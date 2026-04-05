@@ -1,0 +1,576 @@
+===== クイズアプリ問題集 =====
+
+## セクション1: React & TypeScript 高難易度問題
+
+### 問題1: useEffect の依存配列
+以下のコードについて、正しい説明はどれですか？
+
+```typescript
+useEffect(() => {
+  console.log("Effect ran");
+}, [count]);
+```
+
+A) 依存配列 count が変わるたびに Effect が実行される
+B) count の初期値が設定されるたびに Effect が実行される
+C) ページをロードするたびに Effect 内の cleanup 関数が実行される
+D) 依存配列を指定した場合、cleanup 関数は実行されない
+
+正解: A
+出典: React Official Documentation - Using the Effect Hook
+
+---
+
+### 問題2: 関数型コンポーネントの State 更新
+以下の useState の使用について、誤っているのはどれですか？
+
+```typescript
+const [state, setState] = useState({ count: 0, name: "test" });
+setState(prev => ({ ...prev, count: 1 }));
+```
+
+A) 前のstatusとマージしないと、name プロパティが失われる
+B) setState(() => prev) という書き方では前の値を参照できない
+C) setState は非同期で実行されるため、即座に state は更新されない
+D) setState 後、即座に console.log(state) を実行すると古い値が出力される
+
+正解: B
+出典: React Official Documentation - State Hooks
+
+---
+
+### 問題3: TypeScript の Generic について
+React コンポーネントで Generic を使う際、以下の記述で型推論が正しく機能するのはどれですか？
+
+```typescript
+interface Props<T> {
+  items: T[];
+  onSelect: (item: T) => void;
+}
+
+function List<T extends { id: number }>(props: Props<T>) {
+  return ...
+}
+```
+
+A) T の型は自動推論され、List に渡したオブジェクト配列から推測される
+B) T extends { id: number } により、id プロパティを持つ型のみが使用可能
+C) props の型が正確に定義され、onSelect は T 型のオブジェクトを必須パラメータとする
+D) すべてが正しい
+
+正解: D
+出典: TypeScript Official Handbook - Generics
+
+---
+
+## セクション2: ビルドツール & Asset 管理
+
+### 問題4: Vite での Asset 読み込み方式の違い
+以下のファイル配置について、```fetch("/data.json")``` でアクセス可能なのはどれですか？
+
+A) src/data/data.json
+B) public/data.json
+C) dist/data.json（ビルド後）
+D) A と C
+
+正解: B
+出典: Vite Official Documentation - Static Asset Handling
+
+理由:
+- src/ 配下のファイルは、ビルド時に JavaScript にバンドルされます
+- そのため、HTTP リクエストで直接アクセスできません
+- import で JavaScript 内に読み込む必要があります
+
+```typescript
+// src/data.json にアクセスする場合（import方式）
+import data from "./data.json";
+```
+
+---
+
+### 問題5: src/ 方式 vs public/ 方式 の使い分け
+クイズアプリで、クイズの複数バージョンを サーバー側で動的に配信し、
+その日のクイズをランダムに読み込みたい場合、最適な配置方式はどちらですか？
+
+A) src/data/quizzes.json にすべてのバージョンを保存し、ビルド時にバンドルする
+B) public/quizzes/ フォルダに複数ファイルを保存し、fetch() で動的に取得する
+C) バックエンド API から動的に取得する
+D) TypeScript の enum で定義する
+
+正解: C
+補足:
+- public/ 方式は静的配信向き（毎日変わるデータには不向き）
+- サーバー側で「本日のクイズ」を決定し、API で配信する設計が推奨
+
+出典: Vite Documentation, React Best Practices
+
+---
+
+### 問題6: バンドルサイズの最適化
+以下のうち、最終的なブラウザのダウンロードサイズが最も小さくなるのはどれですか？
+
+A) assets.json を src/data/ にインポートして、すべてのクイズをバンドルする
+B) index.html から <script src="./quizzes.js"></script> で別途読込み
+C) public/ に置いて動的に fetch() し、必要な分だけ読込み
+D) バックエンド API から遅延ロード（Lazy Load）で配信
+
+正解: C または D（最適: D）
+理由:
+- src/ バンドル：すべてがメインバンドルに含まれ、最初のロードが重い
+- 静的な別ファイル：キャッシュ効率が良いが、すべてダウンロードされる
+- public + fetch：必要なファイルだけ取得でき、code splitting も可能
+- API + Lazy Load：サーバー側で配信制御でき、最も柔軟で最適
+
+出典: Web Performance Best Practices, Vite Code Splitting Guide
+
+---
+
+## セクション3: 実装パターン
+
+### 問題7: クイズデータの構造設計
+「高難易度クイズアプリ」に最適データ構造は？
+
+```typescript
+// パターンA
+interface Quiz {
+  id: number;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
+
+// パターンB
+interface Quiz {
+  id: number;
+  question: string;
+  options: Array<{ text: string; isCorrect: boolean }>;
+  explanation: { ja: string; en: string };
+  difficulty: "easy" | "medium" | "hard";
+  tags: string[];
+}
+```
+
+クイズアプリの要件（難易度が高い、複数言語対応、カテゴリ分け）を考えると、適切なのはどれですか？
+
+A) パターンA（シンプルで実装が楽）
+B) パターンB（機能拡張性が高い）
+C) どちらでも大差ない
+D) JSON ファイルの構造では決まらない
+
+正解: B
+理由:
+- パターンB は tags でカテゴリ分けが容易
+- difficulty で難易度フィルタリングが可能
+- 国際化（i18n）対応が最初から設計済み
+- 拡張性が高く、将来のデータ追加に強い
+
+出典: Database Design Best Practices, React Pattern Guide
+
+---
+
+## セクション4: 本番環境運用
+
+### 問題8: クイズファイルのバージョン管理
+管理画面でクイズを追加・編集したとき、git に何をコミットすべきですか？
+
+A) src/data/quizzes.txt そのもの
+B) DB スキーマのみ
+C) 仕様書（マークダウン）
+D) A と C
+
+正解: D
+理由:
+- src/data に含める場合：JSON/TSX ファイルは git と相性良好
+- テキスト形式の場合：マークダウン形式に変更し、docs/ に管理用コピーを作成
+- レビュー・トレーサビリティ：誰がいつどの問題を追加したか履歴が残る
+- バージョン管理：本番環境で問題の追加履歴が追跡可能
+
+ベストプラクティス:
+```
+- docs/quizzes.md (人間が読む版)
+- src/data/quizzes.json (アプリが読む版)
+- git で docs/ をメイン管理
+```
+
+出典: Git Workflow Best Practices
+
+---
+
+## セクション5: パフォーマンス・セキュリティ
+
+### 問題9: localStorage を使った「訪問回数」カウントの注意点
+以下のコードで、最も問題になる可能性があるのはどれですか？
+
+```typescript
+useEffect(() => {
+  const stored = localStorage.getItem("visitCount");
+  const count = stored ? parseInt(stored, 10) : 0;
+  const newCount = count + 1;
+  localStorage.setItem("visitCount", String(newCount));
+  setVisitCount(newCount);
+}, []);
+```
+
+A) localStorage はシークレットモードで動作しない可能性
+B) ユーザーがブラウザの開発者ツールで値を改ざん可能
+C) キーが重複すると値が上書きされる
+D) parseInt の基数指定（第2引数の 10）がないと、'08' が8進数となるバグになる可能性
+
+正解: B
+補足: 
+- 正解回数や スコアのような重要データは localStorage で管理すべきではない
+- サーバーサイドで管理し、JWT など認証トークンで検証する必要がある
+- localStorage は「ローカル設定」（テーマ、言語設定など）向き
+
+出典: OWASP - Client-side Storage Security
+
+---
+
+### 問題10: クイズアプリの基本セキュリティ
+管理画面でクイズを作成・更新するとき、最初に実装すべき認証・認可は？
+
+A) メールアドレスのみで認証
+B) JWT トークン + ロールベース認可（RBAC）
+C) セッションクッキー + CSRF トークン
+D) A と B
+
+正解: B
+理由:
+- 複数アプリを運用する場合、JWT の scope/role で権限制御が容易
+- API 呼び出しごとに検証可能（モバイル ↔ Web の共通認可ロジック）
+- セッションクッキーはサーバーサイド状態を維持するため、スケーラビリティに課題
+- CSRF 対策は必須ですが、JWT + SameSite クッキーで対応可能
+
+実装順序:
+1. JWT 発行・検証（バックエンド）
+2. role/scope を含める（admin, user など）
+3. 管理画面で Authorization ヘッダーに JWT を付与
+4. バックエンド側で role を確認して、削除・編集を許可 / 拒否
+
+出典: OWASP - Authentication Cheat Sheet, JWT Best Practices
+
+---
+
+## セクション6: セットアップツールの選択
+
+### 問題11: Create React App vs Vite
+以下は、Create React App（CRA）と Vite を比較した説明です。最も正確でないのはどれですか？
+
+A) CRA は Facebook が公式提供するテンプレートツール
+B) Vite は CRA よりもビルド速度が速く、ESM ベースの開発サーバーを使用
+C) 古いブラウザ対応が必要な場合、CRA の方がデフォルト設定で有利
+D) CRA は `npm start` で開発サーバーが起動し、Vite は `npm run dev` で起動する
+
+正解: D（正確には、どちらも `npm` コマンドを使うが、スクリプト名が異なる）
+
+補足:
+```bash
+# CRA
+npx create-react-app my-app
+cd my-app
+npm start
+
+# Vite + React
+npm create vite@latest my-app -- --template react
+cd my-app
+npm run dev
+```
+
+出典: Create React App Documentation, Vite Getting Started
+
+---
+
+### 問題12: Vite + React + TypeScript の推奨プラグイン
+Vite で React + TypeScript を使用する場合、公式推奨のプラグインはどれですか？
+
+A) babel-plugin-react-compiler
+B) @vitejs/plugin-react
+C) react-compiler
+D) tsx-loader
+
+正解: B
+理由:
+- Vite は ESM ベースで、Babel は不要
+- @vitejs/plugin-react が React の JSX トランスフォーメーションを処理
+- React Compiler は最適化用の実験的ツール（babel-plugin-react-compiler）だが、Vite では @vitejs/plugin-react で十分
+
+`vite.config.ts` での設定:
+```typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+})
+```
+
+出典: Vite Documentation - React, @vitejs/plugin-react
+
+---
+
+## セクション7: React Router の実装パターン
+
+### 問題13: React Router のルート保護（Route Protection）
+クイズアプリで、管理画面は認証済みユーザーのみがアクセス可能にする実装方法として、最も推奨されるのはどれですか？
+
+A) ルートコンポーネント内で useEffect で認証確認し、未認証なら手動で redirect
+B) ルートを定義する際、loader 関数で事前認証確認し、unauthorized なら throw redirect
+C) ページ遷移時に useNavigate で手動チェック
+D) クライアント側の状態だけで判定
+
+正解: B
+理由:
+- loader 関数はルート遷移前に実行される
+- 認証失敗の場合、コンポーネント描画の前に redirect 可能
+- UX が良く、不正アクセス試行のログもとりやすい
+
+実装パターン:
+```typescript
+export const adminRoute = {
+  path: "admin",
+  lazy: () => import("./admin"),
+  loader: async ({ params }) => {
+    const isAuthed = await checkAuth();
+    if (!isAuthed) {
+      throw redirect("/login");
+    }
+    return {};
+  }
+}
+```
+
+出典: React Router Documentation - Route Protection, Loader Pattern
+
+---
+
+### 問題14: Index ルート と Lazy Loading の組み合わせ
+以下のルート定義で、`/admin` にアクセスした場合、どれが実行されますか？
+
+```typescript
+export default [
+  {
+    path: "admin",
+    lazy: () => import("./admin/layout"),
+    children: [
+      { index: true, lazy: () => import("./admin/dashboard") }
+    ]
+  }
+] satisfies RouteConfig;
+```
+
+A) admin/layout のみロード
+B) admin/dashboard のみロード
+C) admin/layout と admin/dashboard の両方ロード
+D) ルート遷移時にロード、コンポーネント描画時には未ロード
+
+正解: C
+理由:
+- `path: "admin"` → admin/layout をロード
+- `index: true` → 追加パスなし ($PATH/admin) に対応
+- lazy() により、両方がコード分割される
+
+このパターンで、`/admin` アクセス時は:
+1. admin/layout がロード → <Outlet /> で子を表示
+2. admin/dashboard がロード → <Outlet /> に挿入
+
+出典: React Router Documentation - Code Splitting with Lazy
+
+---
+
+## セクション8: キャッシング と データ再取得戦略
+
+### 問題15: Request Deduplication（リクエスト重複排除）
+同一の問題データを複数ページから fetch する場合、Request Deduplication を実装する利点は？
+
+A) 同じ fetch() 呼び出しが並行実行される場合、1回のリクエストで統合し複数ページに配信する
+B) キャッシュ層を追加して、ネットワークリクエストを削減する
+C) バックエンド側で重複クエリをフィルタリング
+D) A と B
+
+正解: A
+理由:
+- 単一のネットワークリクエストで、複数のコンポーネント・ページから参照される
+- 競合状態（race condition）を回避
+- API 負荷を削減
+
+実装パターン（キャッシュ + deduplication）:
+```typescript
+const cache = new Map();
+
+async function fetchQuiz(quizId: string) {
+  if (cache.has(quizId)) {
+    return cache.get(quizId);
+  }
+  const promise = fetch(`/api/quiz/${quizId}`).then(r => r.json());
+  cache.set(quizId, promise);
+  return promise;
+}
+```
+
+出典: TanStack Query Documentation - Request Deduplication
+
+---
+
+### 問題16: Invalidate（キャッシュ無効化）
+管理画面でクイズを編集後、ユーザー画面の「クイズ一覧」キャッシュを無効化する実装として、最も推奨されるのはどれですか？
+
+A) useEffect の依存配列で手動リポーリング
+B) setInterval で定期的に refetch
+C) TanStack Query の invalidateQueries() または similar
+D) localStorage をクリア
+
+正解: C
+理由:
+- キャッシュの無効化タイミングを明示的に制御可能
+- 不要な refetch を避けられる
+- モダンな非同期状態管理の標準パターン
+
+実装例（TanStack Query）:
+```typescript
+const mutation = useMutation({
+  mutationFn: updateQuiz,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['quizzes'] })
+  }
+})
+```
+
+出典: TanStack Query Documentation - Invalidate and Refetch
+
+---
+
+## セクション9: HTML メタデータとパフォーマンス
+
+### 問題17: First Contentful Paint（FCP）と CSR/SSR の選択
+「クイズ管理画面は SEO が不要で、初期描画速度を重視する必要がない」という要件での最適な実装はどれですか？
+
+A) SSR（Server-Side Rendering）で最初のHTMLに全コンテンツを含める
+B) CSR（Client-Side Rendering）- JavaScript 実行後にコンテンツを描画
+C) SSG（Static Site Generation）で事前生成
+D) ISR（Incremental Static Regeneration）
+
+正解: B
+理由:
+- 管理者向けの内部ツールなので、SEO 不要
+- **FCP 最適化の必要がない**（管理者は多少の遅延を許容）
+- CSR はシンプルで保守性が高い
+
+補足: ユーザー向けのクイズ本体は FCP が重要なため、SSR or Next.js サイドでもいい設計が必要です。
+
+出典: Web Performance - First Contentful Paint, Routing Strategies
+
+---
+
+### 問題18: Response Shape Validation（レスポンス形状検証）
+バックエンド API からのレスポンスが期待する形式かを確認する処理を「Response Shape Validation」といいます。最も安全な実装はどれですか？
+
+A) typeof チェックと === での厳密等価比較
+B) JSON.parse の try-catch のみ
+C) zod や io-ts などスキーマバリデーションライブラリ
+D) ユーザー入力のバリデーションと同じロジック
+
+正解: C
+理由:
+- zod などはネストされたオブジェクト、配列の型安全チェックが容易
+- TypeScript との型推論統合（自動型生成）
+- エラーメッセージが詳細で、デバッグが容易
+
+実装例（zod）:
+```typescript
+const QuizResponseSchema = z.object({
+  id: z.number(),
+  question: z.string(),
+  options: z.array(z.string()),
+  correctAnswer: z.number(),
+});
+
+const parsed = QuizResponseSchema.parse(apiResponse);
+```
+
+出典: zod Documentation, API Response Validation Best Practices
+
+---
+
+## セクション10: フォーム処理 と UX
+
+### 問題19: React Hook Form での送信中ガード
+クイズ編集フォームで、ユーザーが「保存」ボタンを連打するのを防止する実装方法として推奨されるのはどれですか？
+
+A) onClick で submit 後、手動で `disabled = true` 設定
+B) React Hook Form の `formState.isSubmitting` を使用
+C) useState で送信フラグを管理
+D) form の disabled 属性を合わせせて制御
+
+正解: B
+理由:
+- React Hook Form の `isSubmitting` は送信中を自動追跡
+- ボタン `disabled={isSubmitting}` だけで OK
+- フォームの各フィールドも `disabled={isSubmitting}` 可能
+
+実装例：
+```typescript
+const { handleSubmit, formState: { isSubmitting } } = useForm();
+
+return (
+  <form onSubmit={handleSubmit(onSubmit)}>
+    <input {...register("title")} disabled={isSubmitting} />
+    <button type="submit" disabled={isSubmitting}>
+      {isSubmitting ? "保存中..." : "保存"}
+    </button>
+  </form>
+);
+```
+
+出典: React Hook Form Documentation - formState.isSubmitting
+
+---
+
+### 問題20: npm のバージョン指定エラー ETARGET
+npm install 実行時に「ETARGET: No matching version found」というエラーが出た場合、最初に確認すべきことはどれですか？
+
+A) npm cache を削除して再実行
+B) package.json の依存バージョン指定が正確か確認
+C) npm/node のバージョン互換性確認
+D) インターネット接続確認
+
+正解: B
+理由:
+- **ETARGET = 指定したバージョンがレジストリに存在しない**
+- `npm view パッケージ名` でレジストリに存在するバージョンを確認
+
+例：
+```bash
+# エラー例
+npm install react@99.0.0  # 存在しないバージョン
+
+# 確認方法
+npm view react versions  # 利用可能なバージョン一覧
+
+# 修正方法
+npm install react@latest  # または npm install react@18.2.0
+```
+
+補足:
+- Vite で React Compiler を使う場合も、バージョン互換性を要確認
+- alpha/beta バージョンの場合、`npm install パッケージ@next` なども有効
+
+出典: npm Error Messages Documentation
+
+---
+
+===== 問題一覧 =====
+[ ] React・TypeScript: Generic、hooks、state 更新
+[ ] Vite・Assets: src/ vs public/ の違いを理解
+[ ] データ設計: 型安全で拡張性の高い構造
+[ ] ファイル配置: テキスト/JSON/マークダウンの使い分け
+[ ] セキュリティ: JWT、役割ベース認可、localStorage の制限
+[ ] パフォーマンス: 動的ロード、コード分割、キャッシング戦略
+[ ] セットアップツール: CRA vs Vite の使い分け、@vitejs/plugin-react
+[ ] React Router: index ルート、lazy ローディング、ルート保護
+[ ] キャッシング: request deduplication、invalidate、TanStack Query
+[ ] HTTP・メタデータ: First Contentful Paint、CSR の適用判断
+[ ] API バリデーション: zod による response shape validation
+[ ] フォーム処理: React Hook Form、isSubmitting による送信中ガード
+[ ] npm エラー: ETARGET の意味と対応方法
+

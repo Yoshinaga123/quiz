@@ -1,0 +1,1280 @@
+{
+  "quizzes": [
+    {
+      "id": 1,
+      "section": "セクション1: React & TypeScript 高難易度問題",
+      "title": "useEffect の依存配列",
+      "question": "以下のコードについて、正しい説明はどれですか？",
+      "code": "useEffect(() => {\n  console.log(\"Effect ran\");\n}, [count]);",
+      "options": ["依存配列 count が変わるたびに Effect が実行される", "count の初期値が設定されるたびに Effect が実行される", "ページをロードするたびに Effect 内の cleanup 関数が実行される", "依存配列を指定した場合、cleanup 関数は実行されない"],
+      "correctAnswerIndex": 0,
+      "explanation": "依存配列が指定されている場合、その配列の要素が変わるたびに Effect 関数が実行されます。count が変わるたびに Effect が走ります。",
+      "source": "React Official Documentation"
+    },
+    {
+      "id": 2,
+      "section": "セクション1: React & TypeScript 高難易度問題",
+      "title": "関数型コンポーネントの State 更新",
+      "question": "以下の useState の使用について、誤っているのはどれですか？",
+      "code": "const [state, setState] = useState({ count: 0, name: \"test\" });\nsetState(prev => ({ ...prev, count: 1 }));",
+      "options": ["前のstate とマージしないと、name プロパティが失われる", "setState(() => prev) という書き方では前の値を参照できない", "setState は非同期で実行されるため、即座に state は更新されない", "setState 後、即座に console.log(state) を実行すると古い値が出力される"],
+      "correctAnswerIndex": 1,
+      "explanation": "setState(() => prev) は、setState に関数を渡す形式で、前の値を参照できる正しい書き方です。",
+      "source": "React Official Documentation"
+    },
+    {
+      "id": 3,
+      "section": "セクション1: React & TypeScript 高難易度問題",
+      "title": "TypeScript の Generic について",
+      "question": "React コンポーネントで Generic を使う際、以下の記述で型推論が正しく機能するのはどれですか？",
+      "code": "interface Props<T> {\n  items: T[];\n  onSelect: (item: T) => void;\n}",
+      "options": ["T の型は自動推論される", "T extends { id: number } により、id プロパティを持つ型のみが使用可能", "props の型が正確に定義される", "すべてが正しい"],
+      "correctAnswerIndex": 3,
+      "explanation": "Generic を使うことで、型安全かつ柔軟なコンポーネント設計が可能になります。",
+      "source": "TypeScript Handbook"
+    },
+    {
+      "id": 4,
+      "section": "セクション2: ビルドツール & Asset 管理",
+      "title": "Vite での Asset 読み込み",
+      "question": "以下のファイル配置について、fetch('/data.json') でHTTPアクセス可能なのはどれですか？",
+      "code": "// 例1: public/data.json は HTTP で直接取得できる\nconst res = await fetch('/data.json');\n\n// 例2: src/data/data.json は import で利用する（fetch での直アクセス前提ではない）\nimport localData from './data/data.json';",
+      "options": ["src/data/data.json", "public/data.json", "dist/data.json", "いずれでも可能"],
+      "correctAnswerIndex": 1,
+      "explanation": "ソースコードから参照されないアセット、まったく同じファイル名を保つ必要があるアセット、または URL を得るためだけに最初に import したくないアセットは、プロジェクトルート配下の特別な `public` ディレクトリに置くことができます。このディレクトリ内のアセットは、開発時にはルートパス `/` で配信され、`dist` ディレクトリのルートへそのままコピーされます。`public` アセットは常にルート絶対パスで参照する必要があるため、`public/data.json` は `/data.json` として取得します。",
+      "source": "https://vite.dev/guide/assets.html#the-public-directory"
+    },
+    {
+      "id": 5,
+      "section": "セクション2: ビルドツール & Asset 管理",
+      "title": "src vs public 方式の使い分け",
+      "question": "動的にコンテンツを読み込みたい場合、最適な配置方式はどちらですか？",
+      "code": "// 複数の quiz.json from サーバー",
+      "options": ["src/data/ にすべてバンドル", "public/ フォルダに複数ファイル保存", "バックエンド API から取得", "TypeScript enum で定義"],
+      "correctAnswerIndex": 2,
+      "explanation": "Vite の `public` ディレクトリは、「ソースコードから参照されないアセット」「まったく同じファイル名を保つ必要があるアセット」「URL を得るためだけに import したくないアセット」を置くためのものです。一方で Fetch API は、「ネットワーク越しを含むリソースを取得するためのインターフェース」を提供します。したがって、内容が固定ファイルではなく動的に変わるコンテンツを読み込みたい場合は、`public` に複数 JSON を置くより、バックエンド API から取得する方が問題文の意図に合っています。",
+      "source": "Vite Public Directory / MDN Fetch API"
+    },
+    {
+      "id": 6,
+      "section": "セクション2: ビルドツール & Asset 管理",
+      "title": "モジュールと非モジュール読み込み",
+      "question": "JSON を import vs fetch で読み込む場合の違いはどれですか？",
+      "code": "import quizzes from './quizzes.json';\nconst res = await fetch('/api/quizzes.json');",
+      "options": ["取得タイミングが異なる", "バンドルサイズが変わる", "ビルド時最適化が異なる", "すべて正しい"],
+      "correctAnswerIndex": 3,
+      "explanation": "import はビルド時に解析され、fetch は実行時に取得します。バンドルサイズと最適化方法が異なります。",
+      "source": "Vite Guide"
+    },
+    {
+      "id": 7,
+      "section": "セクション3: コンポーネント設計",
+      "title": "Props Drilling 問題",
+      "question": "深くネストされたコンポーネント構造で、親の state を孫に渡す際の推奨方法はどれですか？",
+      "code": "// 3層のコンポーネントがある場合",
+      "options": ["複数の Props でバケツリレーする", "Context API を使用する", "Redux などの状態管理ツール", "React.memo でラップする"],
+      "correctAnswerIndex": 1,
+      "explanation": "深くネストされた構造で親の state を孫へ渡す場合は、Props drilling を避けるため Context API が有力です。Redux などの状態管理ツールは、より広域で複雑な共有状態がある場合の選択肢であり、この問いの第一回答ではありません。React.memo は再レンダリング最適化の手段であり、state の受け渡し方法そのものではありません。\n\n浅いツリーの場合の具体コード:\nfunction Parent() {\n  const [count, setCount] = useState(0)\n  return <Child count={count} setCount={setCount} />\n}\n\nfunction Child({ count, setCount }) {\n  return <GrandChild count={count} setCount={setCount} />\n}\n\nfunction GrandChild({ count, setCount }) {\n  return <button onClick={() => setCount(count + 1)}>{count}</button>\n}\n\n深いツリーの場合の具体コード:\nconst CountContext = createContext(null)\n\nfunction Parent() {\n  const [count, setCount] = useState(0)\n  return (\n    <CountContext.Provider value={{ count, setCount }}>\n      <Child />\n    </CountContext.Provider>\n  )\n}\n\nfunction GrandChild() {\n  const { count, setCount } = useContext(CountContext)\n  return <button onClick={() => setCount(count + 1)}>{count}</button>\n}\n\n複雑状態での具体コード:\nconst useQuizStore = create((set) => ({\n  count: 0,\n  selectedIds: [],\n  increment: () => set((state) => ({ count: state.count + 1 })),\n  toggleSelected: (id) =>\n    set((state) => ({\n      selectedIds: state.selectedIds.includes(id)\n        ? state.selectedIds.filter((item) => item !== id)\n        : [...state.selectedIds, id],\n    })),\n}))\n\nfunction GrandChild() {\n  const count = useQuizStore((state) => state.count)\n  const increment = useQuizStore((state) => state.increment)\n  return <button onClick={increment}>{count}</button>\n}",
+      "source": "React Design Patterns"
+    },
+    {
+      "id": 8,
+      "section": "セクション3: コンポーネント設計",
+      "title": "Controlled vs Uncontrolled Component",
+      "question": "フォーム入力を React で管理する際、state で値を制御する方式の名称はどれですか？",
+      "code": "<input value={name} onChange={(e) => setName(e.target.value)} />",
+      "options": ["Uncontrolled Component", "Controlled Component", "Ref Component", "Form Component"],
+      "correctAnswerIndex": 1,
+      "explanation": "state で値を管理し、onChange で更新する方式が Controlled Component です。",
+      "source": "React Forms"
+    },
+    {
+      "id": 9,
+      "section": "セクション3: コンポーネント設計",
+      "title": "React.memo の使用シーン",
+      "question": "React.memo でコンポーネントをラップする場合の効果はどれですか？",
+      "code": "const MemoizedList = React.memo(ListComponent);",
+      "options": ["props が同じなら再レンダリングをスキップ", "必ずレンダリングスキップされる", "メモリ使用量が削減される", "TypeScript の型チェックが厳しくなる"],
+      "correctAnswerIndex": 0,
+      "explanation": "React.memo は props の浅い比較で再レンダリングをスキップします。",
+      "source": "React Optimization"
+    },
+    {
+      "id": 10,
+      "section": "セクション4: 非同期処理パターン",
+      "title": "Promise.all vs Promise.allSettled",
+      "question": "複数の API 呼び出しについて、全件の成功を待ち、1つでも失敗したら全体を reject したい場合に使うメソッドはどれですか？",
+      "code": "Promise.all([fetch(url1), fetch(url2), fetch(url3)])",
+      "options": ["Promise.race", "Promise.all", "Promise.any", "Promise.allSettled"],
+      "correctAnswerIndex": 1,
+      "explanation": "Promise.all は、すべての入力 Promise が fulfill されたときにのみ fulfill され、1つでも reject されると即座に reject されます。一方 Promise.allSettled は、成功・失敗にかかわらずすべての Promise が settle するまで待ち、各結果を配列で返します。",
+      "source": "Promise MDN"
+    },
+    {
+      "id": 11,
+      "section": "セクション4: 非同期処理パターン",
+      "title": "async/await のエラーハンドリング",
+      "question": "複数の async 処理をシーケンシャルに実行し、エラーが発生した時点で停止する場合の書き方は？",
+      "code": "try {\n  const data = await fetchUser();\n  const posts = await fetchPosts(data.id);\n} catch (err) { ... }",
+      "options": ["Promise チェーン", "async/await + try/catch", "async/await + catch メソッド", "コールバック地獄"],
+      "correctAnswerIndex": 1,
+      "explanation": "async/await + try/catch は読みやすく、エラーハンドリングが容易です。",
+      "source": "JavaScript Async"
+    },
+    {
+      "id": 12,
+      "section": "セクション5: TypeScript 型システム",
+      "title": "Union Type vs Intersection Type",
+      "question": "以下の型定義について、値が持つべきプロパティはどれですか？",
+      "code": "type A = { name: string; age: number };\ntype B = { email: string };\ntype Result = A & B;",
+      "options": ["name か email のいずれか", "name, age, email のすべて", "age のみ", "name のみ"],
+      "correctAnswerIndex": 1,
+      "explanation": "Intersection Type (A & B) は両方の型を『すべて』持つ必要があります。",
+      "source": "TypeScript Advanced"
+    },
+    {
+      "id": 13,
+      "section": "セクション5: TypeScript 型システム",
+      "title": "Partial と Required ユーティリティ型",
+      "question": "すべてのプロパティをオプショナルにするユーティリティ型はどれですか？",
+      "code": "type User = { name: string; age: number };\ntype OptionalUser = Partial<User>;",
+      "options": ["Required", "Partial", "Pick", "Record"],
+      "correctAnswerIndex": 1,
+      "explanation": "Partial<T> はすべてのプロパティをオプショナル（? がつく）に変換します。",
+      "source": "TypeScript Utility Types"
+    },
+    {
+      "id": 14,
+      "section": "セクション5: TypeScript 型システム",
+      "title": "keyof と Mapped Type",
+      "question": "`User` 型の各キーをそのまま使い、値の型だけをすべて `boolean` にした新しい型を作るには？",
+      "code": "type User = { name: string; age: number };\ntype Flags = { [K in keyof User]: boolean };",
+      "options": ["Pick", "Omit", "Mapped Type", "Union"],
+      "correctAnswerIndex": 2,
+      "explanation": "`keyof User` で `name | age` のようなキーのユニオン型を取り出し、`[K in keyof User]` で各キーを順にたどれます。そこで各プロパティの値の型を `boolean` に置き換えると、`{ name: boolean; age: boolean }` のような新しい型を作れます。これは Mapped Type の基本パターンです。\n\nユーザー目線で実現できる機能の例:\n- プロフィール編集画面で、各項目が「編集中かどうか」を `name: true`, `age: false` のように管理できる\n- バリデーション結果を、各入力欄ごとに「エラーあり / なし」で持てる\n- 管理画面で、各列や各設定項目の ON/OFF 状態を元のデータ構造に合わせて安全に管理できる\n- フォーム送信時に、どの項目を変更したか、どの項目を無効化するかを同じキー構造で扱える\n\nつまり Mapped Type を使うと、元データと同じ項目構成を保ったまま、UI 用の状態や設定フラグを自動的に作れるため、画面機能を増やしても型のズレを減らせます。",
+      "source": "TypeScript Handbook"
+    },
+    {
+      "id": 15,
+      "section": "セクション6: エラーハンドリング戦略",
+      "title": "try/catch で複数エラー型を処理",
+      "question": "fetch エラーと JSON parse エラーを区別する方法はどれですか？",
+      "code": "try { ... } catch (err) { if (err instanceof SyntaxError) ... }",
+      "options": ["Error.message で文字列判定", "instanceof で型チェック", "err.code を参照", "手動で throw-catch"],
+      "correctAnswerIndex": 1,
+      "explanation": "instanceof はエラーの実際の型をチェックできます。",
+      "source": "Error Handling Best Practices"
+    },
+    {
+      "id": 16,
+      "section": "セクション6: エラーハンドリング戦略",
+      "title": "カスタムエラークラス",
+      "question": "ビジネスロジック固有のエラーを表現するための推奨パターンは？",
+      "code": "class ValidationError extends Error { constructor(msg) { super(msg); } }",
+      "options": ["Error を拡張してカスタムクラスを作成", "単なる Error を throw する", "文字列を throw する", "undefined を throw する"],
+      "correctAnswerIndex": 0,
+      "explanation": "Error を継承してカスタムクラスを作ることで、エラーの種類を明確にできます。",
+      "source": "JavaScript Patterns"
+    },
+    {
+      "id": 17,
+      "section": "セクション7: パフォーマンス最適化",
+      "title": "useMemo vs useCallback",
+      "question": "関数の参照を保持して再作成を避けたい場合に使用するフックはどれですか？",
+      "code": "const memoizedCallback = useCallback(() => { doSomething() }, [dep]);",
+      "options": ["useMemo", "useCallback", "useRef", "useReducer"],
+      "correctAnswerIndex": 1,
+      "explanation": "useCallback は関数の参照を保持し、不必要な再作成を避けます。",
+      "source": "React Hooks"
+    },
+    {
+      "id": 18,
+      "section": "セクション7: パフォーマンス最適化",
+      "title": "バンドルサイズの最適化",
+      "question": "不要な npm パッケージを削除した際、最初に確認すべき項目はどれですか？",
+      "code": "npm install @large/library  // 削除",
+      "options": ["ビルドファイルサイズ", "package.json の記録", "node_modules の削除", "すべて"],
+      "correctAnswerIndex": 3,
+      "explanation": "パッケージ管理、依存関係、ビルド出力のサイズ確認が重要です。",
+      "source": "Build Optimization"
+    },
+    {
+      "id": 19,
+      "section": "セクション8: テスト戦略",
+      "title": "ユニットテストの対象",
+      "question": "React コンポーネントのテストで最優先すべき項目はどれですか？",
+      "code": "// テスト対象の優先順位",
+      "options": ["UI の見た目", "ユーザーの入力と出力", "内部実装の詳細", "CSS の正確性"],
+      "correctAnswerIndex": 1,
+      "explanation": "ユーザー視点での入出力と振る舞いをテストすることが重要です。",
+      "source": "React Testing Library"
+    },
+    {
+      "id": 20,
+      "section": "セクション8: テスト戦略",
+      "title": "マッチャーの選択",
+      "question": "要素が DOM に存在することをテストする場合の推奨マッチャーは？",
+      "code": "expect(screen.getByText('Hello')).toBeInTheDocument();",
+      "options": ["toBeTruthy", "toBeInTheDocument", "toBeVisible", "toHaveLength"],
+      "correctAnswerIndex": 1,
+      "explanation": "toBeInTheDocument は DOM の存在を確認する明示的な方法です。",
+      "source": "Jest Matchers"
+    },
+    {
+      "id": 21,
+      "section": "セクション9: API 統合パターン",
+      "title": "CORS の仕組み",
+      "question": "ブラウザから別オリジンの API にリクエストを送る際、サーバーが返すべきヘッダーはどれですか？",
+      "code": "// ブラウザ制限を回避するには",
+      "options": ["Access-Control-Allow-Origin", "Authorization", "X-API-Key", "Content-Type"],
+      "correctAnswerIndex": 0,
+      "explanation": "サーバーが Access-Control-Allow-Origin ヘッダーを返して CORS を許可します。",
+      "source": "MDN CORS"
+    },
+    {
+      "id": 22,
+      "section": "セクション9: API 統合パターン",
+      "title": "認証トークンの管理",
+      "question": "JWT トークンを localStorage に保存する方法の安全性は？",
+      "code": "localStorage.setItem('token', jwtToken);",
+      "options": ["最も安全な方法", "XSS 攻撃のリスクあり", "完全に安全", "サーバー側のみで管理すべき"],
+      "correctAnswerIndex": 1,
+      "explanation": "localStorage は XSS 攻撃で奪われるリスクがあります。より安全な方法はタブ内のメモリや HttpOnly Cookie です。",
+      "source": "OWASP HTML5 Security Cheat Sheet / JWT Cheat Sheet"
+    },
+    {
+      "id": 23,
+      "section": "セクション10: デバッグとロギング",
+      "title": "console.log vs console.table",
+      "question": "オブジェクト配列 `users` を DevTools 上で列形式で見やすく確認したい。`console.log(users)` の代わりとして最も適切なのはどれですか？",
+      "code": "const users = [{id: 1, name: 'A'}, {id: 2, name: 'B'}];\nconsole.log(users);",
+      "options": ["console.log", "console.table", "JSON.stringify", "alert"],
+      "correctAnswerIndex": 1,
+      "explanation": "console.table は配列のオブジェクトをテーブル形式で表示して可視化しやすくします。",
+      "source": "Browser DevTools"
+    },
+    {
+      "id": 24,
+      "section": "セクション11: モジュールシステム",
+      "title": "CommonJS vs ES Modules",
+      "question": "最新の JavaScript プロジェクトで推奨されるモジュールシステムはどれですか？",
+      "code": "import { Component } from './component.js';\nconst { Component } = require('./component.js');",
+      "options": ["CommonJS", "ES Modules", "どちらでも同じ", "環境に依存"],
+      "correctAnswerIndex": 1,
+      "explanation": "ES Modules は標準化され、ツールの最適化も充実しているため npm @latest では推奨されます。",
+      "source": "ECMAScript 2015+"
+    },
+    {
+      "id": 25,
+      "section": "セクション11: モジュールシステム",
+      "title": "デフォルトエクスポート vs 名前付きエクスポート",
+      "question": "複数の関数をエクスポートする場合、推奨するパターンはどれですか？",
+      "code": "export const func1 = () => {};\nexport const func2 = () => {};",
+      "options": ["デフォルトエクスポート", "名前付きエクスポート", "どちらでも同じ", "別ファイルに分割"],
+      "correctAnswerIndex": 1,
+      "explanation": "複数のエクスポートは名前付きエクスポートを使うことで、import する側が柔軟に選択できます。",
+      "source": "ES6 Modules"
+    },
+    {
+      "id": 26,
+      "section": "セクション12: React StrictMode",
+      "title": "StrictMode の役割",
+      "question": "React.StrictMode は開発環境で何を行いますか？",
+      "code": "<React.StrictMode>\n  <App />\n</React.StrictMode>",
+      "options": ["エラーをキャッチして本番環境を保護", "不純な関数を検出して2回レンダリング", "パフォーマンスを向上させる", "バンドルサイズを削減"],
+      "correctAnswerIndex": 1,
+      "explanation": "StrictMode は意図しない副作用を検出するため、開発環境でコンポーネントを2回マウント・レンダリングします。",
+      "source": "React.StrictMode"
+    },
+    {
+      "id": 27,
+      "section": "セクション12: React StrictMode",
+      "title": "StrictMode による useEffect の重複実行",
+      "question": "StrictMode で useEffect が異なる結果を返すコードはどれですか？",
+      "code": "useEffect(() => {\n  array.push(1);  // 破壊的変更\n}, []);",
+      "options": ["純粋なデータ変換", "破壊的な変更（配列 push など）", "fetch による外部データ取得", "console.log による出力"],
+      "correctAnswerIndex": 1,
+      "explanation": "配列の push などの破壊的な変更は、2回実行されると異なる結果になり、StrictMode で検出されます。",
+      "source": "React StrictMode"
+    },
+    {
+      "id": 28,
+      "section": "セクション12: React StrictMode",
+      "title": "StrictMode でハイライトされるバグ",
+      "question": "useEffect の重複実行で検出される『不純な関数』の特徴はどれですか？",
+      "code": "useEffect(() => {\n  globalCounter++;  // グローバル変数変更\n}, []);",
+      "options": ["入出力が確定している", "同じ入力なら同じ出力を返す", "外部状態を変更する", "すべてが A と B"],
+      "correctAnswerIndex": 2,
+      "explanation": "不純な関数は外部状態を変更し、「同じ入力 → 異なる出力」となってバグの原因になります。",
+      "source": "React.StrictMode"
+    },
+    {
+      "id": 29,
+      "section": "セクション12: React StrictMode",
+      "title": "StrictMode による double-render の合図",
+      "question": "DOMに値が2倍になって表示される場合、疑うべき関数の特徴は？",
+      "code": "const Counter = () => {\n  const [count, setCount] = useState(0);\n  // レンダー結果を変更する処理が含まれている",
+      "options": ["fetch エラー", "破壊的な props", "不純なレンダー（pure でない関数）によるバグ"],
+      "correctAnswerIndex": 2,
+      "explanation": "公式ドキュメントより：「Strict Mode calls some of your functions (only the ones that should be pure) twice in development.」不純な関数を早期に検出します。",
+      "source": "React StrictMode"
+    },
+    {
+      "id": 30,
+      "section": "セクション12: React StrictMode",
+      "title": "StrictMode での console エラー重複",
+      "question": "StrictMode で console.error や console.warn が2回出力されるのはなぜですか？",
+      "code": "useEffect(() => {\n  console.warn('Warning');\n}, []);",
+      "options": ["バグの報告がある", "不純な関数の検出のため2回実行", "メモリリークのサイン", "ネットワークエラーの再実行"],
+      "correctAnswerIndex": 1,
+      "explanation": "StrictMode はコンポーネントの2重実行で不純な関数を検出するため、console 出力も2回経験します。",
+      "source": "React Strict Mode"
+    },
+    {
+      "id": 31,
+      "section": "セクション13: useEffect と副作用・データ取得パターン",
+      "title": "useEffect の依存配列 [] の意味",
+      "question": "以下のコードで、空の依存配列 [] を指定した useEffect はどのタイミングで実行されますか？（本番挙動ベースで回答）",
+      "code": "useEffect(() => {\n  fetch(API_URL).then(res => res.json()).then(data => setCount(data.count));\n}, []);",
+      "options": ["毎回のレンダリングのたびに実行される", "マウント時とアンマウント時だけに実行される", "マウント時だけ1回実行される", "state が更新されるたびに実行される"],
+      "correctAnswerIndex": 2,
+      "explanation": "空の依存配列 [] は、Effect を初回マウント時に実行する意図を表します。本番ビルドでは通常1回です。なお開発環境で React StrictMode が有効な場合は副作用検出のために追加実行され、結果として2回観測されることがあります。",
+      "source": "view-counter/frontend/src/components/ViewCounter.tsx"
+    },
+    {
+      "id": 32,
+      "section": "セクション13: useEffect と副作用・データ取得パターン",
+      "title": "外部データ取得を『副作用』と呼ぶ理由",
+      "question": "以下の説明の中で、『副作用（side effect）』の定義として最も正確なものはどれですか？",
+      "code": "useEffect(() => {\n  fetch(API_URL)\n  .then(data => setCount(data.count));\n}, []);",
+      "options": ["コンポーネントのレンダリング結果に直接反映されない処理", "レンダー関数内で実行されると問題が生じる処理（データ取得、イベントリスナー登録など）", "props や state に基づかない処理", "エラーを発生させる可能性のある処理"],
+      "correctAnswerIndex": 1,
+      "explanation": "『副作用』とは、『コンポーネントの pure なレンダリングプロセスの外で実行される処理』を指します。これらをレンダー関数内で直接実行するとバグの原因になります。",
+      "source": "React Official Documentation"
+    },
+    {
+      "id": 33,
+      "section": "セクション13: useEffect と副作用・データ取得パターン",
+      "title": "useEffect に直接 async を書けない理由と cleanup",
+      "question": "以下のコードが推奨されていない理由は何ですか？",
+      "code": "useEffect(async () => {\n  const res = await fetch(API_URL);\n  const data = await res.json();\n  setCount(data.count);\n}, []);",
+      "options": ["非同期処理のため、cleanup 関数が実行できなくなる", "async 関数は自動的に Promise を返すが、useEffect は関数かクリーンアップ関数の返却を期待しており、Promise の返却は型に矛盾するから", "useState の呼び出しが許可されないから", "fetch API は useEffect 内では使用禁止だから"],
+      "correctAnswerIndex": 1,
+      "explanation": "useEffect の第1引数は『関数 → (クリーンアップ関数 | undefined)』の型を期待しています。async 関数は必ず Promise を返すため、型が合致しません。正しいパターンは『内部に async 関数を定義して呼び出す』方式です。",
+      "source": "view-counter/frontend/src/components/ViewCounter.tsx"
+    },
+    {
+      "id": 34,
+      "section": "セクション13: useEffect と副作用・データ取得パターン",
+      "title": "fetch API と res.ok チェックの重要性",
+      "question": "以下のコードで res.ok を確認する理由は何ですか？",
+      "code": "const res = await fetch(API_URL);\nif (!res.ok) throw new Error(`HTTP error: ${res.status}`);\nconst data = await res.json();",
+      "options": ["fetch が失敗しても Promise は reject されず、HTTP エラーステータス（404, 500など）は成功値として返されるから", "res.json() 呼び出し時に必ず IOException が発生するから", "JSON パースエラーを事前に防ぐため", "TypeScript の型チェックで必須だから"],
+      "correctAnswerIndex": 0,
+      "explanation": "fetch API の重要な特性：『ネットワークエラーのみで Promise を reject する』。HTTP エラーステータスでも fetch は成功値を返すため、res.ok チェックが必須です。",
+      "source": "view-counter/frontend/src/components/ViewCounter.tsx"
+    },
+    {
+      "id": 35,
+      "section": "セクション13: useEffect と副作用・データ取得パターン",
+      "title": "TypeScript 型アサーション (as) の役割",
+      "question": "以下のコードで as ViewData を使用する理由は何ですか？",
+      "code": "const data = (await res.json()) as ViewData;\n\ntype ViewData = {\n  count: number;\n};",
+      "options": ["res.json() は any 型を返し、TypeScript は data.count がどの型なのか推測できないため、開発者が『これは ViewData 型です』と明示する", "型アサーションで実行時のデータ検証が自動的に行われる", "as を使うことで fetch エラーが自動的にハンドルされる", "JSON のパース速度が向上する"],
+      "correctAnswerIndex": 0,
+      "explanation": "res.json() は Promise<any> を返します。型アサーション (as ViewData) は『このデータは ViewData 型である』と TypeScript コンパイラに通知し、型チェックを可能にします。ただし実行時のデータ検証は行われません。",
+      "source": "view-counter/frontend/src/components/ViewCounter.tsx"
+    },
+    {
+      "id": 36,
+      "section": "セクション13: useEffect と副作用・データ取得パターン",
+      "title": "try/catch でのエラーハンドリングと型ガード",
+      "question": "以下のコードで err instanceof Error を確認する理由は何ですか？",
+      "code": "try {\n  const data = (await res.json()) as ViewData;\n  setCount(data.count);\n} catch (err) {\n  setError(err instanceof Error ? err.message : \"Unknown error\");\n}",
+      "options": ["catch ブロックの err 変数は unknown 型であり、Error 型とは限らず、throw \"string\" や throw 123 などの任意の値も catch される可能性があるから", "await 式でのみ例外が発生し、それ以外では発生しないから", "catch で捕捉されたすべてのエラーは自動的に Error 型", "「型ガード」は TypeScript だけの機能で、JavaScript では無関係"],
+      "correctAnswerIndex": 0,
+      "explanation": "JavaScript では `throw new Error(...)` の他に、`throw \"string\"` や `throw 123` など任意の値を throw できます。そのため catch 時に `err instanceof Error` で検証し、堅牢な実装をします。",
+      "source": "view-counter/frontend/src/components/ViewCounter.tsx"
+    },
+    {
+      "id": 37,
+      "section": "セクション14: CORS とセキュリティ",
+      "title": "CORS エラーの原因特定",
+      "question": "以下のエラーが発生した原因として正しいものはどれですか？\n\nAccess to fetch at 'http://localhost:8080/api/views' from origin 'http://localhost:5174' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'http://localhost:5173' that is not equal to the supplied origin.",
+      "code": "// Go バックエンド\nw.Header().Set(\"Access-Control-Allow-Origin\", \"http://localhost:5173\")\n\n// フロントエンドは http://localhost:5174 で起動中",
+      "options": [
+        "フロントエンドのコードに誤りがある",
+        "バックエンドの CORS 許可オリジンが 5173 固定のため、5174 で起動した Vite からのリクエストが拒否された",
+        "fetch の URL が間違っている",
+        "ブラウザのキャッシュが原因"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "CORS は『ブラウザが』リクエスト元のオリジン（プロトコル + ホスト + ポート）とサーバーが返す Access-Control-Allow-Origin を比較し、一致しない場合にブロックします。Vite は 5173 が使用中のとき自動的に 5174 に切り替えるため、固定値のままでは起動のたびに壊れます。",
+      "source": "view-counter/backend/main.go"
+    },
+    {
+      "id": 38,
+      "section": "セクション14: CORS とセキュリティ",
+      "title": "Origin をそのまま返す修正のセキュリティリスク",
+      "question": "以下の修正はポート問題を解決しますが、本番環境でのセキュリティリスクはどれですか？",
+      "code": "// 修正後\nif origin := r.Header.Get(\"Origin\"); origin != \"\" {\n    w.Header().Set(\"Access-Control-Allow-Origin\", origin)\n}",
+      "options": [
+        "リスクなし。Origin ヘッダーはブラウザが自動で付与するので安全",
+        "任意のオリジンからのリクエストを許可することになり、悪意あるサイトから API を叩かれる可能性がある",
+        "パフォーマンスが低下する",
+        "localhost でしか動かなくなる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Origin をそのまま返すのは実質的に「全オリジン許可（* と同等）」です。さらに Access-Control-Allow-Credentials: true が加わると、Cookie や認証情報も外部サイトから送信可能になり深刻なリスクになります。\n\n本番環境での正しい対応：許可するオリジンをホワイトリストで管理する。\n\n// 本番向け例\nallowed := map[string]bool{\n    \"https://example.com\": true,\n}\nif allowed[r.Header.Get(\"Origin\")] {\n    w.Header().Set(\"Access-Control-Allow-Origin\", r.Header.Get(\"Origin\"))\n}\n\n今回のケースは localhost 開発環境専用かつ Credentials なしのため実害はありませんが、本番コードに流用しないよう注意が必要です。",
+      "source": "view-counter/backend/main.go"
+    },
+    {
+      "id": 39,
+      "section": "セクション15: フロントエンドアーキテクチャ選定",
+      "title": "SPA / RSC / Astro の使い分け",
+      "question": "「徹底的なパフォーマンス最適化」を目指す場合、アーキテクチャ選定の基準として最も正確な説明はどれですか？",
+      "code": "// A: Vite + React SPA\n// B: Next.js App Router (RSC)\n// C: Astro (Islands Architecture)",
+      "options": [
+        "RSC は常に最速なので、すべてのプロジェクトで採用すべき",
+        "プロダクトの性質（コンテンツ駆動 vs インタラクション駆動）によって最適解は変わるため、銀の弾丸はない",
+        "Astro は静的サイト専用で、動的コンテンツには使えない",
+        "SPA はパフォーマンスが劣るため、現代では使うべきではない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "アーキテクチャ選定はユースケース依存です。\n\n・SPA（Vite + React）: インタラクションが密なアプリ（クイズ、管理画面など）に適切\n・RSC（Next.js）: データ取得が多くインタラクションが少ないコンテンツ駆動サイトで効果的。ライブラリがバンドルに含まれず転送量が削減される\n・Astro（Islands）: ほぼ静的で一部だけインタラクティブなサイトに最適\n\n「銀の弾丸はない」がアーキテクチャ設計の大原則です。",
+      "source": "アーキテクチャ設計原則"
+    },
+    {
+      "id": 40,
+      "section": "セクション15: フロントエンドアーキテクチャ選定",
+      "title": "React Server Components (RSC) の特徴",
+      "question": "React Server Components (RSC) がクライアントバンドルサイズを削減できる理由はどれですか？",
+      "code": "// Server Component（サーバー側のみで実行）\nasync function ProductList() {\n  const data = await db.query(...)  // DBに直接アクセス可\n  return <ul>{data.map(...)}</ul>\n}\n// このコンポーネントで使ったライブラリはブラウザに送られない",
+      "options": [
+        "コードを自動的に圧縮するから",
+        "Server Components はサーバー側のみで実行され、そこで使ったライブラリはクライアントの JavaScript バンドルに含まれないから",
+        "画像を自動的に最適化するから",
+        "不要な CSS を削除するから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Server Components はサーバー側でのみ実行されます。使ったライブラリ（例: 巨大な日付フォーマットライブラリ）はブラウザに一切送信されず、ネットワーク転送量を削減できます。\n\nただし Hydration がゼロになるわけではなく「選択的 Hydration」が正確な表現です。'use client' がついた Client Components は従来通り Hydration されます。",
+      "source": "React Server Components"
+    },
+    {
+      "id": 41,
+      "section": "セクション15: フロントエンドアーキテクチャ選定",
+      "title": "クイズアプリに最適なアーキテクチャ",
+      "question": "今回開発しているクイズアプリ（ユーザーが問題を選択・回答し、リアルタイムでフィードバックを受ける）に最も適したアーキテクチャはどれですか？",
+      "code": "// クイズアプリの特性\n// - 問題選択・回答 → state 管理が必要\n// - 正解/不正解フィードバック → リアルタイムな UI 更新\n// - 問題データは静的 JSON",
+      "options": [
+        "Next.js (RSC): サーバー側レンダリングで SEO を最適化すべき",
+        "Astro (Islands): 静的コンテンツが多いので Islands が最適",
+        "Vite + React SPA: インタラクションが密でほぼ全域が動的なため SPA が素直に合う",
+        "どれでも同じなので、チームの慣れで決めればよい"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "クイズアプリはインタラクション駆動型の典型例です。\n\n・問題の選択・回答・フィードバックはすべて state で管理\n・ほぼ全域が動的なため Astro の Islands の旨味がない\n・問題データが静的 JSON なので RSC の「DB直接アクセス」の恩恵も薄い\n\nVite + React SPA が最もシンプルで適切です。パフォーマンス改善が必要な場合は RSC より先に React.memo / useMemo / React.lazy（コード分割）を検討するのが現実的です。",
+      "source": "フロントエンドアーキテクチャ選定"
+    },
+    {
+      "id": 42,
+      "section": "セクション16: パフォーマンス最適化の判断基準",
+      "title": "主張評価: 計測前提での最適化判断",
+      "question": "次の評価のうち、最も妥当なものはどれですか？\n\nA. State Colocation 推奨\nB. Zustand/Jotai 強推奨\nC. Code Splitting 推奨",
+      "code": "// 前提: クイズアプリ (Vite + React SPA)\n// 目的: パフォーマンス最適化方針の妥当性を評価する",
+      "options": [
+        "A, B, C すべて無条件で正しい",
+        "A は良い習慣だが前提条件が必要、B は計測なき最適化になりやすく注意、C は方向性は正しいが効果はアプリ規模に依存",
+        "B だけが唯一正しく、まずグローバル状態管理ライブラリを導入すべき",
+        "C は不要で、コード分割は現代のビルドツールなら自動で最適化される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "実務では『計測なき最適化』を避けることが重要です。\n\n・State Colocation: 不要な再レンダリング伝播が原因と確認できた場合に有効\n・Zustand/Jotai: 共有状態の複雑化が実際にボトルネックになってから検討\n・Code Splitting: 初期バンドルや LCP/INP の実測悪化がある場合に効果が出る\n\n結論として、最適化施策は常に計測結果とアプリ規模を前提に採用判断する。",
+      "source": "パフォーマンス最適化原則"
+    },
+    {
+      "id": 43,
+      "section": "セクション17: Go の並行処理と排他制御",
+      "title": "sync.Mutex の英文読解",
+      "question": "次の Go 公式ドキュメントの英文から読み取れる `Mutex` の説明として、最も適切なものはどれですか？",
+      "code": "A Mutex is a mutual exclusion lock.\nThe zero value for a Mutex is an unlocked mutex.\nA Mutex must not be copied after first use.\nLock locks m. If the lock is already in use, the calling goroutine blocks until the mutex is available.",
+      "options": [
+        "Mutex は最初から lock 済みで、コピーして使い回すことが推奨される",
+        "Mutex は相互排他ロックで、初期状態は unlocked。すでに使用中なら利用可能になるまで goroutine は待機する",
+        "Mutex は goroutine ごとの専用ロックで、Lock した goroutine 以外は Unlock できない",
+        "Mutex は読み取り専用ロックなので、共有データの書き込み保護には向かない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`A Mutex is a mutual exclusion lock.` は「Mutex は相互排他ロックである」という意味です。つまり、同じ共有データに複数の goroutine が同時に入らないように制御します。`The zero value for a Mutex is an unlocked mutex.` は「初期値の Mutex は未ロック状態」という意味で、宣言直後から使えます。`A Mutex must not be copied after first use.` は「使い始めた後はコピーしてはいけない」という注意です。さらに `If the lock is already in use, the calling goroutine blocks until the mutex is available.` から、すでに誰かが Lock している間は、次の goroutine は利用可能になるまで待機すると読み取れます。",
+      "source": "https://pkg.go.dev/sync#Mutex"
+    },
+    {
+      "id": 44,
+      "section": "セクション18: Docker Compose とビルド設定",
+      "title": "failed to read dockerfile の原因と対処",
+      "question": "次のエラーが発生した。最も適切な原因と解決策の組み合わせはどれですか？\n\nfailed to solve: failed to read dockerfile: open Dockerfile: no such file or directory",
+      "code": "# 前提\n# - docker-compose.yml の api に build: ./backend を指定\n# - backend/ に Dockerfile は存在しない\n# - 実行場所: vite-quiz-app/backend",
+      "options": [
+        "原因: ポート 8080 が競合している。解決: ports を 8081:8080 に変更する",
+        "原因: build コンテキスト内に Dockerfile がない。解決: Dockerfile を配置し、compose の build.context / dockerfile を正しいパスに合わせる",
+        "原因: depends_on の順序が逆。解決: db を削除して api 単体起動にする",
+        "原因: Vite が起動している。解決: npm run dev を停止すれば Dockerfile なしでもビルドできる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "このエラーは Docker がビルド時に Dockerfile を見つけられないときに発生します。`build: ./backend` は compose ファイルの配置位置を基準に解決されるため、意図と異なるディレクトリを参照することがあります。対策は (1) Dockerfile をビルドコンテキストに置く、(2) `build.context` と `build.dockerfile` を実ディレクトリ構成に合わせて明示する、の2点です。",
+      "source": "Docker Compose Build Specification"
+    },
+    {
+      "id": 45,
+      "section": "セクション19: DB マイグレーション運用",
+      "title": "本番マイグレーションでの IF EXISTS/IF NOT EXISTS",
+      "question": "CI/CD 前提の本番マイグレーションで、再実行可能性（冪等性）を高める方針として最も適切なのはどれですか？",
+      "code": "-- 例\nDROP TABLE IF EXISTS temp_table;\nCREATE TABLE IF NOT EXISTS users (...);",
+      "options": [
+        "本番では失敗を早く検知するため、IF EXISTS は使わないのが常に正解",
+        "本番では IF EXISTS / IF NOT EXISTS を適切に使い、アトミックかつリバーシブルなマイグレーションにする",
+        "IF EXISTS は開発環境でのみ有効で、本番SQLでは無効",
+        "IF EXISTS を使うとロールバック不能になるため禁止すべき"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "モダンな CI/CD では、デプロイやロールバックの再試行可能性が重要です。`IF EXISTS` / `IF NOT EXISTS` は環境差分や途中失敗後の再実行でスクリプト全体のクラッシュを防ぎやすくし、冪等性の実装に寄与します。",
+      "source": "MDN/各種Migrationベストプラクティス要約"
+    },
+    {
+      "id": 46,
+      "section": "セクション20: Flutter 実行環境トラブルシュート",
+      "title": "No supported devices found の原因",
+      "question": "以下の実行で `No supported devices found with name or id matching ...` が出た。最も適切な対処はどれですか？",
+      "code": "flutter run -d 8D8A5796-D4C7-4BB9-B135-\nDBF87FC258BA --dart-define-from-file=dart-defines.json",
+      "options": [
+        "UUID を途中改行で分断しない。Simulator を boot してから `flutter devices` で認識を確認する",
+        "`--dart-define-from-file` を削除すれば必ずデバイス認識される",
+        "`flutter run` の代わりに `npm run dev` を使う",
+        "UUID は不要で、常に `-d ios` 固定が正解"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ログでは UUID が改行で分断され、`zsh: command not found` も発生しています。まず UUID を1行で渡し、必要なら `xcrun simctl boot <UUID>` と `open -a Simulator` 後に `flutter devices` で対象が見えることを確認します。",
+      "source": "Flutter CLI / simctl 実行ログ"
+    },
+    {
+      "id": 47,
+      "section": "セクション21: Node.js 環境トラブルシュート",
+      "title": "npm EACCES と root-owned cache",
+      "question": "`npm ERR! code EACCES` と `Your cache folder contains root-owned files` が出た場合の実務的な対処として最も適切なのはどれですか？",
+      "code": "npm ERR! Your cache folder contains root-owned files ...\nnpm ERR! To permanently fix this problem, run: sudo chown -R ... ~/.npm",
+      "options": [
+        "毎回 `sudo npm install` で実行し続ける",
+        "案内された通り `.npm` キャッシュ所有者を現在ユーザーへ戻し、以後は通常ユーザーで npm を実行する",
+        "node_modules を削除するだけで必ず解決する",
+        "OS を再起動すれば再発しない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "原因はキャッシュ配下の所有権不整合です。まず所有者を修正し、以後 `sudo npm` を常用しない運用へ戻すのが再発防止に有効です。",
+      "source": "npm エラーメッセージ"
+    },
+    {
+      "id": 48,
+      "section": "セクション22: Docker Compose とビルド反映",
+      "title": "docker compose up だけでは反映されない理由",
+      "question": "Go アプリを Dockerfile で `go build -o server .` している構成で、`main.go` に `fmt.Printf(...)` を追加したのに `docker compose logs api` に出ない。最も適切な説明と対処はどれですか？",
+      "code": "FROM golang:1.26-alpine AS build-env\nCOPY . /app\nWORKDIR /app\nRUN go mod download\nRUN go build -o server .\n\nFROM alpine:3.19\nCOPY --from=build-env /app/server /app/server\nCMD [\"./server\"]",
+      "options": [
+        "`fmt.Printf` は Docker では常に捨てられるので、`log.Printf` に変えない限り `docker compose logs` には出ない",
+        "既存コンテナは以前ビルドした `server` バイナリを実行している。ソース変更を反映するには `docker compose up --build` でイメージを再ビルドする",
+        "`docker compose up` は毎回自動で再ビルドするが、Go の `runtime.NumCPU()` だけはログ出力されない",
+        "PostgreSQL の checkpoint ログが大量に出ると API ログは非表示になるため、db コンテナを停止してから起動する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "この構成ではコンテナ内で実行されるのはソースコードではなく、ビルド済みの `server` バイナリです。`main.go` を編集しても既存イメージや既存コンテナには自動反映されません。`docker compose up --build` あるいは `docker compose build` 後に再起動して、最新ソースからバイナリを作り直す必要があります。`fmt.Printf` 自体は標準出力に出るため、再ビルド後であれば `docker compose logs api` で確認できます。",
+      "source": "Docker Compose / Dockerfile build behavior"
+    },
+    {
+      "id": 49,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "air で自動再起動させるための条件",
+      "question": "Go API を Docker 上で `air` により自動再起動させたい。最も適切な構成はどれですか？",
+      "code": "services:\n  api:\n    build:\n      context: .\n      target: dev\n    volumes:\n      - .:/app\n    command: [\"air\", \"-c\", \".air.toml\"]",
+      "options": [
+        "本番用のビルド済みバイナリを実行するだけでよく、ソースコードの volume mount も `air` 設定も不要",
+        "`air` をコンテナ内に入れ、ソースコードを volume mount し、`air` を PID 1 として起動する",
+        "PostgreSQL コンテナに `air` を入れれば、`api` コンテナも自動で再起動する",
+        "`docker compose logs -f api` を開いておけば、ファイル変更時に自動再起動される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`air` はファイル監視ツールなので、監視対象のソースコードがコンテナ内から見えている必要があります。そのため、開発用コンテナには `air` のインストール、ソースコードの bind mount、`air` を起動コマンドにする設定が必要です。単にビルド済みバイナリを実行するだけの構成では自動再起動されません。",
+      "source": "air / Docker Compose development setup"
+    },
+    {
+      "id": 50,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "air.toml の root と tmp_dir の意味",
+      "question": "次の `air` 設定について、`root` と `tmp_dir` の説明として最も適切なのはどれですか？",
+      "code": "root = \".\"\ntmp_dir = \"tmp\"\n\n[build]\ncmd = \"go build -o ./tmp/server .\"\nentrypoint = \"./tmp/server\"\ninclude_ext = [\"go\"]\nexclude_dir = [\"tmp\"]",
+      "options": [
+        "`root` は Go module 名、`tmp_dir` は Docker volume 名である",
+        "`root` は `air` が監視とビルドの基準にする作業ディレクトリ、`tmp_dir` は再ビルド時の一時成果物を置くディレクトリである",
+        "`root` は実行バイナリ名、`tmp_dir` は PostgreSQL のデータ保存先である",
+        "`root` は常に `/` 固定で、`tmp_dir` は指定しても無視される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`root` は `air` がプロジェクトの基準ディレクトリとして扱う場所です。この例では `.` なので、`air` を起動した現在ディレクトリを基準に監視・ビルドします。`tmp_dir` は再ビルドした実行ファイルなどの一時ファイル置き場で、この設定では `./tmp` 配下が使われます。",
+      "source": "air configuration semantics"
+    },
+    {
+      "id": 51,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "air の build 設定と typo の見分け方",
+      "question": "次の設定断片を見たときの判断として最も適切なのはどれですか？",
+      "code": "[build]\ncmd = \"go build -o ./tmp/server .\"\nbin = \"./tmp/server .\"\ninclude_ext = [\"go\"]\nexclude_dir = [\"tmp\"]",
+      "options": [
+        "`bin` の値に余分な ` .` が入っており不自然で、実行パス指定として typo を疑うべきである",
+        "`bin = \"./tmp/server .\"` は Go の標準的な書き方で、末尾の `.` は必須である",
+        "`cmd` の `go build` は不要で、`air` はソースコードを直接実行するため常に `bin` だけあればよい",
+        "`exclude_dir = [\"tmp\"]` を入れると `cmd` は実行されなくなる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`cmd` の末尾の `.` は `go build` のビルド対象として自然ですが、`bin` や実行パスに `./tmp/server .` のような値が入るのは不自然です。実行ファイルの指定なら通常は `./tmp/server` で、末尾の空白と `.` は typo を疑うのが妥当です。現行設定では deprecated な `bin` ではなく `entrypoint = \"./tmp/server\"` を使う形にしています。",
+      "source": "air build configuration troubleshooting"
+    },
+    {
+      "id": 52,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "include_ext と exclude_dir を両方入れる理由",
+      "question": "次の `air` 設定で `include_ext` と `exclude_dir` を両方指定する主な理由として最も適切なのはどれですか？",
+      "code": "[build]\ncmd = \"go build -o ./tmp/server .\"\nentrypoint = \"./tmp/server\"\ninclude_ext = [\"go\"]\nexclude_dir = [\"tmp\"]",
+      "options": [
+        "`.go` の変更だけを監視しつつ、ビルド成果物のある `tmp` を監視対象から外して不要な再検知ループを防ぐため",
+        "Go は `include_ext` と `exclude_dir` を必ず同時に書かないとコンパイルできないため",
+        "`exclude_dir = [\"tmp\"]` を入れると `tmp` 配下にだけ変更を限定して高速化できるため",
+        "`include_ext = [\"go\"]` はログの色を変える設定で、監視とは無関係であるため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`include_ext = [\"go\"]` により、Go ソースの変更に絞って監視できます。一方 `exclude_dir = [\"tmp\"]` を入れておかないと、`cmd` が生成した `./tmp/server` などの成果物まで再度検知して、無駄な再ビルドや再起動ループの原因になります。",
+      "source": "air watch configuration"
+    },
+    {
+      "id": 53,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "開発用 air 構成と本番用バイナリ構成の違い",
+      "question": "Go API の Docker 構成について、開発用 `air` 構成と本番用ビルド済みバイナリ構成の違いとして最も適切なのはどれですか？",
+      "code": "# development\napi:\n  build:\n    context: .\n    target: dev\n  volumes:\n    - .:/app\n\n# production image\nFROM golang:1.26-alpine AS build-env\nRUN go build -o server .\nFROM alpine:3.19 AS runtime\nCMD [\"./server\"]",
+      "options": [
+        "開発用はソースを mount して `air` で変更を監視するが、本番用はビルド済みバイナリを固定イメージとして実行する",
+        "開発用と本番用の違いはポート番号だけで、再ビルド反映の考え方は同じである",
+        "本番用のほうが `air` による自動再起動が強く有効になる",
+        "開発用は必ず `docker compose up --build` が必要で、本番用は不要である"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "開発用構成は bind mount したソースコードを `air` が監視し、その場で再ビルド・再起動します。一方、本番用は Docker build 時に作ったバイナリを含むイメージを実行する構成で、起動後にソース変更を自動反映する仕組みは持ちません。目的が異なるため、同じ運用を期待しないことが重要です。",
+      "source": "Docker development vs production architecture"
+    },
+    {
+      "id": 54,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "docker compose up --build が要る場合と要らない場合",
+      "question": "Go プロジェクトで、どのような場合に `docker compose up --build` が必要になりやすいですか？",
+      "code": "# A: source mounted + air\nvolumes:\n  - .:/app\ncommand: [\"air\", \"-c\", \".air.toml\"]\n\n# B: built binary only\nRUN go build -o server .\nCMD [\"./server\"]",
+      "options": [
+        "A のように `air` でソースを監視する開発構成では毎回必須で、B では不要である",
+        "B のようにビルド済みバイナリをイメージへ閉じ込める構成ではソース変更反映に再ビルドが必要だが、A のような開発構成では通常不要である",
+        "どちらの構成でも `docker compose up` は必ず自動再ビルドするので `--build` は意味がない",
+        "`--build` は PostgreSQL コンテナにだけ影響し、Go API には無関係である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "正解は B です。\n\n理由の全体像:\n- A は開発用の \"ソースをマウントして air で監視する\" 構成です。\n- B は \"Docker イメージ作成時に Go バイナリを焼き込み、そのバイナリを実行する\" 構成です。\n- `docker compose up --build` が必要になりやすいのは、ソース変更を反映するためにイメージの作り直しが必要な B 側です。\n\n`volumes:` の意味:\n- `- .:/app` は bind mount です。\n- ホスト側の現在ディレクトリ `.` を、コンテナ内の `/app` にそのまま見せます。\n- つまりローカルで `main.go` や `go.mod` を編集すると、コンテナ内 `/app` からも最新ファイルとして見えます。\n- そのため、コンテナ内ツールがファイル変更を監視する構成なら、毎回イメージを作り直さなくても反映できます。\n\n`command: [\"air\", \"-c\", \".air.toml\"]` の意味:\n- Docker イメージに元々設定されているデフォルトコマンドを上書きして、起動時に `air` を実行します。\n- `-c .air.toml` は air の設定ファイルとして `.air.toml` を使う指定です。\n- air は Go ソースの変更を監視し、変更があれば再ビルドしてプロセスを再起動します。\n- そのため A のような開発構成では、通常のソース変更だけなら `docker compose up --build` を毎回打つ必要はありません。\n\n`RUN go build -o server .` の意味:\n- これは Dockerfile のビルド時に実行される命令です。\n- `.` を Go モジュールのビルド対象としてコンパイルし、出力ファイル名を `server` にしています。\n- ここで作られた `server` バイナリは、その時点のソースコードのスナップショットです。\n- 後からホスト側のソースを編集しても、すでに作成済みのイメージ内バイナリは自動では更新されません。\n\n`CMD [\"./server\"]` の意味:\n- これはコンテナ起動時のデフォルト実行コマンドです。\n- つまりコンテナは、イメージ内に保存されている `./server` バイナリをそのまま起動します。\n- 実行されるのはソースコードではなく、以前 `RUN go build ...` で作られた成果物です。\n\nなぜ B で `--build` が必要になりやすいのか:\n- B では実行対象が焼き込み済みバイナリなので、ソースを変えてもコンテナの中身は変わりません。\n- したがって最新ソースを反映したければ、`docker compose up --build` か `docker compose build` でイメージを再ビルドする必要があります。\n\nA でも `--build` が要ることがある例:\n- Dockerfile 自体を変更したとき\n- ベースイメージや Go バージョンを変えたとき\n- `air` や OS パッケージなど、イメージに焼き込んだツールを更新したいとき\n- bind mount ではなく、イメージに COPY したファイル内容へ依存する部分を変えたとき\n\n要するに:\n- ソースをマウントして監視する開発構成なら、普段のコード修正は air に任せられる\n- イメージ内バイナリを直接動かす構成なら、ソース修正の反映に再ビルドが必要\n- そのため `docker compose up --build` が必要になりやすいのは B です。",
+      "source": "Docker Compose build reflection behavior"
+    },
+    {
+      "id": 55,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "root = \".\" を別ディレクトリに変えたときの影響",
+      "question": "`air` 設定で `root = \".\"` を `root = \"./handlers\"` に変更した。下の設定断片を前提に、最も起きやすい影響はどれですか？",
+      "code": "root = \"./handlers\"\ntmp_dir = \"tmp\"\n\n[build]\ncmd = \"go build -o ./tmp/server .\"\nentrypoint = \"./tmp/server\"",
+      "options": [
+        "`air` の基準ディレクトリが `./handlers` になり、監視範囲や `cmd` の相対パス解決が変わってビルド対象がズレる可能性がある",
+        "`root` はログ表示用の文字列なので、実際の動作には影響しない",
+        "`root` を変えると PostgreSQL の接続先も自動で切り替わる",
+        "`root` をサブディレクトリにすると `air` は必ずすべての親ディレクトリも自動監視するので問題は起きない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`root` は `air` の作業基準ディレクトリです。ここをサブディレクトリへ変えると、監視対象の範囲だけでなく、`cmd` や `entrypoint` の相対パス解決基準も変わります。その結果、本来プロジェクトルートで実行したい `go build` が別ディレクトリ基準になり、ビルド失敗や意図しない監視範囲になることがあります。",
+      "source": "air root directory behavior"
+    },
+    {
+      "id": 56,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "exclude_dir = [\"tmp\"] を消したときの不具合",
+      "question": "次の設定のように `exclude_dir = [\"tmp\"]` を削除したとき、最も起きやすい不具合はどれですか？",
+      "code": "tmp_dir = \"tmp\"\n\n[build]\ncmd = \"go build -o ./tmp/server .\"\nentrypoint = \"./tmp/server\"\ninclude_ext = [\"go\"]",
+      "options": [
+        "`./tmp/server` などの生成物まで監視対象に入り、再ビルドのたびに再検知して無駄な再起動やループの原因になりやすい",
+        "`air` が `.go` ファイルを監視しなくなり、変更しても何も起きなくなる",
+        "`tmp` ディレクトリが自動で PostgreSQL 用 volume に変換される",
+        "`exclude_dir` を省略すると `entrypoint` が無視されて `cmd` だけが 1 回実行される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "この構成では `cmd` が `./tmp/server` を更新します。`tmp` を除外しないと、その生成物への変更まで `air` が検知してしまい、再ビルド後の成果物をまた変更と見なして、不要な再起動やループを引き起こしやすくなります。",
+      "source": "air exclude_dir troubleshooting"
+    },
+    {
+      "id": 57,
+      "section": "セクション23: air による Go 開発環境",
+      "title": "entrypoint と cmd の役割分担",
+      "question": "次の `build` 設定における `cmd` と `entrypoint` の役割分担として、最も適切なのはどれですか？",
+      "code": "[build]\ncmd = \"go build -o ./tmp/server .\"\nentrypoint = \"./tmp/server\"",
+      "options": [
+        "`cmd` は再ビルド時に実行するコマンド、`entrypoint` はビルド後に起動する実行ファイルやコマンドを指す",
+        "`cmd` と `entrypoint` は完全に同義で、どちらを書いても内部的に同じ処理になる",
+        "`cmd` は Docker Compose 用、`entrypoint` は PostgreSQL 接続用の設定である",
+        "`entrypoint` は監視拡張子の一覧を表し、`cmd` はログの出力形式を表す"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`cmd` はソース変更時に何でビルドするかを定義する項目です。この例では `go build -o ./tmp/server .` がそれに当たります。一方 `entrypoint` は、そのビルド成果物として何を実行するかを表し、ここでは `./tmp/server` を起動します。つまり、`cmd` は作る処理、`entrypoint` は動かす対象です。",
+      "source": "air cmd vs entrypoint semantics"
+    },
+    {
+      "id": 58,
+      "section": "セクション24: Codex 設定トラブルシュート",
+      "title": "unknown variant xhigh の直接原因",
+      "question": "次のエラーの直接原因として最も適切なのはどれですか？",
+      "code": "Error loading configuration: unknown variant 'xhigh' ... expected one of minimal, low, medium, high",
+      "options": [
+        "Codex 本体のバイナリ破損",
+        "`model_reasoning_effort` に許可されていない値 `xhigh` が設定されていた",
+        "ネットワークがオフラインだった",
+        "API トークンの期限切れ"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "このエラーは設定値の列挙型チェックで発生しています。`model_reasoning_effort` が受け付ける値は `minimal | low | medium | high` だけで、`xhigh` はスキーマ外です。",
+      "source": "Codex config validation behavior"
+    },
+    {
+      "id": 59,
+      "section": "セクション24: Codex 設定トラブルシュート",
+      "title": "なぜ xhigh が入りやすいか",
+      "question": "`xhigh` のような無効値が設定に残る経路として、最も現実的なのはどれですか？",
+      "code": "model_reasoning_effort = \"xhigh\"",
+      "options": [
+        "過去の会話ログや内部表現（例: reasoning_effort）をそのまま `config.toml` に転記した",
+        "TOML では high が自動的に xhigh に変換される",
+        "Go のバージョンが古いと high が xhigh に展開される",
+        "Docker Compose が起動時に設定文字列を改変する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "設定エラーの多くは『別コンテキストで使われていた値やサンプルをそのまま貼る』ことで起きます。TOML や Docker が自動変換した可能性は低く、手動転記ミスのほうが説明力があります。",
+      "source": "Configuration drift troubleshooting"
+    },
+    {
+      "id": 60,
+      "section": "セクション24: Codex 設定トラブルシュート",
+      "title": "なぜ high への変更で直るのか",
+      "question": "`model_reasoning_effort = \"high\"` に修正すると起動できる主な理由はどれですか？",
+      "code": "model_reasoning_effort = \"high\"",
+      "options": [
+        "`high` が許可済みの列挙値で、設定パーサーのバリデーションを通過するため",
+        "`high` だと認証をスキップできるため",
+        "`high` だと自動でネットワーク設定が修正されるため",
+        "`high` だと API エンドポイントが localhost に変わるため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "今回の失敗点は設定読み込み段階の enum 不一致でした。許可された値に戻すことで、起動前バリデーションが通り CLI が通常起動します。",
+      "source": "Codex startup configuration parsing"
+    },
+    {
+      "id": 61,
+      "section": "セクション24: Codex 設定トラブルシュート",
+      "title": "再発防止の確認コマンド",
+      "question": "設定修正後に再発防止の観点で最初に実行する確認として適切なのはどれですか？",
+      "code": "codex --help",
+      "options": [
+        "ヘルプ表示などの軽量コマンドで設定読み込みに失敗しないことを先に確認する",
+        "いきなり長時間の本番バッチを実行する",
+        "設定ファイルを削除して毎回再生成する",
+        "エラーが出なくても毎回 Docker を再ビルドする"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`codex --help` は副作用が少なく、設定パースの成否をすぐ確認できます。まず軽量コマンドで健全性を確認してから本処理へ進むのが安全です。",
+      "source": "Operational verification pattern"
+    },
+    {
+      "id": 62,
+      "section": "セクション24: Codex 設定トラブルシュート",
+      "title": "切り分け時の探索対象",
+      "question": "ワークスペース内に該当設定が見つからない場合、次に優先して調べるべき場所はどれですか？",
+      "code": "# workspace で見つからない場合",
+      "options": [
+        "ユーザーホーム配下の `~/.codex/config.toml`",
+        "`node_modules` の任意ライブラリ",
+        "Docker コンテナ内の `/var/lib/postgresql/data`",
+        "ブラウザの localStorage"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Codex CLI の恒久設定はユーザースコープに置かれることが多く、ワークスペース外の `~/.codex/config.toml` が原因点になるケースがあります。今回もここが実際の修正箇所でした。",
+      "source": "User-scope CLI configuration"
+    },
+    {
+      "id": 63,
+      "section": "セクション25: Go 標準ライブラリ読解",
+      "title": "LookupEnv の戻り値の意味",
+      "question": "次のコードについて、最も正しい説明はどれですか？",
+      "code": "func LookupEnv(key string) (string, bool) {\n\ttestlog.Getenv(key)\n\treturn syscall.Getenv(key)\n}",
+      "options": [
+        "環境変数が未設定でも常に `(\"\", true)` を返す",
+        "第2戻り値は『キーが存在したか』を表し、値が空文字でも存在していれば true になる",
+        "`testlog.Getenv` が環境変数の実体を読み取り、第1戻り値として返している",
+        "`LookupEnv` は値だけを返し、bool は常に false になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`LookupEnv` は `(value, found)` を返す API です。ここでは最終的に `syscall.Getenv(key)` の結果をそのまま返しています。`found` は『環境変数が存在するか』を表すため、値が空文字でもキーが設定済みなら true です。未設定の場合のみ false になります。`testlog.Getenv(key)` はテスト用ログフックで、戻り値の意味そのものは `syscall.Getenv` に依存します。",
+      "source": "Go os.LookupEnv implementation"
+    },
+    {
+      "id": 64,
+      "section": "セクション26: Go runtime 診断出力",
+      "title": "runtime.NumCPU の意味",
+      "question": "次のコード断片における `runtime.NumCPU()` の説明として最も適切なのはどれですか？",
+      "code": "fmt.Printf(\"Number of CPUs: %d\\n\", runtime.NumCPU())",
+      "options": [
+        "現在の goroutine 数を返す",
+        "実行可能な論理CPU数を返し、Goプロセスが使う並列数そのものとは限らない",
+        "常に物理CPUソケット数を返す",
+        "Goのバージョン文字列を返す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`runtime.NumCPU()` はマシンの論理CPU数を返します。ただし実際の並列実行上限は `GOMAXPROCS` によって制御されるため、`NumCPU` と実効並列度は常に一致するとは限りません。",
+      "source": "Go runtime package"
+    },
+    {
+      "id": 65,
+      "section": "セクション26: Go runtime 診断出力",
+      "title": "runtime.GOMAXPROCS(0) の読み取り",
+      "question": "`runtime.GOMAXPROCS(0)` をログ表示に使う主な意図はどれですか？",
+      "code": "fmt.Printf(\"GOMAXPROCS: %d\\n\", runtime.GOMAXPROCS(0))",
+      "options": [
+        "GOMAXPROCS を 0 に設定して無効化するため",
+        "現在値を変更せずに、並列実行に使う OS スレッド数の上限を取得するため",
+        "goroutine をすべて停止するため",
+        "CPU 使用率をパーセントで取得するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`GOMAXPROCS(n)` は通常『設定して旧値を返す』APIですが、`n=0` のときは設定変更せず現在値を返します。診断ログでは副作用なく現設定を確認できるため有用です。",
+      "source": "Go runtime.GOMAXPROCS"
+    },
+    {
+      "id": 66,
+      "section": "セクション26: Go runtime 診断出力",
+      "title": "runtime.NumGoroutine の解釈",
+      "question": "`runtime.NumGoroutine()` の値を監視する際の注意点として最も適切なのはどれですか？",
+      "code": "fmt.Printf(\"Number of Goroutines: %d\\n\", runtime.NumGoroutine())",
+      "options": [
+        "この値は常に 1 で固定される",
+        "この値は現在生存している goroutine 数のスナップショットで、負荷やタイミングで変動する",
+        "この値は OS スレッド数と必ず同じ",
+        "この値はメモリ使用量(MB)を示す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`NumGoroutine` は瞬間値です。リクエスト処理中やバックグラウンドタスクの有無で増減します。単発値だけでなく時系列で見るとリーク検知に役立ちます。",
+      "source": "Go runtime.NumGoroutine"
+    },
+    {
+      "id": 67,
+      "section": "セクション26: Go runtime 診断出力",
+      "title": "runtime.Version の用途",
+      "question": "起動時に `runtime.Version()` を出力する主なメリットはどれですか？",
+      "code": "fmt.Printf(\"Go Version: %s\\n\", runtime.Version())",
+      "options": [
+        "アプリのビジネスロジックを高速化するため",
+        "実行バイナリがどの Go ランタイムで動作しているかを運用時に追跡するため",
+        "JWT の署名方式を選択するため",
+        "DB 接続数を自動調整するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "運用環境での不具合調査では『どの Go バージョンで動いているか』の可観測性が重要です。`runtime.Version()` のログは再現性確認やデプロイ差分の切り分けに有効です。",
+      "source": "Go runtime.Version"
+    },
+    {
+      "id": 68,
+      "section": "セクション26: Go runtime 診断出力",
+      "title": "runtime.GOOS / GOARCH の意味",
+      "question": "`runtime.GOOS` と `runtime.GOARCH` を同時にログ出力する目的として最も適切なのはどれですか？",
+      "code": "fmt.Printf(\"OS/Arch: %s/%s\\n\", runtime.GOOS, runtime.GOARCH)",
+      "options": [
+        "HTTP レスポンスの Content-Type を決めるため",
+        "実行バイナリの対象プラットフォーム（OS/アーキテクチャ）を明示し、環境差異を診断しやすくするため",
+        "データベース方言を切り替えるため",
+        "CORS 設定を自動生成するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`GOOS/GOARCH` は実行環境の識別子です。コンテナやクロスビルド環境では想定外の組み合わせで動くことがあるため、起動時に可視化しておくと障害対応が速くなります。",
+      "source": "Go runtime constants"
+    },
+    {
+      "id": 69,
+      "section": "セクション27: runtime 診断ログの実践読解",
+      "title": "NumCPU と GOMAXPROCS が同じ値の意味",
+      "question": "次の起動ログから読み取れる状態として最も適切なのはどれですか？",
+      "code": "Number of CPUs: 12\nGOMAXPROCS: 12",
+      "options": [
+        "CPU制限が設定されていて、Goプロセスはすべての論理CPUを使用可能",
+        "Go プロセス用に意図的に 6 つの CPU が割り当てられている",
+        "マシンに物理 CPU ソケットが 6 個ある",
+        "このプロセスは単一スレッドで動く"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "NumCPU と GOMAXPROCS が同じ値なら、デフォルト設定で全論理CPU を並列実行に使えます。Docker 環境なら cpus 制限がない状態、物理マシンならマシン全体で並列実行できます。",
+      "source": "Container / Runtime CPU diagnostics"
+    },
+    {
+      "id": 70,
+      "section": "セクション27: runtime 診断ログの実践読解",
+      "title": "起動直後の Goroutines: 1 の状態",
+      "question": "起動直後に Goroutines: 1 と表示される状態から、リクエスト受信中にこの数が増える主な原因はどれですか？",
+      "code": "Number of Goroutines: 1  // 起動直後\n// リクエスト受信後は増加する",
+      "options": [
+        "メモリリークがある",
+        "HTTP リクエストハンドラーが新しい goroutine を起動しているか、バックグラウンドタスクが実行されている",
+        "CPU 使用率が上がった",
+        "Go のバージョンが古い"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "起動直後は main goroutine だけで 1 ですが、http.ListenAndServe でリクエスト受信時に handler goroutine が生成され、数が増えます。多数の同時リクエストやバック側タスク実行で、さらに増加します。",
+      "source": "Goroutine lifecycle in HTTP server"
+    },
+    {
+      "id": 71,
+      "section": "セクション27: runtime 診断ログの実践読解",
+      "title": "NumCPU=12, GOMAXPROCS=12, Goroutines=1 の組み合わせから判断できること",
+      "question": "次のログを見たときの状態判断として最も適切なのはどれですか？",
+      "code": "Number of CPUs: 12\nGOMAXPROCS: 12\nNumber of Goroutines: 1",
+      "options": [
+        "CPU リソースは十分で、並列度は高いが、起動直後でまだリクエストを受け取っていない状態",
+        "CPU が過負荷で、Goroutine が 1 つだけしか作成できない",
+        "Go プロセスはシングルスレッド",
+        "ネットワークが遮断されている"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "全 CPU が利用可能で並列実行可能な環境「なのに」 Goroutines が 1 つとは、まさに起動直後やアイドル状態を意味します。反対に数百～千の Goroutine がいれば、高負荷状態です。",
+      "source": "Runtime diagnostics interpretation"
+    },
+    {
+      "id": 72,
+      "section": "セクション27: runtime 診断ログの実践読解",
+      "title": "OS/Arch: linux/amd64 の環境判断",
+      "question": "OS/Arch: linux/amd64 というログから推測できる運用環境として、最も可能性が高いのはどれですか？",
+      "code": "OS/Arch: linux/amd64",
+      "options": [
+        "Windows Server 環境で WSL を使用している",
+        "Apple Silicon Mac（ARM64）上での実行",
+        "Docker コンテナ内での実行、Linux サーバー、または Linux VM",
+        "Raspberry Pi や組み込みデバイス"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "linux/amd64 は x86-64 CPU をもつ標準的な Linux 実行環境です。Docker、クラウド環境、Linux サーバーの大多数がこの組み合わせで、ARM や Windows では異なります。",
+      "source": "Platform identification"
+    },
+    {
+      "id": 73,
+      "section": "セクション27: runtime 診断ログの実践読解",
+      "title": "起動ログから推測できる Docker コンテナ構成",
+      "question": "次のログが Docker コンテナ起動時に見える状況を診断するうえで、最も重要な観点はどれですか？",
+      "code": "api-1  | Number of CPUs: 12\napi-1  | GOMAXPROCS: 12\napi-1  | Go Version: go1.26.1\napi-1  | OS/Arch: linux/amd64",
+      "options": [
+        "コンテナに CPU 制限（--cpus 等）が設定されておらず、ホストのすべての CPU にアクセス可能な状態",
+        "コンテナは ARM ビルド",
+        "Go のバージョンが最新ではない",
+        "アプリケーションに必ずバグがある"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "12 CPU すべてが見える＝CPU 制限なし。実運用では resource limits を設定して過剰リソース消費を防ぐため、この状況が見えたら限度設定の見直し対象です。",
+      "source": "Container resource isolation"
+    },
+    {
+      "id": 74,
+      "section": "セクション28: PostgreSQL ログ読解",
+      "title": "checkpoint complete の意味",
+      "question": "次のログの `checkpoint complete` が示す状態として最も適切なのはどれですか？",
+      "code": "db-1 | LOG: checkpoint complete: wrote 13 buffers (0.1%); ...",
+      "options": [
+        "WAL が破損したため DB が強制終了した",
+        "チェックポイント処理が正常に完了し、dirty page の一部がディスクへ書き出された",
+        "すべてのテーブルが VACUUM された",
+        "クライアント接続がすべて切断された"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`checkpoint complete` は障害ではなく、PostgreSQL の定期的な永続化処理の完了ログです。メモリ上の変更（dirty buffers）をディスクへ反映し、リカバリ起点を進めます。",
+      "source": "PostgreSQL checkpoint logs"
+    },
+    {
+      "id": 75,
+      "section": "セクション28: PostgreSQL ログ読解",
+      "title": "wrote 13 buffers (0.1%) の読み方",
+      "question": "`wrote 13 buffers (0.1%)` という値の解釈として最も適切なのはどれですか？",
+      "code": "... checkpoint complete: wrote 13 buffers (0.1%); ...",
+      "options": [
+        "13 個の接続を切断した",
+        "チェックポイント対象のうち実際に書き込んだバッファが少量で、負荷は比較的軽い",
+        "13 個の WAL ファイルを新規作成した",
+        "13 秒間ロックを保持した"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`buffers` は共有バッファ中の書き出し対象ページ数を示します。0.1% と小さいため、このチェックポイントでの書き込み負荷は低めと読めます。",
+      "source": "PostgreSQL shared buffers metrics"
+    },
+    {
+      "id": 76,
+      "section": "セクション28: PostgreSQL ログ読解",
+      "title": "WAL file(s) added/removed/recycled が 0 の意味",
+      "question": "次のログ断片の解釈として最も適切なのはどれですか？",
+      "code": "... 0 WAL file(s) added, 0 removed, 0 recycled; ...",
+      "options": [
+        "WAL 機能が無効化されている",
+        "そのチェックポイント区間では WAL ファイルの増減・再利用イベントが発生しなかった",
+        "レプリケーションが停止している",
+        "トランザクションが 0 件だった"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "この値は WAL 管理イベントの件数です。すべて 0 でも異常とは限らず、単にその期間にファイル追加・削除・再利用が不要だったことを示します。",
+      "source": "PostgreSQL WAL checkpoint counters"
+    },
+    {
+      "id": 77,
+      "section": "セクション28: PostgreSQL ログ読解",
+      "title": "write / sync / total の関係",
+      "question": "`write=1.221 s, sync=0.019 s, total=1.274 s` の関係として正しい説明はどれですか？",
+      "code": "... write=1.221 s, sync=0.019 s, total=1.274 s; ...",
+      "options": [
+        "total は常に write + sync と完全一致する",
+        "total はチェックポイント全体時間で、write/sync 以外の処理時間も含みうる",
+        "sync はネットワーク同期時間を示す",
+        "write が 1 秒を超えると必ず障害である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`total` はチェックポイント処理全体で、`write` と `sync` のほか管理オーバーヘッドを含むことがあります。したがって厳密一致しない場合があります。",
+      "source": "PostgreSQL checkpoint timing fields"
+    },
+    {
+      "id": 78,
+      "section": "セクション28: PostgreSQL ログ読解",
+      "title": "lsn と redo lsn の読み方",
+      "question": "`lsn=0/19B0628, redo lsn=0/19B05F0` から読み取れる内容として最も適切なのはどれですか？",
+      "code": "... lsn=0/19B0628, redo lsn=0/19B05F0",
+      "options": [
+        "redo lsn は現在 lsn より常に大きい",
+        "redo lsn はクラッシュリカバリ開始位置を示し、通常は最新 lsn 以下になる",
+        "lsn は CPU 使用率、redo lsn はメモリ使用率を示す",
+        "この値が表示されると必ず WAL 破損を意味する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`LSN` は WAL 上の位置を示す識別子です。`redo lsn` はリカバリ再生の起点で、一般には最新 `lsn` より前方にあります。差分はリカバリ時に再生対象となる範囲の目安になります。",
+      "source": "PostgreSQL WAL/LSN fundamentals"
+    },
+    {
+      "id": 79,
+      "section": "セクション29: runtime.NumGoroutine の実践",
+      "title": "初期ゴルーチン数を保存する理由",
+      "question": "次のコードで `initial := runtime.NumGoroutine()` を先に保存している主な理由として、最も適切なのはどれですか？",
+      "code": "initial := runtime.NumGoroutine()\ndone := make(chan struct{})\n\nfor i := 0; i < 10; i++ {\n  go func() {\n    time.Sleep(10 * time.Millisecond)\n    done <- struct{}{}\n  }()\n}\n\nfor i := 0; i < 10; i++ {\n  <-done\n}\n\ntime.Sleep(50 * time.Millisecond)\nfinal := runtime.NumGoroutine()\nif final > initial {\n  fmt.Printf(\"warning: possible goroutine leak: %d\\n\", final-initial)\n}",
+      "options": [
+        "最初に取得しないと `NumGoroutine()` が正しい値を返さなくなるため",
+        "処理前の基準値を保存し、処理完了後に goroutine 数が戻るか比較してリークの目安にするため",
+        "OS スレッド数を取得して `GOMAXPROCS` を自動設定するため",
+        "goroutine を 1 個ずつ停止するための ID を保存するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`NumGoroutine()` はその瞬間に生存している goroutine 数のスナップショットです。`initial` を処理前の基準値として保存しておくと、処理後の `final` と比較し、終了したはずの goroutine が残っていないかを大まかに確認できます。なお、ランタイム内部 goroutine や計測タイミングの影響があるため、これは厳密なリーク判定ではなく目安として使います。",
+      "source": "https://pkg.go.dev/runtime#NumGoroutine"
+    },
+    {
+      "id": 80,
+      "section": "セクション30: Tailwind CSS クラス読解",
+      "title": "section の className から見た目を読む",
+      "question": "次の Tailwind CSS の `className` が適用された `<section>` の見た目として、最も適切なのはどれですか？",
+      "code": "<section className=\"mt-7 rounded-[24px] border border-[#14213d]/12 bg-white/72 p-[clamp(20px,4vw,32px)] shadow-[0_22px_48px_rgba(20,33,61,0.12)]\">",
+      "options": [
+        "上に余白があり、24px の角丸、薄いボーダー、少し透けた白背景、20px から 32px の可変 padding、柔らかい影が付いたカード状の見た目",
+        "上余白はなく、角丸もなく、濃い紺色の背景に太い実線ボーダーが付き、padding は 0 で影もない",
+        "背景は完全に透明で、hover 時だけ影と padding が付与される。通常時はボーダーも角丸もない",
+        "50% の丸い角丸と固定 4px の padding が付き、背景色は黒、ボーダーは二重線になる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`mt-7` は上側にマージンを付けます。`rounded-[24px]` は任意値による 24px の角丸です。`border` はボーダーを表示し、`border-[#14213d]/12` はカスタム色 `#14213d` を 12% の不透明度で適用します。`bg-white/72` は白背景に 72% の不透明度を指定しています。`p-[clamp(20px,4vw,32px)]` は画面幅に応じて 20px から 32px の間で変化する padding を与えます。`shadow-[0_22px_48px_rgba(20,33,61,0.12)]` は任意値による柔らかいドロップシャドウです。全体として、少し浮いたカード状のセクションに見えます。",
+      "source": "Tailwind utility classes / arbitrary values"
+    },
+    {
+      "id": 81,
+      "section": "セクション30: Tailwind CSS クラス読解",
+      "title": "header のレスポンシブ配置を読む",
+      "question": "以下のコードを見て、この `header` の見た目として正しいものはどれですか？",
+      "code": "<header className=\"mb-[22px] flex flex-col gap-[18px] xl:flex-row xl:items-start xl:justify-between\">",
+      "options": [
+        "画面サイズに関わらず、要素は常に横並びに表示される",
+        "小さい画面では縦並び、xl（1280px以上）になると横並びに切り替わり、両端に要素が配置される",
+        "小さい画面では横並び、xl になると縦並びに切り替わる",
+        "画面サイズに関わらず、要素は常に縦並びで中央揃えになる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`flex` で flex コンテナになり、通常は `flex-col` により縦並びです。`gap-[18px]` は子要素間の間隔を 18px にします。`mb-[22px]` は下側マージン 22px です。`xl:flex-row` は xl ブレークポイント以上で横並びへ切り替える指定です。さらに `xl:items-start` で交差軸方向の開始位置に揃え、`xl:justify-between` で主軸方向に要素を両端配置します。したがって、小さい画面では縦並び、xl 以上では横並びで左右に分かれたレイアウトになります。",
+      "source": "Tailwind utility classes / arbitrary values"
+    },
+    {
+      "id": 82,
+      "section": "セクション31: Tailwind CSS ビルド最適化",
+      "title": "未使用クラスの自動削除",
+      "question": "Tailwind CSS のビルド時パージ（未使用クラスの自動削除）について、最も適切な説明はどれですか？",
+      "code": "Tailwind はビルド時に使っていないクラスを自動で削除する。\n開発時: 数MB（全クラス入り）\n本番ビルド後: 数KB〜数十KB（使ったクラスだけ）\nTailwind v3 以降ではデフォルトで自動なので、基本的に追加意識は不要。",
+      "options": [
+        "本番ビルドでも全クラスをそのまま含むため、CSS サイズはほとんど変わらない",
+        "Tailwind はソースファイル内のクラスを検出して必要なスタイルだけを生成するため、本番 CSS を小さくできる",
+        "未使用クラスの削除はブラウザ実行時に JavaScript が動的に行う",
+        "Tailwind v3 以降では未使用クラス削除機能は廃止され、手動で purge ツールを入れる必要がある"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Tailwind のドキュメントでは、Tailwind はプロジェクト内のソースファイルをスキャンしてクラス名を探し、対応するスタイルを生成すると説明されています。つまり、実際に使ったクラスだけが最終 CSS に含まれるため、本番ビルドの CSS サイズを小さくできます。Tailwind CSS v3 の説明でも、同じ CSS を共有しつつ、ほとんどの Tailwind プロジェクトは非常に小さな CSS を配信できるとされています。要するに、未使用クラスの除去は本番ビルド時に自動で効く最適化です。",
+      "source": "Tailwind production optimization"
+    },
+    {
+      "id": 83,
+      "section": "セクション31: Tailwind CSS ビルド最適化",
+      "title": "手動で CSS の膨張を抑える方法",
+      "question": "Tailwind CSS で、手動で CSS の膨張や保守コストを抑える方法として最も適切なのはどれですか？",
+      "code": "// ❌ これが多いとCSSが膨らむ\np-[17px] p-[23px] p-[31px]\n\n// ✅ デザイントークンに統一する\np-4 p-6 p-8\n\n// ❌ 同じクラスが色んな場所に散らばる\n<div className=\"rounded-2xl bg-white shadow-md p-6\">\n<div className=\"rounded-2xl bg-white shadow-md p-6\">\n\n// ✅ コンポーネントにまとめる\n<Card> // 内部でクラスを管理",
+      "options": [
+        "任意値をできるだけ増やし、同じクラス列も各画面に直接書いたほうが最適化しやすい",
+        "任意値を減らしてデザイントークンへ寄せ、重複するクラスの組み合わせはコンポーネントへまとめる",
+        "CSS の膨張を避けるには Tailwind をやめて、すべて inline style に置き換えるのが最善",
+        "同じクラス文字列を何度も書くほど Tailwind が自動でより強く圧縮してくれる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Tailwind では未使用クラスの自動削除が効きますが、任意値を細かく増やし続けると生成されるユーティリティの種類が増えやすくなります。そのため、`p-[17px]` のような個別値を乱立させるより、`p-4` `p-6` `p-8` のようにデザイントークンへ寄せた方が設計を揃えやすく、出力も管理しやすくなります。また、`rounded-2xl bg-white shadow-md p-6` のような同じクラスの組み合わせが各所に散らばると、見た目の変更やレビューがしづらくなります。`<Card>` のようなコンポーネントへまとめると、内部でクラスを一元管理でき、保守性と再利用性を上げられます。",
+      "source": "Tailwind utility classes / arbitrary values"
+    },
+    {
+      "id": 84,
+      "section": "セクション32: Tailwind v4 CSS-first 構成",
+      "title": "v4 での CSS-first 設定の正解",
+      "question": "Tailwind v4 の CSS-first 構成として、最も適切な説明はどれですか？",
+      "code": "/* app.css */\n@import \"tailwindcss\";\n\n@theme {\n  --color-brand-500: oklch(0.72 0.11 221.19);\n}\n\n/* HTML */\n<div class=\"bg-brand-500\">...</div>",
+      "options": [
+        "`@theme` は通常の `:root` と同じで、Tailwind のユーティリティ生成には影響しない",
+        "`@import \"tailwindcss\";` を CSS で読み込み、`@theme` をトップレベルで定義すると、対応するユーティリティ（例: `bg-brand-500`）が使える",
+        "v4 では CSS に何も書かず、`tailwind.config.js` だけが唯一の設定方法である",
+        "`@theme` は任意のセレクタ内（例: `.card { ... }`）にネストして定義するのが推奨される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Tailwind v4 では CSS-first の設計が中心で、`@import \"tailwindcss\";` で Tailwind を読み込みます。`@theme` で定義したテーマ変数は単なる CSS 変数ではなく、Tailwind のユーティリティ生成にも使われます。公式ドキュメントでも `--color-*` などのテーマ変数により `bg-*` 等のクラスが有効になること、`@theme` はトップレベルで定義することが示されています。",
+      "source": "https://tailwindcss.com/docs/theme"
+    },
+    {
+      "id": 85,
+      "section": "セクション33: ES Modules 基礎",
+      "title": "export default の性質",
+      "question": "次の `export default` の説明として最も適切なのはどれですか？",
+      "code": "// Button.tsx\nexport default function Button() {\n  return <button>OK</button>;\n}\n\n// App.tsx\nimport PrimaryButton from './Button';",
+      "options": [
+        "1つのモジュールで `export default` は複数定義できる",
+        "`export default` で公開した値は、import 側で任意の名前で受け取れる",
+        "`export default` は必ず中括弧付きで import しなければならない",
+        "`export default` は関数には使えず、クラスでしか使えない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ES Modules では 1 モジュールにつき default export は 1 つだけ定義できます。default export は import 側で `import AnyName from '...'` のように任意の識別子名で受け取れます。一方、`{ ... }` を使うのは named export を import する場合です。",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export"
+    },
+    {
+      "id": 86,
+      "section": "セクション34: Go Runtime Monitoring 戦略",
+      "title": "本番監視の導入順と閾値設計",
+      "question": "Go アプリケーションの本番監視方針として、次の結論の要点を最も正しくまとめたものはどれですか？",
+      "code": "Monitoring Go runtime metrics is essential for maintaining healthy, performant applications in production.\n\nStart with the default Go collector metrics, then add custom metrics as you learn your application's specific patterns and requirements.\n\nRemember that thresholds should be adjusted based on your application's characteristics.\nEstablish baselines during normal operation and set alerts based on meaningful deviations from those baselines.",
+      "options": [
+        "最初から細かい custom metrics と固定しきい値を大量投入し、どのサービスでも同じ alert 条件を使うのが最善",
+        "まず標準の Go runtime 指標を監視し、必要に応じて Prometheus や OpenTelemetry の custom metrics を足し、しきい値はアプリ固有の通常時ベースラインから調整する",
+        "runtime.NumGoroutine() と runtime.ReadMemStats() は開発時だけに使い、本番ではアプリ独自ログだけ見れば十分",
+        "高スループットなバッチ処理と軽量 API では同じ goroutine 数・GC pause しきい値を共有すべき"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "結論の中心は、「Go runtime の監視は本番で重要であり、まずは標準の runtime 指標から始める」という点です。そのうえで、Prometheus や OpenTelemetry を使って可視化を広げ、必要になったところだけ custom metrics を追加していくのが推奨されています。また、goroutine 数、メモリ使用量、GC pause などの警告しきい値は全サービス共通の固定値ではなく、アプリの特性によって調整すべきだと述べています。つまり、通常運転時のベースラインを先に観測し、そこから意味のある逸脱に対して alert を張る、という運用方針が正解です。",
+      "source": "Go runtime / Prometheus / OpenTelemetry monitoring"
+    },
+    {
+      "id": 87,
+      "section": "セクション35: 英単語 × CSS カラー",
+      "title": "「navy」の英単語の意味",
+      "question": "CSS で `--color-navy: #14213d;` のように使われる「navy」という英単語の本来の意味として正しいものはどれですか？",
+      "code": "/* index.css */\n@theme {\n  --color-navy: #14213d; /* 深い紺色 */\n}",
+      "options": [
+        "空軍（航空戦力）",
+        "海軍（海上の軍隊）",
+        "陸軍（地上部隊）",
+        "海兵隊（水陸両用部隊）"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "\"navy\" の本来の意味は「海軍」です。語源はラテン語の \"navis\"（船）に由来します。色名としての「ネイビーブルー（navy blue）」はイギリス海軍の制服の色（深い紺色）に由来しており、そこから転じて深い紺色全般を指す色名にもなりました。CSS では `#14213d` のような暗い紺色を `navy` と命名するケースが多いのはこの背景からです。",
+      "source": "https://www.etymonline.com/word/navy"
+    },
+    {
+      "id": 88,
+      "section": "セクション36: React モジュールスコープ",
+      "title": "コンポーネント外の定数宣言",
+      "question": "次のコードで `allQuizzes` をコンポーネント関数の外（モジュールスコープ）で宣言している主な理由として最も適切なものはどれですか？",
+      "code": "// モジュールスコープ（コンポーネント外）\nconst allQuizzes = getAllQuizzes()\nconst sectionCount = groupQuizzesBySection().size\nconst quizCountPerSession = allQuizzes.length\n\nfunction JsonQuizPreviewSection() {\n  // ...\n}",
+      "options": [
+        "React の規約でデータ取得は必ずコンポーネント外で行わなければならない",
+        "コンポーネントの再レンダリングのたびに再計算されないよう、初回モジュール読み込み時に1度だけ評価するため",
+        "`const` はコンポーネント内では使えないため",
+        "ESLint の react-hooks/exhaustive-deps ルールに違反しないようにするため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "モジュールスコープに宣言すると、そのファイルがはじめて import された時点で1度だけ評価されます。コンポーネント内に書いてしまうと、state 変化などで再レンダリングが起きるたびに `getAllQuizzes()` が呼ばれてしまいます。クイズデータのように「変化しない重い初期化」はモジュールスコープに置くことでコストを抑えられます。なお、値が変化しうる場合は `useState` や `useMemo` を使う方が適切です。",
+      "source": "https://react.dev/learn/keeping-components-pure"
+    },
+    {
+      "id": 89,
+      "section": "セクション37: 技術英語読解",
+      "title": "`recommended` の意味",
+      "question": "技術ドキュメントで `It is strongly recommended to restart the server after changing this setting.` と書かれているとき、`recommended` の意味として最も適切なのはどれですか？",
+      "code": "It is strongly recommended to restart the server after changing this setting.",
+      "options": [
+        "再起動は禁止されている",
+        "再起動が推奨されている",
+        "再起動は必須で、省略すると設定は保存されない",
+        "サーバーは自動的に再起動される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`recommended` は「推奨されている」という意味です。Cambridge Dictionary では、`recommended` は「ある目的や仕事にとって良い・適切だと提案されている、または実行すべき行動として提案されている」と説明されています。したがってこの文は、「この設定を変更したあと、サーバーを再起動するのが強く勧められる」という意味です。`must` のような絶対必須までは言っていませんが、従うべき実務上の推奨として読むのが自然です。",
+      "source": "https://dictionary.cambridge.org/us/dictionary/english/recommended"
+    },
+    {
+      "id": 90,
+      "section": "セクション38: React / TypeScript 英文読解",
+      "title": "`createRoot(container!)` コメントの読解",
+      "question": "次の React 18 の GitHub Issue コメントの意味として、最も適切なものはどれですか？",
+      "code": "The issue here is that `container` is potentially null. `createRoot(null)` would throw at runtime and therefore rightfully does not compile. If you're sure it's not nullable then you can use the `!` operator: `createRoot(container!)`.",
+      "options": [
+        "`container` は常に null ではないので、TypeScript のエラーは誤検知である",
+        "`container` は null の可能性があるため、そのままではコンパイルできないのは正しい。null ではないと確信できるなら `!` で非 null として扱える",
+        "`createRoot(null)` は実行時に安全に無視されるので、`!` は不要である",
+        "`!` 演算子を使うと DOM 要素が自動生成されるので、`getElementById('root')` の結果確認は不要になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "このコメントは、「問題は `container` が null かもしれないことだ」と述べています。`createRoot(null)` は実行時に例外になるため、TypeScript がそのコードを拒否するのは正しい、という意味です。そのうえで、呼び出し側が `container` は null ではないと本当に保証できるなら、non-null assertion の `!` を使って `createRoot(container!)` と書ける、という説明です。つまり、型エラーを黙らせるために無条件で `!` を付けるのではなく、null にならない根拠がある場合だけ使うべき、という文脈です。",
+      "source": "https://github.com/facebook/react/issues/24208#issuecomment-1082708370"
+    },
+    {
+      "id": 91,
+      "section": "セクション39: ESLint / TypeScript ルール読解",
+      "title": "`@typescript-eslint/no-non-null-assertion: 'error'` の意味",
+      "question": "次の ESLint 設定の意味として最も適切なのはどれですか？",
+      "code": "\"@typescript-eslint/no-non-null-assertion\": \"error\"",
+      "options": [
+        "postfix `!` を使う non-null assertion を禁止し、違反は ESLint の error として扱われる",
+        "`x!` は `null` と `undefined` を型から除外し、出力される JavaScript では `!` が削除される",
+        "`warn` は違反を報告するが exit code には影響しない",
+        "このルールはオプションで細かく挙動を調整できる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`@typescript-eslint/no-non-null-assertion` は、`!` postfix を使った non-null assertion を禁止するルールです。typesript-eslint の公式 docs でも `Disallow non-null assertions using the ! postfix operator.` と説明されています。さらに ESLint では、ルールを `\"error\"` にすると違反は error として扱われ、トリガー時は exit code が 1 になります。一方、TypeScript の docs にある「`x!` は `null` / `undefined` を型から除外し、JavaScript 出力では消える」という説明は演算子自体の性質であり、この ESLint 設定の意味そのものではありません。また、この rule は typescript-eslint docs 上で `This rule is not configurable.` とされています。",
+      "source": "https://typescript-eslint.io/rules/no-non-null-assertion, https://eslint.org/docs/latest/use/configure/rules, https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html"
+    }
+  ]
+}
