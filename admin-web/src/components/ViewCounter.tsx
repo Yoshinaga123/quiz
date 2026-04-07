@@ -4,7 +4,7 @@ interface ViewData {
   count: number;
 }
 
-const API_URL = "http://localhost:8080/";
+const API_URL = "http://localhost:8082/";
 
 export default function ViewCounter() {
   const [count, setCount] = useState<number | null>(null);

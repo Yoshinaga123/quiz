@@ -61,10 +61,35 @@ const sourceLinkMap: Record<string, SourceLinkMapValue> = {
   'React Strict Mode': 'https://react.dev/reference/react/StrictMode',
   'React StrictMode': 'https://react.dev/reference/react/StrictMode',
   'React Testing Library': 'https://testing-library.com/docs/react-testing-library/intro/',
+  'React useCallback / useEffect / exhaustive-deps': [
+    {
+      href: 'https://react.dev/reference/react/useCallback',
+      label: 'React useCallback',
+    },
+    {
+      href: 'https://react.dev/reference/react/useEffect',
+      label: 'React useEffect',
+    },
+    {
+      href: 'https://react.dev/learn/separating-events-from-logic',
+      label: 'React separating events from logic',
+    },
+  ],
+  'React exhaustive-deps lint guidance': [
+    {
+      href: 'https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps',
+      label: 'React exhaustive-deps lint',
+    },
+    {
+      href: 'https://react.dev/learn/removing-effect-dependencies',
+      label: 'React removing effect dependencies',
+    },
+  ],
   'React.StrictMode': 'https://react.dev/reference/react/StrictMode',
   'Security Best Practices': 'https://owasp.org/www-project-top-ten/',
   'TypeScript Advanced': 'https://www.typescriptlang.org/docs/handbook/2/generics.html',
   'TypeScript Handbook': 'https://www.typescriptlang.org/docs/handbook/intro.html',
+  'TypeScript JSX Intrinsic Elements': 'https://www.typescriptlang.org/docs/handbook/jsx.html#intrinsic-elements',
   'TypeScript Utility Types': 'https://www.typescriptlang.org/docs/handbook/utility-types.html',
   'Tailwind utility classes / arbitrary values': [
     {

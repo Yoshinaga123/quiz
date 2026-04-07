@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: counter
     ports:
-      - "5432:5432"
+      - "5433:5432"
   api:
     build:
       context: .
@@ -21,7 +21,7 @@ services:
       ADMIN_PASSWORD: password
       JWT_SECRET: dev-only-secret
     ports:
-      - "8080:8080"
+      - "8082:8080"
     volumes:
       - .:/app
       - go-mod-cache:/go/pkg/mod

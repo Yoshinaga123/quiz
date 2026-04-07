@@ -2,18 +2,18 @@
   "quizzes": [
     {
       "id": 1,
-      "section": "セクション1: React & TypeScript 高難易度問題",
-      "title": "useEffect の依存配列",
-      "question": "以下のコードについて、正しい説明はどれですか？",
-      "code": "useEffect(() => {\n  console.log(\"Effect ran\");\n}, [count]);",
-      "options": ["依存配列 count が変わるたびに Effect が実行される", "count の初期値が設定されるたびに Effect が実行される", "ページをロードするたびに Effect 内の cleanup 関数が実行される", "依存配列を指定した場合、cleanup 関数は実行されない"],
-      "correctAnswerIndex": 0,
-      "explanation": "依存配列が指定されている場合、その配列の要素が変わるたびに Effect 関数が実行されます。count が変わるたびに Effect が走ります。",
-      "source": "React Official Documentation"
+      "section": "セクション1: React & TypeScript ",
+      "title": "useEffect 依存配列と関数参照",
+      "question": "以下のコードについて、最も正しい説明はどれですか？",
+      "code": "const fetchUser = useCallback(async () => {\n  const res = await fetch(`/api/users/${userId}`);\n  const data = await res.json();\n  setUser(data);\n}, [userId]);\n\nuseEffect(() => {\n  fetchUser();\n}, [fetchUser]);",
+      "options": ["`fetchUser` を依存配列に入れると常に無限ループになる", "`useCallback` で `fetchUser` を安定化し、`[fetchUser]` を依存配列に入れると `userId` 変更時に再実行されるため `exhaustive-deps` の意図に沿う", "`useEffect(..., [])` にしても同じ挙動で、常に最新の `userId` を参照できる", "cleanup 関数は初回マウント前に必ず1回実行される"],
+      "correctAnswerIndex": 1,
+      "explanation": "`fetchUser` は `useCallback(..., [userId])` により `userId` が変わると新しい参照になります。Effect 側を `[fetchUser]` にすると、結果として `userId` 変化に追従しつつ、依存関係を正しく宣言できます。`[]` にすると古い `userId` を閉じ込める（stale closure）リスクがあります。",
+      "source": "React useCallback / useEffect / exhaustive-deps"
     },
     {
       "id": 2,
-      "section": "セクション1: React & TypeScript 高難易度問題",
+      "section": "セクション1: React & TypeScript ",
       "title": "関数型コンポーネントの State 更新",
       "question": "以下の useState の使用について、誤っているのはどれですか？",
       "code": "const [state, setState] = useState({ count: 0, name: \"test\" });\nsetState(prev => ({ ...prev, count: 1 }));",
@@ -24,7 +24,7 @@
     },
     {
       "id": 3,
-      "section": "セクション1: React & TypeScript 高難易度問題",
+      "section": "セクション1: React & TypeScript ",
       "title": "TypeScript の Generic について",
       "question": "React コンポーネントで Generic を使う際、以下の記述で型推論が正しく機能するのはどれですか？",
       "code": "interface Props<T> {\n  items: T[];\n  onSelect: (item: T) => void;\n}",
@@ -1275,6 +1275,550 @@
       "correctAnswerIndex": 0,
       "explanation": "`@typescript-eslint/no-non-null-assertion` は、`!` postfix を使った non-null assertion を禁止するルールです。typesript-eslint の公式 docs でも `Disallow non-null assertions using the ! postfix operator.` と説明されています。さらに ESLint では、ルールを `\"error\"` にすると違反は error として扱われ、トリガー時は exit code が 1 になります。一方、TypeScript の docs にある「`x!` は `null` / `undefined` を型から除外し、JavaScript 出力では消える」という説明は演算子自体の性質であり、この ESLint 設定の意味そのものではありません。また、この rule は typescript-eslint docs 上で `This rule is not configurable.` とされています。",
       "source": "https://typescript-eslint.io/rules/no-non-null-assertion, https://eslint.org/docs/latest/use/configure/rules, https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html"
+    },
+    {
+      "id": 92,
+      "section": "セクション40: TypeScript / Vite エラー対応",
+      "title": "vite/client 型定義エラーの原因",
+      "question": "次の TypeScript エラーの原因として最も適切なのはどれですか？\n\nCannot find type definition file for 'vite/client'.\nThe file is in the program because:\nEntry point of type library 'vite/client' specified in compilerOptions",
+      "code": "// tsconfig.app.json\n{\n  \"compilerOptions\": {\n    \"types\": [\"vite/client\"]\n  }\n}",
+      "options": [
+        "`types` で `vite/client` を指定しているが、Vite 依存関係の解決に失敗して型定義を見つけられていない",
+        "`vite/client` は TypeScript で使えない予約語である",
+        "`types` 配列に 1 つしか指定できないため発生する",
+        "JSON ファイルの読み込み設定が不足しているため発生する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "このエラーは、`compilerOptions.types` に `vite/client` を指定しているのに、TypeScript が該当型定義を解決できないときに発生します。多くの場合は依存関係の未インストールや壊れた `node_modules` が原因です。",
+      "source": "TypeScript / Vite configuration error"
+    },
+    {
+      "id": 93,
+      "section": "セクション41: TypeScript エラー切り分け",
+      "title": "最初の確認対象",
+      "question": "`Cannot find type definition file for 'vite/client'` が出たとき、最初に確認すべき対象として最も適切なのはどれですか？",
+      "code": "// tsconfig.app.json\n{\n  \"compilerOptions\": {\n    \"types\": [\"vite/client\"]\n  }\n}",
+      "options": [
+        "tsconfig の `types` 設定が何を要求しているかを確認する",
+        "まず CSS の import を削除する",
+        "React のバージョンを下げる",
+        "eslint.config.js を削除する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "切り分けの第一歩は、設定が何を解決しようとしているかを把握することです。`types` に `vite/client` があるなら、TypeScript はその型定義の解決を試みます。",
+      "source": "TypeScript troubleshooting workflow"
+    },
+    {
+      "id": 94,
+      "section": "セクション41: TypeScript エラー切り分け",
+      "title": "package.json と実体の差分",
+      "question": "`package.json` に `vite` が定義されているのに `npm ls vite --depth=0` が `(empty)` になる状況の説明として正しいのはどれですか？",
+      "code": "// package.json には vite がある\n\"devDependencies\": {\n  \"vite\": \"^7.3.1\"\n}\n\n// ただし npm ls では empty",
+      "options": [
+        "依存定義はあるが、インストールされていない（node_modules が未構築）",
+        "vite は npm ls で表示されない仕様",
+        "TypeScript 5.9 では vite が無効化される",
+        "ESM プロジェクトでは devDependencies が無視される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`package.json` は要求仕様、`node_modules` は実体です。要求があっても install されていなければ解決できません。",
+      "source": "npm dependency resolution basics"
+    },
+    {
+      "id": 95,
+      "section": "セクション41: TypeScript エラー切り分け",
+      "title": "npm install の役割",
+      "question": "今回のケースで `npm install` を実行する主目的として最も適切なのはどれですか？",
+      "code": "npm install",
+      "options": [
+        "未導入の依存関係を node_modules に展開し、`vite/client` 型定義を解決可能にする",
+        "tsconfig のエラーを自動で書き換える",
+        "ESLint ルールを自動修正する",
+        "build 出力を dist から削除する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "今回の欠損は設定ではなく依存実体です。`npm install` により Vite 本体と型定義ファイルが利用可能になります。",
+      "source": "npm install behavior"
+    },
+    {
+      "id": 96,
+      "section": "セクション41: TypeScript エラー切り分け",
+      "title": "存在確認コマンドの意味",
+      "question": "`test -f node_modules/vite/client.d.ts` を実行する意義として最も適切なのはどれですか？",
+      "code": "test -f node_modules/vite/client.d.ts && echo 'vite-client-types-ok'",
+      "options": [
+        "TypeScript が参照する型定義ファイルの実在を直接検証する",
+        "tsconfig の JSON 構文を検証する",
+        "Vite の開発サーバーを起動する",
+        "ESLint の警告を無効化する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ファイルの存在確認は、推測ではなく事実で切り分けるための最短手段です。",
+      "source": "shell troubleshooting practice"
+    },
+    {
+      "id": 97,
+      "section": "セクション41: TypeScript エラー切り分け",
+      "title": "修正完了の判定",
+      "question": "この問題に対する最終的な完了判定として最も妥当なのはどれですか？",
+      "code": "npm run build",
+      "options": [
+        "`npm run build` が成功し、TypeScript で同エラーが再現しない",
+        "`package.json` を開いて確認しただけで完了",
+        "`node_modules` が存在すれば無条件で完了",
+        "エディタの表示を閉じれば完了"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "最終判定は実行結果です。設定確認と依存導入の後、ビルド成功で再現性のある完了確認になります。",
+      "source": "build verification workflow"
+    },
+    {
+      "id": 98,
+      "section": "セクション42: Docker トラブルシュート",
+      "title": "Cannot connect to the Docker daemon の意味",
+      "question": "次のエラーメッセージの意味として最も適切なのはどれですか？\n\nCannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?",
+      "code": "docker ps",
+      "options": [
+        "Docker CLI は動いているが、接続先の Docker デーモン（バックグラウンドサービス）に接続できていない",
+        "コンテナ数が多すぎて `docker ps` がタイムアウトした",
+        "Dockerfile が見つからないため `docker ps` が失敗した",
+        "イメージの pull が未完了なため必ず出る正常メッセージ"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "このエラーは、`docker` コマンド自体ではなく、裏で動く Docker デーモンに接続できない状態を示します。代表例は Docker Desktop が未起動、デーモン停止、またはソケット権限の問題です。",
+      "source": "Docker daemon connection error"
+    },
+    {
+      "id": 99,
+      "section": "セクション42: Docker トラブルシュート",
+      "title": "コンテナが Exited (255) になる理由",
+      "question": "リポジトリのコンテナが `Exited (255)` になっている。原因切り分けとして最も適切な最初の行動はどれですか？",
+      "code": "docker ps -a\ndocker logs <container_name>",
+      "options": [
+        "終了コードだけでは原因を断定できないため、まず `docker logs` で起動時エラー（環境変数不足、接続失敗、実行ファイルエラーなど）を確認する",
+        "Exited (255) は常にポート競合なので、ポート番号だけ変更すればよい",
+        "Exited (255) は正常終了の意味なので、対応は不要",
+        "コンテナを再作成せずに、OS を再起動すれば必ず解決する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`255` は一般的に異常終了を示しますが、理由はアプリごとに異なります。まずは `docker logs` と `docker inspect` で実際のエラーメッセージを確認し、設定不足・接続先未起動・コマンド実行失敗などを切り分けるのが正攻法です。",
+      "source": "Docker troubleshooting practice"
+    },
+    {
+      "id": 100,
+      "section": "セクション43: DBマイグレーション運用",
+      "title": "dirty 状態の意味",
+      "question": "DBマイグレーション文脈で `dirty` 状態と表示されたときの意味として最も適切なのはどれですか？",
+      "code": "error: Dirty database version 12. Fix and force version.",
+      "options": [
+        "あるマイグレーションが途中で失敗し、スキーマ整合性が不確定なため後続マイグレーションが停止される状態",
+        "DBに不要データが多いので VACUUM が必要な状態",
+        "マイグレーションが完全成功したことを示す正常状態",
+        "SQLファイル名に誤字があるだけで、実行には影響しない警告状態"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`dirty` は途中失敗の保護状態です。まず失敗理由と実DB状態を確認し、必要に応じて手動修正してから履歴バージョンと dirty フラグを整合させて再開します。",
+      "source": "Migration tools common behavior"
+    },
+    {
+      "id": 101,
+      "section": "セクション43: DBマイグレーション運用",
+      "title": "000016失敗後に force 16 する意図",
+      "question": "次の対応の説明として最も適切なのはどれですか？\n\n000016 は `information.image_url` が既に存在していたため失敗。\n000016 はカラム追加1文のみだったので実体反映済みと判断し、`force 16` で履歴を整えた後に 000017 を適用した。",
+      "code": "-- 000016: ALTER TABLE information ADD COLUMN image_url ...\n-- 実DBには既に image_url が存在\n-- migration tool: force 16\n-- then apply 000017",
+      "options": [
+        "実DBスキーマは16相当まで進んでいると確認できたため、履歴テーブルだけを16に合わせて dirty/不整合を解消し、後続の000017を再開した",
+        "000016 のSQLを自動的にロールバックして、DBを15に完全復元した",
+        "000016 と000017 を同時にスキップし、次回デプロイでまとめて実行する設定にした",
+        "`force 16` はDB実体を自動変更する機能なので、検証なしで使って問題ない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "この対応は『実体と履歴の再同期』です。000016 は「既存カラムのため失敗」だったが、内容がその1文のみで実体が既に満たされていると確認できたため、履歴だけ16に進めて不整合を解消し、次の000017を適用しています。ポイントは force が履歴操作であり、実体変更の代替ではないことです。",
+      "source": "DB migration incident recovery"
+    },
+    {
+      "id": 102,
+      "section": "セクション44: SQL データ操作",
+      "title": "DELETE + サブクエリの対象理解",
+      "question": "次の SQL クエリの目的として最も適切なものはどれですか？",
+      "code": "DELETE FROM user_favorite_stores\nWHERE user_id IN (SELECT id FROM users WHERE email IN ('user1@example.com', 'user2@example.com', 'user3@example.com'));",
+      "options": [
+        "指定メールアドレスのユーザー本体を users テーブルから削除する",
+        "指定メールアドレスのユーザーに紐づく user_favorite_stores の行を削除する",
+        "user_favorite_stores に新しい行を追加する",
+        "users テーブルのメールアドレスを一括更新する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "内側のサブクエリで、指定メールアドレスに一致する `users.id` を取得し、外側の DELETE でその `id` を `user_id` に持つ `user_favorite_stores` の行を削除します。削除対象は users 本体ではなく関連テーブルです。",
+      "source": "SQL DELETE with subquery"
+    },
+    {
+      "id": 103,
+      "section": "セクション45: Linux コマンド基礎",
+      "title": "wc コマンドの意味",
+      "question": "`wc -l src/data/quizzes.json` で使われている `wc` の意味として最も適切なのはどれですか？",
+      "code": "wc -l src/data/quizzes.json",
+      "options": [
+        "テキストの行数・単語数・バイト数などを数えるコマンド",
+        "ファイルの所有者を変更するコマンド",
+        "ディレクトリ構造をツリー表示するコマンド",
+        "ファイルを圧縮するコマンド"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`wc` は word count の略で、入力テキストの統計情報（行数・単語数・バイト数など）を表示するコマンドです。",
+      "source": "Unix wc command"
+    },
+    {
+      "id": 104,
+      "section": "セクション45: Linux コマンド基礎",
+      "title": "`-l` オプションの意味",
+      "question": "`wc -l src/data/quizzes.json` の `-l` オプションが表すものはどれですか？",
+      "code": "wc -l src/data/quizzes.json",
+      "options": [
+        "ファイルの行数（line count）を表示する",
+        "ファイルの最終更新日時を表示する",
+        "ファイルサイズを人間向け表示にする",
+        "隠しファイルも含めて一覧表示する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`-l` は line の意味で、改行区切りの行数を表示します。今回の出力 `1440 src/data/quizzes.json` はそのファイルが 1440 行であることを示します。",
+      "source": "wc -l option"
+    },
+    {
+      "id": 105,
+      "section": "セクション46: Docker Compose エラー読解",
+      "title": "設定ファイルが見つからないエラーの意味",
+      "question": "次のエラーメッセージの意味として最も適切なものはどれですか？\n\ncan't find a suitable configuration file in this directory or any parent: not found",
+      "code": "docker compose up",
+      "options": [
+        "現在のディレクトリか親ディレクトリに、利用可能な Compose 設定ファイル（例: docker-compose.yml）が見つからない",
+        "Compose ファイルは見つかったが、ポート競合で起動に失敗している",
+        "Docker デーモンが停止しているため、ソケット接続に失敗している",
+        "イメージのビルドは成功したが、コンテナのヘルスチェックだけ失敗している"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "このエラーは、実行場所のパスに Compose 設定ファイルが無いことを示します。`docker compose up` は通常、カレントディレクトリまたは親ディレクトリから `compose.yaml` / `docker-compose.yml` などを探します。",
+      "source": "Docker Compose configuration lookup"
+    },
+    {
+      "id": 106,
+      "section": "セクション47: Node.js / JSON 検証",
+      "title": "JSON.parse で構文検証するコマンドの意味",
+      "question": "次のコマンドの目的として最も適切なものはどれですか？\n\nnode -e \"JSON.parse(require('fs').readFileSync('src/data/quizzes.json','utf8')); console.log('quizzes.json valid')\"",
+      "code": "node -e \"JSON.parse(require('fs').readFileSync('src/data/quizzes.json','utf8')); console.log('quizzes.json valid')\"",
+      "options": [
+        "quizzes.json を読み込んで JSON 構文が正しいか確認し、成功時にメッセージを表示する",
+        "quizzes.json の内容を自動整形して上書き保存する",
+        "quizzes.json を gzip 圧縮して容量を確認する",
+        "quizzes.json の行数を数えて表示する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`readFileSync` で文字列として読み込んだ JSON を `JSON.parse` しており、構文エラーがあれば例外で失敗します。例外が出なければ `console.log('quizzes.json valid')` が表示されるため、簡易的なJSON妥当性チェックとして使えます。",
+      "source": "Node.js JSON validation pattern"
+    },
+    {
+      "id": 107,
+      "section": "セクション48: React exhaustive-deps 実践",
+      "title": "欠けた依存配列が生む不具合",
+      "question": "`useEffect` / `useMemo` / `useCallback` で依存配列に必要な値を入れ忘れたとき、最も起きやすい問題はどれですか？",
+      "code": "useEffect(() => {\n  console.log(count);\n}, []); // count を参照しているのに依存配列にない",
+      "options": [
+        "stale closure により古い値を参照し続け、想定した再同期が起きない",
+        "React が自動で依存を補完するので問題は起きない",
+        "依存を省略すると常に最適化されて再レンダリングが減る",
+        "依存配列は本番ビルドでだけ評価される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "依存配列は『Effect が参照する値』を宣言するためのものです。参照値を漏らすと、値が変わっても Effect が再実行されず、古いクロージャを掴んだままになります。",
+      "source": "React exhaustive-deps lint guidance"
+    },
+    {
+      "id": 108,
+      "section": "セクション48: React exhaustive-deps 実践",
+      "title": "関数依存で無限ループになる理由",
+      "question": "次のパターンで `useEffect` がループしやすい主な理由はどれですか？",
+      "code": "const logItems = () => console.log(items);\nuseEffect(() => {\n  logItems();\n}, [logItems]);",
+      "options": [
+        "毎レンダーで `logItems` の参照が新しくなり、依存変化として Effect が再実行されるため",
+        "`console.log` は非同期なので必ず再レンダーが起きるため",
+        "依存配列に関数を入れると React が例外を投げるため",
+        "`useEffect` はデフォルトで 2 回しか実行されないため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "関数をインライン定義すると参照が毎回変わります。Effect がその関数参照に依存していると、依存が毎回変化したと判断され再実行ループにつながります。必要なら `useCallback` で参照を安定化します。",
+      "source": "React exhaustive-deps lint guidance"
+    },
+    {
+      "id": 109,
+      "section": "セクション48: React exhaustive-deps 実践",
+      "title": "\"一度だけ実行\"したいときの設計",
+      "question": "`userId` を使う analytics 送信を『実質1回』にしたい。lint を回避せずに実装する方針として最も適切なのはどれですか？",
+      "code": "useEffect(() => {\n  sendAnalytics(userId);\n}, []); // lint で userId 不足を指摘",
+      "options": [
+        "`[userId]` を依存に含め、必要なら `useRef` ガードで重複送信を制御する",
+        "eslint-disable コメントで exhaustive-deps を無効化する",
+        "依存配列を削除して毎レンダー送信する",
+        "`userId` を state から外しグローバル変数にする"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "基本は依存を正しく宣言することです。\"一度だけ\"の要件がある場合は、依存を隠すのではなく `useRef` などで実行制御を行うのが安全です。",
+      "source": "React exhaustive-deps lint guidance"
+    },
+    {
+      "id": 110,
+      "section": "セクション48: React exhaustive-deps 実践",
+      "title": "カスタム Effect Hook の lint 対象化",
+      "question": "`useMyEffect` のようなカスタム Hook も exhaustive-deps のチェック対象に含めたい。設定として最も適切なのはどれですか？",
+      "code": "// ESLint settings または rule-level option で正規表現を指定する",
+      "options": [
+        "`settings.react-hooks.additionalEffectHooks` か rule-level の `additionalHooks` に regex を設定する",
+        "TypeScript の `types` 配列に Hook 名を追加する",
+        "Vite config の plugins に Hook 名を列挙する",
+        "React コンポーネント名を PascalCase にすれば自動で検出される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "eslint-plugin-react-hooks では、カスタム Effect Hook を正規表現で指定して依存配列チェック対象に含められます。共有 settings と rule-level option の両方が用意されています。",
+      "source": "React exhaustive-deps lint guidance"
+    },
+    {
+      "id": 111,
+      "section": "セクション1: React & TypeScript",
+      "title": "useEffect の依存配列と関数の扱い方",
+      "question": "以下のコードにはバグがあります。React公式の推奨に最も沿った修正はどれですか？",
+      "code": "function ProductPage({ productId }) {\n  const [product, setProduct] = useState(null);\n\n  async function fetchProduct() {\n    const res = await fetch('/api/product/' + productId);\n    const json = await res.json();\n    setProduct(json);\n  }\n\n  useEffect(() => {\n    fetchProduct();\n  }, []); // ← バグ\n}",
+      "options": [
+        "exhaustive-deps の警告を eslint-disable コメントで無効化する",
+        "fetchProduct を useCallback でラップし、依存配列に [productId] を指定した上で useEffect の依存配列に [fetchProduct] を追加する",
+        "fetchProduct をそのまま useEffect の依存配列に追加する（[fetchProduct]）",
+        "fetchProduct の定義を useEffect の内部に移動し、依存配列を [productId] にする"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "React公式（Hooks FAQ）は「関数をEffect内に移動する」を第一の推奨としています。こうすることでfetchProductが依存配列の問題を引き起こさず、productIdが変わるたびに正しく再実行されます。useCallbackを使う方法（選択肢2）も正しく動作しますが、公式はメモ化より先に「関数をEffect内に移動する」シンプルな解決策を優先しています。選択肢1はuseCallbackなしで関数参照が毎レンダーで変わるため無限ループになります。選択肢0はバグを隠蔽するだけで根本的な解決になりません。",
+      "source": "https://legacy.reactjs.org/docs/hooks-faq.html#is-it-safe-to-omit-functions-from-the-list-of-dependencies"
+    },
+    {
+      "id": 112,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "Intrinsic elements の基本訳",
+      "question": "`Intrinsic elements are looked up on the special interface JSX.IntrinsicElements.` の日本語訳として最も適切なのはどれですか？",
+      "code": "Intrinsic elements are looked up on the special interface JSX.IntrinsicElements.",
+      "options": [
+        "intrinsic elements は、特別なインターフェース JSX.IntrinsicElements 上で参照される。",
+        "intrinsic elements は、JSX.IntrinsicElements を自動生成する。",
+        "intrinsic elements は、特別なインターフェースを常に無視する。",
+        "intrinsic elements は、JSX.IntrinsicElements に変換される。"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "looked up はこの文脈では『参照される』『検索される』の意味で、intrinsic elements が JSX.IntrinsicElements を基準に扱われることを述べています。",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 113,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "By default の意味",
+      "question": "本文中の `By default` の意味として最も適切なのはどれですか？",
+      "code": "By default, if this interface is not specified, then anything goes and intrinsic elements will not be type checked.",
+      "options": [
+        "例外的に",
+        "初期状態では",
+        "明示的に",
+        "結果として"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`By default` は『特別な設定がなければ通常は』『初期状態では』という意味で使われています。",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 114,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "if this interface is not specified の訳",
+      "question": "`if this interface is not specified` の日本語訳として最も適切なのはどれですか？",
+      "code": "By default, if this interface is not specified, then anything goes and intrinsic elements will not be type checked.",
+      "options": [
+        "このインターフェースが自動生成される場合",
+        "このインターフェースが指定されていない場合",
+        "このインターフェースを削除した場合",
+        "このインターフェースを継承した場合"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`is not specified` は『指定されていない』を意味します。ここでは JSX.IntrinsicElements が定義されていないケースを指しています。",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 115,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "指定されていない場合の挙動",
+      "question": "本文では、`JSX.IntrinsicElements` が指定されていない場合、intrinsic elements はどう扱われると述べられていますか？",
+      "code": "By default, if this interface is not specified, then anything goes and intrinsic elements will not be type checked.",
+      "options": [
+        "常に厳密に型チェックされる",
+        "自動的に DOM API に変換される",
+        "何でも許され、型チェックされない",
+        "JSX 構文エラーとして扱われる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "本文の `anything goes and intrinsic elements will not be type checked` がそのまま根拠で、制約なしに受け入れられ型チェックも行われません。",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 116,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "However の役割",
+      "question": "本文中の `However` はどのような役割をしていますか？",
+      "code": "However, if JSX.IntrinsicElements is present, then the name of the intrinsic element is looked up as a property on the JSX.IntrinsicElements interface.",
+      "options": [
+        "具体例の追加",
+        "理由の説明",
+        "対比の導入",
+        "結論の強調"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "前文では『指定されない場合』を説明し、この文では『存在する場合』を説明しているため、However は対比を導入しています。",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 117,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "property on the interface の訳",
+      "question": "`the name of the intrinsic element is looked up as a property on the JSX.IntrinsicElements interface` の日本語訳として最も適切なのはどれですか？",
+      "code": "However, if JSX.IntrinsicElements is present, then the name of the intrinsic element is looked up as a property on the JSX.IntrinsicElements interface.",
+      "options": [
+        "intrinsic element の名前は、JSX.IntrinsicElements を置き換えるプロパティになる。",
+        "intrinsic element の名前は、JSX.IntrinsicElements インターフェース上のプロパティとして参照される。",
+        "intrinsic element の名前は、プロパティではなく型引数として扱われる。",
+        "intrinsic element の名前は、JSX.IntrinsicElements とは無関係に評価される。"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`as a property on ... interface` は『そのインターフェース上のプロパティとして』という意味です。",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 118,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "本文内容との一致",
+      "question": "本文の内容に合うものを次から1つ選びなさい。",
+      "code": "By default, if this interface is not specified, then anything goes and intrinsic elements will not be type checked. However, if JSX.IntrinsicElements is present, then the name of the intrinsic element is looked up as a property on the JSX.IntrinsicElements interface.",
+      "options": [
+        "JSX.IntrinsicElements がなくても常に厳密な型チェックが行われる。",
+        "JSX.IntrinsicElements が存在すると、要素名はそのインターフェースのプロパティとして調べられる。",
+        "Intrinsic elements は JSX.IntrinsicElements とは無関係である。",
+        "JSX.IntrinsicElements があると型チェックは無効になる。"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "本文後半がそのまま根拠です。JSX.IntrinsicElements がある場合は、要素名をそのプロパティとして照合します。",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 119,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "英文全体の要約",
+      "question": "この英文全体の内容を1文で要約したものとして最も適切なのはどれですか？",
+      "code": "By default, if this interface is not specified, then anything goes and intrinsic elements will not be type checked. However, if JSX.IntrinsicElements is present, then the name of the intrinsic element is looked up as a property on the JSX.IntrinsicElements interface.",
+      "options": [
+        "JSX の intrinsic elements は常にランタイムでのみ処理され、型とは関係ない。",
+        "JSX.IntrinsicElements の有無によって、intrinsic elements の型チェック方法が変わる。",
+        "JSX.IntrinsicElements は React 専用であり、TypeScript では使用されない。",
+        "intrinsic elements は必ずクラスコンポーネントとして解釈される。"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "前半は『未指定なら型チェックしない』、後半は『存在すればそのプロパティとして照合する』であり、要約すると型チェック方法が変わるという内容です。",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 120,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "TOEIC風: By default most nearly mean",
+      "question": "What does the phrase `By default` most nearly mean in this passage?",
+      "code": "By default, if this interface is not specified, then anything goes and intrinsic elements will not be type checked.",
+      "options": [
+        "In advance",
+        "Normally",
+        "By mistake",
+        "In detail"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`By default` means `normally` or `in the standard case` in this passage.",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 121,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "TOEIC風: interface is not specified",
+      "question": "What happens if the interface is not specified?",
+      "code": "By default, if this interface is not specified, then anything goes and intrinsic elements will not be type checked.",
+      "options": [
+        "Intrinsic elements are deleted automatically.",
+        "Intrinsic elements are converted into properties.",
+        "Intrinsic elements are not type checked.",
+        "Intrinsic elements become invalid syntax."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "The passage explicitly says `intrinsic elements will not be type checked.`",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 122,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "TOEIC風: However の役割",
+      "question": "What is the role of `However` in the passage?",
+      "code": "However, if JSX.IntrinsicElements is present, then the name of the intrinsic element is looked up as a property on the JSX.IntrinsicElements interface.",
+      "options": [
+        "It introduces a similar example.",
+        "It adds technical detail.",
+        "It shows a contrast.",
+        "It repeats the previous idea."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`However` marks a contrast between the case where the interface is absent and the case where it is present.",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 123,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "TOEIC風: interface が存在する場合",
+      "question": "According to the passage, what happens when `JSX.IntrinsicElements` is present?",
+      "code": "However, if JSX.IntrinsicElements is present, then the name of the intrinsic element is looked up as a property on the JSX.IntrinsicElements interface.",
+      "options": [
+        "The intrinsic element name is checked as a property of the interface.",
+        "All intrinsic elements are ignored by the compiler.",
+        "The interface is removed from the program.",
+        "JSX syntax is disabled."
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "The passage states that the intrinsic element name is looked up as a property on the interface.",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 124,
+      "section": "セクション49: TypeScript JSX 読解",
+      "title": "TOEIC風: 最も正確な要約",
+      "question": "Which of the following is most accurate according to the passage?",
+      "code": "By default, if this interface is not specified, then anything goes and intrinsic elements will not be type checked. However, if JSX.IntrinsicElements is present, then the name of the intrinsic element is looked up as a property on the JSX.IntrinsicElements interface.",
+      "options": [
+        "Type checking always happens, whether the interface exists or not.",
+        "The interface is only used for runtime execution.",
+        "The presence of the interface affects how intrinsic elements are checked.",
+        "Intrinsic elements cannot be used with interfaces."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "This is the best summary of the passage: whether the interface exists changes how TypeScript checks intrinsic elements.",
+      "source": "TypeScript JSX Intrinsic Elements"
+    },
+    {
+      "id": 125,
+      "section": "セクション50: Flutter 情報一覧ロジック",
+      "title": "isNew 判定の条件",
+      "question": "次のコードにおいて `isNew` が `true` になる条件として最も正しいものはどれですか？",
+      "code": "final now = DateTime.now();\nfinal newCutoff = now.subtract(Duration(days: _newThresholdDays));\nfinal isDateInNewRange =\n    !displayDate.isBefore(newCutoff) && !displayDate.isAfter(now);\nfinal isNew = _currentPage == 1 && isDateInNewRange;\n\n// 未読判定: 既読IDセットに含まれていなければ未読\nfinal isUnread = !_readIds.contains(information.id);\n\n// --- デザイン定数（変更しやすいよう集約） ---\nconst unreadTitleStyle = TextStyle(\n  fontSize: 14,\n  fontWeight: FontWeight.bold,\n  color: Color(0xFF1A1A1A),\n);\nconst readTitleStyle = TextStyle(\n  fontSize: 14,\n  fontWeight: FontWeight.normal,\n  color: Color(0xFF888888),\n);\nconst unreadDateStyle = TextStyle(\n  fontSize: 14,\n  fontWeight: FontWeight.bold,\n  color: Color(0xFF1A1A1A),\n);\nconst readDateStyle = TextStyle(\n  fontSize: 14,\n  color: Color(0xFF888888),\n);\nconst newBadgeColor = Color(0xFFFFD600);\nconst newBadgeTextColor = Color(0xFF1A1A1A);",
+      "options": [
+        "_currentPage が 1 以外でも、displayDate が now より後なら true",
+        "_currentPage が 1 で、displayDate が newCutoff から now の範囲内なら true",
+        "displayDate が newCutoff より前でも _readIds に含まれなければ true",
+        "_readIds に含まれていても newBadgeColor が黄色なら true"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`isNew` は `_currentPage == 1` かつ `isDateInNewRange` のAND条件です。`isDateInNewRange` は `displayDate` が `newCutoff` 以上 `now` 以下のとき true になります。",
+      "source": "User provided Flutter snippet"
     }
   ]
 }
