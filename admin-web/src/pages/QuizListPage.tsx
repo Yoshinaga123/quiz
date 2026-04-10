@@ -1,54 +1,192 @@
-import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { deleteQuiz, listQuizzes } from '../api/admin'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { deleteQuiz, toggleQuizPush, toggleQuizStatus } from '../api/admin'
 import { getErrorMessage } from '../api/errors'
 import { handleUnauthorized } from '../auth/session'
 import DeleteQuizDialog from '../components/DeleteQuizDialog'
 import JsonQuizPreviewSection from '../components/JsonQuizPreviewSection'
-import type { Quiz } from '../types/admin'
+import { useFlash } from '../contexts/FlashContext'
+import { useQuizzes } from '../hooks/useQuizzes'
+import type { Quiz, QuizSearchParams, QuizSort } from '../types/admin'
 
-const updatedAtFormatter = new Intl.DateTimeFormat('ja-JP', {
-  dateStyle: 'medium',
+const formatter = new Intl.DateTimeFormat('ja-JP', {
+  dateStyle: 'long',
   timeStyle: 'short',
 })
+
+const DEFAULT_SORT: QuizSort = 'updated_newest'
 
 const pillButtonClassName =
   'inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-medium transition duration-150 hover:-translate-y-0.5 hover:shadow-float'
 
-function formatUpdatedAt(value: string): string {
-  return updatedAtFormatter.format(new Date(value))
+type SearchDraft = {
+  title: string
+  section: string
+  status: '' | 'published' | 'unpublished'
+  sort: QuizSort
+}
+
+function formatDateTime(value: string): string {
+  return formatter.format(new Date(value))
+}
+
+function createDraft(searchParams: URLSearchParams): SearchDraft {
+  const status = searchParams.get('status')
+  const sort = searchParams.get('sort')
+
+  return {
+    title: searchParams.get('title') ?? '',
+    section: searchParams.get('section') ?? '',
+    status: status === 'published' || status === 'unpublished' ? status : '',
+    sort:
+      sort === 'updated_oldest' || sort === 'created_newest' || sort === 'created_oldest'
+        ? sort
+        : DEFAULT_SORT,
+  }
+}
+
+function createQueryParams(draft: SearchDraft, page = 1): URLSearchParams {
+  const nextParams = new URLSearchParams()
+
+  if (draft.title.trim() !== '') {
+    nextParams.set('title', draft.title.trim())
+  }
+  if (draft.section.trim() !== '') {
+    nextParams.set('section', draft.section.trim())
+  }
+  if (draft.status !== '') {
+    nextParams.set('status', draft.status)
+  }
+  if (draft.sort !== DEFAULT_SORT) {
+    nextParams.set('sort', draft.sort)
+  }
+  if (page > 1) {
+    nextParams.set('page', String(page))
+  }
+
+  return nextParams
+}
+
+function createQueryState(searchParams: URLSearchParams): QuizSearchParams {
+  const draft = createDraft(searchParams)
+  const rawPage = Number.parseInt(searchParams.get('page') ?? '1', 10)
+
+  return {
+    title: draft.title || undefined,
+    section: draft.section || undefined,
+    status: draft.status,
+    sort: draft.sort,
+    page: Number.isNaN(rawPage) || rawPage < 1 ? 1 : rawPage,
+  }
+}
+
+function getPaginationItems(currentPage: number, totalPages: number): Array<number | 'ellipsis'> {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1)
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, 'ellipsis', totalPages]
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [1, 'ellipsis', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages]
+  }
+
+  return [1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', totalPages]
+}
+
+function StatusBadge({ status, onClick }: { status: Quiz['status']; onClick: () => void }) {
+  if (status === 'published') {
+    return (
+      <button className="inline-flex rounded-full bg-[#10b981]/12 px-3 py-1 text-xs font-semibold text-[#047857] transition hover:bg-[#10b981]/22" onClick={onClick} type="button">
+        公開
+      </button>
+    )
+  }
+
+  return (
+    <button className="inline-flex rounded-full bg-[#94a3b8]/16 px-3 py-1 text-xs font-semibold text-[#475569] transition hover:bg-[#94a3b8]/28" onClick={onClick} type="button">
+      非公開
+    </button>
+  )
+}
+
+function PushBadge({ pushEnabled, onClick }: { pushEnabled: boolean; onClick: () => void }) {
+  if (pushEnabled) {
+    return (
+      <button className="inline-flex rounded-full bg-[#1768ac]/12 px-3 py-1 text-xs font-semibold text-[#0f4c81] transition hover:bg-[#1768ac]/22" onClick={onClick} type="button">
+        ON
+      </button>
+    )
+  }
+
+  return (
+    <button className="inline-flex rounded-full bg-[#94a3b8]/16 px-3 py-1 text-xs font-semibold text-[#475569] transition hover:bg-[#94a3b8]/28" onClick={onClick} type="button">
+      OFF
+    </button>
+  )
 }
 
 function QuizListPage() {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [draft, setDraft] = useState<SearchDraft>(() => createDraft(searchParams))
+  const query = createQueryState(searchParams)
+  const { quizzes, total, page, totalPages, error, errorMessage, isLoading, mutate } = useQuizzes(query)
   const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(null)
   const [quizToDelete, setQuizToDelete] = useState<Quiz | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const navigate = useNavigate()
-
-  const loadQuizzes = useCallback(async () => {
-    setIsLoading(true)
-    setErrorMessage(null)
-
-    try {
-      const items = await listQuizzes()
-      setQuizzes(items)
-    } catch (error) {
-      if (handleUnauthorized(error, navigate)) {
-        return
-      }
-
-      setErrorMessage(getErrorMessage(error))
-    } finally {
-      setIsLoading(false)
-    }
-  }, [navigate])
+  const { showFlash } = useFlash()
 
   useEffect(() => {
-    void loadQuizzes()
-  }, [loadQuizzes])
+    setDraft(createDraft(searchParams))
+  }, [searchParams])
+
+  useEffect(() => {
+    if (error) {
+      handleUnauthorized(error, navigate)
+    }
+  }, [error, navigate])
+
+  const handleFilterSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSearchParams(createQueryParams(draft))
+  }
+
+  const handleResetFilters = () => {
+    setDraft({
+      title: '',
+      section: '',
+      status: '',
+      sort: DEFAULT_SORT,
+    })
+    setSearchParams(new URLSearchParams())
+  }
+
+  const handlePageChange = (nextPage: number) => {
+    setSearchParams(createQueryParams(draft, nextPage))
+  }
+
+  const handleToggleStatus = async (quizId: number) => {
+    try {
+      await toggleQuizStatus(quizId)
+      await mutate()
+    } catch (err) {
+      if (handleUnauthorized(err, navigate)) return
+      showFlash(`ステータス変更に失敗しました: ${getErrorMessage(err)}`)
+    }
+  }
+
+  const handleTogglePush = async (quizId: number) => {
+    try {
+      await toggleQuizPush(quizId)
+      await mutate()
+    } catch (err) {
+      if (handleUnauthorized(err, navigate)) return
+      showFlash(`PUSH設定変更に失敗しました: ${getErrorMessage(err)}`)
+    }
+  }
 
   const handleDeleteConfirm = async () => {
     if (!quizToDelete) {
@@ -60,7 +198,8 @@ function QuizListPage() {
 
     try {
       await deleteQuiz(quizToDelete.id)
-      setQuizzes((current) => current.filter((quiz) => quiz.id !== quizToDelete.id))
+      await mutate()
+      showFlash(`ID ${quizToDelete.id} を削除しました。`)
       setQuizToDelete(null)
     } catch (error) {
       if (handleUnauthorized(error, navigate)) {
@@ -73,21 +212,23 @@ function QuizListPage() {
     }
   }
 
+  const paginationItems = getPaginationItems(page, totalPages)
+
   return (
     <>
-      <section className="mb-[22px] flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+      <section className="mb-6 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="m-0 mb-2.5 text-[0.78rem] uppercase tracking-[0.18em] text-[#1768ac]">Quiz Inventory</p>
-          <h2 className="m-0 text-[clamp(1.8rem,3vw,2.4rem)] font-semibold">登録済みクイズ</h2>
+          <h2 className="m-0 text-[clamp(1.8rem,3vw,2.4rem)] font-semibold">クイズ一覧</h2>
           <p className="mt-3 mb-0 max-w-[700px] text-[#4f5d75]">
-            出典付きの問題データを一か所で管理します。更新の新しい順に並べています。
+            検索、公開状態、PUSH 対象を横断で確認しながら問題データを管理します。
           </p>
         </div>
 
         <div className="flex flex-wrap gap-3">
           <button
             className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy`}
-            onClick={() => void loadQuizzes()}
+            onClick={() => void mutate()}
             type="button"
           >
             再読み込み
@@ -101,12 +242,93 @@ function QuizListPage() {
         </div>
       </section>
 
+      <section className="mb-6 rounded-card border border-navy/12 bg-white/86 p-card shadow-card">
+        <form className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_220px_220px_auto]" onSubmit={handleFilterSubmit}>
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold text-navy">タイトル</span>
+            <input
+              className="rounded-surface border border-navy/14 bg-white/92 px-4 py-3 text-navy"
+              onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
+              placeholder="タイトルで部分一致"
+              type="text"
+              value={draft.title}
+            />
+          </label>
+
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold text-navy">セクション</span>
+            <input
+              className="rounded-surface border border-navy/14 bg-white/92 px-4 py-3 text-navy"
+              onChange={(event) => setDraft((current) => ({ ...current, section: event.target.value }))}
+              placeholder="セクション名"
+              type="text"
+              value={draft.section}
+            />
+          </label>
+
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold text-navy">公開状態</span>
+            <select
+              className="rounded-surface border border-navy/14 bg-white/92 px-4 py-3 text-navy"
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  status: event.target.value === 'published' || event.target.value === 'unpublished' ? event.target.value : '',
+                }))
+              }
+              value={draft.status}
+            >
+              <option value="">すべて</option>
+              <option value="published">公開</option>
+              <option value="unpublished">非公開</option>
+            </select>
+          </label>
+
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold text-navy">並び順</span>
+            <select
+              className="rounded-surface border border-navy/14 bg-white/92 px-4 py-3 text-navy"
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  sort: event.target.value as QuizSort,
+                }))
+              }
+              value={draft.sort}
+            >
+              <option value="updated_newest">更新日時の新しい順</option>
+              <option value="updated_oldest">更新日時の古い順</option>
+              <option value="created_newest">作成日時の新しい順</option>
+              <option value="created_oldest">作成日時の古い順</option>
+            </select>
+          </label>
+
+          <div className="flex flex-wrap items-end gap-3">
+            <button
+              className={`${pillButtonClassName} bg-linear-to-br from-[#1768ac] to-[#0f4c81] text-white`}
+              type="submit"
+            >
+              検索
+            </button>
+            <button
+              className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy`}
+              onClick={handleResetFilters}
+              type="button"
+            >
+              クリア
+            </button>
+          </div>
+        </form>
+      </section>
+
       <section className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card">
         <div className="mb-stack flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <span className="inline-flex w-fit items-center rounded-full bg-[#1768ac]/12 px-3.5 py-2.5 font-semibold text-[#0f4c81]">
-            {quizzes.length} quizzes
+            {total} quizzes
           </span>
-          <span className="text-[#4f5d75]">管理画面から直接 CRUD 可能です。</span>
+          <span className="text-[#4f5d75]">
+            {totalPages > 0 ? `${page} / ${totalPages} ページ` : '該当データなし'}
+          </span>
         </div>
 
         {errorMessage ? (
@@ -114,7 +336,7 @@ function QuizListPage() {
             <p className="m-0">{errorMessage}</p>
             <button
               className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy`}
-              onClick={() => void loadQuizzes()}
+              onClick={() => void mutate()}
               type="button"
             >
               再試行
@@ -128,66 +350,141 @@ function QuizListPage() {
           </div>
         ) : quizzes.length === 0 ? (
           <div className="grid min-h-[260px] place-items-center gap-3 rounded-surface border border-dashed border-navy/16 px-8 py-6 text-center">
-            <p className="m-0 text-[1.3rem] font-semibold text-navy">まだクイズがありません</p>
-            <p className="m-0 max-w-[520px] text-[#4f5d75]">
-              最初の1件を作成して、管理画面から編集フローを確認してください。
+            <p className="m-0 text-[1.3rem] font-semibold text-navy">
+              {total === 0 && (draft.title !== '' || draft.section !== '' || draft.status !== '')
+                ? '条件に一致するクイズがありません'
+                : 'まだクイズがありません'}
             </p>
-            <Link
-              className={`${pillButtonClassName} bg-linear-to-br from-[#1768ac] to-[#0f4c81] text-white`}
-              to="/quizzes/new"
-            >
-              クイズを作成
-            </Link>
+            <p className="m-0 max-w-[520px] text-[#4f5d75]">
+              {total === 0 && (draft.title !== '' || draft.section !== '' || draft.status !== '')
+                ? '検索条件を変更するか、フィルターをクリアして再確認してください。'
+                : '最初の1件を作成して、管理画面から編集フローを確認してください。'}
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy`}
+                onClick={handleResetFilters}
+                type="button"
+              >
+                フィルターをクリア
+              </button>
+              <Link
+                className={`${pillButtonClassName} bg-linear-to-br from-[#1768ac] to-[#0f4c81] text-white`}
+                to="/quizzes/new"
+              >
+                クイズを作成
+              </Link>
+            </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse">
-              <thead>
-                <tr className="text-left text-[0.82rem] uppercase tracking-[0.08em] text-[#4f5d75]">
-                  <th className="border-b border-navy/8 px-3 py-4 font-medium">タイトル</th>
-                  <th className="border-b border-navy/8 px-3 py-4 font-medium">セクション</th>
-                  <th className="border-b border-navy/8 px-3 py-4 font-medium">出典</th>
-                  <th className="border-b border-navy/8 px-3 py-4 font-medium">更新日時</th>
-                  <th className="border-b border-navy/8 px-3 py-4 font-medium">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {quizzes.map((quiz) => (
-                  <tr key={quiz.id}>
-                    <td className="border-b border-navy/8 px-3 py-4 align-top">
-                      <div className="grid gap-2">
-                        <strong>{quiz.title}</strong>
-                        <span className="text-[#4f5d75]">{quiz.question}</span>
-                      </div>
-                    </td>
-                    <td className="border-b border-navy/8 px-3 py-4 align-top">{quiz.section}</td>
-                    <td className="border-b border-navy/8 px-3 py-4 align-top">{quiz.source}</td>
-                    <td className="border-b border-navy/8 px-3 py-4 align-top">{formatUpdatedAt(quiz.updatedAt)}</td>
-                    <td className="border-b border-navy/8 px-3 py-4 align-top">
-                      <div className="flex flex-wrap gap-2.5">
-                        <Link
-                          className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy`}
-                          to={`/quizzes/${quiz.id}/edit`}
-                        >
-                          編集
-                        </Link>
-                        <button
-                          className={`${pillButtonClassName} bg-[#b42318]/12 text-[#b42318]`}
-                          onClick={() => {
-                            setDeleteErrorMessage(null)
-                            setQuizToDelete(quiz)
-                          }}
-                          type="button"
-                        >
-                          削除
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border-collapse">
+                <thead>
+                  <tr className="bg-[#f8fafc] text-left text-[0.82rem] uppercase tracking-[0.08em] text-[#4f5d75]">
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">ID</th>
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">タイトル</th>
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">セクション</th>
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">出典</th>
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">公開状態</th>
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">PUSH</th>
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">作成日時</th>
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">更新日時</th>
+                    <th className="border-b border-navy/8 px-3 py-4 font-medium">操作</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {quizzes.map((quiz) => (
+                    <tr className="transition hover:bg-[#f8fafc]" key={quiz.id}>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top font-semibold text-navy">{quiz.id}</td>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top">
+                        <div className="grid gap-1.5">
+                          <strong>{quiz.title}</strong>
+                          <span className="max-w-[320px] text-sm text-[#4f5d75]">{quiz.question}</span>
+                        </div>
+                      </td>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top">{quiz.section}</td>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top break-all text-sm">{quiz.source}</td>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top">
+                        <StatusBadge onClick={() => void handleToggleStatus(quiz.id)} status={quiz.status} />
+                      </td>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top">
+                        <PushBadge onClick={() => void handleTogglePush(quiz.id)} pushEnabled={quiz.pushEnabled} />
+                      </td>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top text-sm">{formatDateTime(quiz.createdAt)}</td>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top text-sm">{formatDateTime(quiz.updatedAt)}</td>
+                      <td className="border-b border-navy/8 px-3 py-4 align-top">
+                        <div className="flex min-w-[160px] flex-wrap gap-2.5">
+                          <Link
+                            className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy`}
+                            to={`/quizzes/${quiz.id}/edit`}
+                          >
+                            編集
+                          </Link>
+                          <button
+                            className={`${pillButtonClassName} border border-[#b42318]/12 bg-[#b42318]/10 text-[#7a271a]`}
+                            onClick={() => {
+                              setDeleteErrorMessage(null)
+                              setQuizToDelete(quiz)
+                            }}
+                            type="button"
+                          >
+                            削除
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {totalPages > 1 ? (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                <p className="m-0 text-sm text-[#4f5d75]">
+                  {Math.min((page - 1) * 20 + 1, total)} - {Math.min(page * 20, total)} / {total} 件
+                </p>
+                <nav aria-label="クイズ一覧ページネーション" className="flex flex-wrap items-center gap-2">
+                  <button
+                    className={`${pillButtonClassName} border border-navy/12 bg-white/92 px-3 py-2 text-navy disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 disabled:hover:shadow-none`}
+                    disabled={page <= 1}
+                    onClick={() => handlePageChange(page - 1)}
+                    type="button"
+                  >
+                    前へ
+                  </button>
+                  {paginationItems.map((item, index) =>
+                    item === 'ellipsis' ? (
+                      <span className="px-2 text-[#4f5d75]" key={`ellipsis-${index}`}>
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        className={
+                          item === page
+                            ? `${pillButtonClassName} bg-linear-to-br from-[#1768ac] to-[#0f4c81] px-3 py-2 text-white`
+                            : `${pillButtonClassName} border border-navy/12 bg-white/92 px-3 py-2 text-navy`
+                        }
+                        key={item}
+                        onClick={() => handlePageChange(item)}
+                        type="button"
+                      >
+                        {item}
+                      </button>
+                    ),
+                  )}
+                  <button
+                    className={`${pillButtonClassName} border border-navy/12 bg-white/92 px-3 py-2 text-navy disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 disabled:hover:shadow-none`}
+                    disabled={page >= totalPages}
+                    onClick={() => handlePageChange(page + 1)}
+                    type="button"
+                  >
+                    次へ
+                  </button>
+                </nav>
+              </div>
+            ) : null}
+          </>
         )}
       </section>
 
@@ -202,7 +499,7 @@ function QuizListPage() {
         }}
         onConfirm={() => void handleDeleteConfirm()}
         open={quizToDelete !== null}
-        quizTitle={quizToDelete?.title ?? ''}
+        quiz={quizToDelete}
       />
     </>
   )

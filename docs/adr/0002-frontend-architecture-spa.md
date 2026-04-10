@@ -61,6 +61,12 @@ Apply optimizations in this order:
 2. Optimize within SPA (`React.memo`, `useMemo`, `React.lazy`)
 3. Re-evaluate RSC/Astro only if measured goals are not met
 
+## Search Requirements
+
+- If a page is public and search discovery is a requirement, implementation must follow Google Search Central guidance.
+- In SPA routes, use crawlable links and History API based URLs instead of fragment-based routing.
+- If a public page cannot expose correct status codes, metadata, or index control reliably in SPA form, re-evaluate SSR/SSG/prerender instead of forcing the current architecture.
+
 ## Alternatives Considered
 
 1. Next.js App Router (RSC)

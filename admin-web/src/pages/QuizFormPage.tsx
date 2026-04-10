@@ -4,6 +4,7 @@ import { createQuiz, getQuiz, updateQuiz } from '../api/admin'
 import { getErrorMessage } from '../api/errors'
 import { handleUnauthorized } from '../auth/session'
 import QuizForm from '../components/QuizForm'
+import { useFlash } from '../contexts/FlashContext'
 import { quizPayloadSchema } from '../schemas/quiz'
 import type { QuizFormValues } from '../types/admin'
 
@@ -21,6 +22,8 @@ function createEmptyValues(): QuizFormValues {
     correctAnswerIndex: 0,
     explanation: '',
     source: '',
+    status: 'unpublished',
+    pushEnabled: false,
   }
 }
 
@@ -33,6 +36,7 @@ function QuizFormPage({ mode }: QuizFormPageProps) {
   const [hasLoadedQuiz, setHasLoadedQuiz] = useState(mode === 'create')
   const navigate = useNavigate()
   const params = useParams()
+  const { showFlash } = useFlash()
 
   useEffect(() => {
     if (mode !== 'edit') {
@@ -69,6 +73,8 @@ function QuizFormPage({ mode }: QuizFormPageProps) {
           correctAnswerIndex: quiz.correctAnswerIndex,
           explanation: quiz.explanation,
           source: quiz.source,
+          status: quiz.status,
+          pushEnabled: quiz.pushEnabled,
         })
         setHasLoadedQuiz(true)
       } catch (error) {
@@ -94,7 +100,7 @@ function QuizFormPage({ mode }: QuizFormPageProps) {
   }, [mode, navigate, params.id])
 
   const handleFieldChange = (
-    field: 'section' | 'title' | 'question' | 'code' | 'explanation' | 'source',
+    field: 'section' | 'title' | 'question' | 'code' | 'explanation' | 'source' | 'status',
     value: string,
   ) => {
     setValues((current) => ({
@@ -160,6 +166,8 @@ function QuizFormPage({ mode }: QuizFormPageProps) {
       options: values.options.map((option) => option.trim()),
       explanation: values.explanation.trim(),
       source: values.source.trim(),
+      status: values.status,
+      pushEnabled: values.pushEnabled,
     }
 
     const parsedPayload = quizPayloadSchema.safeParse(normalizedPayload)
@@ -179,8 +187,10 @@ function QuizFormPage({ mode }: QuizFormPageProps) {
         }
 
         await updateQuiz(quizId, parsedPayload.data)
+        showFlash('クイズを更新しました。')
       } else {
         await createQuiz(parsedPayload.data)
+        showFlash('クイズを作成しました。')
       }
 
       navigate('/quizzes', { replace: true })
@@ -241,6 +251,12 @@ function QuizFormPage({ mode }: QuizFormPageProps) {
           }))
         }
         onFieldChange={handleFieldChange}
+        onPushEnabledChange={(value) =>
+          setValues((current) => ({
+            ...current,
+            pushEnabled: value,
+          }))
+        }
         onOptionChange={handleOptionChange}
         onRemoveOption={handleRemoveOption}
         onSubmit={handleSubmit}

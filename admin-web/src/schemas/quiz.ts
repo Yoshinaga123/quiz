@@ -15,6 +15,8 @@ export const quizSchema = z
     correctAnswerIndex: z.number().int().nonnegative(),
     explanation: z.string().min(1),
     source: z.string().min(1),
+    status: z.enum(['published', 'unpublished']),
+    pushEnabled: z.boolean(),
     createdAt: z.string().min(1),
     updatedAt: z.string().min(1),
   })
@@ -28,6 +30,14 @@ export const quizSchema = z
 
 export const quizzesSchema = z.array(quizSchema)
 
+export const quizListResponseSchema = z.object({
+  items: quizzesSchema,
+  total: z.number().int().nonnegative(),
+  page: z.number().int().positive(),
+  perPage: z.number().int().positive(),
+  totalPages: z.number().int().nonnegative(),
+})
+
 export const quizPayloadSchema = z
   .object({
     section: z.string().trim().min(1, 'セクションは必須です'),
@@ -38,6 +48,8 @@ export const quizPayloadSchema = z
     correctAnswerIndex: z.number().int().nonnegative(),
     explanation: z.string().trim().min(1, '解説は必須です'),
     source: z.string().trim().min(1, '出典は必須です'),
+    status: z.enum(['published', 'unpublished']),
+    pushEnabled: z.boolean(),
   })
   .refine(
     ({ correctAnswerIndex, options }) => hasValidCorrectAnswerIndex(correctAnswerIndex, options.length),

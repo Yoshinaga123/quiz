@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,9 +18,15 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 	_ "github.com/lib/pq"
 	"github.com/shirou/gopsutil/mem"
 )
+
+//go:embed migrations/*.sql
+var migrationsFS embed.FS
 
 type server struct {
 	db            *sql.DB
@@ -63,8 +70,18 @@ type quiz struct {
 	CorrectAnswerIndex int       `json:"correctAnswerIndex"`
 	Explanation        string    `json:"explanation"`
 	Source             string    `json:"source"`
+	Status             string    `json:"status"`
+	PushEnabled        bool      `json:"pushEnabled"`
 	CreatedAt          time.Time `json:"createdAt"`
 	UpdatedAt          time.Time `json:"updatedAt"`
+}
+
+type quizListResponse struct {
+	Items      []quiz `json:"items"`
+	Total      int    `json:"total"`
+	Page       int    `json:"page"`
+	PerPage    int    `json:"perPage"`
+	TotalPages int    `json:"totalPages"`
 }
 
 type quizPayload struct {
@@ -76,6 +93,8 @@ type quizPayload struct {
 	CorrectAnswerIndex int      `json:"correctAnswerIndex"`
 	Explanation        string   `json:"explanation"`
 	Source             string   `json:"source"`
+	Status             string   `json:"status"`
+	PushEnabled        bool     `json:"pushEnabled"`
 }
 
 func getEnv(key, fallback string) string {
@@ -110,34 +129,34 @@ func initDB() (*sql.DB, error) {
 		return nil, err
 	}
 
-	if _, err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS views (
-			id INT PRIMARY KEY,
-			count INT NOT NULL
-		);
-
-		INSERT INTO views (id, count)
-		VALUES (1, 0)
-		ON CONFLICT (id) DO NOTHING;
-
-		CREATE TABLE IF NOT EXISTS quizzes (
-			id BIGSERIAL PRIMARY KEY,
-			section TEXT NOT NULL,
-			title TEXT NOT NULL,
-			question TEXT NOT NULL,
-			code TEXT,
-			options JSONB NOT NULL,
-			correct_answer_index INT NOT NULL,
-			explanation TEXT NOT NULL,
-			source TEXT NOT NULL,
-			created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-			updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-		);
-	`); err != nil {
-		return nil, err
+	if err := runMigrations(db); err != nil {
+		return nil, fmt.Errorf("migration: %w", err)
 	}
 
 	return db, nil
+}
+
+func runMigrations(db *sql.DB) error {
+	srcDriver, err := iofs.New(migrationsFS, "migrations")
+	if err != nil {
+		return err
+	}
+
+	dbDriver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return err
+	}
+
+	m, err := migrate.NewWithInstance("iofs", srcDriver, "postgres", dbDriver)
+	if err != nil {
+		return err
+	}
+
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return err
+	}
+
+	return nil
 }
 
 func writeJSON(w http.ResponseWriter, status int, payload any) {
@@ -181,6 +200,7 @@ func normalizeQuizPayload(payload *quizPayload) error {
 	payload.Code = strings.TrimSpace(payload.Code)
 	payload.Explanation = strings.TrimSpace(payload.Explanation)
 	payload.Source = strings.TrimSpace(payload.Source)
+	payload.Status = strings.TrimSpace(payload.Status)
 
 	if payload.Section == "" {
 		return errors.New("section is required")
@@ -196,6 +216,9 @@ func normalizeQuizPayload(payload *quizPayload) error {
 	}
 	if payload.Source == "" {
 		return errors.New("source is required")
+	}
+	if payload.Status != "published" && payload.Status != "unpublished" {
+		return errors.New("status must be published or unpublished")
 	}
 
 	if len(payload.Options) < 2 {
@@ -231,6 +254,8 @@ func scanQuiz(scanner rowScanner) (quiz, error) {
 		&item.CorrectAnswerIndex,
 		&item.Explanation,
 		&item.Source,
+		&item.Status,
+		&item.PushEnabled,
 		&item.CreatedAt,
 		&item.UpdatedAt,
 	)
@@ -494,21 +519,99 @@ func (s *server) requireAuth(next http.Handler) http.Handler {
 	})
 }
 
+// handleHealth godoc
+//
+//	@Summary		ヘルスチェック
+//	@Description	サーバーの稼働状態を返す
+//	@Tags			system
+//	@Produce		json
+//	@Success		200	{object}	healthResponse
+//	@Router			/ [get]
 func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, healthResponse{Status: "ok"})
 }
 
-func (s *server) handleViews(w http.ResponseWriter, r *http.Request) {
+// handleGetCounter godoc
+//
+//	@Summary		PVカウンター
+//	@Description	現在のページビュー数を返す
+//	@Tags			system
+//	@Produce		json
+//	@Success		200	{object}	countResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Router			/counter [get]
+func (s *server) handleGetCounter(w http.ResponseWriter, r *http.Request) {
 	var current int
 	err := s.db.QueryRow(
-		"UPDATE views SET count = count + 1 WHERE id = 1 RETURNING count",
+		"SELECT count FROM views WHERE id = 1",
 	).Scan(&current)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			writeError(w, http.StatusNotFound, "counter not found")
+			return
+		}
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	writeJSON(w, http.StatusOK, countResponse{Count: current})
+}
+
+// handleIncrementCounter godoc
+//
+//	@Summary		PVカウンター加算
+//	@Description	ページビュー数をインクリメントして現在値を返す
+//	@Tags			system
+//	@Produce		json
+//	@Success		200	{object}	countResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Router			/counter [post]
+func (s *server) handleIncrementCounter(w http.ResponseWriter, r *http.Request) {
+	var current int
+	err := s.db.QueryRow(
+		"UPDATE views SET count = count + 1 WHERE id = 1 RETURNING count",
+	).Scan(&current)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			writeError(w, http.StatusNotFound, "counter not found")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	writeJSON(w, http.StatusOK, countResponse{Count: current})
+}
+
+// handleLogin godoc
+//
+//	@Summary		管理者ログイン
+//	@Description	ユーザー名・パスワードで認証し JWT を発行する
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		loginRequest	true	"認証情報"
+//	@Success		200		{object}	loginResponse
+//	@Failure		400		{object}	errorResponse
+//	@Failure		401		{object}	errorResponse
+//	@Failure		500		{object}	errorResponse
+//	@Router			/api/admin/login [post]
+func (s *server) recordLoginLog(username string, success bool, r *http.Request) {
+	ip := r.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		ip = r.RemoteAddr
+	}
+	ua := r.UserAgent()
+
+	_, err := s.db.Exec(
+		`INSERT INTO login_logs (username, success, ip_address, user_agent) VALUES ($1, $2, $3, $4)`,
+		username, success, ip, ua,
+	)
+	if err != nil {
+		log.Printf("failed to record login log: %v", err)
+	}
 }
 
 func (s *server) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -519,6 +622,7 @@ func (s *server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if payload.Username != s.adminUser || payload.Password != s.adminPassword {
+		s.recordLoginLog(payload.Username, false, r)
 		writeError(w, http.StatusUnauthorized, "invalid credentials")
 		return
 	}
@@ -529,26 +633,97 @@ func (s *server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	s.recordLoginLog(payload.Username, true, r)
 	writeJSON(w, http.StatusOK, loginResponse{Token: token})
 }
 
+// handleListQuizzes godoc
+//
+//	@Summary		クイズ一覧取得
+//	@Description	検索・フィルター・ソート・ページネーション付きでクイズ一覧を返す
+//	@Tags			quizzes
+//	@Produce		json
+//	@Param			title		query		string	false	"タイトル部分一致"
+//	@Param			section		query		string	false	"セクション完全一致"
+//	@Param			status		query		string	false	"公開状態"	Enums(published, unpublished)
+//	@Param			sort		query		string	false	"ソート順"	Enums(updated_newest, updated_oldest, created_newest, created_oldest)	default(updated_newest)
+//	@Param			page		query		int		false	"ページ番号"	minimum(1)	default(1)
+//	@Param			per_page	query		int		false	"1ページあたり件数"	minimum(1)	maximum(100)	default(20)
+//	@Success		200			{object}	quizListResponse
+//	@Failure		401			{object}	errorResponse
+//	@Failure		500			{object}	errorResponse
+//	@Security		BearerAuth
+//	@Router			/api/admin/quizzes [get]
 func (s *server) handleListQuizzes(w http.ResponseWriter, r *http.Request) {
-	rows, err := s.db.Query(`
+	q := r.URL.Query()
+
+	// ページネーション
+	page, _ := strconv.Atoi(q.Get("page"))
+	if page < 1 {
+		page = 1
+	}
+	perPage, _ := strconv.Atoi(q.Get("per_page"))
+	if perPage < 1 || perPage > 100 {
+		perPage = 20
+	}
+
+	// フィルター条件を構築
+	where := []string{"1=1"}
+	args := []any{}
+	argIdx := 1
+
+	if title := strings.TrimSpace(q.Get("title")); title != "" {
+		where = append(where, fmt.Sprintf("title ILIKE $%d", argIdx))
+		args = append(args, "%"+title+"%")
+		argIdx++
+	}
+	if section := strings.TrimSpace(q.Get("section")); section != "" {
+		where = append(where, fmt.Sprintf("section = $%d", argIdx))
+		args = append(args, section)
+		argIdx++
+	}
+	if status := strings.TrimSpace(q.Get("status")); status == "published" || status == "unpublished" {
+		where = append(where, fmt.Sprintf("status = $%d", argIdx))
+		args = append(args, status)
+		argIdx++
+	}
+
+	whereClause := strings.Join(where, " AND ")
+
+	// 総件数を取得
+	var total int
+	countQuery := "SELECT COUNT(*) FROM quizzes WHERE " + whereClause
+	if err := s.db.QueryRow(countQuery, args...).Scan(&total); err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// ソート順
+	orderBy := "updated_at DESC, id DESC"
+	switch q.Get("sort") {
+	case "created_newest":
+		orderBy = "created_at DESC, id DESC"
+	case "created_oldest":
+		orderBy = "created_at ASC, id ASC"
+	case "updated_oldest":
+		orderBy = "updated_at ASC, id ASC"
+	}
+
+	// データ取得
+	offset := (page - 1) * perPage
+	dataQuery := fmt.Sprintf(`
 		SELECT
-			id,
-			section,
-			title,
-			question,
-			code,
-			options,
-			correct_answer_index,
-			explanation,
-			source,
-			created_at,
-			updated_at
+			id, section, title, question, code, options,
+			correct_answer_index, explanation, source,
+			status, push_enabled, created_at, updated_at
 		FROM quizzes
-		ORDER BY updated_at DESC, id DESC
-	`)
+		WHERE %s
+		ORDER BY %s
+		LIMIT $%d OFFSET $%d
+	`, whereClause, orderBy, argIdx, argIdx+1)
+	args = append(args, perPage, offset)
+
+	rows, err := s.db.Query(dataQuery, args...)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -570,9 +745,30 @@ func (s *server) handleListQuizzes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, items)
+	totalPages := (total + perPage - 1) / perPage
+	writeJSON(w, http.StatusOK, quizListResponse{
+		Items:      items,
+		Total:      total,
+		Page:       page,
+		PerPage:    perPage,
+		TotalPages: totalPages,
+	})
 }
 
+// handleGetQuiz godoc
+//
+//	@Summary		クイズ詳細取得
+//	@Description	指定IDのクイズを返す
+//	@Tags			quizzes
+//	@Produce		json
+//	@Param			id	path		int	true	"クイズID"
+//	@Success		200	{object}	quiz
+//	@Failure		400	{object}	errorResponse
+//	@Failure		401	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Security		BearerAuth
+//	@Router			/api/admin/quizzes/{id} [get]
 func (s *server) handleGetQuiz(w http.ResponseWriter, r *http.Request) {
 	quizID, err := parseID(r.PathValue("id"))
 	if err != nil {
@@ -582,17 +778,9 @@ func (s *server) handleGetQuiz(w http.ResponseWriter, r *http.Request) {
 
 	item, err := scanQuiz(s.db.QueryRow(`
 		SELECT
-			id,
-			section,
-			title,
-			question,
-			code,
-			options,
-			correct_answer_index,
-			explanation,
-			source,
-			created_at,
-			updated_at
+			id, section, title, question, code, options,
+			correct_answer_index, explanation, source,
+			status, push_enabled, created_at, updated_at
 		FROM quizzes
 		WHERE id = $1
 	`, quizID))
@@ -608,6 +796,20 @@ func (s *server) handleGetQuiz(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, item)
 }
 
+// handleCreateQuiz godoc
+//
+//	@Summary		クイズ新規作成
+//	@Description	新しいクイズを作成して返す
+//	@Tags			quizzes
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		quizPayload	true	"クイズデータ"
+//	@Success		201		{object}	quiz
+//	@Failure		400		{object}	errorResponse
+//	@Failure		401		{object}	errorResponse
+//	@Failure		500		{object}	errorResponse
+//	@Security		BearerAuth
+//	@Router			/api/admin/quizzes [post]
 func (s *server) handleCreateQuiz(w http.ResponseWriter, r *http.Request) {
 	var payload quizPayload
 	if err := decodeJSON(r, &payload); err != nil {
@@ -635,28 +837,14 @@ func (s *server) handleCreateQuiz(w http.ResponseWriter, r *http.Request) {
 
 	item, err := scanQuiz(s.db.QueryRow(`
 		INSERT INTO quizzes (
-			section,
-			title,
-			question,
-			code,
-			options,
-			correct_answer_index,
-			explanation,
-			source
+			section, title, question, code, options,
+			correct_answer_index, explanation, source, status, push_enabled
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		RETURNING
-			id,
-			section,
-			title,
-			question,
-			code,
-			options,
-			correct_answer_index,
-			explanation,
-			source,
-			created_at,
-			updated_at
+			id, section, title, question, code, options,
+			correct_answer_index, explanation, source,
+			status, push_enabled, created_at, updated_at
 	`,
 		payload.Section,
 		payload.Title,
@@ -666,6 +854,8 @@ func (s *server) handleCreateQuiz(w http.ResponseWriter, r *http.Request) {
 		payload.CorrectAnswerIndex,
 		payload.Explanation,
 		payload.Source,
+		payload.Status,
+		payload.PushEnabled,
 	))
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
@@ -675,6 +865,22 @@ func (s *server) handleCreateQuiz(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, item)
 }
 
+// handleUpdateQuiz godoc
+//
+//	@Summary		クイズ更新
+//	@Description	指定IDのクイズを更新して返す
+//	@Tags			quizzes
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int			true	"クイズID"
+//	@Param			body	body		quizPayload	true	"クイズデータ"
+//	@Success		200		{object}	quiz
+//	@Failure		400		{object}	errorResponse
+//	@Failure		401		{object}	errorResponse
+//	@Failure		404		{object}	errorResponse
+//	@Failure		500		{object}	errorResponse
+//	@Security		BearerAuth
+//	@Router			/api/admin/quizzes/{id} [put]
 func (s *server) handleUpdateQuiz(w http.ResponseWriter, r *http.Request) {
 	quizID, err := parseID(r.PathValue("id"))
 	if err != nil {
@@ -717,20 +923,14 @@ func (s *server) handleUpdateQuiz(w http.ResponseWriter, r *http.Request) {
 			correct_answer_index = $7,
 			explanation = $8,
 			source = $9,
+			status = $10,
+			push_enabled = $11,
 			updated_at = NOW()
 		WHERE id = $1
 		RETURNING
-			id,
-			section,
-			title,
-			question,
-			code,
-			options,
-			correct_answer_index,
-			explanation,
-			source,
-			created_at,
-			updated_at
+			id, section, title, question, code, options,
+			correct_answer_index, explanation, source,
+			status, push_enabled, created_at, updated_at
 	`,
 		quizID,
 		payload.Section,
@@ -741,6 +941,8 @@ func (s *server) handleUpdateQuiz(w http.ResponseWriter, r *http.Request) {
 		payload.CorrectAnswerIndex,
 		payload.Explanation,
 		payload.Source,
+		payload.Status,
+		payload.PushEnabled,
 	))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -754,6 +956,19 @@ func (s *server) handleUpdateQuiz(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, item)
 }
 
+// handleDeleteQuiz godoc
+//
+//	@Summary		クイズ削除
+//	@Description	指定IDのクイズを削除する
+//	@Tags			quizzes
+//	@Param			id	path	int	true	"クイズID"
+//	@Success		204	"No Content"
+//	@Failure		400	{object}	errorResponse
+//	@Failure		401	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Security		BearerAuth
+//	@Router			/api/admin/quizzes/{id} [delete]
 func (s *server) handleDeleteQuiz(w http.ResponseWriter, r *http.Request) {
 	quizID, err := parseID(r.PathValue("id"))
 	if err != nil {
@@ -780,6 +995,92 @@ func (s *server) handleDeleteQuiz(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusNoContent, nil)
 }
 
+// handleToggleStatus godoc
+//
+//	@Summary		公開状態トグル
+//	@Description	指定IDのクイズの公開状態を反転する（published ↔ unpublished）
+//	@Tags			quizzes
+//	@Produce		json
+//	@Param			id	path		int	true	"クイズID"
+//	@Success		200	{object}	quiz
+//	@Failure		400	{object}	errorResponse
+//	@Failure		401	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Security		BearerAuth
+//	@Router			/api/admin/quizzes/{id}/status [patch]
+func (s *server) handleToggleStatus(w http.ResponseWriter, r *http.Request) {
+	quizID, err := parseID(r.PathValue("id"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	item, err := scanQuiz(s.db.QueryRow(`
+		UPDATE quizzes
+		SET status = CASE WHEN status = 'published' THEN 'unpublished' ELSE 'published' END,
+		    updated_at = NOW()
+		WHERE id = $1
+		RETURNING
+			id, section, title, question, code, options,
+			correct_answer_index, explanation, source,
+			status, push_enabled, created_at, updated_at
+	`, quizID))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			writeError(w, http.StatusNotFound, "quiz not found")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	writeJSON(w, http.StatusOK, item)
+}
+
+// handleTogglePush godoc
+//
+//	@Summary		PUSH通知トグル
+//	@Description	指定IDのクイズのPUSH通知設定を反転する（true ↔ false）
+//	@Tags			quizzes
+//	@Produce		json
+//	@Param			id	path		int	true	"クイズID"
+//	@Success		200	{object}	quiz
+//	@Failure		400	{object}	errorResponse
+//	@Failure		401	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Security		BearerAuth
+//	@Router			/api/admin/quizzes/{id}/push [patch]
+func (s *server) handleTogglePush(w http.ResponseWriter, r *http.Request) {
+	quizID, err := parseID(r.PathValue("id"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	item, err := scanQuiz(s.db.QueryRow(`
+		UPDATE quizzes
+		SET push_enabled = NOT push_enabled,
+		    updated_at = NOW()
+		WHERE id = $1
+		RETURNING
+			id, section, title, question, code, options,
+			correct_answer_index, explanation, source,
+			status, push_enabled, created_at, updated_at
+	`, quizID))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			writeError(w, http.StatusNotFound, "quiz not found")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	writeJSON(w, http.StatusOK, item)
+}
+
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
@@ -787,7 +1088,7 @@ func withCORS(next http.Handler) http.Handler {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
 		}
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
 
 		if r.Method == http.MethodOptions {
@@ -803,17 +1104,30 @@ func (s *server) routes() http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", s.handleHealth)
-	mux.HandleFunc("GET /api/views", s.handleViews)
+	mux.HandleFunc("GET /counter", s.handleGetCounter)
+	mux.HandleFunc("POST /counter", s.handleIncrementCounter)
 	mux.HandleFunc("POST /api/admin/login", s.handleLogin)
 	mux.Handle("GET /api/admin/quizzes", s.requireAuth(http.HandlerFunc(s.handleListQuizzes)))
 	mux.Handle("GET /api/admin/quizzes/{id}", s.requireAuth(http.HandlerFunc(s.handleGetQuiz)))
 	mux.Handle("POST /api/admin/quizzes", s.requireAuth(http.HandlerFunc(s.handleCreateQuiz)))
 	mux.Handle("PUT /api/admin/quizzes/{id}", s.requireAuth(http.HandlerFunc(s.handleUpdateQuiz)))
 	mux.Handle("DELETE /api/admin/quizzes/{id}", s.requireAuth(http.HandlerFunc(s.handleDeleteQuiz)))
+	mux.Handle("PATCH /api/admin/quizzes/{id}/status", s.requireAuth(http.HandlerFunc(s.handleToggleStatus)))
+	mux.Handle("PATCH /api/admin/quizzes/{id}/push", s.requireAuth(http.HandlerFunc(s.handleTogglePush)))
 
 	return withCORS(mux)
 }
 
+// @title			Quiz Admin API
+// @version		1.0
+// @description	クイズ管理アプリケーションのバックエンドAPI
+// @host			localhost:8080
+// @BasePath		/
+//
+// @securityDefinitions.apikey	BearerAuth
+// @in							header
+// @name						Authorization
+// @description				Bearer トークンを入力（例: Bearer eyJhbG...）
 func main() {
 	v, _ := mem.VirtualMemory()
 	fmt.Printf("OS全体の使用中: %.2f%%\n", v.UsedPercent)

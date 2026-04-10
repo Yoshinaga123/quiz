@@ -2,7 +2,7 @@ import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import type { QuizFormValues } from '../types/admin'
 
-type QuizFormField = Exclude<keyof QuizFormValues, 'correctAnswerIndex' | 'options'>
+type QuizTextField = Exclude<keyof QuizFormValues, 'correctAnswerIndex' | 'options' | 'pushEnabled'>
 
 interface QuizFormProps {
   heading: string
@@ -12,7 +12,8 @@ interface QuizFormProps {
   errorMessage: string | null
   isSubmitting: boolean
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
-  onFieldChange: (field: QuizFormField, value: string) => void
+  onFieldChange: (field: QuizTextField, value: string) => void
+  onPushEnabledChange: (value: boolean) => void
   onOptionChange: (index: number, value: string) => void
   onCorrectAnswerChange: (index: number) => void
   onAddOption: () => void
@@ -34,6 +35,7 @@ function QuizForm({
   isSubmitting,
   onSubmit,
   onFieldChange,
+  onPushEnabledChange,
   onOptionChange,
   onCorrectAnswerChange,
   onAddOption,
@@ -79,6 +81,31 @@ function QuizForm({
             type="text"
             value={values.source}
           />
+        </label>
+
+        <label className="grid gap-2.5">
+          <span className="font-semibold">公開状態</span>
+          <select
+            className={inputClassName}
+            onChange={(event) => onFieldChange('status', event.target.value)}
+            value={values.status}
+          >
+            <option value="unpublished">非公開</option>
+            <option value="published">公開</option>
+          </select>
+        </label>
+
+        <label className="grid gap-2.5">
+          <span className="font-semibold">PUSH 通知</span>
+          <span className="inline-flex min-h-[54px] items-center gap-3 rounded-surface border border-navy/14 bg-white/90 px-4 py-3.5 text-navy">
+            <input
+              checked={values.pushEnabled}
+              className="h-4 w-4 accent-[#1768ac]"
+              onChange={(event) => onPushEnabledChange(event.target.checked)}
+              type="checkbox"
+            />
+            <span>{values.pushEnabled ? '送信対象にする' : '送信対象にしない'}</span>
+          </span>
         </label>
 
         <label className="grid gap-2.5 md:col-span-2">

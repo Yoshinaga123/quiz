@@ -1,7 +1,7 @@
 # 実装ポリシー1: 外部APIレスポンスの検証
 
 ## 基本方針
-他社が提供している外部APIを利用する場合は、レスポンスをそのまま信用せず、Zodでランタイムバリデーションする。
+他社が提供している外部APIを利用する場合は、レスポンスをそのまま信用せず、Zod または TypeScript ベースのランタイムバリデーションで検証する。
 
 ## なぜ必要か
 - TypeScriptの型保証はコンパイル時のみ有効で、実行時データの型は保証しない
@@ -9,21 +9,26 @@
 - 早い段階で不正データを検知し、障害を早期に食い止める
 
 ## 運用ルール
-- `fetch`の直後で `schema.safeParse()` を実行する
+- `fetch`の直後で Zod の `safeParse()` または TypeScript の型ガード/アサーション関数による検証を実行する
 - 失敗時はUIにフォールバック表示を行い、ログを残す
-- 外部APIのレスポンス型は `z.infer<typeof Schema>` から導出する
+- 外部APIのレスポンス型は Zod の `z.infer<typeof Schema>` または TypeScript の `type` / `interface` と型ガードから導出する
 - `as SomeType` のみで通過させない
 
 ## 最小実装例
 ```ts
-import { z } from "zod";
+type User = {
+	id: number;
+	name: string;
+};
 
-const UserSchema = z.object({
-	id: z.number(),
-	name: z.string(),
-});
+function isUser(value: unknown): value is User {
+	if (typeof value !== "object" || value === null) {
+		return false;
+	}
 
-type User = z.infer<typeof UserSchema>;
+	const candidate = value as Record<string, unknown>;
+	return typeof candidate.id === "number" && typeof candidate.name === "string";
+}
 
 export async function fetchUser(apiUrl: string): Promise<User> {
 	const res = await fetch(apiUrl);
@@ -32,12 +37,11 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 	}
 
 	const json: unknown = await res.json();
-	const parsed = UserSchema.safeParse(json);
-	if (!parsed.success) {
+	if (!isUser(json)) {
 		throw new Error("Invalid API response format");
 	}
 
-	return parsed.data;
+	return json;
 }
 ```
 
@@ -152,3 +156,75 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 ## 状態管理の方針
 - グローバル state は最小限にする
 - サーバーの状態とクライアントの状態を分けて考える
+
+# 実装ポリシー4: Google Search Central 準拠
+
+## 基本方針
+公開 Web アプリは、Google Search Central のガイドラインに準拠することを前提に設計・実装する。特に JavaScript を多用する画面では、「Google に発見される URL 構造」「クロール可能なリンク」「適切なインデックス制御」を最初から要件に含める。
+
+## なぜ必要か
+- JavaScript アプリでも、検索エンジンに発見・クロール・理解される前提を外すと、公開ページの流入と到達性を損なう
+- Google Search Central は、SPA でもフラグメントではなく History API を使うこと、意味のある HTTP ステータスコードを返すことなどを明示している
+- SEO は検索順位だけでなく、検索エンジンが URL と内容を正しく解釈できる最低限の技術要件でもある
+
+## 実装ルール
+- 公開ページの内部導線は、`href` を持つ `<a>` 要素でクロール可能にする
+- SPA のクライアントルーティングでは、`#/path` のようなフラグメント遷移ではなく History API ベースの URL を使う
+- 404 / 401 / 301 など、ページ状態に応じた意味のある HTTP ステータスコードを返す
+- CSR で適切なステータスコードが返せないエラーページは、少なくとも `noindex` などで誤インデックスを防ぐ
+- 初期 HTML とレンダリング後 HTML の両方で、検索対象コンテンツが確認できるようにする
+- タイトル、メタデータ、構造化データ、内部リンクを公開ページごとに設計する
+- コンテンツは search engine-first ではなく people-first を原則とする
+
+## アーキテクチャ判断ルール
+- 管理画面や認証必須画面のように検索流入が不要な UI は、このポリシーの優先度を下げてよい
+- 一方で公開ページ、LP、記事、商品・サービス詳細など検索流入が要件に入る画面では、このポリシーを必須要件とする
+- SPA で Search Central 準拠を満たしにくい場合は、SSR / SSG / prerender を含めて構成を再評価する
+
+## 参照
+- Google Search Central: JavaScript SEO basics
+  https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics
+- Google Search Central: SEO Starter Guide
+  https://developers.google.com/search/docs/fundamentals/seo-starter-guide
+- Google Search Central: Creating helpful, reliable, people-first content
+  https://developers.google.com/search/docs/fundamentals/creating-helpful-content
+
+# 実装ポリシー5: 入力バリデーションとエラー契約
+
+## 基本方針
+クイズアプリの入力検証は、`admin-web` と `mobile` では UX 改善のために、`backend` ではセキュリティと整合性保証のために行う。最終判定は常に `backend` が担当する。
+
+## なぜ必要か
+- `admin-web` や `mobile` のローカル検証だけでは改ざんや不正リクエストを防げない
+- クエリパラメータ、JSON ボディ、API レスポンスは境界をまたぐため shape の崩れが障害になりやすい
+- 入力ミスと一時的障害を分けて扱わないと、UI も運用ログも不安定になる
+
+## 実装ルール
+- フォーム入力は `admin-web` で Zod による事前検証を行う
+- API レスポンスは `admin-web` 側でランタイム検証する
+- `backend` はパス、クエリ、JSON ボディを入口で検証し、業務ルール検証はその先で行う
+- 書き込み系 API は未知フィールド拒否を基本とする
+- エラーは利用者向け `message` と機械可読な `code` を持たせる
+- `required`、`optional`、`nullable` を区別し、何でも `null` 許容にしない
+
+## 詳細
+詳細ルールは [validation-policy.md](./validation-policy.md) を参照する。
+
+# 実装ポリシー6: 初期化の責務と順序
+
+## 基本方針
+初期化は暗黙依存にせず、どこで何を初期化するかを明示する。constructor や build/render に重い初期化や非同期 I/O を押し込まない。
+
+## なぜ必要か
+- 起動順序が曖昧だと、`late` 未初期化やセッション復元漏れが起きやすい
+- `admin-web`、`backend`、`mobile` で初期化境界が違うため、ルールがないと責務が混ざる
+- テスト時に依存差し替えしにくくなる
+
+## 実装ルール
+- 非同期初期化は `init()`、factory、loader、provider など明示的な境界で行う
+- 起動不能な初期化失敗は握りつぶさず停止または再試行へ寄せる
+- グローバル状態や singleton の初期化箇所は 1 か所に固定する
+- `late` は代入前に読まれないことを保証できる場合だけ使う
+
+## 詳細
+詳細ルールは [initializer.md](./initializer.md) を参照する。

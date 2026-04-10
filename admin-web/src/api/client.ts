@@ -11,17 +11,19 @@ const apiErrorSchema = z.object({
 
 interface RequestOptions<T> {
   path: string
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   body?: unknown
   schema: ZodType<T>
   requiresAuth?: boolean
+  signal?: AbortSignal
 }
 
 interface VoidRequestOptions {
   path: string
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   body?: unknown
   requiresAuth?: boolean
+  signal?: AbortSignal
 }
 
 function buildHeaders(body: unknown, requiresAuth: boolean): Headers {
@@ -61,11 +63,13 @@ export async function requestJson<T>({
   body,
   schema,
   requiresAuth = true,
+  signal,
 }: RequestOptions<T>): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method,
     headers: buildHeaders(body, requiresAuth),
     body: body === undefined ? undefined : JSON.stringify(body),
+    signal,
   })
 
   if (!response.ok) {
@@ -86,11 +90,13 @@ export async function requestVoid({
   method = 'DELETE',
   body,
   requiresAuth = true,
+  signal,
 }: VoidRequestOptions): Promise<void> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method,
     headers: buildHeaders(body, requiresAuth),
     body: body === undefined ? undefined : JSON.stringify(body),
+    signal,
   })
 
   if (!response.ok) {

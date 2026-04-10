@@ -6,7 +6,12 @@
       "title": "useEffect 依存配列と関数参照",
       "question": "以下のコードについて、最も正しい説明はどれですか？",
       "code": "const fetchUser = useCallback(async () => {\n  const res = await fetch(`/api/users/${userId}`);\n  const data = await res.json();\n  setUser(data);\n}, [userId]);\n\nuseEffect(() => {\n  fetchUser();\n}, [fetchUser]);",
-      "options": ["`fetchUser` を依存配列に入れると常に無限ループになる", "`useCallback` で `fetchUser` を安定化し、`[fetchUser]` を依存配列に入れると `userId` 変更時に再実行されるため `exhaustive-deps` の意図に沿う", "`useEffect(..., [])` にしても同じ挙動で、常に最新の `userId` を参照できる", "cleanup 関数は初回マウント前に必ず1回実行される"],
+      "options": [
+        "`fetchUser` を依存配列に入れると常に無限ループになる",
+        "`useCallback` で `fetchUser` を安定化し、`[fetchUser]` を依存配列に入れると `userId` 変更時に再実行されるため `exhaustive-deps` の意図に沿う",
+        "`useEffect(..., [])` にしても同じ挙動で、常に最新の `userId` を参照できる",
+        "cleanup 関数は初回マウント前に必ず1回実行される"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "`fetchUser` は `useCallback(..., [userId])` により `userId` が変わると新しい参照になります。Effect 側を `[fetchUser]` にすると、結果として `userId` 変化に追従しつつ、依存関係を正しく宣言できます。`[]` にすると古い `userId` を閉じ込める（stale closure）リスクがあります。",
       "source": "React useCallback / useEffect / exhaustive-deps"
@@ -17,7 +22,12 @@
       "title": "関数型コンポーネントの State 更新",
       "question": "以下の useState の使用について、誤っているのはどれですか？",
       "code": "const [state, setState] = useState({ count: 0, name: \"test\" });\nsetState(prev => ({ ...prev, count: 1 }));",
-      "options": ["前のstate とマージしないと、name プロパティが失われる", "setState(() => prev) という書き方では前の値を参照できない", "setState は非同期で実行されるため、即座に state は更新されない", "setState 後、即座に console.log(state) を実行すると古い値が出力される"],
+      "options": [
+        "前のstate とマージしないと、name プロパティが失われる",
+        "setState(() => prev) という書き方では前の値を参照できない",
+        "setState は非同期で実行されるため、即座に state は更新されない",
+        "setState 後、即座に console.log(state) を実行すると古い値が出力される"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "setState(() => prev) は、setState に関数を渡す形式で、前の値を参照できる正しい書き方です。",
       "source": "React Official Documentation"
@@ -28,7 +38,12 @@
       "title": "TypeScript の Generic について",
       "question": "React コンポーネントで Generic を使う際、以下の記述で型推論が正しく機能するのはどれですか？",
       "code": "interface Props<T> {\n  items: T[];\n  onSelect: (item: T) => void;\n}",
-      "options": ["T の型は自動推論される", "T extends { id: number } により、id プロパティを持つ型のみが使用可能", "props の型が正確に定義される", "すべてが正しい"],
+      "options": [
+        "T の型は自動推論される",
+        "T extends { id: number } により、id プロパティを持つ型のみが使用可能",
+        "props の型が正確に定義される",
+        "すべてが正しい"
+      ],
       "correctAnswerIndex": 3,
       "explanation": "Generic を使うことで、型安全かつ柔軟なコンポーネント設計が可能になります。",
       "source": "TypeScript Handbook"
@@ -39,7 +54,12 @@
       "title": "Vite での Asset 読み込み",
       "question": "以下のファイル配置について、fetch('/data.json') でHTTPアクセス可能なのはどれですか？",
       "code": "// 例1: public/data.json は HTTP で直接取得できる\nconst res = await fetch('/data.json');\n\n// 例2: src/data/data.json は import で利用する（fetch での直アクセス前提ではない）\nimport localData from './data/data.json';",
-      "options": ["src/data/data.json", "public/data.json", "dist/data.json", "いずれでも可能"],
+      "options": [
+        "src/data/data.json",
+        "public/data.json",
+        "dist/data.json",
+        "いずれでも可能"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "ソースコードから参照されないアセット、まったく同じファイル名を保つ必要があるアセット、または URL を得るためだけに最初に import したくないアセットは、プロジェクトルート配下の特別な `public` ディレクトリに置くことができます。このディレクトリ内のアセットは、開発時にはルートパス `/` で配信され、`dist` ディレクトリのルートへそのままコピーされます。`public` アセットは常にルート絶対パスで参照する必要があるため、`public/data.json` は `/data.json` として取得します。",
       "source": "https://vite.dev/guide/assets.html#the-public-directory"
@@ -50,7 +70,12 @@
       "title": "src vs public 方式の使い分け",
       "question": "動的にコンテンツを読み込みたい場合、最適な配置方式はどちらですか？",
       "code": "// 複数の quiz.json from サーバー",
-      "options": ["src/data/ にすべてバンドル", "public/ フォルダに複数ファイル保存", "バックエンド API から取得", "TypeScript enum で定義"],
+      "options": [
+        "src/data/ にすべてバンドル",
+        "public/ フォルダに複数ファイル保存",
+        "バックエンド API から取得",
+        "TypeScript enum で定義"
+      ],
       "correctAnswerIndex": 2,
       "explanation": "Vite の `public` ディレクトリは、「ソースコードから参照されないアセット」「まったく同じファイル名を保つ必要があるアセット」「URL を得るためだけに import したくないアセット」を置くためのものです。一方で Fetch API は、「ネットワーク越しを含むリソースを取得するためのインターフェース」を提供します。したがって、内容が固定ファイルではなく動的に変わるコンテンツを読み込みたい場合は、`public` に複数 JSON を置くより、バックエンド API から取得する方が問題文の意図に合っています。",
       "source": "Vite Public Directory / MDN Fetch API"
@@ -61,7 +86,12 @@
       "title": "モジュールと非モジュール読み込み",
       "question": "JSON を import vs fetch で読み込む場合の違いはどれですか？",
       "code": "import quizzes from './quizzes.json';\nconst res = await fetch('/api/quizzes.json');",
-      "options": ["取得タイミングが異なる", "バンドルサイズが変わる", "ビルド時最適化が異なる", "すべて正しい"],
+      "options": [
+        "取得タイミングが異なる",
+        "バンドルサイズが変わる",
+        "ビルド時最適化が異なる",
+        "すべて正しい"
+      ],
       "correctAnswerIndex": 3,
       "explanation": "import はビルド時に解析され、fetch は実行時に取得します。バンドルサイズと最適化方法が異なります。",
       "source": "Vite Guide"
@@ -72,7 +102,12 @@
       "title": "Props Drilling 問題",
       "question": "深くネストされたコンポーネント構造で、親の state を孫に渡す際の推奨方法はどれですか？",
       "code": "// 3層のコンポーネントがある場合",
-      "options": ["複数の Props でバケツリレーする", "Context API を使用する", "Redux などの状態管理ツール", "React.memo でラップする"],
+      "options": [
+        "複数の Props でバケツリレーする",
+        "Context API を使用する",
+        "Redux などの状態管理ツール",
+        "React.memo でラップする"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "深くネストされた構造で親の state を孫へ渡す場合は、Props drilling を避けるため Context API が有力です。Redux などの状態管理ツールは、より広域で複雑な共有状態がある場合の選択肢であり、この問いの第一回答ではありません。React.memo は再レンダリング最適化の手段であり、state の受け渡し方法そのものではありません。\n\n浅いツリーの場合の具体コード:\nfunction Parent() {\n  const [count, setCount] = useState(0)\n  return <Child count={count} setCount={setCount} />\n}\n\nfunction Child({ count, setCount }) {\n  return <GrandChild count={count} setCount={setCount} />\n}\n\nfunction GrandChild({ count, setCount }) {\n  return <button onClick={() => setCount(count + 1)}>{count}</button>\n}\n\n深いツリーの場合の具体コード:\nconst CountContext = createContext(null)\n\nfunction Parent() {\n  const [count, setCount] = useState(0)\n  return (\n    <CountContext.Provider value={{ count, setCount }}>\n      <Child />\n    </CountContext.Provider>\n  )\n}\n\nfunction GrandChild() {\n  const { count, setCount } = useContext(CountContext)\n  return <button onClick={() => setCount(count + 1)}>{count}</button>\n}\n\n複雑状態での具体コード:\nconst useQuizStore = create((set) => ({\n  count: 0,\n  selectedIds: [],\n  increment: () => set((state) => ({ count: state.count + 1 })),\n  toggleSelected: (id) =>\n    set((state) => ({\n      selectedIds: state.selectedIds.includes(id)\n        ? state.selectedIds.filter((item) => item !== id)\n        : [...state.selectedIds, id],\n    })),\n}))\n\nfunction GrandChild() {\n  const count = useQuizStore((state) => state.count)\n  const increment = useQuizStore((state) => state.increment)\n  return <button onClick={increment}>{count}</button>\n}",
       "source": "React Design Patterns"
@@ -83,7 +118,12 @@
       "title": "Controlled vs Uncontrolled Component",
       "question": "フォーム入力を React で管理する際、state で値を制御する方式の名称はどれですか？",
       "code": "<input value={name} onChange={(e) => setName(e.target.value)} />",
-      "options": ["Uncontrolled Component", "Controlled Component", "Ref Component", "Form Component"],
+      "options": [
+        "Uncontrolled Component",
+        "Controlled Component",
+        "Ref Component",
+        "Form Component"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "state で値を管理し、onChange で更新する方式が Controlled Component です。",
       "source": "React Forms"
@@ -94,7 +134,12 @@
       "title": "React.memo の使用シーン",
       "question": "React.memo でコンポーネントをラップする場合の効果はどれですか？",
       "code": "const MemoizedList = React.memo(ListComponent);",
-      "options": ["props が同じなら再レンダリングをスキップ", "必ずレンダリングスキップされる", "メモリ使用量が削減される", "TypeScript の型チェックが厳しくなる"],
+      "options": [
+        "props が同じなら再レンダリングをスキップ",
+        "必ずレンダリングスキップされる",
+        "メモリ使用量が削減される",
+        "TypeScript の型チェックが厳しくなる"
+      ],
       "correctAnswerIndex": 0,
       "explanation": "React.memo は props の浅い比較で再レンダリングをスキップします。",
       "source": "React Optimization"
@@ -105,7 +150,12 @@
       "title": "Promise.all vs Promise.allSettled",
       "question": "複数の API 呼び出しについて、全件の成功を待ち、1つでも失敗したら全体を reject したい場合に使うメソッドはどれですか？",
       "code": "Promise.all([fetch(url1), fetch(url2), fetch(url3)])",
-      "options": ["Promise.race", "Promise.all", "Promise.any", "Promise.allSettled"],
+      "options": [
+        "Promise.race",
+        "Promise.all",
+        "Promise.any",
+        "Promise.allSettled"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "Promise.all は、すべての入力 Promise が fulfill されたときにのみ fulfill され、1つでも reject されると即座に reject されます。一方 Promise.allSettled は、成功・失敗にかかわらずすべての Promise が settle するまで待ち、各結果を配列で返します。",
       "source": "Promise MDN"
@@ -116,7 +166,12 @@
       "title": "async/await のエラーハンドリング",
       "question": "複数の async 処理をシーケンシャルに実行し、エラーが発生した時点で停止する場合の書き方は？",
       "code": "try {\n  const data = await fetchUser();\n  const posts = await fetchPosts(data.id);\n} catch (err) { ... }",
-      "options": ["Promise チェーン", "async/await + try/catch", "async/await + catch メソッド", "コールバック地獄"],
+      "options": [
+        "Promise チェーン",
+        "async/await + try/catch",
+        "async/await + catch メソッド",
+        "コールバック地獄"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "async/await + try/catch は読みやすく、エラーハンドリングが容易です。",
       "source": "JavaScript Async"
@@ -127,7 +182,12 @@
       "title": "Union Type vs Intersection Type",
       "question": "以下の型定義について、値が持つべきプロパティはどれですか？",
       "code": "type A = { name: string; age: number };\ntype B = { email: string };\ntype Result = A & B;",
-      "options": ["name か email のいずれか", "name, age, email のすべて", "age のみ", "name のみ"],
+      "options": [
+        "name か email のいずれか",
+        "name, age, email のすべて",
+        "age のみ",
+        "name のみ"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "Intersection Type (A & B) は両方の型を『すべて』持つ必要があります。",
       "source": "TypeScript Advanced"
@@ -138,7 +198,12 @@
       "title": "Partial と Required ユーティリティ型",
       "question": "すべてのプロパティをオプショナルにするユーティリティ型はどれですか？",
       "code": "type User = { name: string; age: number };\ntype OptionalUser = Partial<User>;",
-      "options": ["Required", "Partial", "Pick", "Record"],
+      "options": [
+        "Required",
+        "Partial",
+        "Pick",
+        "Record"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "Partial<T> はすべてのプロパティをオプショナル（? がつく）に変換します。",
       "source": "TypeScript Utility Types"
@@ -149,7 +214,12 @@
       "title": "keyof と Mapped Type",
       "question": "`User` 型の各キーをそのまま使い、値の型だけをすべて `boolean` にした新しい型を作るには？",
       "code": "type User = { name: string; age: number };\ntype Flags = { [K in keyof User]: boolean };",
-      "options": ["Pick", "Omit", "Mapped Type", "Union"],
+      "options": [
+        "Pick",
+        "Omit",
+        "Mapped Type",
+        "Union"
+      ],
       "correctAnswerIndex": 2,
       "explanation": "`keyof User` で `name | age` のようなキーのユニオン型を取り出し、`[K in keyof User]` で各キーを順にたどれます。そこで各プロパティの値の型を `boolean` に置き換えると、`{ name: boolean; age: boolean }` のような新しい型を作れます。これは Mapped Type の基本パターンです。\n\nユーザー目線で実現できる機能の例:\n- プロフィール編集画面で、各項目が「編集中かどうか」を `name: true`, `age: false` のように管理できる\n- バリデーション結果を、各入力欄ごとに「エラーあり / なし」で持てる\n- 管理画面で、各列や各設定項目の ON/OFF 状態を元のデータ構造に合わせて安全に管理できる\n- フォーム送信時に、どの項目を変更したか、どの項目を無効化するかを同じキー構造で扱える\n\nつまり Mapped Type を使うと、元データと同じ項目構成を保ったまま、UI 用の状態や設定フラグを自動的に作れるため、画面機能を増やしても型のズレを減らせます。",
       "source": "TypeScript Handbook"
@@ -160,7 +230,12 @@
       "title": "try/catch で複数エラー型を処理",
       "question": "fetch エラーと JSON parse エラーを区別する方法はどれですか？",
       "code": "try { ... } catch (err) { if (err instanceof SyntaxError) ... }",
-      "options": ["Error.message で文字列判定", "instanceof で型チェック", "err.code を参照", "手動で throw-catch"],
+      "options": [
+        "Error.message で文字列判定",
+        "instanceof で型チェック",
+        "err.code を参照",
+        "手動で throw-catch"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "instanceof はエラーの実際の型をチェックできます。",
       "source": "Error Handling Best Practices"
@@ -171,7 +246,12 @@
       "title": "カスタムエラークラス",
       "question": "ビジネスロジック固有のエラーを表現するための推奨パターンは？",
       "code": "class ValidationError extends Error { constructor(msg) { super(msg); } }",
-      "options": ["Error を拡張してカスタムクラスを作成", "単なる Error を throw する", "文字列を throw する", "undefined を throw する"],
+      "options": [
+        "Error を拡張してカスタムクラスを作成",
+        "単なる Error を throw する",
+        "文字列を throw する",
+        "undefined を throw する"
+      ],
       "correctAnswerIndex": 0,
       "explanation": "Error を継承してカスタムクラスを作ることで、エラーの種類を明確にできます。",
       "source": "JavaScript Patterns"
@@ -182,7 +262,12 @@
       "title": "useMemo vs useCallback",
       "question": "関数の参照を保持して再作成を避けたい場合に使用するフックはどれですか？",
       "code": "const memoizedCallback = useCallback(() => { doSomething() }, [dep]);",
-      "options": ["useMemo", "useCallback", "useRef", "useReducer"],
+      "options": [
+        "useMemo",
+        "useCallback",
+        "useRef",
+        "useReducer"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "useCallback は関数の参照を保持し、不必要な再作成を避けます。",
       "source": "React Hooks"
@@ -193,7 +278,12 @@
       "title": "バンドルサイズの最適化",
       "question": "不要な npm パッケージを削除した際、最初に確認すべき項目はどれですか？",
       "code": "npm install @large/library  // 削除",
-      "options": ["ビルドファイルサイズ", "package.json の記録", "node_modules の削除", "すべて"],
+      "options": [
+        "ビルドファイルサイズ",
+        "package.json の記録",
+        "node_modules の削除",
+        "すべて"
+      ],
       "correctAnswerIndex": 3,
       "explanation": "パッケージ管理、依存関係、ビルド出力のサイズ確認が重要です。",
       "source": "Build Optimization"
@@ -204,7 +294,12 @@
       "title": "ユニットテストの対象",
       "question": "React コンポーネントのテストで最優先すべき項目はどれですか？",
       "code": "// テスト対象の優先順位",
-      "options": ["UI の見た目", "ユーザーの入力と出力", "内部実装の詳細", "CSS の正確性"],
+      "options": [
+        "UI の見た目",
+        "ユーザーの入力と出力",
+        "内部実装の詳細",
+        "CSS の正確性"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "ユーザー視点での入出力と振る舞いをテストすることが重要です。",
       "source": "React Testing Library"
@@ -215,7 +310,12 @@
       "title": "マッチャーの選択",
       "question": "要素が DOM に存在することをテストする場合の推奨マッチャーは？",
       "code": "expect(screen.getByText('Hello')).toBeInTheDocument();",
-      "options": ["toBeTruthy", "toBeInTheDocument", "toBeVisible", "toHaveLength"],
+      "options": [
+        "toBeTruthy",
+        "toBeInTheDocument",
+        "toBeVisible",
+        "toHaveLength"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "toBeInTheDocument は DOM の存在を確認する明示的な方法です。",
       "source": "Jest Matchers"
@@ -226,7 +326,12 @@
       "title": "CORS の仕組み",
       "question": "ブラウザから別オリジンの API にリクエストを送る際、サーバーが返すべきヘッダーはどれですか？",
       "code": "// ブラウザ制限を回避するには",
-      "options": ["Access-Control-Allow-Origin", "Authorization", "X-API-Key", "Content-Type"],
+      "options": [
+        "Access-Control-Allow-Origin",
+        "Authorization",
+        "X-API-Key",
+        "Content-Type"
+      ],
       "correctAnswerIndex": 0,
       "explanation": "サーバーが Access-Control-Allow-Origin ヘッダーを返して CORS を許可します。",
       "source": "MDN CORS"
@@ -237,7 +342,12 @@
       "title": "認証トークンの管理",
       "question": "JWT トークンを localStorage に保存する方法の安全性は？",
       "code": "localStorage.setItem('token', jwtToken);",
-      "options": ["最も安全な方法", "XSS 攻撃のリスクあり", "完全に安全", "サーバー側のみで管理すべき"],
+      "options": [
+        "最も安全な方法",
+        "XSS 攻撃のリスクあり",
+        "完全に安全",
+        "サーバー側のみで管理すべき"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "localStorage は XSS 攻撃で奪われるリスクがあります。より安全な方法はタブ内のメモリや HttpOnly Cookie です。",
       "source": "OWASP HTML5 Security Cheat Sheet / JWT Cheat Sheet"
@@ -248,7 +358,12 @@
       "title": "console.log vs console.table",
       "question": "オブジェクト配列 `users` を DevTools 上で列形式で見やすく確認したい。`console.log(users)` の代わりとして最も適切なのはどれですか？",
       "code": "const users = [{id: 1, name: 'A'}, {id: 2, name: 'B'}];\nconsole.log(users);",
-      "options": ["console.log", "console.table", "JSON.stringify", "alert"],
+      "options": [
+        "console.log",
+        "console.table",
+        "JSON.stringify",
+        "alert"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "console.table は配列のオブジェクトをテーブル形式で表示して可視化しやすくします。",
       "source": "Browser DevTools"
@@ -259,7 +374,12 @@
       "title": "CommonJS vs ES Modules",
       "question": "最新の JavaScript プロジェクトで推奨されるモジュールシステムはどれですか？",
       "code": "import { Component } from './component.js';\nconst { Component } = require('./component.js');",
-      "options": ["CommonJS", "ES Modules", "どちらでも同じ", "環境に依存"],
+      "options": [
+        "CommonJS",
+        "ES Modules",
+        "どちらでも同じ",
+        "環境に依存"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "ES Modules は標準化され、ツールの最適化も充実しているため npm @latest では推奨されます。",
       "source": "ECMAScript 2015+"
@@ -270,7 +390,12 @@
       "title": "デフォルトエクスポート vs 名前付きエクスポート",
       "question": "複数の関数をエクスポートする場合、推奨するパターンはどれですか？",
       "code": "export const func1 = () => {};\nexport const func2 = () => {};",
-      "options": ["デフォルトエクスポート", "名前付きエクスポート", "どちらでも同じ", "別ファイルに分割"],
+      "options": [
+        "デフォルトエクスポート",
+        "名前付きエクスポート",
+        "どちらでも同じ",
+        "別ファイルに分割"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "複数のエクスポートは名前付きエクスポートを使うことで、import する側が柔軟に選択できます。",
       "source": "ES6 Modules"
@@ -281,7 +406,12 @@
       "title": "StrictMode の役割",
       "question": "React.StrictMode は開発環境で何を行いますか？",
       "code": "<React.StrictMode>\n  <App />\n</React.StrictMode>",
-      "options": ["エラーをキャッチして本番環境を保護", "不純な関数を検出して2回レンダリング", "パフォーマンスを向上させる", "バンドルサイズを削減"],
+      "options": [
+        "エラーをキャッチして本番環境を保護",
+        "不純な関数を検出して2回レンダリング",
+        "パフォーマンスを向上させる",
+        "バンドルサイズを削減"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "StrictMode は意図しない副作用を検出するため、開発環境でコンポーネントを2回マウント・レンダリングします。",
       "source": "React.StrictMode"
@@ -292,7 +422,12 @@
       "title": "StrictMode による useEffect の重複実行",
       "question": "StrictMode で useEffect が異なる結果を返すコードはどれですか？",
       "code": "useEffect(() => {\n  array.push(1);  // 破壊的変更\n}, []);",
-      "options": ["純粋なデータ変換", "破壊的な変更（配列 push など）", "fetch による外部データ取得", "console.log による出力"],
+      "options": [
+        "純粋なデータ変換",
+        "破壊的な変更（配列 push など）",
+        "fetch による外部データ取得",
+        "console.log による出力"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "配列の push などの破壊的な変更は、2回実行されると異なる結果になり、StrictMode で検出されます。",
       "source": "React StrictMode"
@@ -303,7 +438,12 @@
       "title": "StrictMode でハイライトされるバグ",
       "question": "useEffect の重複実行で検出される『不純な関数』の特徴はどれですか？",
       "code": "useEffect(() => {\n  globalCounter++;  // グローバル変数変更\n}, []);",
-      "options": ["入出力が確定している", "同じ入力なら同じ出力を返す", "外部状態を変更する", "すべてが A と B"],
+      "options": [
+        "入出力が確定している",
+        "同じ入力なら同じ出力を返す",
+        "外部状態を変更する",
+        "すべてが A と B"
+      ],
       "correctAnswerIndex": 2,
       "explanation": "不純な関数は外部状態を変更し、「同じ入力 → 異なる出力」となってバグの原因になります。",
       "source": "React.StrictMode"
@@ -314,7 +454,11 @@
       "title": "StrictMode による double-render の合図",
       "question": "DOMに値が2倍になって表示される場合、疑うべき関数の特徴は？",
       "code": "const Counter = () => {\n  const [count, setCount] = useState(0);\n  // レンダー結果を変更する処理が含まれている",
-      "options": ["fetch エラー", "破壊的な props", "不純なレンダー（pure でない関数）によるバグ"],
+      "options": [
+        "fetch エラー",
+        "破壊的な props",
+        "不純なレンダー（pure でない関数）によるバグ"
+      ],
       "correctAnswerIndex": 2,
       "explanation": "公式ドキュメントより：「Strict Mode calls some of your functions (only the ones that should be pure) twice in development.」不純な関数を早期に検出します。",
       "source": "React StrictMode"
@@ -325,7 +469,12 @@
       "title": "StrictMode での console エラー重複",
       "question": "StrictMode で console.error や console.warn が2回出力されるのはなぜですか？",
       "code": "useEffect(() => {\n  console.warn('Warning');\n}, []);",
-      "options": ["バグの報告がある", "不純な関数の検出のため2回実行", "メモリリークのサイン", "ネットワークエラーの再実行"],
+      "options": [
+        "バグの報告がある",
+        "不純な関数の検出のため2回実行",
+        "メモリリークのサイン",
+        "ネットワークエラーの再実行"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "StrictMode はコンポーネントの2重実行で不純な関数を検出するため、console 出力も2回経験します。",
       "source": "React Strict Mode"
@@ -336,7 +485,12 @@
       "title": "useEffect の依存配列 [] の意味",
       "question": "以下のコードで、空の依存配列 [] を指定した useEffect はどのタイミングで実行されますか？（本番挙動ベースで回答）",
       "code": "useEffect(() => {\n  fetch(API_URL).then(res => res.json()).then(data => setCount(data.count));\n}, []);",
-      "options": ["毎回のレンダリングのたびに実行される", "マウント時とアンマウント時だけに実行される", "マウント時だけ1回実行される", "state が更新されるたびに実行される"],
+      "options": [
+        "毎回のレンダリングのたびに実行される",
+        "マウント時とアンマウント時だけに実行される",
+        "マウント時だけ1回実行される",
+        "state が更新されるたびに実行される"
+      ],
       "correctAnswerIndex": 2,
       "explanation": "空の依存配列 [] は、Effect を初回マウント時に実行する意図を表します。本番ビルドでは通常1回です。なお開発環境で React StrictMode が有効な場合は副作用検出のために追加実行され、結果として2回観測されることがあります。",
       "source": "view-counter/frontend/src/components/ViewCounter.tsx"
@@ -347,7 +501,12 @@
       "title": "外部データ取得を『副作用』と呼ぶ理由",
       "question": "以下の説明の中で、『副作用（side effect）』の定義として最も正確なものはどれですか？",
       "code": "useEffect(() => {\n  fetch(API_URL)\n  .then(data => setCount(data.count));\n}, []);",
-      "options": ["コンポーネントのレンダリング結果に直接反映されない処理", "レンダー関数内で実行されると問題が生じる処理（データ取得、イベントリスナー登録など）", "props や state に基づかない処理", "エラーを発生させる可能性のある処理"],
+      "options": [
+        "コンポーネントのレンダリング結果に直接反映されない処理",
+        "レンダー関数内で実行されると問題が生じる処理（データ取得、イベントリスナー登録など）",
+        "props や state に基づかない処理",
+        "エラーを発生させる可能性のある処理"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "『副作用』とは、『コンポーネントの pure なレンダリングプロセスの外で実行される処理』を指します。これらをレンダー関数内で直接実行するとバグの原因になります。",
       "source": "React Official Documentation"
@@ -358,7 +517,12 @@
       "title": "useEffect に直接 async を書けない理由と cleanup",
       "question": "以下のコードが推奨されていない理由は何ですか？",
       "code": "useEffect(async () => {\n  const res = await fetch(API_URL);\n  const data = await res.json();\n  setCount(data.count);\n}, []);",
-      "options": ["非同期処理のため、cleanup 関数が実行できなくなる", "async 関数は自動的に Promise を返すが、useEffect は関数かクリーンアップ関数の返却を期待しており、Promise の返却は型に矛盾するから", "useState の呼び出しが許可されないから", "fetch API は useEffect 内では使用禁止だから"],
+      "options": [
+        "非同期処理のため、cleanup 関数が実行できなくなる",
+        "async 関数は自動的に Promise を返すが、useEffect は関数かクリーンアップ関数の返却を期待しており、Promise の返却は型に矛盾するから",
+        "useState の呼び出しが許可されないから",
+        "fetch API は useEffect 内では使用禁止だから"
+      ],
       "correctAnswerIndex": 1,
       "explanation": "useEffect の第1引数は『関数 → (クリーンアップ関数 | undefined)』の型を期待しています。async 関数は必ず Promise を返すため、型が合致しません。正しいパターンは『内部に async 関数を定義して呼び出す』方式です。",
       "source": "view-counter/frontend/src/components/ViewCounter.tsx"
@@ -369,7 +533,12 @@
       "title": "fetch API と res.ok チェックの重要性",
       "question": "以下のコードで res.ok を確認する理由は何ですか？",
       "code": "const res = await fetch(API_URL);\nif (!res.ok) throw new Error(`HTTP error: ${res.status}`);\nconst data = await res.json();",
-      "options": ["fetch が失敗しても Promise は reject されず、HTTP エラーステータス（404, 500など）は成功値として返されるから", "res.json() 呼び出し時に必ず IOException が発生するから", "JSON パースエラーを事前に防ぐため", "TypeScript の型チェックで必須だから"],
+      "options": [
+        "fetch が失敗しても Promise は reject されず、HTTP エラーステータス（404, 500など）は成功値として返されるから",
+        "res.json() 呼び出し時に必ず IOException が発生するから",
+        "JSON パースエラーを事前に防ぐため",
+        "TypeScript の型チェックで必須だから"
+      ],
       "correctAnswerIndex": 0,
       "explanation": "fetch API の重要な特性：『ネットワークエラーのみで Promise を reject する』。HTTP エラーステータスでも fetch は成功値を返すため、res.ok チェックが必須です。",
       "source": "view-counter/frontend/src/components/ViewCounter.tsx"
@@ -380,7 +549,12 @@
       "title": "TypeScript 型アサーション (as) の役割",
       "question": "以下のコードで as ViewData を使用する理由は何ですか？",
       "code": "const data = (await res.json()) as ViewData;\n\ntype ViewData = {\n  count: number;\n};",
-      "options": ["res.json() は any 型を返し、TypeScript は data.count がどの型なのか推測できないため、開発者が『これは ViewData 型です』と明示する", "型アサーションで実行時のデータ検証が自動的に行われる", "as を使うことで fetch エラーが自動的にハンドルされる", "JSON のパース速度が向上する"],
+      "options": [
+        "res.json() は any 型を返し、TypeScript は data.count がどの型なのか推測できないため、開発者が『これは ViewData 型です』と明示する",
+        "型アサーションで実行時のデータ検証が自動的に行われる",
+        "as を使うことで fetch エラーが自動的にハンドルされる",
+        "JSON のパース速度が向上する"
+      ],
       "correctAnswerIndex": 0,
       "explanation": "res.json() は Promise<any> を返します。型アサーション (as ViewData) は『このデータは ViewData 型である』と TypeScript コンパイラに通知し、型チェックを可能にします。ただし実行時のデータ検証は行われません。",
       "source": "view-counter/frontend/src/components/ViewCounter.tsx"
@@ -391,7 +565,12 @@
       "title": "try/catch でのエラーハンドリングと型ガード",
       "question": "以下のコードで err instanceof Error を確認する理由は何ですか？",
       "code": "try {\n  const data = (await res.json()) as ViewData;\n  setCount(data.count);\n} catch (err) {\n  setError(err instanceof Error ? err.message : \"Unknown error\");\n}",
-      "options": ["catch ブロックの err 変数は unknown 型であり、Error 型とは限らず、throw \"string\" や throw 123 などの任意の値も catch される可能性があるから", "await 式でのみ例外が発生し、それ以外では発生しないから", "catch で捕捉されたすべてのエラーは自動的に Error 型", "「型ガード」は TypeScript だけの機能で、JavaScript では無関係"],
+      "options": [
+        "catch ブロックの err 変数は unknown 型であり、Error 型とは限らず、throw \"string\" や throw 123 などの任意の値も catch される可能性があるから",
+        "await 式でのみ例外が発生し、それ以外では発生しないから",
+        "catch で捕捉されたすべてのエラーは自動的に Error 型",
+        "「型ガード」は TypeScript だけの機能で、JavaScript では無関係"
+      ],
       "correctAnswerIndex": 0,
       "explanation": "JavaScript では `throw new Error(...)` の他に、`throw \"string\"` や `throw 123` など任意の値を throw できます。そのため catch 時に `err instanceof Error` で検証し、堅牢な実装をします。",
       "source": "view-counter/frontend/src/components/ViewCounter.tsx"
@@ -1819,6 +1998,1916 @@
       "correctAnswerIndex": 1,
       "explanation": "`isNew` は `_currentPage == 1` かつ `isDateInNewRange` のAND条件です。`isDateInNewRange` は `displayDate` が `newCutoff` 以上 `now` 以下のとき true になります。",
       "source": "User provided Flutter snippet"
+    },
+    {
+      "id": 126,
+      "section": "セクション51: TypeScript Property Key",
+      "title": "Quoted Property Key と keyof",
+      "question": "次の型定義において `type K = keyof Settings;` の結果として最も正しいものはどれですか？",
+      "code": "type Settings = {\n  \"api-key\": string;\n  retryCount: number;\n};\n\ntype K = keyof Settings;",
+      "options": [
+        "`string`",
+        "`\"api-key\" | \"retryCount\"`",
+        "`\"api-key\" & \"retryCount\"`",
+        "`number`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "quoted property key で定義した `\"api-key\"` も通常のプロパティキーとして扱われるため、`keyof Settings` は `\"api-key\" | \"retryCount\"` になります。なお値としてアクセスする際は `settings[\"api-key\"]` のようにブラケット記法を使うのが基本です。",
+      "source": "TypeScript keyof / quoted property names"
+    },
+    {
+      "id": 127,
+      "section": "セクション52: Claude Code アップデート案内",
+      "title": "Claude Code のバージョン更新",
+      "question": "次のメッセージが表示されたとき、最も適切な対応はどれですか？",
+      "code": "It looks like your version of Claude Code (1.0.37) needs an update.\nA newer version (1.0.88 or higher) is required to continue.\n\nTo update, please run:\n    claude update",
+      "options": [
+        "`claude update` を実行して必要なバージョンへ更新する",
+        "`git pull` を実行すれば Claude Code も更新される",
+        "そのまま `claude code` を再実行すれば自動で続行できる",
+        "`npm install` を実行すれば必ず解決する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "このメッセージは、現在の Claude Code が `1.0.37` で、継続には `1.0.88` 以上が必要だと明示しています。したがって案内どおり `claude update` を実行して CLI 自体を更新するのが正しい対応です。",
+      "source": "User provided Claude Code update message"
+    },
+    {
+      "id": 128,
+      "section": "セクション53: JavaScript 英語表現",
+      "title": "組み込みオブジェクトの英訳",
+      "question": "`組み込みオブジェクト` を英語で表すものとして最も適切なのはどれですか？",
+      "code": "// JavaScript で Array, Date, Math などを指す文脈",
+      "options": [
+        "built-in object",
+        "embedded property",
+        "internal variable",
+        "default instance"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`組み込みオブジェクト` は英語で一般に `built-in object` と表現します。JavaScript では `Array` や `Date` など、言語や実行環境にあらかじめ備わっているオブジェクトを指す文脈で使われます。",
+      "source": "General JavaScript terminology"
+    },
+    {
+      "id": 129,
+      "section": "セクション54: Go ランタイム メモリ統計",
+      "title": "runtime.MemStats の Alloc フィールド",
+      "question": "以下のコードで `stats.Alloc` が表す値はどれですか？",
+      "code": "var stats runtime.MemStats\nruntime.ReadMemStats(&stats)\nfmt.Printf(\"Alloc: %s\\n\", formatBytes(stats.Alloc))",
+      "options": [
+        "OSからGoランタイムに割り当てられた総メモリ量",
+        "現在ヒープに使用中のメモリ量（GCされていないオブジェクト）",
+        "プログラム開始からの累計アロケーション量",
+        "スタック領域の使用量"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`Alloc` は現在ヒープ上で生きているオブジェクトが使用中のバイト数です。GCが走るたびに減少します。累計アロケーション量は `TotalAlloc`、OSから取得した総量は `Sys` です。",
+      "source": "backend/main.go - logMemoryStats() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 130,
+      "section": "セクション54: Go ランタイム メモリ統計",
+      "title": "TotalAlloc と Alloc の違い",
+      "question": "`stats.TotalAlloc` と `stats.Alloc` の違いとして正しいものはどれですか？",
+      "code": "fmt.Printf(\"Alloc（ヒープ使用中）: %s\\n\", formatBytes(stats.Alloc))\nfmt.Printf(\"TotalAlloc（累計）: %s\\n\", formatBytes(stats.TotalAlloc))",
+      "options": [
+        "`TotalAlloc` はGC後に減少し、`Alloc` は単調増加する",
+        "`Alloc` はGC後に減少するが、`TotalAlloc` はプログラム開始からの累計で減少しない",
+        "両者は常に同じ値を返す",
+        "`TotalAlloc` はスタックとヒープの合計、`Alloc` はヒープのみ"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`Alloc` はGCが走るとオブジェクトが回収されるため減少します。`TotalAlloc` はプログラム開始から確保されたバイト数の累計で、単調増加のみです。メモリ圧力を測るには `Alloc` を、アロケーション頻度を測るには `TotalAlloc` の変化量を見ます。",
+      "source": "backend/main.go - logMemoryStats() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 131,
+      "section": "セクション54: Go ランタイム メモリ統計",
+      "title": "HeapIdle と HeapInuse",
+      "question": "`HeapIdle` が大きい場合、何を意味しますか？",
+      "code": "fmt.Printf(\"HeapIdle: %s\\n\", formatBytes(stats.HeapIdle))\nfmt.Printf(\"HeapInuse: %s\\n\", formatBytes(stats.HeapInuse))",
+      "options": [
+        "ヒープのメモリ不足が近い",
+        "Goランタイムが確保しているがオブジェクトに使われていないスパンが多い",
+        "GCが全く動いていない",
+        "スタックが大きく成長している"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`HeapIdle` はOSから確保済みだがオブジェクトが入っていないスパンの合計です。大きい場合はメモリをOSに返せる余地があります。`debug.FreeOSMemory()` を呼ぶか、`GOGC` を下げると解放されます。`HeapInuse` は実際にオブジェクトが入っているスパンです。",
+      "source": "backend/main.go - logMemoryStats() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 132,
+      "section": "セクション54: Go ランタイム メモリ統計",
+      "title": "NumGC の意味",
+      "question": "`stats.NumGC` が表す値はどれですか？",
+      "code": "fmt.Printf(\"NumGC（GCサイクル数）: %d\\n\", stats.NumGC)",
+      "options": [
+        "現在実行中のGCゴルーチン数",
+        "プログラム開始からの完了したGCサイクル数",
+        "次のGCが発動するまでの残りサイクル数",
+        "強制GC（runtime.GC()）の呼び出し回数のみ"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`NumGC` はプログラム開始から完了したGCサイクルの総数です。自動GC・強制GCどちらもカウントされます。強制GCのみのカウントは `NumForcedGC` が別途あります。",
+      "source": "backend/main.go - logMemoryStats() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 133,
+      "section": "セクション54: Go ランタイム メモリ統計",
+      "title": "StackInuse とゴルーチン数の関係",
+      "question": "以下のコードで平均スタックサイズを計算しているとき、`numGoroutines` が増えると `avgStack` はどうなりますか？",
+      "code": "numGoroutines := runtime.NumGoroutine()\nif numGoroutines > 0 {\n    avgStack := stats.StackInuse / uint64(numGoroutines)\n    fmt.Printf(\"Average Stack per Goroutine: %s\\n\", formatBytes(avgStack))\n}",
+      "options": [
+        "numGoroutines が増えると avgStack は増加する",
+        "numGoroutines が増えると avgStack は減少する（分母が増えるため）",
+        "numGoroutines と avgStack は無関係",
+        "StackInuse は変化しないため avgStack は常に一定"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`avgStack = StackInuse / numGoroutines` なので、分母の `numGoroutines` が増えると `avgStack` は小さくなります。ただし実際はゴルーチンが増えると `StackInuse` も増加するため、実運用での `avgStack` の変化は必ずしも単調ではありません。",
+      "source": "backend/main.go - analyzeNonHeapMemory()"
+    },
+    {
+      "id": 134,
+      "section": "セクション54: Go ランタイム メモリ統計",
+      "title": "MSpanInuse とは",
+      "question": "`stats.MSpanInuse` が表すものはどれですか？",
+      "code": "fmt.Printf(\"MSpanInuse: %s\\n\", formatBytes(stats.MSpanInuse))\nfmt.Printf(\"MSpanSys: %s\\n\", formatBytes(stats.MSpanSys))",
+      "options": [
+        "ヒープオブジェクトのメモリ量",
+        "mspan 構造体（ヒープスパン管理メタデータ）が使用しているメモリ量",
+        "ミューテックスのスピン待機に使われているメモリ量",
+        "OSのメモリマップに使われているメモリ量"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`MSpanInuse` はGoランタイムがヒープスパンを管理するための `mspan` 構造体が実際に使用しているメモリ量です。`MSpanSys` はOSから確保した総量で、`MSpanSys - MSpanInuse` がアイドル分になります。",
+      "source": "backend/main.go - analyzeNonHeapMemory() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 135,
+      "section": "セクション54: Go ランタイム メモリ統計",
+      "title": "formatBytes 関数の動作",
+      "question": "以下の `formatBytes` 関数に `1500` を渡した場合の出力はどれですか？",
+      "code": "func formatBytes(bytes uint64) string {\n    const unit = 1024\n    if bytes < unit {\n        return fmt.Sprintf(\"%d B\", bytes)\n    }\n    div, exp := uint64(unit), 0\n    for n := bytes / unit; n >= unit; n /= unit {\n        div *= unit\n        exp++\n    }\n    return fmt.Sprintf(\"%.2f %cB\", float64(bytes)/float64(div), \"KMGTPE\"[exp])\n}",
+      "options": [
+        "\"1500 B\"",
+        "\"1.46 KB\"",
+        "\"1.50 KB\"",
+        "\"0.00 MB\""
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "1500 >= 1024 なのでKB換算になります。`1500 / 1024 = 1.46484...` なので `\"1.46 KB\"` です。ループは `n = 1500/1024 = 1` で `1 < 1024` のため即終了し `exp=0`（K）になります。",
+      "source": "backend/main.go - formatBytes()"
+    },
+    {
+      "id": 136,
+      "section": "セクション54: Go ランタイム メモリ統計",
+      "title": "BuckHashSys の用途",
+      "question": "`stats.BuckHashSys` が表すものはどれですか？",
+      "code": "fmt.Printf(\"BuckHashSys: %s\\n\", formatBytes(stats.BuckHashSys))",
+      "options": [
+        "バケットソートに使われるメモリ量",
+        "プロファイリング用バケットハッシュテーブルが使用しているメモリ量",
+        "ハッシュマップの全エントリのメモリ量",
+        "GCのマークビットマップに使われているメモリ量"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`BuckHashSys` はGoランタイムがpprof等のプロファイリングデータを管理するバケットハッシュテーブルに使用するメモリ量です。通常は数百KB以下で、アプリのメモリ問題の主因にはなりません。",
+      "source": "backend/main.go - analyzeNonHeapMemory() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 137,
+      "section": "セクション55: Go GC 統計",
+      "title": "LastGC の型と変換",
+      "question": "以下のコードで `stats.LastGC` を時刻に変換しているとき、`stats.LastGC` の型はどれですか？",
+      "code": "if stats.LastGC > 0 {\n    lastGCTime := time.Unix(0, int64(stats.LastGC))\n    fmt.Printf(\"Last GC: %s\\n\", lastGCTime.Format(time.RFC3339))\n}",
+      "options": [
+        "time.Time",
+        "int64（Unix秒）",
+        "uint64（Unixナノ秒）",
+        "float64（Unix秒の小数）"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`MemStats.LastGC` は `uint64` 型で、最後のGCが完了したUnixナノ秒を表します。`time.Unix(0, int64(stats.LastGC))` で `time.Time` に変換します。`time.Unix(sec, nsec)` の第1引数をゼロにし、第2引数にナノ秒を渡すのがポイントです。",
+      "source": "backend/main.go - analyzeGC() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 138,
+      "section": "セクション55: Go GC 統計",
+      "title": "PauseTotalNs と平均ポーズ時間",
+      "question": "以下のコードで平均GCポーズ時間を計算するとき、`stats.NumGC` がゼロの場合に除算しない理由はどれですか？",
+      "code": "if stats.NumGC > 0 {\n    avgPause := time.Duration(stats.PauseTotalNs / uint64(stats.NumGC))\n    fmt.Printf(\"Average GC Pause: %s\\n\", avgPause)\n}",
+      "options": [
+        "NumGC がゼロだとPauseTotalNsも必ずゼロになるから",
+        "ゼロ除算でパニックが発生するのを防ぐため",
+        "uint64 の除算ではゼロ除算が無視されるから",
+        "NumGC はゼロになり得ないから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Goでは整数のゼロ除算は実行時パニック（`runtime error: integer divide by zero`）になります。`stats.NumGC > 0` のガードで安全に除算しています。なお `PauseTotalNs` が0でも除算は問題なく0を返すため、ガードは `NumGC` のみで十分です。",
+      "source": "backend/main.go - analyzeGC()"
+    },
+    {
+      "id": 139,
+      "section": "セクション55: Go GC 統計",
+      "title": "GCCPUFraction の意味",
+      "question": "`stats.GCCPUFraction` が `0.05` のとき、何を意味しますか？",
+      "code": "fmt.Printf(\"GC CPU Fraction: %.4f%%\\n\", stats.GCCPUFraction*100)\n\n// gcTuningReport() より\nif stats.GCCPUFraction > 0.05 {\n    fmt.Println(\"WARNING: GC overhead is high (>5%)\")\n}",
+      "options": [
+        "GCが5%の確率で実行される",
+        "プログラム実行時間の5%をGCが消費している",
+        "ヒープの5%がGC対象になっている",
+        "GCが毎秒5回実行されている"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`GCCPUFraction` は直近のGCサイクルでGCがCPU時間の何割を使ったかを表す `float64`（0〜1）です。`0.05` なら5%のCPU時間をGCが使用しています。5%超は高負荷の目安とされ、`GOGC` を上げる（GC頻度を下げる）か、アロケーション量を減らすことが推奨されます。",
+      "source": "backend/main.go - gcTuningReport() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 140,
+      "section": "セクション55: Go GC 統計",
+      "title": "PauseNs 配列とインデックス計算",
+      "question": "以下のコードで最新のGCポーズ時間を取得するインデックス計算の意味はどれですか？",
+      "code": "idx := int((stats.NumGC - uint32(i) - 1 + 256) % 256)",
+      "options": [
+        "256サイクル分の循環バッファから最新順にインデックスを計算している",
+        "ランダムなサンプリング位置を計算している",
+        "256で割った余りを使って配列の境界外アクセスを防いでいるだけ",
+        "NumGCを256進数に変換している"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`PauseNs` は256要素の循環バッファで、インデックスは `NumGC % 256` の位置に最新値が入ります。`(NumGC - i - 1 + 256) % 256` で i=0が最新、i=1が一つ前…と逆順にアクセスできます。`+256` はアンダーフロー防止です。",
+      "source": "backend/main.go - analyzeGCPauses() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 141,
+      "section": "セクション55: Go GC 統計",
+      "title": "パーセンタイル計算（P50/P90/P99）",
+      "question": "以下のP99計算コードで `len(pauses)*99/100` を使う理由はどれですか？",
+      "code": "sort.Slice(pauses, func(i, j int) bool {\n    return pauses[i] < pauses[j]\n})\n\np50 := pauses[len(pauses)*50/100]\np90 := pauses[len(pauses)*90/100]\np99 := pauses[len(pauses)*99/100]",
+      "options": [
+        "浮動小数点演算を避けて整数インデックスを求めるため",
+        "配列を256要素に正規化するため",
+        "sort.Sliceが1-basedインデックスを使うため",
+        "99番目の要素だけを取り出すため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "スライスのインデックスは整数なので `int(float64(len)*0.99)` より整数演算 `len*99/100` の方がシンプルです。ソート済み配列の `len*99/100` 番目が99パーセンタイル（下から99%の位置）に相当します。厳密な実装ではなく近似値ですが、GCポーズの傾向把握には十分です。",
+      "source": "backend/main.go - analyzeGCPauses()"
+    },
+    {
+      "id": 142,
+      "section": "セクション55: Go GC 統計",
+      "title": "debug.SetGCPercent の使い方",
+      "question": "以下のコードで `debug.SetGCPercent(-1)` を呼んだ後に再度 `debug.SetGCPercent(gcPercent)` を呼ぶ理由はどれですか？",
+      "code": "gcPercent := debug.SetGCPercent(-1)\ndebug.SetGCPercent(gcPercent)\nif gcPercent < 0 {\n    fmt.Println(\"GOGC: off (GC disabled)\")\n} else {\n    fmt.Printf(\"GOGC: %d%%\\n\", gcPercent)\n}",
+      "options": [
+        "GCを一時的に無効化して値を読み取るため",
+        "`SetGCPercent` は現在値を返すので `-1` で読み取り専用アクセスし、元の値に戻している",
+        "GCを2回トリガーするため",
+        "負の値を渡すとGCが強制実行されるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`debug.SetGCPercent(n)` は新しい値を設定し**直前の値**を返します。`-1` を渡すとGCが無効化されてしまうため、返ってきた元の値を即座に再設定して副作用を打ち消しています。現在値だけを読み取る専用関数がないため、このパターンが慣用的です。",
+      "source": "backend/main.go - gcTuningReport() / https://pkg.go.dev/runtime/debug#SetGCPercent"
+    },
+    {
+      "id": 143,
+      "section": "セクション55: Go GC 統計",
+      "title": "GOMEMLIMIT の未設定検出",
+      "question": "以下のコードで `unlimitedMemLimit` を `1<<63 - 1` と定義している理由はどれですか？",
+      "code": "memLimit := debug.SetMemoryLimit(-1)\nconst unlimitedMemLimit int64 = 1<<63 - 1\nif memLimit == unlimitedMemLimit {\n    fmt.Println(\"GOMEMLIMIT: not set\")\n}",
+      "options": [
+        "int64の最大値がGOMEMLIMIT未設定時のデフォルト値だから",
+        "負の値を表現するため",
+        "メモリ上限を1PBに制限するため",
+        "オーバーフローのチェック用マジックナンバーだから"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`debug.SetMemoryLimit` はGOMEMLIMITが設定されていない場合に `math.MaxInt64`（= `1<<63 - 1`）を返します。これはGoの仕様で「上限なし」を意味するセンチネル値です。この値と比較することでGOMEMLIMITが明示設定されているかを判定できます。",
+      "source": "backend/main.go - gcTuningReport() / https://pkg.go.dev/runtime/debug#SetMemoryLimit"
+    },
+    {
+      "id": 144,
+      "section": "セクション55: Go GC 統計",
+      "title": "NextGC とヒープ成長比率",
+      "question": "`stats.NextGC / stats.HeapAlloc` が `2.0` のとき、何を意味しますか？",
+      "code": "if stats.HeapAlloc > 0 && stats.NextGC > 0 {\n    growthRatio := float64(stats.NextGC) / float64(stats.HeapAlloc)\n    fmt.Printf(\"Heap Growth Ratio (NextGC/HeapAlloc): %.2fx\\n\", growthRatio)\n}",
+      "options": [
+        "次のGCまでにヒープが2倍になると予測されている",
+        "現在のヒープの2倍に達したときに次のGCが発動する",
+        "GCが2サイクル後に実行される",
+        "ヒープ効率が50%である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`NextGC` は次のGCが発動するヒープサイズの目標値です。デフォルトの `GOGC=100` では前回GC後のヒープサイズの2倍が `NextGC` になります。`NextGC/HeapAlloc = 2.0` は「現在の2倍になったらGC」という状態を表し、デフォルト動作です。",
+      "source": "backend/main.go - gcTuningReport() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 145,
+      "section": "セクション55: Go GC 統計",
+      "title": "NumForcedGC の意味",
+      "question": "`stats.NumForcedGC` が `stats.NumGC` より小さい場合、何を意味しますか？",
+      "code": "fmt.Printf(\"Completed GC Cycles: %d\\n\", stats.NumGC)\nfmt.Printf(\"Forced GC Cycles: %d\\n\", stats.NumForcedGC)",
+      "options": [
+        "強制GCの一部が失敗した",
+        "自動GC（ランタイムによるトリガー）が発生している",
+        "GCが無効化されている",
+        "NumForcedGCのカウントにバグがある"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`NumGC` は全GCサイクル数、`NumForcedGC` は `runtime.GC()` 等で明示的に呼んだGCの回数です。`NumForcedGC < NumGC` はランタイムが自動でGCを実行したサイクルが存在することを意味します。通常の運用では `NumForcedGC` はほぼゼロで、`NumGC` の大半は自動GCです。",
+      "source": "backend/main.go - analyzeGC() / https://pkg.go.dev/runtime#MemStats"
+    },
+    {
+      "id": 146,
+      "section": "セクション56: Go ゴルーチン管理",
+      "title": "runtime.NumGoroutine の用途",
+      "question": "以下のコードで `initial` と `final` を比較している目的はどれですか？",
+      "code": "initial := runtime.NumGoroutine()\n\ndone := make(chan bool)\nfor i := 0; i < 10; i++ {\n    go func(id int) {\n        time.Sleep(2 * time.Second)\n        done <- true\n    }(i)\n}\n\nfor i := 0; i < 10; i++ {\n    <-done\n}\n\ntime.Sleep(100 * time.Millisecond)\nfinal := runtime.NumGoroutine()\n\nif final > initial {\n    fmt.Printf(\"警告: ゴルーチンリークの可能性を検出！リーク数: %d\\n\", final-initial)\n}",
+      "options": [
+        "ゴルーチンの実行速度を計測するため",
+        "ゴルーチンリークを検出するため",
+        "チャネルのバッファサイズを確認するため",
+        "OSスレッド数の上限を確認するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ゴルーチンが適切に終了していれば、全ワーカー完了後のゴルーチン数は起動前の値に戻るはずです。`final > initial` の場合、いずれかのゴルーチンが終了していない（リーク）可能性を示します。テストでは `goleak` パッケージが同様の検出を行います。",
+      "source": "backend/main.go - main()"
+    },
+    {
+      "id": 147,
+      "section": "セクション56: Go ゴルーチン管理",
+      "title": "ゴルーチンのクロージャと引数渡し",
+      "question": "以下のコードで `go func(id int) { ... }(i)` のように引数で `i` を渡している理由はどれですか？",
+      "code": "for i := 0; i < 10; i++ {\n    go func(id int) {\n        time.Sleep(2 * time.Second)\n        done <- true\n    }(i)\n}",
+      "options": [
+        "goroutineにIDを渡してデバッグログを出力するため",
+        "クロージャがループ変数 i を共有するstale closure問題を避けるため",
+        "time.Sleepに引数として使うため",
+        "done チャネルへの送信順序を制御するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "クロージャが `i` を直接参照すると、全ゴルーチンが同じ変数を共有しループ終了後の値（10）を見てしまいます（stale closure）。引数 `id int` として値コピーを渡すことで各ゴルーチンが独立した値を持ちます。Go 1.22以降はループ変数のスコープが変わりこの問題が緩和されましたが、明示的な引数渡しは可読性のために推奨されます。",
+      "source": "backend/main.go - main()"
+    },
+    {
+      "id": 148,
+      "section": "セクション56: Go ゴルーチン管理",
+      "title": "time.Sleep(100 * time.Millisecond) の役割",
+      "question": "全ワーカーの完了を `<-done` で待った後に `time.Sleep(100 * time.Millisecond)` を挟んでいる理由はどれですか？",
+      "code": "for i := 0; i < 10; i++ {\n    <-done\n}\n\ntime.Sleep(100 * time.Millisecond)\nfinal := runtime.NumGoroutine()",
+      "options": [
+        "次のGCサイクルを発生させるため",
+        "ランタイムがゴルーチンのクリーンアップを完了する時間を与えるため",
+        "チャネルのバッファをフラッシュするため",
+        "OSスレッドのスケジューリングを安定させるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`done <- true` を送信しても、送信側ゴルーチンがスケジューラによって完全に終了・回収されるまでわずかな時間がかかります。即座に `NumGoroutine()` を呼ぶとまだ終了処理中のゴルーチンがカウントされ誤検知になることがあります。短いスリープでランタイムのクリーンアップを待ちます。",
+      "source": "backend/main.go - main()"
+    },
+    {
+      "id": 149,
+      "section": "セクション56: Go ゴルーチン管理",
+      "title": "runtime.GOMAXPROCS の意味",
+      "question": "`runtime.GOMAXPROCS(0)` を呼び出したとき何が返りますか？",
+      "code": "fmt.Printf(\"GOMAXPROCS: %d\\n\", runtime.GOMAXPROCS(0))",
+      "options": [
+        "GOMAXPROCSを0に設定して以前の値を返す",
+        "現在のGOMAXPROCS値を変更せず返す",
+        "利用可能なCPUコア数を返す",
+        "実行中のOSスレッド数を返す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`GOMAXPROCS(n)` はn>0なら値を設定して以前の値を返し、n=0なら設定を変更せず現在値を返します。読み取り専用アクセスに `0` を使うのは慣用パターンです。初期値は `runtime.NumCPU()` と同じです。",
+      "source": "backend/main.go - main() / https://pkg.go.dev/runtime#GOMAXPROCS"
+    },
+    {
+      "id": 150,
+      "section": "セクション56: Go ゴルーチン管理",
+      "title": "unbuffered channel でのワーカー同期",
+      "question": "以下のコードで `done` チャネルをバッファなし（`make(chan bool)`）にしている場合、ワーカーが `done <- true` を送信するタイミングはどれですか？",
+      "code": "done := make(chan bool)\nfor i := 0; i < 10; i++ {\n    go func(id int) {\n        time.Sleep(2 * time.Second)\n        done <- true\n    }(i)\n}\nfor i := 0; i < 10; i++ {\n    <-done\n}",
+      "options": [
+        "受信側が <-done を呼ぶ準備ができるまでワーカーはブロックされる",
+        "ワーカーは done <- true を非同期で送信してすぐ終了する",
+        "バッファなしチャネルへの送信は常にパニックになる",
+        "メインゴルーチンが <-done を呼ぶ前にバッファに積まれる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "バッファなしチャネルは送受信が必ずランデブー（同期）します。送信側（ワーカー）は受信側（メインゴルーチン）が `<-done` を呼ぶまでブロックされます。これにより「10回 `<-done` を受け取る = 10ワーカーが全員完了」という同期が実現します。",
+      "source": "backend/main.go - main()"
+    },
+    {
+      "id": 151,
+      "section": "セクション56: Go ゴルーチン管理",
+      "title": "ワーカー生成後のゴルーチン数",
+      "question": "以下のコードで `afterSpawn` の値として期待される値はどれですか（初期ゴルーチン数が1の場合）？",
+      "code": "initial := runtime.NumGoroutine()  // 1\n\nfor i := 0; i < 10; i++ {\n    go func(id int) {\n        time.Sleep(2 * time.Second)\n        done <- true\n    }(i)\n}\n\nafterSpawn := runtime.NumGoroutine()\nfmt.Printf(\"ワーカー生成後: %d\\n\", afterSpawn)",
+      "options": [
+        "1（ゴルーチンはまだ起動していない）",
+        "10（ワーカーのみ）",
+        "11（メイン + 10ワーカー）",
+        "不定（スケジューラ次第）"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`go func()` でゴルーチンを起動すると即座にスケジューラに登録されます。メインゴルーチン(1) + 10ワーカー = 11 が期待値です。ただし `NumGoroutine()` はランタイムの内部ゴルーチン（GC補助など）も含む場合があり、環境によって±数個の誤差がありえます。",
+      "source": "backend/main.go - main()"
+    },
+    {
+      "id": 152,
+      "section": "セクション57: Go JWT 認証",
+      "title": "jwt.RegisteredClaims の ExpiresAt",
+      "question": "以下のコードで発行されるJWTの有効期限はどれですか？",
+      "code": "claims := jwt.RegisteredClaims{\n    Subject:   s.adminUser,\n    IssuedAt:  jwt.NewNumericDate(time.Now()),\n    ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),\n}\ntoken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)\nreturn token.SignedString(s.jwtSecret)",
+      "options": [
+        "発行から1時間",
+        "発行から24時間",
+        "発行から7日間",
+        "無期限"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`time.Now().Add(24 * time.Hour)` で現在時刻から24時間後を `ExpiresAt` に設定しています。`jwt.NewNumericDate` はGoの `time.Time` をJWT仕様の NumericDate（Unixタイムスタンプ）に変換します。",
+      "source": "backend/main.go - issueJWT()"
+    },
+    {
+      "id": 153,
+      "section": "セクション57: Go JWT 認証",
+      "title": "Bearer トークンの検証フロー",
+      "question": "以下の `requireAuth` ミドルウェアで `strings.HasPrefix(header, \"Bearer \")` を最初に確認する理由はどれですか？",
+      "code": "header := r.Header.Get(\"Authorization\")\nif !strings.HasPrefix(header, \"Bearer \") {\n    writeError(w, http.StatusUnauthorized, \"missing bearer token\")\n    return\n}\ntokenString := strings.TrimPrefix(header, \"Bearer \")\nclaims := &jwt.RegisteredClaims{}\ntoken, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {\n    if token.Method != jwt.SigningMethodHS256 {\n        return nil, fmt.Errorf(\"unexpected signing method: %s\", token.Method.Alg())\n    }\n    return s.jwtSecret, nil\n})",
+      "options": [
+        "JWTの署名を事前検証するため",
+        "Authorizationヘッダーが存在しない・形式が違う場合を早期リターンするため",
+        "Base64デコードを行うため",
+        "トークンの有効期限を確認するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`Bearer ` プレフィックスがない場合はJWT自体が存在しないか形式が不正です。`jwt.ParseWithClaims` を呼ぶ前に早期リターンすることで不要なパース処理を省き、エラーメッセージも明確になります。",
+      "source": "backend/main.go - requireAuth()"
+    },
+    {
+      "id": 154,
+      "section": "セクション57: Go JWT 認証",
+      "title": "署名アルゴリズムの検証",
+      "question": "以下のキー関数で署名アルゴリズムを確認している理由はどれですか？",
+      "code": "func(token *jwt.Token) (any, error) {\n    if token.Method != jwt.SigningMethodHS256 {\n        return nil, fmt.Errorf(\"unexpected signing method: %s\", token.Method.Alg())\n    }\n    return s.jwtSecret, nil\n}",
+      "options": [
+        "パフォーマンス最適化のため",
+        "alg:none 攻撃など意図しないアルゴリズムによる検証バイパスを防ぐため",
+        "HS256以外ではシークレットキーが不要なため",
+        "jwt.ParseWithClaims がアルゴリズムを自動検出できないため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "攻撃者がヘッダーの `alg` を `none` に書き換えると、ライブラリによっては署名検証をスキップします。キー関数内で期待するアルゴリズムを明示的に確認することで、このアルゴリズム混同攻撃を防止します。これはJWT利用時のセキュリティベストプラクティスです。",
+      "source": "backend/main.go - requireAuth()"
+    },
+    {
+      "id": 155,
+      "section": "セクション57: Go JWT 認証",
+      "title": "http.Handle と requireAuth の合成",
+      "question": "以下のルーティングで `s.requireAuth(http.HandlerFunc(s.handleListQuizzes))` のように2つの型変換を行っている理由はどれですか？",
+      "code": "mux.Handle(\n    \"GET /api/admin/quizzes\",\n    s.requireAuth(http.HandlerFunc(s.handleListQuizzes)),\n)",
+      "options": [
+        "s.handleListQuizzes はメソッドなので直接 http.Handler として渡せないため、http.HandlerFunc でラップする",
+        "requireAuth がメソッドを受け取れないため",
+        "mux.Handle が関数ポインタを受け取らないため",
+        "http.HandlerFunc はパフォーマンス最適化のためのラッパー"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`s.handleListQuizzes` は `func(http.ResponseWriter, *http.Request)` 型のメソッド値です。`mux.Handle` は `http.Handler` インターフェース（`ServeHTTP` メソッドを持つ型）を要求します。`http.HandlerFunc` は関数を `http.Handler` に変換する型エイリアスで、`ServeHTTP` が定義されています。",
+      "source": "backend/main.go - routes()"
+    },
+    {
+      "id": 156,
+      "section": "セクション57: Go JWT 認証",
+      "title": "handleLogin での認証情報比較",
+      "question": "以下の認証処理で `payload.Username != s.adminUser || payload.Password != s.adminPassword` の条件が真の場合、HTTPステータスコードはどれですか？",
+      "code": "if payload.Username != s.adminUser || payload.Password != s.adminPassword {\n    writeError(w, http.StatusUnauthorized, \"invalid credentials\")\n    return\n}",
+      "options": [
+        "400 Bad Request",
+        "401 Unauthorized",
+        "403 Forbidden",
+        "404 Not Found"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "認証情報が不正（ユーザー名・パスワードの不一致）は `401 Unauthorized` です。`403 Forbidden` は認証済みだがアクセス権限がない場合、`400 Bad Request` はリクエスト形式が不正な場合に使います。RFC 7235に基づき、認証失敗は401が正しい選択です。",
+      "source": "backend/main.go - handleLogin()"
+    },
+    {
+      "id": 157,
+      "section": "セクション58: Go HTTP & CORS",
+      "title": "withCORS の Origin 動的設定",
+      "question": "以下の CORS ミドルウェアで `Access-Control-Allow-Origin` を固定値 `*` ではなくリクエストの `Origin` ヘッダーで動的に設定している理由はどれですか？",
+      "code": "origin := r.Header.Get(\"Origin\")\nif origin != \"\" {\n    w.Header().Set(\"Access-Control-Allow-Origin\", origin)\n    w.Header().Set(\"Vary\", \"Origin\")\n}",
+      "options": [
+        "* ではCookieや認証ヘッダーを含むリクエストが許可されないため",
+        "* はChromiumブラウザで動作しないため",
+        "動的設定の方がパフォーマンスが高いため",
+        "* はHTTPSでのみ使用できないため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`Access-Control-Allow-Credentials: true` と組み合わせる場合、`Access-Control-Allow-Origin: *` はブラウザに拒否されます。Cookieや `Authorization` ヘッダーを含む認証リクエストでは、オリジンを明示する必要があります。`Vary: Origin` はキャッシュがオリジンごとに別々のレスポンスを保持するよう指示します。",
+      "source": "backend/main.go - withCORS()"
+    },
+    {
+      "id": 158,
+      "section": "セクション58: Go HTTP & CORS",
+      "title": "OPTIONS プリフライトリクエストの処理",
+      "question": "以下のコードで `OPTIONS` メソッドを特別に処理している理由はどれですか？",
+      "code": "if r.Method == http.MethodOptions {\n    w.WriteHeader(http.StatusNoContent)\n    return\n}\nnext.ServeHTTP(w, r)",
+      "options": [
+        "OPTIONS は危険なメソッドなので即座に遮断するため",
+        "ブラウザがCORSプリフライトとして OPTIONS を送るため、本処理前に204を返す必要があるため",
+        "OPTIONSレスポンスはボディを含めてはいけないため",
+        "mux が OPTIONS を認識しないため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ブラウザはクロスオリジンリクエストの前に `OPTIONS` メソッドでプリフライトリクエストを送り、サーバーが許可しているかを確認します。CORSヘッダーを付けた `204 No Content` を返すことでブラウザに「許可済み」を伝え、本リクエストの送信に進ませます。",
+      "source": "backend/main.go - withCORS()"
+    },
+    {
+      "id": 159,
+      "section": "セクション58: Go HTTP & CORS",
+      "title": "writeJSON でのエンコード",
+      "question": "以下の `writeJSON` で `json.NewEncoder(w).Encode(payload)` を使う利点はどれですか？",
+      "code": "func writeJSON(w http.ResponseWriter, status int, payload any) {\n    w.Header().Set(\"Content-Type\", \"application/json\")\n    w.WriteHeader(status)\n    if payload == nil {\n        return\n    }\n    if err := json.NewEncoder(w).Encode(payload); err != nil {\n        log.Printf(\"encode response: %v\", err)\n    }\n}",
+      "options": [
+        "`json.Marshal` より高速なため",
+        "メモリに全データをバッファせず `http.ResponseWriter` に直接ストリーム書き込みできるため",
+        "文字コードを自動変換するため",
+        "`any` 型を受け取れるのは `Encoder` だけのため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`json.Marshal` は全データをメモリ上の `[]byte` に一度展開してから書き込みます。`json.NewEncoder(w).Encode` は `io.Writer`（ここでは `http.ResponseWriter`）に直接ストリーム出力するためメモリ効率が良いです。大きなレスポンスで特に有効です。",
+      "source": "backend/main.go - writeJSON()"
+    },
+    {
+      "id": 160,
+      "section": "セクション58: Go HTTP & CORS",
+      "title": "io.LimitReader によるリクエストボディ制限",
+      "question": "以下のコードで `io.LimitReader(r.Body, 1<<20)` を使う理由はどれですか？",
+      "code": "decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))\ndecoder.DisallowUnknownFields()",
+      "options": [
+        "JSONのパース速度を向上させるため",
+        "1MB超のリクエストボディによるメモリ枯渇・DoS攻撃を防ぐため",
+        "r.Body をコピーして再利用できるようにするため",
+        "Content-Length ヘッダーの検証をするため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`1<<20` は 1MB（1,048,576バイト）です。制限なしで `r.Body` を読むと、巨大なボディを送りつけるDoS攻撃でサーバーメモリを枯渇させられます。`LimitReader` で上限を設けることで安全にボディを処理できます。",
+      "source": "backend/main.go - decodeJSON()"
+    },
+    {
+      "id": 161,
+      "section": "セクション58: Go HTTP & CORS",
+      "title": "DisallowUnknownFields の効果",
+      "question": "`decoder.DisallowUnknownFields()` を設定した場合、JSONに未知フィールドが含まれていたときどうなりますか？",
+      "code": "decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))\ndecoder.DisallowUnknownFields()\nif err := decoder.Decode(dst); err != nil {\n    return err\n}",
+      "options": [
+        "未知フィールドは無視されてデコード成功",
+        "デコードエラーが返される",
+        "未知フィールドのみ別の変数に格納される",
+        "パニックが発生する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "デフォルトでは `json.Decoder` は未知フィールドを無視します。`DisallowUnknownFields()` を呼ぶと、構造体に対応するフィールドが存在しないJSONキーがあった場合にエラーを返します。タイポや意図しないフィールドを早期検出するためのバリデーション手段です。",
+      "source": "backend/main.go - decodeJSON()"
+    },
+    {
+      "id": 162,
+      "section": "セクション58: Go HTTP & CORS",
+      "title": "2回目の Decode で io.EOF を確認",
+      "question": "以下のコードで2回目の `decoder.Decode(&extra)` を行う目的はどれですか？",
+      "code": "if err := decoder.Decode(dst); err != nil {\n    return err\n}\nvar extra json.RawMessage\nif err := decoder.Decode(&extra); err != io.EOF {\n    return errors.New(\"request body must contain a single JSON object\")\n}",
+      "options": [
+        "追加フィールドをキャプチャするため",
+        "リクエストボディに複数のJSONオブジェクトが含まれていないか確認するため",
+        "デコードのキャッシュをクリアするため",
+        "r.Body を閉じるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "1回目の `Decode` 後に `io.EOF` 以外が返る場合、ボディにまだデータが残っています。`{...}{...}` のように複数のJSONオブジェクトを連結して送る攻撃や誤りを検出できます。正常なリクエストなら2回目の `Decode` は `io.EOF` を返します。",
+      "source": "backend/main.go - decodeJSON()"
+    },
+    {
+      "id": 163,
+      "section": "セクション58: Go HTTP & CORS",
+      "title": "r.PathValue によるパスパラメータ取得",
+      "question": "以下のコードで `r.PathValue(\"id\")` を使っています。これはGoのどのバージョンから使えますか？",
+      "code": "func (s *server) handleGetQuiz(w http.ResponseWriter, r *http.Request) {\n    quizID, err := parseID(r.PathValue(\"id\"))\n    if err != nil {\n        writeError(w, http.StatusBadRequest, err.Error())\n        return\n    }\n}",
+      "options": [
+        "Go 1.18（Generics導入時）",
+        "Go 1.20",
+        "Go 1.22",
+        "Go 1.19"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`http.Request.PathValue` と `ServeMux` のパターンマッチング（`{id}` 記法）はGo 1.22で標準ライブラリに追加されました。それ以前はパスパラメータの取得に `gorilla/mux` や `chi` などサードパーティのルーターが必要でした。",
+      "source": "backend/main.go - handleGetQuiz() / Go 1.22 release notes"
+    },
+    {
+      "id": 164,
+      "section": "セクション59: Go SQL & JSONB",
+      "title": "sql.NullString の使い方",
+      "question": "以下のコードで `code` フィールドに `sql.NullString` を使っている理由はどれですか？",
+      "code": "var item quiz\nvar code sql.NullString\n\nerr := scanner.Scan(\n    &item.ID,\n    // ...\n    &code,\n    // ...\n)\n\nif code.Valid {\n    item.Code = &code.String\n}",
+      "options": [
+        "NullStringはStringより高速にスキャンできるため",
+        "DBのNULL値をGoの nil として安全に扱うため",
+        "Stringではマルチバイト文字を扱えないため",
+        "sql.Scanがstring型を直接受け取れないため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "DBのカラムが NULL の場合、`string` に直接スキャンするとエラーになります。`sql.NullString` は `{String string; Valid bool}` を持ち、`Valid=false` のとき NULL を表します。スキャン後に `code.Valid` を確認して `*string`（nil or 値）に変換しています。",
+      "source": "backend/main.go - scanQuiz()"
+    },
+    {
+      "id": 165,
+      "section": "セクション59: Go SQL & JSONB",
+      "title": "JSONB カラムのスキャン",
+      "question": "以下のコードで `options` を `[]byte` でスキャンしてから `json.Unmarshal` している理由はどれですか？",
+      "code": "var optionsJSON []byte\nerr := scanner.Scan(\n    // ...\n    &optionsJSON,\n    // ...\n)\njson.Unmarshal(optionsJSON, &item.Options)",
+      "options": [
+        "[]stringには直接スキャンできないため、[]byteで受けてからGoの型に変換する",
+        "PostgreSQLのJSONBはバイナリ形式で返されるため",
+        "json.Unmarshalの方がsql.Scanより速いため",
+        "[]stringはsql.Scanでnilになるため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`database/sql` は `[]string` 型への直接スキャンをサポートしていません。PostgreSQLのJSONBカラムをスキャンするには一旦 `[]byte` または `string` で受け取り、`json.Unmarshal` でGoの型に変換するのが標準的なパターンです。",
+      "source": "backend/main.go - scanQuiz()"
+    },
+    {
+      "id": 166,
+      "section": "セクション59: Go SQL & JSONB",
+      "title": "ON CONFLICT DO NOTHING の使い所",
+      "question": "以下のSQLで `ON CONFLICT (id) DO NOTHING` を指定した場合の動作はどれですか？",
+      "code": "INSERT INTO quizzes (id, section, title, ...)\nVALUES ($1, $2, $3, ...)\nON CONFLICT (id) DO NOTHING;",
+      "options": [
+        "同じidが存在するとエラーが発生する",
+        "同じidが存在する場合は既存行を上書きする",
+        "同じidが存在する場合はINSERTをスキップして正常終了する",
+        "同じidが存在する場合はNULLを挿入する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`ON CONFLICT (id) DO NOTHING` は競合（主キー重複など）が発生した場合にエラーを発生させずスキップします。冪等なシード処理に適しています。上書きしたい場合は `ON CONFLICT DO UPDATE SET ...`（UPSERT）を使います。",
+      "source": "backend/migrations/002_seed_quizzes.up.sql"
+    },
+    {
+      "id": 167,
+      "section": "セクション59: Go SQL & JSONB",
+      "title": "RETURNING 句の活用",
+      "question": "以下のINSERT文で `RETURNING` 句を使っている理由はどれですか？",
+      "code": "item, err := scanQuiz(s.db.QueryRow(`\n    INSERT INTO quizzes (...)\n    VALUES ($1, $2, ...)\n    RETURNING\n        id,\n        section,\n        created_at,\n        updated_at\n`, ...))",
+      "options": [
+        "INSERTの実行確認のため",
+        "INSERT後にSELECTを別途発行せずに挿入された行のデータを1回のクエリで取得するため",
+        "トランザクションを自動コミットするため",
+        "created_at のデフォルト値を上書きするため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`RETURNING` はINSERT/UPDATE/DELETEで変更された行のカラム値を返すPostgreSQL拡張です。`INSERT ... RETURNING id, created_at` とすることで、DB側で生成された `BIGSERIAL` のIDやデフォルト値 `NOW()` の `created_at` を別途SELECTなしで取得できます。",
+      "source": "backend/main.go - handleCreateQuiz()"
+    },
+    {
+      "id": 168,
+      "section": "セクション59: Go SQL & JSONB",
+      "title": "rows.Err() の確認",
+      "question": "以下のコードで `rows.Close()` の後に `rows.Err()` を確認している理由はどれですか？",
+      "code": "rows, err := s.db.Query(`SELECT ...`)\nif err != nil { ... }\ndefer rows.Close()\n\nfor rows.Next() {\n    // ...\n}\n\nif err := rows.Err(); err != nil {\n    writeError(w, http.StatusInternalServerError, err.Error())\n    return\n}",
+      "options": [
+        "rows.Closeのエラーを確認するため",
+        "ループ中に発生したDBエラー（ネットワーク断など）を検出するため",
+        "結果セットが空かどうかを確認するため",
+        "rows.Nextの戻り値を再確認するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`rows.Next()` がfalseを返した理由は「全行読み終わった」または「エラー発生」の2つです。`rows.Err()` でイテレーション中のエラーを確認しないと、DBサーバーとの通信断などで途中で切れた結果を正常として返してしまうバグが起きます。",
+      "source": "backend/main.go - handleListQuizzes()"
+    },
+    {
+      "id": 169,
+      "section": "セクション59: Go SQL & JSONB",
+      "title": "sql.ErrNoRows の判定",
+      "question": "以下のコードで `errors.Is(err, sql.ErrNoRows)` を使っている理由はどれですか？",
+      "code": "item, err := scanQuiz(s.db.QueryRow(`SELECT ... WHERE id = $1`, quizID))\nif err != nil {\n    if errors.Is(err, sql.ErrNoRows) {\n        writeError(w, http.StatusNotFound, \"quiz not found\")\n        return\n    }\n    writeError(w, http.StatusInternalServerError, err.Error())\n    return\n}",
+      "options": [
+        "QueryRowは必ずエラーを返すため",
+        "レコードが見つからない場合と内部エラーを区別して適切なHTTPステータスを返すため",
+        "sql.ErrNoRowsはpanicを防ぐためのセンチネル値のため",
+        "errors.Isを使わないと型アサーションが失敗するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`db.QueryRow` はレコードが0件のとき `sql.ErrNoRows` を返します。これを区別しないと「存在しないID」へのリクエストに `500 Internal Server Error` を返してしまいます。`errors.Is` でエラーの種類を判定し、`404 Not Found` と `500` を正しく使い分けます。",
+      "source": "backend/main.go - handleGetQuiz()"
+    },
+    {
+      "id": 170,
+      "section": "セクション59: Go SQL & JSONB",
+      "title": "setval でシーケンスをリセット",
+      "question": "マイグレーションのシードSQL末尾にある以下のSQL文の目的はどれですか？",
+      "code": "SELECT setval('quizzes_id_seq', (SELECT MAX(id) FROM quizzes));",
+      "options": [
+        "シーケンスを1にリセットして最初からIDを採番し直すため",
+        "INSERT後にシーケンスの現在値を最大IDに合わせ、次の自動採番が重複しないようにするため",
+        "quizzes_id_seqテーブルを初期化するため",
+        "MAX(id)の値をログに出力するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`BIGSERIAL` のシーケンスは通常INSERTのたびにインクリメントされますが、`id` を明示指定したINSERT（シードデータ）ではシーケンスが進みません。このため次の通常INSERTが既存IDと重複する可能性があります。`setval` でシーケンスを `MAX(id)` に合わせることで重複を防ぎます。",
+      "source": "backend/migrations/002_seed_quizzes.up.sql"
+    },
+    {
+      "id": 171,
+      "section": "セクション60: Go embed & golang-migrate",
+      "title": "//go:embed ディレクティブ",
+      "question": "以下のコードで `//go:embed migrations/*.sql` を使う目的はどれですか？",
+      "code": "//go:embed migrations/*.sql\nvar migrationsFS embed.FS",
+      "options": [
+        "実行時にファイルシステムからSQLを読み込むため",
+        "ビルド時にSQLファイルをバイナリに埋め込み、デプロイ時に別途ファイルを配置不要にするため",
+        "SQLファイルを暗号化するため",
+        "マイグレーションを自動実行するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`//go:embed` はビルド時に指定したファイルをGoバイナリに埋め込みます。`migrations/*.sql` をバイナリに含めることで、デプロイ先サーバーにSQLファイルを別途配置する必要がなくなります。`embed.FS` は組み込みファイルへの読み取り専用アクセスを提供します。",
+      "source": "backend/main.go / https://pkg.go.dev/embed"
+    },
+    {
+      "id": 172,
+      "section": "セクション60: Go embed & golang-migrate",
+      "title": "migrate.ErrNoChange の処理",
+      "question": "以下のコードで `errors.Is(err, migrate.ErrNoChange)` を無視している理由はどれですか？",
+      "code": "if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {\n    return err\n}\nreturn nil",
+      "options": [
+        "ErrNoChange はフォーマットエラーのため無視できる",
+        "全マイグレーション適用済みの場合 ErrNoChange が返り、これはエラーではなく正常状態のため",
+        "ErrNoChange はGoの標準エラーではないため比較できないから",
+        "m.Up() は常にエラーを返すため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`m.Up()` は全マイグレーションが既に適用されている場合（追加変更なし）に `migrate.ErrNoChange` を返します。これはエラーではなく「何もすることがない」という正常な状態です。サーバー再起動のたびに `Up()` を呼ぶ構成ではこの処理が必須です。",
+      "source": "backend/main.go - runMigrations()"
+    },
+    {
+      "id": 173,
+      "section": "セクション60: Go embed & golang-migrate",
+      "title": "schema_migrations テーブルの役割",
+      "question": "golang-migrate が自動作成する `schema_migrations` テーブルの役割はどれですか？",
+      "code": "-- golang-migrate が内部で管理するテーブル\nSELECT version, dirty FROM schema_migrations;\n--  version | dirty\n-- ---------+-------\n--        2 | f",
+      "options": [
+        "マイグレーションSQLの内容を保存するため",
+        "どのバージョンのマイグレーションまで適用済みかを追跡するため",
+        "ロールバック用にデータのスナップショットを保存するため",
+        "マイグレーションの実行時間を記録するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`schema_migrations` は適用済みマイグレーションのバージョン番号と `dirty`（失敗フラグ）を管理します。`version=2` なら `002_` までが適用済みを意味します。`dirty=true` はマイグレーション途中で失敗した状態を示し、手動修正が必要になります。",
+      "source": "backend/main.go - runMigrations() / golang-migrate docs"
+    },
+    {
+      "id": 174,
+      "section": "セクション60: Go embed & golang-migrate",
+      "title": "iofs.New の第2引数",
+      "question": "以下のコードで `iofs.New(migrationsFS, \"migrations\")` の第2引数 `\"migrations\"` は何を意味しますか？",
+      "code": "srcDriver, err := iofs.New(migrationsFS, \"migrations\")",
+      "options": [
+        "マイグレーション名のプレフィックス",
+        "embed.FS 内でSQLファイルを探すディレクトリパス",
+        "データベース名",
+        "マイグレーションのバージョン番号"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`iofs.New` の第2引数は `embed.FS` 内のどのディレクトリをルートとしてマイグレーションファイルを探すかを指定します。`//go:embed migrations/*.sql` で埋め込んだファイルは `migrations/` ディレクトリ構造で `embed.FS` に入るため、`\"migrations\"` を指定することで `001_create_tables.up.sql` 等が正しく検出されます。",
+      "source": "backend/main.go - runMigrations()"
+    },
+    {
+      "id": 175,
+      "section": "セクション60: Go embed & golang-migrate",
+      "title": "up.sql と down.sql の命名規則",
+      "question": "golang-migrate のファイル命名規則として正しいものはどれですか？",
+      "code": "migrations/\n  001_create_tables.up.sql\n  001_create_tables.down.sql\n  002_seed_quizzes.up.sql\n  002_seed_quizzes.down.sql",
+      "options": [
+        "{version}_{description}.{direction}.sql（バージョンは連番、direction は up または down）",
+        "{description}_{version}.sql（方向はファイル内のコメントで指定）",
+        "{version}.sql と {version}_rollback.sql のペア",
+        "任意のファイル名でよく、ファイル内のコメントで方向を指定"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "golang-migrate の標準命名規則は `{version}_{description}.{direction}.sql` です。`version` は数値の連番（`001`, `002`...）、`direction` は `up`（適用）または `down`（ロールバック）です。バージョン番号の順序でマイグレーションが実行されます。",
+      "source": "backend/migrations/ / golang-migrate docs"
+    },
+    {
+      "id": 176,
+      "section": "セクション61: Go 環境変数 & サーバー構造体",
+      "title": "getEnv のフォールバックパターン",
+      "question": "以下の `getEnv` 関数で環境変数が空文字列 `\"\"` の場合、`fallback` が返されますか？",
+      "code": "func getEnv(key, fallback string) string {\n    if value := os.Getenv(key); value != \"\" {\n        return value\n    }\n    return fallback\n}",
+      "options": [
+        "はい、空文字列は falsy として扱われ fallback が返る",
+        "いいえ、空文字列は設定済みとして扱われ空文字列が返る",
+        "os.Getenv は空文字列を返さない",
+        "パニックが発生する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`value != \"\"` の条件なので、環境変数が設定されていても値が空文字列の場合は `fallback` が返ります。`os.Getenv` は未設定・空設定どちらも空文字列を返すため、この実装では「未設定」と「空文字列に設定」を区別しません。区別が必要なら `os.LookupEnv` を使います。",
+      "source": "backend/main.go - getEnv()"
+    },
+    {
+      "id": 177,
+      "section": "セクション61: Go 環境変数 & サーバー構造体",
+      "title": "server 構造体への依存注入",
+      "question": "以下の `server` 構造体に `db`・`adminUser`・`jwtSecret` 等をフィールドとして持たせている設計上の利点はどれですか？",
+      "code": "type server struct {\n    db            *sql.DB\n    adminUser     string\n    adminPassword string\n    jwtSecret     []byte\n}\n\ns := &server{\n    db:            db,\n    adminUser:     getEnv(\"ADMIN_USER\", \"admin\"),\n    adminPassword: getEnv(\"ADMIN_PASSWORD\", \"password\"),\n    jwtSecret:     []byte(getEnv(\"JWT_SECRET\", \"dev-only-secret\")),\n}",
+      "options": [
+        "グローバル変数より読み書きが速いため",
+        "テスト時にモックDBや異なる設定を注入しやすく、グローバル状態を避けられるため",
+        "Goではメソッドに引数を渡せないため",
+        "フィールドは自動的にgoroutine-safeになるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "依存関係を構造体フィールドに持たせる「依存性注入（DI）」パターンです。グローバル変数と違い、テスト時に `server{db: mockDB}` のように差し替えやすく、並行テストでの競合も避けられます。ハンドラがすべてメソッドとして `*server` に紐づくためコンテキストも明確です。",
+      "source": "backend/main.go - server struct / main()"
+    },
+    {
+      "id": 178,
+      "section": "セクション61: Go 環境変数 & サーバー構造体",
+      "title": "jwtSecret を []byte で保持する理由",
+      "question": "`jwtSecret` を `string` ではなく `[]byte` で保持している理由はどれですか？",
+      "code": "jwtSecret: []byte(getEnv(\"JWT_SECRET\", \"dev-only-secret\")),\n\n// 使用箇所\nreturn token.SignedString(s.jwtSecret)",
+      "options": [
+        "[]byteの方がメモリ効率が良いため",
+        "jwt.SignedStringが[]byteを要求し、文字列より安全にゼロクリアできるため",
+        "環境変数はバイト列で返されるため",
+        "Goではstring型の比較ができないため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`jwt.Token.SignedString` はHMAC系アルゴリズムで `[]byte` を要求します。また `[]byte` はメモリ上でゼロクリア（`for i := range secret { secret[i] = 0 }`）が可能ですが、Goの `string` はイミュータブルなためクリアできません。シークレット情報を `[]byte` で扱うのはセキュリティ上の慣行です。",
+      "source": "backend/main.go - server struct / issueJWT()"
+    },
+    {
+      "id": 179,
+      "section": "セクション61: Go 環境変数 & サーバー構造体",
+      "title": "defer db.Close() のタイミング",
+      "question": "以下のコードで `defer db.Close()` を呼んでいるとき、`db.Close()` が実行されるタイミングはどれですか？",
+      "code": "db, err := initDB()\nif err != nil {\n    log.Fatal(err)\n}\ndefer db.Close()\n\n// ... サーバー起動\nif err := http.ListenAndServe(\":8080\", s.routes()); err != nil {\n    log.Fatal(err)\n}",
+      "options": [
+        "initDB() の直後",
+        "main() 関数が返るとき（サーバーが停止したとき）",
+        "各HTTPリクエスト処理後",
+        "GCが実行されたとき"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`defer` は宣言した関数（ここでは `main`）が返るときに実行されます。`http.ListenAndServe` はサーバーが停止するまでブロックするため、通常は `db.Close()` は呼ばれません。サーバーがシャットダウンしたとき（エラーまたはシグナル）に `main` が返り、`defer db.Close()` が実行されます。",
+      "source": "backend/main.go - main()"
+    },
+    {
+      "id": 180,
+      "section": "セクション61: Go 環境変数 & サーバー構造体",
+      "title": "log.Fatal の動作",
+      "question": "`log.Fatal(err)` と `log.Print(err); os.Exit(1)` の動作の違いはどれですか？",
+      "code": "db, err := initDB()\nif err != nil {\n    log.Fatal(err)\n}",
+      "options": [
+        "log.Fatal はパニックを起こすが log.Print はログのみ",
+        "実質同じ動作（ログ出力 + os.Exit(1)）。ただし log.Fatal は defer を実行しない",
+        "log.Fatal は終了コード 0 で終了する",
+        "log.Fatal はゴルーチンをすべて待ってから終了する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`log.Fatal` は内部で `log.Print + os.Exit(1)` を呼びます。`os.Exit` は `defer` を実行せずに即終了します。そのため `defer db.Close()` が登録済みでも `log.Fatal` で終了すると実行されません。グレースフルシャットダウンが必要な場合は `os.Exit` を避け、エラーを上位に返す設計が推奨されます。",
+      "source": "backend/main.go - main() / https://pkg.go.dev/log#Fatal"
+    },
+    {
+      "id": 181,
+      "section": "セクション62: Go バリデーション & 文字列処理",
+      "title": "strings.TrimSpace の活用",
+      "question": "以下の `normalizeQuizPayload` で各フィールドに `strings.TrimSpace` を適用している理由はどれですか？",
+      "code": "func normalizeQuizPayload(payload *quizPayload) error {\n    payload.Section = strings.TrimSpace(payload.Section)\n    payload.Title = strings.TrimSpace(payload.Title)\n    payload.Question = strings.TrimSpace(payload.Question)\n    // ...\n    if payload.Section == \"\" {\n        return errors.New(\"section is required\")\n    }\n}",
+      "options": [
+        "SQLインジェクションを防ぐため",
+        "前後の空白のみのデータが「空」として正しく検出されるようにするため",
+        "全角スペースを除去するため",
+        "文字列を小文字に変換するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`TrimSpace` なしで `\"  \"`（空白のみ）を `== \"\"` で比較すると空と判定されません。バリデーション前に `TrimSpace` を適用することで「空白のみ入力」を「空」として検出します。また `payload` はポインタ渡しなので `TrimSpace` 後の値が呼び出し元にも反映されます。",
+      "source": "backend/main.go - normalizeQuizPayload()"
+    },
+    {
+      "id": 182,
+      "section": "セクション62: Go バリデーション & 文字列処理",
+      "title": "CorrectAnswerIndex の範囲チェック",
+      "question": "以下の範囲チェックで `payload.CorrectAnswerIndex >= len(payload.Options)` を含める理由はどれですか？",
+      "code": "if payload.CorrectAnswerIndex < 0 || payload.CorrectAnswerIndex >= len(payload.Options) {\n    return errors.New(\"correctAnswerIndex is out of range\")\n}",
+      "options": [
+        "Goの配列は1始まりのため",
+        "インデックスは0始まりなのでlen(options)はインデックスとして無効な値のため",
+        "len()が負の値を返すことがあるため",
+        "Options が空の場合のみチェックするため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Goのスライスインデックスは0始まりなので、有効な範囲は `0` 〜 `len-1` です。`CorrectAnswerIndex == len(options)` は1つ外（out of bounds）になります。`< 0` と `>= len` の両方をチェックすることで配列外アクセスによるパニックを防ぎます。",
+      "source": "backend/main.go - normalizeQuizPayload()"
+    },
+    {
+      "id": 183,
+      "section": "セクション62: Go バリデーション & 文字列処理",
+      "title": "parseID での strconv.ParseInt",
+      "question": "以下の `parseID` で `strconv.ParseInt(raw, 10, 64)` を使っている理由はどれですか？",
+      "code": "func parseID(raw string) (int64, error) {\n    id, err := strconv.ParseInt(raw, 10, 64)\n    if err != nil || id <= 0 {\n        return 0, errors.New(\"invalid quiz id\")\n    }\n    return id, nil\n}",
+      "options": [
+        "URLパスパラメータは常に16進数のため",
+        "パスパラメータは文字列なので10進整数として安全にパースし、quiz.ID（int64）型に合わせるため",
+        "int32では値が溢れる可能性があるため、パフォーマンスのためにint64を使う",
+        "strconvの方がfmtパッケージより速いため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`r.PathValue` は常に文字列を返すため数値変換が必要です。`ParseInt(raw, 10, 64)` の第2引数 `10` は10進数、第3引数 `64` はビットサイズ（`int64`）を指定します。`quiz.ID` が `int64` 型なので合わせています。また `id <= 0` チェックで負数や0の無効なIDを弾きます。",
+      "source": "backend/main.go - parseID()"
+    },
+    {
+      "id": 184,
+      "section": "セクション62: Go バリデーション & 文字列処理",
+      "title": "options の空スライス初期化",
+      "question": "以下の `handleListQuizzes` で `make([]quiz, 0)` を使う理由はどれですか？",
+      "code": "items := make([]quiz, 0)\nfor rows.Next() {\n    item, err := scanQuiz(rows)\n    // ...\n    items = append(items, item)\n}\nwriteJSON(w, http.StatusOK, items)",
+      "options": [
+        "var items []quiz と全く同じため、どちらでもよい",
+        "var で宣言するとnil スライスになりJSONで null になるが、make([]quiz, 0)は空配列 [] になるため",
+        "make の方がappendのパフォーマンスが良いため",
+        "nil スライスへの append はパニックになるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`var items []quiz` は `nil` スライスを作るため `json.Marshal` すると `null` になります。`make([]quiz, 0)` は空（長さ0）の非nilスライスを作るため `[]` になります。クイズが0件のとき `null` ではなく `[]` を返す方がAPIクライアントにとって扱いやすいため、`make` を使っています。",
+      "source": "backend/main.go - handleListQuizzes()"
+    },
+    {
+      "id": 185,
+      "section": "セクション62: Go バリデーション & 文字列処理",
+      "title": "code フィールドの nil 判定",
+      "question": "以下のコードで `payload.Code == \"\"` のとき `codeValue = nil` にしている理由はどれですか？",
+      "code": "var codeValue any\nif payload.Code == \"\" {\n    codeValue = nil\n} else {\n    codeValue = payload.Code\n}\n\nitem, err := scanQuiz(s.db.QueryRow(`\n    INSERT INTO quizzes (..., code, ...) VALUES (..., $4, ...)\n`, ..., codeValue, ...))",
+      "options": [
+        "空文字列のSQLパラメータはエラーになるため",
+        "DBスキーマでcodeはNULL許容（TEXT, not NOT NULL）なので、コードなしのクイズはNULLを格納するため",
+        "PostgreSQLでは空文字列とNULLは同じ扱いのため",
+        "nil を渡すとPostgreSQLが自動でDEFAULT値を使うため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "DBスキーマで `code TEXT`（`NOT NULL` なし）のため NULL が許容されます。コードブロックがないクイズで空文字列 `\"\"` を格納するよりも `NULL` を格納する方が「値なし」の意味が明確です。Go の `nil` を `any` 型で渡すと `database/sql` が SQL の `NULL` に変換します。",
+      "source": "backend/main.go - handleCreateQuiz() / handleUpdateQuiz()"
+    },
+    {
+      "id": 186,
+      "section": "セクション62: Go バリデーション & 文字列処理",
+      "title": "RowsAffected による削除確認",
+      "question": "以下の削除処理で `rowsAffected == 0` のとき 404 を返している理由はどれですか？",
+      "code": "result, err := s.db.Exec(`DELETE FROM quizzes WHERE id = $1`, quizID)\nrowsAffected, err := result.RowsAffected()\nif rowsAffected == 0 {\n    writeError(w, http.StatusNotFound, \"quiz not found\")\n    return\n}\nwriteJSON(w, http.StatusNoContent, nil)",
+      "options": [
+        "DELETEは常に少なくとも1行削除するため0は異常",
+        "存在しないIDへのDELETEはエラーを返さず0行削除するため、404で存在しないことを伝える",
+        "rowsAffectedが0の場合DBエラーが発生するため",
+        "PostgreSQLはrowsAffectedを返さないため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`DELETE WHERE id = $1` は条件に一致する行がなくてもエラーにならず、`RowsAffected()` が `0` を返します。クライアントに「そのIDは存在しなかった」と伝えるため `404 Not Found` を返します。削除成功時は `204 No Content`（ボディなし）がRESTの慣行です。",
+      "source": "backend/main.go - handleDeleteQuiz()"
+    },
+    {
+      "id": 187,
+      "section": "セクション63: SPA と SEO",
+      "title": "GoogleボットのJSレンダリング問題",
+      "question": "Vite + React で構築したSPAをそのまま公開した場合、SEO上の問題として最も正確なものはどれですか？",
+      "code": "// SPAの初期HTML（Vite build 後）\n<!DOCTYPE html>\n<html>\n  <head><title>Quiz App</title></head>\n  <body>\n    <div id=\"root\"></div>\n    <script type=\"module\" src=\"/assets/index-abc123.js\"></script>\n  </body>\n</html>",
+      "options": [
+        "GoogleボットはJSを一切実行できないため、全コンテンツがインデックスされない",
+        "GoogleボットはJSを実行できるが、クロールキューに入るまで遅延があり、インデックスが遅れたりコンテンツが見逃される可能性がある",
+        "SPAはHTTPSでないとインデックスされない",
+        "Viteのビルド出力はGoogleに対応していない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "GoogleボットはChromiumベースでJSを実行できますが、「第2波クロール」と呼ばれる遅延レンダリングキューに入るため、インデックス反映が数日〜数週間遅れることがあります。また動的に生成されるコンテンツが正しく解釈されない場合もあります。HTMLに最初からコンテンツが含まれているSSR/SSGと比べてSEO上不利です。",
+      "source": "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics"
+    },
+    {
+      "id": 188,
+      "section": "セクション63: SPA と SEO",
+      "title": "SSR と SSG の違い",
+      "question": "Next.js における SSR（Server-Side Rendering）と SSG（Static Site Generation）の違いとして正しいものはどれですか？",
+      "code": "// SSR: リクエストのたびにサーバーでHTMLを生成\nexport async function getServerSideProps() {\n  const data = await fetchQuizzes()\n  return { props: { data } }\n}\n\n// SSG: ビルド時にHTMLを生成\nexport async function getStaticProps() {\n  const data = await fetchQuizzes()\n  return { props: { data } }\n}",
+      "options": [
+        "SSRはビルド時、SSGはリクエスト時にHTMLを生成する",
+        "SSRはリクエスト時にサーバーでHTMLを生成し、SSGはビルド時にHTMLを生成する",
+        "SSRとSSGは同じもので、フレームワークによって名称が異なる",
+        "SSGはJavaScriptを使わない静的サイトのことで、Reactは使えない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "SSRはリクエストのたびにサーバーがHTMLを生成して返すため、常に最新データを返せますがサーバー負荷がかかります。SSGはビルド時に全ページのHTMLを生成するため高速・低コストですが、データ更新にはリビルドが必要です。クイズ一覧のような更新頻度の低いコンテンツはSSGが適しています。",
+      "source": "https://nextjs.org/docs/pages/building-your-application/rendering"
+    },
+    {
+      "id": 189,
+      "section": "セクション63: SPA と SEO",
+      "title": "Core Web Vitals とSEO",
+      "question": "Google検索のランキング要因になっている Core Web Vitals の3指標として正しい組み合わせはどれですか？",
+      "code": "// Lighthouseで計測できる主要指標\n// LCP: ページ内の最大コンテンツが表示されるまでの時間\n// CLS: レイアウトのズレ（累積レイアウトシフト）\n// INP: ユーザー操作に対する応答性（旧FID）",
+      "options": [
+        "FCP・TTI・TBT",
+        "LCP・CLS・INP",
+        "TTFB・FCP・TTI",
+        "SEO・Performance・Accessibility"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Core Web Vitals は LCP（Largest Contentful Paint）・CLS（Cumulative Layout Shift）・INP（Interaction to Next Paint、2024年3月にFIDから移行）の3指標です。Googleは2021年よりこれらを検索ランキングの要因に組み込んでいます。SPAはJSバンドルが大きくなりがちなためLCPが悪化しやすい点に注意が必要です。",
+      "source": "https://web.dev/articles/vitals"
+    },
+    {
+      "id": 190,
+      "section": "セクション63: SPA と SEO",
+      "title": "React SPA から Next.js への移行の主なメリット",
+      "question": "Vite + React SPA を Next.js に移行する最大のSEO上のメリットはどれですか？",
+      "code": "// Before: SPAの初期HTML\n<div id=\"root\"></div> // コンテンツなし\n\n// After: Next.js SSGの初期HTML\n<h1>Reactの基礎</h1>\n<p>以下の問題に答えてください...</p>\n// コンテンツがHTMLに含まれる",
+      "options": [
+        "TypeScriptが使えるようになる",
+        "初期HTMLにコンテンツが含まれるためGoogleボットがJSレンダリングを待たずにインデックスできる",
+        "CSSのバンドルサイズが小さくなる",
+        "APIルートが使えるためバックエンドが不要になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Next.js のSSR/SSGでは初期レスポンスのHTMLにすでにコンテンツが含まれます。Googleボットはこれを即座にパースしてインデックスできるため、SPAの「遅延レンダリング問題」が解消されます。クイズタイトル・問題文・解説がHTMLに含まれることで、検索結果にコンテンツが反映されやすくなります。",
+      "source": "https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering"
+    },
+    {
+      "id": 191,
+      "section": "セクション63: SPA と SEO",
+      "title": "動的メタタグと og:title",
+      "question": "クイズ詳細ページ（`/quizzes/123`）でSNSシェア時に正しいタイトルを表示するために必要な対応はどれですか？",
+      "code": "// SPAでは全ページ共通のmetaになってしまう\n<meta property=\"og:title\" content=\"Quiz App\" />\n\n// Next.jsではページごとに動的に設定できる\nexport const metadata = {\n  title: quiz.title,\n  openGraph: { title: quiz.title }\n}",
+      "options": [
+        "JavaScriptでdocument.titleを書き換えれば十分",
+        "SNSクローラーはJSを実行しないため、SSR/SSGでHTMLにog:titleを埋め込む必要がある",
+        "og:titleはGoogleのみが参照するためSEOには影響しない",
+        "React HelmetでSPAでも同じ効果が得られる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Twitter・Facebook等のSNSクローラーはJavaScriptを実行せず、HTMLのみを解析します。SPAでJSから `og:title` を動的に設定しても、クローラーには初期HTMLの値しか見えません。Next.jsのSSR/SSGでは各ページのHTMLに正しい `og:title` が埋め込まれるため、シェア時に適切なプレビューが表示されます。",
+      "source": "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data"
+    },
+    {
+      "id": 192,
+      "section": "セクション63: SPA と SEO",
+      "title": "sitemap.xml の役割",
+      "question": "クイズアプリに `sitemap.xml` を設置する目的として正しいものはどれですか？",
+      "code": "<!-- sitemap.xml の例 -->\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n  <url>\n    <loc>https://example.com/quizzes/1</loc>\n    <lastmod>2026-04-07</lastmod>\n  </url>\n  <url>\n    <loc>https://example.com/quizzes/2</loc>\n    <lastmod>2026-04-07</lastmod>\n  </url>\n</urlset>",
+      "options": [
+        "サイトのデザインをGoogleに伝えるため",
+        "GoogleボットにクロールすべきURLを明示的に伝え、インデックス漏れを防ぐため",
+        "sitemap.xml があるとCore Web Vitalsのスコアが上がるため",
+        "ユーザーへのナビゲーションメニューを提供するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`sitemap.xml` はGoogleボットにサイト内の全URLを伝えるファイルです。特に内部リンクが少ないページや新しいコンテンツをGoogleに発見させる手助けになります。クイズが100問以上ある場合、全問題ページのURLをsitemapに列挙することで、クロール漏れを防げます。Next.jsでは `next-sitemap` パッケージで自動生成できます。",
+      "source": "https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview"
+    },
+    {
+      "id": 193,
+      "section": "セクション63: SPA と SEO",
+      "title": "構造化データ（Quiz スキーマ）",
+      "question": "クイズアプリで以下のような構造化データを設置する目的はどれですか？",
+      "code": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Quiz\",\n  \"name\": \"useEffect 依存配列と関数参照\",\n  \"hasPart\": [{\n    \"@type\": \"Question\",\n    \"text\": \"以下のコードについて、最も正しい説明はどれですか？\",\n    \"acceptedAnswer\": {\n      \"@type\": \"Answer\",\n      \"text\": \"useCallbackでfetchUserを安定化し...\"\n    }\n  }]\n}",
+      "options": [
+        "Googleがページをブロックしないようにするため",
+        "Googleがコンテンツの意味を理解しやすくなり、リッチリザルト（検索結果での特別な表示）が得られる可能性があるため",
+        "ページの読み込み速度を向上させるため",
+        "構造化データはアクセシビリティのためのものでSEOとは無関係"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "構造化データ（JSON-LD形式のschema.org）を設置するとGoogleがコンテンツの種類・意味を機械的に理解できます。QuizやQ&Aスキーマを使うと検索結果ページにリッチリザルト（問題文や回答が直接表示）が表示される可能性があり、クリック率の向上が期待できます。",
+      "source": "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data"
+    },
+    {
+      "id": 194,
+      "section": "セクション64: CSR を示すコード読解",
+      "title": "createRoot はCSRの証拠",
+      "question": "以下の `main.tsx` のコードがCSR（クライアントサイドレンダリング）であることを示す根拠はどれですか？",
+      "code": "// main.tsx\nconst rootElement = document.getElementById('root')\nif (!rootElement) throw new Error('Root element #root not found')\n\ncreateRoot(rootElement).render(\n  <StrictMode>\n    <App />\n  </StrictMode>,\n)",
+      "options": [
+        "StrictMode を使っているため",
+        "document.getElementById と createRoot によりブラウザのDOMにReactツリーをマウントしており、サーバーではなくブラウザ上でレンダリングが行われるため",
+        "StrictModeはサーバーでは動作しないため",
+        "App コンポーネントをラップしているため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`document.getElementById` は `document` オブジェクトを参照しており、これはブラウザ環境のみに存在します。`createRoot` でブラウザのDOM要素にReactをマウントすることがCSRの本質です。SSRでは `hydrateRoot` を使い、サーバーで生成済みのHTMLにイベントを付与します。",
+      "source": "admin-web/src/main.tsx"
+    },
+    {
+      "id": 195,
+      "section": "セクション64: CSR を示すコード読解",
+      "title": "BrowserRouter はCSRのルーター",
+      "question": "以下の `App.tsx` で `BrowserRouter` を使っていることがCSRを示す理由はどれですか？",
+      "code": "// App.tsx\nimport { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'\n\nexport default function App() {\n  return (\n    <BrowserRouter>\n      <Routes>\n        <Route path=\"/quizzes\" element={<QuizListPage />} />\n        {/* ... */}\n      </Routes>\n    </BrowserRouter>\n  )\n}",
+      "options": [
+        "BrowserRouter は React Router v6 以降でしか使えないため",
+        "BrowserRouter は window.history API を使ってブラウザ上でルーティングを管理するため、サーバーではなくブラウザがページ遷移を制御するCSRの仕組み",
+        "Routes コンポーネントはサーバーで動作しないため",
+        "BrowserRouter を使うと自動的にSSRが無効になるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`BrowserRouter` は `window.history.pushState` を使ってURLを書き換え、ブラウザ側でルーティングを管理します。Next.jsではサーバーが各URLに対応するHTMLを返しますが、SPAではどのURLへのアクセスも同じ `index.html` を返し、その後JavaScriptがURLに応じたコンポーネントを表示します。",
+      "source": "admin-web/src/App.tsx"
+    },
+    {
+      "id": 196,
+      "section": "セクション64: CSR を示すコード読解",
+      "title": "useEffect + fetch はCSRのデータ取得",
+      "question": "以下の `ViewCounter.tsx` のデータ取得パターンがCSRであることを示す根拠はどれですか？",
+      "code": "// ViewCounter.tsx\nuseEffect(() => {\n  const fetchViews = async () => {\n    const res = await fetch(API_URL)\n    const data = await res.json()\n    setCount(data.count)\n  }\n  fetchViews()\n}, [])",
+      "options": [
+        "useEffect はサーバーで実行されないため、データ取得がブラウザ上でマウント後に行われる",
+        "fetch はブラウザAPIのため",
+        "async/await はサーバーで使えないため",
+        "setCount はブラウザのみで動作するため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`useEffect` はコンポーネントのマウント後（ブラウザ上）にのみ実行されます。サーバーサイドでは実行されません。このため初期HTMLには `count` の値が含まれず、ブラウザでJSが実行されて初めてデータが表示されます。SSGなら `getStaticProps`、SSRなら `getServerSideProps` でビルド時・リクエスト時にデータを取得してHTMLに埋め込みます。",
+      "source": "admin-web/src/components/ViewCounter.tsx"
+    },
+    {
+      "id": 197,
+      "section": "セクション64: CSR を示すコード読解",
+      "title": "window.localStorage はブラウザ専用API",
+      "question": "以下の `session.ts` のコードがCSR環境前提である証拠はどれですか？",
+      "code": "// auth/session.ts\nconst TOKEN_STORAGE_KEY = 'quiz-admin-token'\n\nexport function getAuthToken(): string | null {\n  return window.localStorage.getItem(TOKEN_STORAGE_KEY)\n}\n\nexport function setAuthToken(token: string): void {\n  window.localStorage.setItem(TOKEN_STORAGE_KEY, token)\n}",
+      "options": [
+        "localStorage は文字列のみ保存できるため",
+        "window.localStorage はブラウザ専用APIであり、Node.js（SSR）環境では window が存在しないためエラーになる",
+        "TOKEN_STORAGE_KEY を定数にしているため",
+        "getAuthToken が null を返す可能性があるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`window.localStorage` はブラウザ専用のWeb APIです。Next.jsのSSR環境（Node.js）では `window` は未定義のため、このコードをサーバーサイドで実行すると `ReferenceError: window is not defined` が発生します。Next.jsに移行する場合、`typeof window !== 'undefined'` のガードや `useEffect` 内への移動が必要です。",
+      "source": "admin-web/src/auth/session.ts"
+    },
+    {
+      "id": 198,
+      "section": "セクション64: CSR を示すコード読解",
+      "title": "isLoading state はCSRのUXパターン",
+      "question": "以下の `QuizListPage.tsx` で `isLoading` state が必要になる根本的な理由はどれですか？",
+      "code": "// QuizListPage.tsx\nconst [quizzes, setQuizzes] = useState<Quiz[]>([])\nconst [isLoading, setIsLoading] = useState(true)\n\n// ...\n{isLoading ? (\n  <div>読み込み中...</div>\n) : (\n  <table>...</table>\n)}",
+      "options": [
+        "useState の初期値に空配列を使っているため",
+        "CSRではページ表示後にブラウザからAPIを叩くため、データ取得中の空白期間が生まれUXのためローディング表示が必要になる",
+        "React の仕様でテーブルは非同期でレンダリングされるため",
+        "APIが遅いため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "CSRではブラウザがJSを実行してからAPIリクエストを送るため、必ずデータ取得前の「空の状態」が存在します。SSGであればビルド時にデータ取得済みのHTMLが返るため、初期表示時にローディング状態が不要になります。`isLoading` の存在自体がCSRのデータ取得パターンの証拠です。",
+      "source": "admin-web/src/pages/QuizListPage.tsx"
+    },
+    {
+      "id": 199,
+      "section": "セクション64: CSR を示すコード読解",
+      "title": "ProtectedRoute はクライアント側認証",
+      "question": "以下の `ProtectedRoute` コンポーネントがCSR前提である理由はどれですか？",
+      "code": "// components/ProtectedRoute.tsx\nimport { Navigate } from 'react-router-dom'\nimport { getAuthToken } from '../auth/session'\n\nexport default function ProtectedRoute({ children }) {\n  if (!getAuthToken()) {\n    return <Navigate to=\"/login\" replace />\n  }\n  return children\n}",
+      "options": [
+        "Navigate コンポーネントを使っているため",
+        "getAuthToken() が window.localStorage を参照しており、認証チェックがブラウザ上のJS実行時に行われるため、サーバーでは保護できない",
+        "children props を受け取っているため",
+        "replace オプションを使っているため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`getAuthToken()` は `window.localStorage` を参照するCSRの実装です。SSRでは初期HTMLレスポンス時点でサーバー側が認証状態を確認してリダイレクトできますが、この実装ではブラウザでJSが実行されるまで保護ページのHTMLが一瞬表示される可能性（フラッシュ）があります。Next.jsではMiddlewareやサーバーコンポーネントでサーバー側認証が可能です。",
+      "source": "admin-web/src/components/ProtectedRoute.tsx"
+    },
+    {
+      "id": 200,
+      "section": "セクション64: CSR を示すコード読解",
+      "title": "Next.js移行時の window 対応",
+      "question": "CSRの `session.ts` を Next.js に移行する際、`window.localStorage` が原因でSSRエラーになる場合の正しい対処法はどれですか？",
+      "code": "// 現在のコード（SSR環境でエラー）\nexport function getAuthToken(): string | null {\n  return window.localStorage.getItem('quiz-admin-token')\n}\n\n// Next.js 移行後の対応例\nexport function getAuthToken(): string | null {\n  if (typeof window === 'undefined') return null\n  return window.localStorage.getItem('quiz-admin-token')\n}",
+      "options": [
+        "window を global に置き換える",
+        "typeof window === 'undefined' でサーバー実行時を判定してnullを返す",
+        "localStorage を sessionStorage に置き換える",
+        "useEffect 内でのみ localStorage を使い、それ以外では Cookie を使う"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`typeof window === 'undefined'` はサーバーサイド（Node.js）では `true` になります。このガードを追加することでSSRビルドエラーを回避できます。より本格的な対応としては、Cookie-based認証に切り替えてサーバーサイドでもトークンを読めるようにする方法が推奨されます（Next.js の `cookies()` API等）。",
+      "source": "admin-web/src/auth/session.ts / Next.js migration"
+    },
+    {
+      "id": 201,
+      "section": "セクション65: React Router v7 移行",
+      "title": "Viteプラグインの変更",
+      "question": "現在のプロジェクトを React Router v7 フレームワークモードに移行するとき `vite.config.ts` の変更として正しいものはどれですか？",
+      "code": "// 移行前\nimport react from '@vitejs/plugin-react'\nimport { defineConfig } from 'vite'\n\nexport default defineConfig({\n  plugins: [react()]\n})\n\n// 移行後\nimport { reactRouter } from '@react-router/dev/vite'\nimport { defineConfig } from 'vite'\n\nexport default defineConfig({\n  plugins: [reactRouter()]\n})",
+      "options": [
+        "@vitejs/plugin-react を残したまま reactRouter() を追加する",
+        "@vitejs/plugin-react を削除し reactRouter() に置き換える",
+        "vite.config.ts は変更不要で package.json のみ変更する",
+        "reactRouter() は vite.config.ts ではなく react-router.config.ts に書く"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`reactRouter()` は `@react-router/dev/vite` が提供するViteプラグインで、`@vitejs/plugin-react` の機能を内包しています。両方を同時に使うと競合するため、`@vitejs/plugin-react` を削除して置き換えます。合わせて `npm install -D @react-router/dev` と `npm install @react-router/node` が必要です。",
+      "source": "https://reactrouter.com/upgrading/component-routes"
+    },
+    {
+      "id": 202,
+      "section": "セクション65: React Router v7 移行",
+      "title": "createRoot から hydrateRoot への変更",
+      "question": "React Router v7 フレームワークモードに移行するとき `main.tsx` の変更として正しいものはどれですか？",
+      "code": "// 移行前 (main.tsx)\nimport { createRoot } from 'react-dom/client'\ncreateRoot(document.getElementById('root')!).render(\n  <StrictMode><App /></StrictMode>\n)\n\n// 移行後 (entry.client.tsx)\nimport { hydrateRoot } from 'react-dom/client'\nimport { HydratedRouter } from 'react-router/dom'\n\nhydrateRoot(\n  document,\n  <StrictMode><HydratedRouter /></StrictMode>\n)",
+      "options": [
+        "createRoot のまま App を HydratedRouter に変えるだけでよい",
+        "createRoot を hydrateRoot に変え、App を HydratedRouter に置き換え、マウント対象を document 全体にする",
+        "main.tsx は削除してよく、entry.client.tsx は自動生成される",
+        "hydrateRoot は SSR が有効なときのみ必要で、SPA モードなら createRoot のまま"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`hydrateRoot` はサーバーで生成済みのHTMLにReactのイベントを付与（ハイドレーション）します。`createRoot` は空のDOMにゼロからレンダリングするCSRの方式です。マウント対象が `document.getElementById('root')` から `document` 全体になる点も重要な変更です。`<HydratedRouter>` がルーティングを管理するため `<App>` は不要になります。",
+      "source": "https://reactrouter.com/upgrading/component-routes"
+    },
+    {
+      "id": 203,
+      "section": "セクション65: React Router v7 移行",
+      "title": "BrowserRouter から routes.ts への移行",
+      "question": "現在の `App.tsx` のルート定義を React Router v7 の `routes.ts` に移行したとき、正しい記述はどれですか？",
+      "code": "// 移行前 App.tsx\n<Routes>\n  <Route path=\"/quizzes\" element={<QuizListPage />} />\n  <Route path=\"/quizzes/new\" element={<QuizFormPage mode=\"create\" />} />\n  <Route path=\"/quizzes/:id/edit\" element={<QuizFormPage mode=\"edit\" />} />\n  <Route path=\"/login\" element={<LoginPage />} />\n</Routes>\n\n// 移行後 routes.ts\nimport { type RouteConfig, route } from '@react-router/dev/routes'\n\nexport default [\n  route('/quizzes', './pages/QuizListPage.tsx'),\n  route('/quizzes/new', './pages/QuizFormPage.tsx'),\n  route('/quizzes/:id/edit', './pages/QuizFormPage.tsx'),\n  route('/login', './pages/LoginPage.tsx'),\n] satisfies RouteConfig",
+      "options": [
+        "routes.ts では element プロパティで JSX を直接渡す",
+        "routes.ts ではファイルパスの文字列でルートモジュールを指定し、コンポーネントは各ファイルの default export になる",
+        "routes.ts は JSON 形式で記述する",
+        "BrowserRouter を残したまま routes.ts を追加できる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "React Router v7 の `routes.ts` ではJSXではなくファイルパスの文字列でルートを定義します。各ページファイルが「ルートモジュール」となり、`default export` がコンポーネント、`loader` がデータ取得、`action` がフォーム送信処理を担います。自動コード分割もこの構造によって実現されます。",
+      "source": "https://reactrouter.com/upgrading/component-routes"
+    },
+    {
+      "id": 204,
+      "section": "セクション65: React Router v7 移行",
+      "title": "loader によるSSRデータ取得",
+      "question": "現在の `QuizListPage.tsx` の `useEffect` + `fetch` によるデータ取得を React Router v7 の `loader` に移行したとき、SEO上の利点はどれですか？",
+      "code": "// 移行前: CSR（useEffect内でデータ取得）\nuseEffect(() => {\n  void loadQuizzes()\n}, [loadQuizzes])\n\n// 移行後: SSR（loaderでサーバー取得）\nexport async function loader() {\n  const quizzes = await listQuizzes()\n  return { quizzes }\n}\n\nexport default function QuizListPage({ loaderData }) {\n  const { quizzes } = loaderData\n  // isLoading state が不要になる\n  return <table>...</table>\n}",
+      "options": [
+        "loader は並列実行されるためパフォーマンスが上がる",
+        "初期HTMLにクイズデータが含まれるためGoogleボットがJSを待たずにインデックスでき、isLoading状態も不要になる",
+        "loader はキャッシュが自動で効くためAPIリクエストが減る",
+        "loader はTypeScriptの型推論が強化されるためバグが減る"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`loader` はサーバーサイドで実行されるため、レスポンスのHTMLにクイズデータが含まれます。Googleボットはこれを即座にインデックスできます。また `useEffect` でのデータ取得がなくなるため `isLoading` state も不要になり、コードがシンプルになります。",
+      "source": "https://reactrouter.com/upgrading/component-routes"
+    },
+    {
+      "id": 205,
+      "section": "セクション65: React Router v7 移行",
+      "title": "react-router.config.ts の ssr オプション",
+      "question": "以下の `react-router.config.ts` で `ssr: false` と `ssr: true` の違いはどれですか？",
+      "code": "// SPA モード（移行初期段階）\nexport default {\n  ssr: false,\n} satisfies Config\n\n// SSR モード（本格対応）\nexport default {\n  ssr: true,\n  async prerender() {\n    return ['/', '/quizzes']\n  },\n} satisfies Config",
+      "options": [
+        "ssr: false はビルドが速くなるだけで動作は同じ",
+        "ssr: false はCSRのまま（既存SPAと同等）で移行の足がかりになり、ssr: true にするとSSR/SSGが有効になる",
+        "ssr: true にするとReact Server Componentsが使えるようになる",
+        "ssr: false は開発環境のみ有効でプロダクションでは自動でtrueになる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`ssr: false` はSPAモードで、フレームワーク機能（routes.ts、loader等）は使えますがサーバーレンダリングはしません。既存SPAからの段階的移行の足がかりとして使えます。`ssr: true` にするとサーバーレンダリングが有効になります。`prerender` で特定URLを静的HTML生成（SSG相当）することもできます。",
+      "source": "https://reactrouter.com/upgrading/component-routes"
+    },
+    {
+      "id": 206,
+      "section": "セクション65: React Router v7 移行",
+      "title": "root.tsx の役割",
+      "question": "React Router v7 の `root.tsx` に含まれる `<Scripts />` コンポーネントの役割はどれですか？",
+      "code": "// src/root.tsx\nimport { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'\n\nexport function Layout({ children }) {\n  return (\n    <html lang=\"ja\">\n      <head>\n        <Meta />\n        <Links />\n      </head>\n      <body>\n        {children}\n        <ScrollRestoration />\n        <Scripts />\n      </body>\n    </html>\n  )\n}",
+      "options": [
+        "外部CDNのスクリプトを読み込む",
+        "Viteがバンドルしたクライアント側JavaScriptをHTMLに挿入し、ハイドレーションを可能にする",
+        "Google Analyticsを自動挿入する",
+        "サーバーサイドのスクリプトを実行する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`<Scripts />` はViteがビルドしたJSバンドルを `<script>` タグとして自動挿入するコンポーネントです。これがないとブラウザにJSが読み込まれずインタラクティブなUIが動きません。`<Meta />` はルートの `meta` エクスポート、`<Links />` はCSSリンク、`<ScrollRestoration />` はナビゲーション時のスクロール位置復元を担います。",
+      "source": "https://reactrouter.com/upgrading/component-routes"
+    },
+    {
+      "id": 207,
+      "section": "セクション65: React Router v7 移行",
+      "title": "catchall.tsx による段階的移行",
+      "question": "移行初期に `routes.ts` で `route('*?', 'catchall.tsx')` を定義し、`catchall.tsx` で既存の `<App>` を返す理由はどれですか？",
+      "code": "// routes.ts（移行初期）\nexport default [\n  route('*?', 'catchall.tsx'),\n] satisfies RouteConfig\n\n// catchall.tsx\nimport App from './App'\nexport default function Component() {\n  return <App />\n}",
+      "options": [
+        "App.tsx を削除するための準備として使う",
+        "既存の Routes/BrowserRouter をそのまま動かしながらフレームワークモードに移行し、その後ルートを1つずつ routes.ts に移行できる",
+        "catchall は 404 ページ専用の規約のため",
+        "全 URL を App にフォールバックすることでSSRが自動有効になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "catchall（`*?`）で全URLを既存の `<App>` に委譲することで、フレームワークモードへの移行初日から既存機能を壊さず動かせます。その後 `routes.ts` にルートを1つずつ追加し、`App.tsx` の対応する `<Route>` を削除していく段階的移行が可能です。ドキュメントでも「最初の数ルートが最も大変」と記載されています。",
+      "source": "https://reactrouter.com/upgrading/component-routes"
+    },
+    {
+      "id": 208,
+      "section": "セクション66: SWR & コード分割",
+      "title": "SWR のキャッシュキー",
+      "question": "以下の `useQuizzes` カスタムフックで `useSWR` の第1引数 `'/api/admin/quizzes'` が果たす役割はどれですか？",
+      "code": "export function useQuizzes() {\n  const { data, error, isLoading, mutate } = useSWR<Quiz[]>(\n    '/api/admin/quizzes',\n    () => listQuizzes(),\n    {\n      revalidateOnFocus: false,\n      revalidateOnReconnect: true,\n    },\n  )\n  return { quizzes: data ?? [], errorMessage: error instanceof Error ? error.message : null, isLoading, mutate }\n}",
+      "options": [
+        "fetch に渡す URL",
+        "SWR がデータをキャッシュ・重複排除するためのキーで、同じキーを使うコンポーネントはキャッシュを共有する",
+        "ローカルストレージの保存キー",
+        "API のエンドポイントを自動検出するための型情報"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "SWR の第1引数はキャッシュキーです。同じキーを持つ `useSWR` は複数のコンポーネントから呼ばれてもリクエストが1回に重複排除（dedup）されます。第2引数の fetcher 関数が実際のデータ取得を行うため、キーはURLである必要はありませんが、慣習的にAPIパスを使います。",
+      "source": "admin-web/src/hooks/useQuizzes.ts / https://swr.vercel.app/docs/getting-started"
+    },
+    {
+      "id": 209,
+      "section": "セクション66: SWR & コード分割",
+      "title": "revalidateOnFocus: false の効果",
+      "question": "`revalidateOnFocus: false` を指定する理由として最も適切なものはどれですか？",
+      "code": "useSWR<Quiz[]>(\n  '/api/admin/quizzes',\n  () => listQuizzes(),\n  {\n    revalidateOnFocus: false,\n    revalidateOnReconnect: true,\n  },\n)",
+      "options": [
+        "フォーカスイベントが発生するたびにフェッチすると入力中のフォームがリセットされるため",
+        "タブ切り替えのたびに不要なAPIリクエストが発生し、管理画面では頻繁な再取得が不要なため",
+        "revalidateOnFocus はモバイルブラウザで動作しないため",
+        "false にしないと SWR のキャッシュが無効になるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "SWR はデフォルトでブラウザタブにフォーカスが戻るたびにデータを再取得します。管理画面のクイズ一覧ではタブ切り替えのたびにAPIを叩く必要はありません。`revalidateOnReconnect: true` はネットワーク復帰時の再取得で、オフライン→オンラインの遷移では再取得が有用です。",
+      "source": "admin-web/src/hooks/useQuizzes.ts / https://swr.vercel.app/docs/revalidation"
+    },
+    {
+      "id": 210,
+      "section": "セクション66: SWR & コード分割",
+      "title": "mutate による楽観的更新",
+      "question": "以下の削除処理で `mutate(filteredData, false)` の第2引数 `false` の意味はどれですか？",
+      "code": "await deleteQuiz(quizToDelete.id)\nawait mutate(\n  quizzes.filter((quiz) => quiz.id !== quizToDelete.id),\n  false\n)",
+      "options": [
+        "エラーハンドリングを無効にする",
+        "キャッシュを更新した後にサーバーへの再検証（再フェッチ）をスキップする",
+        "mutate の戻り値を Promise ではなく boolean にする",
+        "削除操作をキャンセルする"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`mutate(data, false)` の第2引数は `revalidate` オプションです。`false` にするとローカルキャッシュを更新するだけでサーバーへの再フェッチを行いません。すでに `deleteQuiz` でサーバーの削除は完了しているため、改めてリスト全体を取得し直す必要がなく、UIが即座に反映されます。",
+      "source": "admin-web/src/pages/QuizListPage.tsx / https://swr.vercel.app/docs/mutation"
+    },
+    {
+      "id": 211,
+      "section": "セクション66: SWR & コード分割",
+      "title": "SWR 導入で削除されたコード",
+      "question": "SWR 導入前の `QuizListPage` にあった以下のコードのうち、SWR 導入後に不要になったのはどれですか？",
+      "code": "const [quizzes, setQuizzes] = useState<Quiz[]>([])\nconst [isLoading, setIsLoading] = useState(true)\nconst [errorMessage, setErrorMessage] = useState<string | null>(null)\n\nconst loadQuizzes = useCallback(async () => {\n  setIsLoading(true)\n  setErrorMessage(null)\n  try {\n    const items = await listQuizzes()\n    setQuizzes(items)\n  } catch (error) {\n    setErrorMessage(getErrorMessage(error))\n  } finally {\n    setIsLoading(false)\n  }\n}, [navigate])\n\nuseEffect(() => {\n  void loadQuizzes()\n}, [loadQuizzes])",
+      "options": [
+        "useState の deleteErrorMessage のみ",
+        "quizzes・isLoading・errorMessage の3つの useState と、loadQuizzes の useCallback と、useEffect のすべて",
+        "useEffect のみ",
+        "useState のみ"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "SWR は `data`（quizzes）・`isLoading`・`error` を内部で管理し、マウント時の自動フェッチも行います。そのため `useState` x3 + `useCallback` + `useEffect` の計5つのフックが `useQuizzes()` の1行に置き換わりました。削除関連の `deleteErrorMessage`・`quizToDelete`・`isDeleting` は SWR とは無関係なため残ります。",
+      "source": "admin-web/src/pages/QuizListPage.tsx / admin-web/src/hooks/useQuizzes.ts"
+    },
+    {
+      "id": 212,
+      "section": "セクション66: SWR & コード分割",
+      "title": "React.lazy によるコード分割",
+      "question": "以下のコードで `lazy(() => import('./pages/QuizListPage'))` を使ったとき、ビルド出力にどのような変化が起きますか？",
+      "code": "// 変更前: 静的インポート\nimport QuizListPage from './pages/QuizListPage'\nimport QuizFormPage from './pages/QuizFormPage'\n\n// 変更後: 動的インポート\nconst QuizListPage = lazy(() => import('./pages/QuizListPage'))\nconst QuizFormPage = lazy(() => import('./pages/QuizFormPage'))",
+      "options": [
+        "ビルド出力に変化はない",
+        "QuizListPage と QuizFormPage が別チャンクに分離され、該当ページへの遷移時に初めてダウンロードされる",
+        "全ページが1つのチャンクにまとめられてバンドルサイズが増える",
+        "lazy を使うと開発時のHMRが無効になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`React.lazy` + 動的 `import()` により Vite がページ単位の別チャンクを生成します。実際のビルド出力では `QuizListPage-xxx.js`（261KB）と `QuizFormPage-xxx.js`（8KB）が分離され、初期バンドル `index-xxx.js`（304KB）には含まれません。ログインページを開いたときにクイズ関連のJSをダウンロードしなくて済み、初期表示が高速化します。",
+      "source": "admin-web/src/App.tsx"
+    },
+    {
+      "id": 213,
+      "section": "セクション66: SWR & コード分割",
+      "title": "Suspense の fallback",
+      "question": "以下の `Suspense` の `fallback` が表示されるのはどのタイミングですか？",
+      "code": "<Suspense fallback={<div>読み込み中...</div>}>\n  <Routes>\n    <Route path=\"/quizzes\" element={<QuizListPage />} />\n  </Routes>\n</Suspense>",
+      "options": [
+        "QuizListPage が API からデータを取得している間",
+        "React.lazy で分割されたチャンク（QuizListPage の JS ファイル）がダウンロード完了するまで",
+        "React の初回レンダリング中に常に表示される",
+        "エラーが発生したときのフォールバック表示"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`Suspense` は `React.lazy` で分割されたコンポーネントのJSチャンクがネットワークからダウンロードされるまでの間に `fallback` を表示します。一度ダウンロードされればキャッシュされるため、2回目以降は fallback は表示されません。APIのデータ取得待ちは SWR の `isLoading` で別途ハンドリングします。",
+      "source": "admin-web/src/App.tsx / https://react.dev/reference/react/Suspense"
+    },
+    {
+      "id": 214,
+      "section": "セクション66: SWR & コード分割",
+      "title": "data ?? [] の nullish coalescing",
+      "question": "以下のコードで `data ?? []` を使っている理由はどれですか？",
+      "code": "const { data, error, isLoading, mutate } = useSWR<Quiz[]>(\n  '/api/admin/quizzes',\n  () => listQuizzes(),\n)\n\nreturn {\n  quizzes: data ?? [],\n}",
+      "options": [
+        "data が空配列 [] のとき [] に変換するため",
+        "data が undefined（初回フェッチ前）のとき空配列を返すことで、呼び出し側で undefined チェックを不要にするため",
+        "data が null のとき SWR がエラーを投げるのを防ぐため",
+        "TypeScript の型エラーを回避するためのキャスト"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "SWR の `data` は初回フェッチが完了するまで `undefined` です。`??`（nullish coalescing）は左辺が `null` または `undefined` のとき右辺を返します。これにより `useQuizzes()` の戻り値 `quizzes` は常に `Quiz[]` 型が保証され、呼び出し側で `quizzes?.map(...)` のようなオプショナルチェーンが不要になります。",
+      "source": "admin-web/src/hooks/useQuizzes.ts"
+    },
+    {
+      "id": 215,
+      "section": "セクション67: Tailwind CSS レイアウト",
+      "title": "min-h-screen の役割",
+      "question": "以下の `AdminLayout` で外側の `<div>` に `min-h-screen` を付けている目的はどれですか？",
+      "code": "// AdminLayout.tsx\n<div className=\"min-h-screen\">\n  <header>ナビゲーション</header>\n  <main>\n    <Outlet />\n  </main>\n</div>\n\n// min-h-screen なしの場合:\n// ┌──────────────────────┐ ← 画面の上端\n// │ header               │\n// ├──────────────────────┤\n// │ main（短いコンテンツ）│\n// ├──────────────────────┤ ← div がここで終わる\n// │                      │\n// │ （背景色が届かない） │\n// │                      │\n// └──────────────────────┘ ← 画面の下端\n//\n// min-h-screen ありの場合:\n// ┌──────────────────────┐ ← 画面の上端\n// │ header               │\n// ├──────────────────────┤\n// │ main（短いコンテンツ）│\n// │                      │\n// │ （div が画面下端まで  │\n// │   伸びている）        │\n// │                      │\n// └──────────────────────┘ ← 画面の下端 = div の下端",
+      "options": [
+        "header を画面上部に固定するため",
+        "コンテンツが少なくても div がビューポート全体の高さを確保し、背景色やレイアウトが画面下端まで適用されるようにするため",
+        "スクロールバーを常に表示するため",
+        "main の幅を画面幅に合わせるため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`min-h-screen` は `min-height: 100vh` に相当し、「この要素の高さは最低でもビューポート（画面）と同じにする」という意味です。クイズが0件など中身が短い場合でも、外側の `<div>` が画面下端まで伸びるため背景色やレイアウトが途切れません。中身が画面より長い場合は自然にスクロールされます。",
+      "source": "admin-web/src/layouts/AdminLayout.tsx / https://tailwindcss.com/docs/min-height"
+    },
+    {
+      "id": 216,
+      "section": "セクション67: Tailwind CSS レイアウト",
+      "title": "sticky top-0 の動作",
+      "question": "以下の `header` に付いている `sticky top-0` の動作はどれですか？",
+      "code": "<header className=\"sticky top-0 z-10 border-b border-[#14213d]/8 bg-[#fffaf0]/78 backdrop-blur-[18px]\">\n  <!-- ナビゲーション -->\n</header>",
+      "options": [
+        "header が常に画面最上部に固定され、コンテンツの上に重なる（position: fixed と同じ）",
+        "スクロールして header が画面上端に達したとき、そこに貼り付いてスクロールに追従する",
+        "header がページの一番上に配置されるだけで固定はされない",
+        "top-0 は header の上部余白を 0 にするだけ"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`sticky` は `position: sticky` に相当し、通常のフロー内に配置されますが、スクロールで `top: 0` の位置に達すると画面上端に貼り付きます。`fixed` と違い、最初はコンテンツの流れに沿って配置されるため他の要素を押し出しません。`backdrop-blur-[18px]` で半透明の背景ぼかし効果を加え、下のコンテンツがうっすら透けて見えるデザインになっています。",
+      "source": "admin-web/src/layouts/AdminLayout.tsx / https://tailwindcss.com/docs/position"
+    },
+    {
+      "id": 217,
+      "section": "セクション67: Tailwind CSS レイアウト",
+      "title": "mx-auto max-w-[1200px] の組み合わせ",
+      "question": "以下のクラスの組み合わせが実現するレイアウトはどれですか？",
+      "code": "<div className=\"mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8\">\n  <!-- コンテンツ -->\n</div>",
+      "options": [
+        "幅 1200px で左寄せされる",
+        "幅が最大 1200px で中央寄せされ、画面幅が狭い場合はレスポンシブに縮む",
+        "常に画面幅いっぱいに広がる",
+        "1200px 未満の画面ではコンテンツが非表示になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`w-full` で親の幅いっぱいに広がりつつ、`max-w-[1200px]` で上限を制限します。`mx-auto` は左右マージンを auto にして中央寄せします。`px-4 sm:px-6 lg:px-8` はブレークポイントごとにパディングを変えるレスポンシブ対応です。この3点セットは中央寄せコンテナの定型パターンです。",
+      "source": "admin-web/src/layouts/AdminLayout.tsx / https://tailwindcss.com/docs/max-width"
+    },
+    {
+      "id": 218,
+      "section": "セクション67: Tailwind CSS レイアウト",
+      "title": "backdrop-blur の効果",
+      "question": "`backdrop-blur-[18px]` と `bg-[#fffaf0]/78` を組み合わせた header の視覚効果はどれですか？",
+      "code": "<header className=\"sticky top-0 z-10 bg-[#fffaf0]/78 backdrop-blur-[18px]\">\n  <!-- ナビゲーション -->\n</header>",
+      "options": [
+        "header の文字がぼやけて読みにくくなる",
+        "header の背景が半透明（78%不透明度）で、背後のコンテンツが18pxのぼかしで透けて見えるすりガラス効果",
+        "header の影が18pxぼかされる",
+        "header の下のコンテンツが非表示になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`bg-[#fffaf0]/78` は背景色を78%の不透明度で適用し、`backdrop-blur-[18px]` は要素の背後にある領域を18pxぼかします。スクロール時に下のコンテンツがすりガラス越しにうっすら見える効果が生まれます。`z-10` で他のコンテンツより前面に表示されることが保証されます。",
+      "source": "admin-web/src/layouts/AdminLayout.tsx / https://tailwindcss.com/docs/backdrop-blur"
+    },
+    {
+      "id": 219,
+      "section": "セクション67: Tailwind CSS レイアウト",
+      "title": "NavLink の isActive による動的クラス",
+      "question": "以下の `NavLink` で `className` に関数を渡している理由はどれですか？",
+      "code": "<NavLink\n  className={({ isActive }) =>\n    isActive\n      ? `${navLinkBaseClassName} bg-linear-to-br from-[#1768ac] to-[#0f4c81] text-white`\n      : `${navLinkBaseClassName} border border-[#14213d]/12 bg-white/80 text-[#14213d]`\n  }\n  end\n  to=\"/quizzes\"\n>\n  一覧\n</NavLink>",
+      "options": [
+        "React Router が className に文字列を受け取れないため",
+        "現在のURLと NavLink の to が一致（アクティブ）しているかどうかで、スタイルを動的に切り替えるため",
+        "アニメーションのために関数が必要なため",
+        "TypeScript の型推論のため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "React Router の `NavLink` は `className` に関数を渡すと `{ isActive, isPending }` を引数で受け取れます。現在の URL が `/quizzes` なら `isActive: true` になり青いグラデーション背景が適用され、そうでなければ白い背景のスタイルが適用されます。`end` プロパティは完全一致のみアクティブにする指定で、`/quizzes/new` のとき「一覧」がアクティブにならないようにします。",
+      "source": "admin-web/src/layouts/AdminLayout.tsx / https://reactrouter.com/components/nav-link"
+    },
+    {
+      "id": 220,
+      "section": "セクション67: Tailwind CSS レイアウト",
+      "title": "Outlet コンポーネントの役割",
+      "question": "以下の `<Outlet />` が表示する内容はどれですか？",
+      "code": "// AdminLayout.tsx\n<div className=\"min-h-screen\">\n  <header>...</header>\n  <main>\n    <Outlet />\n  </main>\n</div>\n\n// App.tsx のルート定義\n<Route element={<AdminLayout />}>\n  <Route path=\"/quizzes\" element={<QuizListPage />} />\n  <Route path=\"/quizzes/new\" element={<QuizFormPage />} />\n</Route>",
+      "options": [
+        "AdminLayout 自身を再帰的にレンダリングする",
+        "URL に応じた子ルートのコンポーネント（/quizzes なら QuizListPage、/quizzes/new なら QuizFormPage）を表示する",
+        "常に全子ルートを同時に表示する",
+        "404 ページのフォールバックを表示する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`<Outlet />` は React Router のネストされたルート構造で、現在の URL に一致する子ルートのコンポーネントを描画する「穴」です。`AdminLayout` は header + main の共通レイアウトを提供し、`<Outlet />` の部分だけがページ遷移で入れ替わります。これにより header のナビゲーションは再レンダリングされず、ページコンテンツだけが切り替わります。",
+      "source": "admin-web/src/layouts/AdminLayout.tsx / admin-web/src/App.tsx"
+    },
+    {
+      "id": 221,
+      "section": "セクション68: CSS テーブルレイアウト",
+      "title": "table-fixed と table-auto の違い",
+      "question": "以下のテーブルに `table-fixed` を追加した場合の動作変化はどれですか？",
+      "code": "// 変更前: 列幅がセル内容で自動決定\n<table className=\"min-w-full border-collapse\">\n\n// 変更後: 列幅が th の width 指定で固定\n<table className=\"min-w-full border-collapse table-fixed\">",
+      "options": [
+        "テーブルの高さが固定される",
+        "列幅の計算方法が「セル内容の長さベース」から「th の width 指定ベース」に変わり、長いテキストは改行される",
+        "テーブルがスクロール不可になる",
+        "border-collapse が無効になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`table-fixed` は `table-layout: fixed` に相当します。デフォルトの `table-layout: auto` はセル内容の長さに応じて列幅が決まりますが、`fixed` では最初の行（通常 `<th>`）の `width` 指定で列幅が決まります。長いテキスト（例:「セクション52: Claude Code アップデート案内」）は列幅に収まるよう自動改行されます。",
+      "source": "admin-web/src/pages/QuizListPage.tsx / https://tailwindcss.com/docs/table-layout"
+    },
+    {
+      "id": 222,
+      "section": "セクション68: CSS テーブルレイアウト",
+      "title": "w-1/6 で均等列幅",
+      "question": "6列のテーブルで各 `<th>` に `w-1/6` を指定した場合、各列の幅はどうなりますか？",
+      "code": "<table className=\"min-w-full border-collapse table-fixed\">\n  <thead>\n    <tr>\n      <th className=\"w-1/6\">タイトル</th>\n      <th className=\"w-1/6\">セクション</th>\n      <th className=\"w-1/6\">出典</th>\n      <th className=\"w-1/6\">作成日時</th>\n      <th className=\"w-1/6\">更新日時</th>\n      <th className=\"w-1/6\">操作</th>\n    </tr>\n  </thead>\n</table>",
+      "options": [
+        "各列が 1/6（約16.67%）で均等幅になる",
+        "最初の列だけが 1/6 で残りは自動調整される",
+        "w-1/6 は 6px を意味するため非常に狭くなる",
+        "table-fixed がないと w-1/6 は無視される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`w-1/6` は `width: 16.666667%` に相当します。6列 × 16.67% = 100% で均等に分割されます。`table-fixed` と組み合わせることで、セル内容の長さに関係なく列幅が固定されます。`table-fixed` がなくても `w-1/6` は適用されますが、セル内容が長いと `auto` レイアウトに上書きされることがあります。",
+      "source": "admin-web/src/pages/QuizListPage.tsx / https://tailwindcss.com/docs/width"
+    },
+    {
+      "id": 223,
+      "section": "セクション68: CSS テーブルレイアウト",
+      "title": "table-layout: fixed のパフォーマンス",
+      "question": "`table-layout: fixed` が `table-layout: auto` よりレンダリングが速い理由はどれですか？",
+      "code": "// auto: 全セルの内容を読んでから列幅を計算\n<table className=\"border-collapse\"> <!-- table-layout: auto -->\n\n// fixed: 最初の行だけ見て列幅を決定\n<table className=\"border-collapse table-fixed\">",
+      "options": [
+        "fixed はブラウザキャッシュを使うため",
+        "fixed は最初の行の幅情報だけで列幅を確定でき、全行のセル内容を先読みする必要がないため",
+        "fixed は CSS を省略できるため",
+        "fixed はテーブルの行数を制限するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`table-layout: auto` はブラウザが全行の全セルを読み込んでから最適な列幅を計算するため、行数が多いとレンダリングが遅くなります。`table-layout: fixed` は最初の行（`<th>`）の `width` だけで列幅を確定するため、残りの行は逐次描画できます。クイズ一覧のように行数が多いテーブルでは体感速度の差が出ます。",
+      "source": "https://developer.mozilla.org/docs/Web/CSS/table-layout"
+    },
+    {
+      "id": 224,
+      "section": "セクション69: React Fragments",
+      "title": "Fragments が導入された歴史的動機",
+      "question": "React 公式ドキュメントの Fragments の説明で、Fragments が導入された動機として最も適切なものはどれですか？",
+      "code": "function Table() {\n  return (\n    <table>\n      <tr>\n        <Columns />\n      </tr>\n    </table>\n  )\n}\n\nfunction Columns() {\n  return (\n    <div>\n      <td>Hello</td>\n      <td>World</td>\n    </div>\n  )\n}",
+      "options": [
+        "コンポーネントから複数要素を返したいが、`div` で包むと `table > tr > td` のような正しい HTML 構造を壊すため",
+        "React が `div` 要素を将来的に廃止する予定だったため",
+        "JSX では `td` 要素を2つ以上書けない仕様だったため",
+        "Fragments は DOM ノード数を常に 0 にし、イベント処理も完全に無効化するため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "React の旧公式 Fragments ドキュメントでは、余計なラッパー要素を入れると表のような文脈で不正な HTML になることが導入の動機として説明されています。Fragments は複数要素をグループ化しつつ、DOM に不要なラッパーノードを追加しないため、この問題を避けられます。現行の react.dev でも、Fragment は wrapper node なしで要素をまとめる手段として説明されています。",
+      "source": "https://legacy.reactjs.org/docs/fragments.html / https://react.dev/reference/react/Fragment"
+    },
+    {
+      "id": 225,
+      "section": "セクション70: Googlebot と JavaScript レンダリング",
+      "title": "Googlebot の JS レンダリング ファイルサイズ制限の変更",
+      "question": "Googlebot が JavaScript をレンダリングする際、2026年2月に変更されたファイルサイズ制限は何 MB から何 MB になりましたか？",
+      "options": [
+        "10MB から 20MB",
+        "15MB から 50MB",
+        "50MB から 100MB",
+        "制限なしから 15MB に新設された"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "2026年2月、Google は Web Rendering Service (WRS) のリソースサイズ上限を従来の 15MB から 50MB に引き上げました。これにより、大規模な SPA バンドルでもレンダリング対象に入りやすくなりましたが、レンダリングキューの遅延（数時間〜数日）は依然として存在するため、SEO が重要なページでは SSR/SSG が推奨されます。",
+      "source": "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics"
+    },
+    {
+      "id": 226,
+      "section": "セクション70: Googlebot と JavaScript レンダリング",
+      "title": "ダイナミックレンダリングの代替手法",
+      "question": "Google 公式ドキュメントで、ダイナミックレンダリング（User-Agent によるサーバー側切替）の代わりに推奨されている3つの手法の組み合わせとして正しいものはどれですか？",
+      "options": [
+        "SSR（サーバーサイドレンダリング）、SSG（静的サイト生成）、ハイドレーション",
+        "CSR（クライアントサイドレンダリング）、ISR（インクリメンタル静的再生成）、Edge Functions",
+        "プリレンダリング、AMP、Service Worker キャッシュ",
+        "Headless Chrome、Puppeteer、Lighthouse CI"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Google の JavaScript SEO ドキュメントでは、ダイナミックレンダリングは「回避策 (workaround)」であり長期的な解決策ではないとされています。代わりに SSR（サーバーサイドレンダリング）、SSG（静的サイト生成）、ハイドレーション（SSR で生成した HTML にクライアント側で JS を接続する手法）の3つが推奨されています。",
+      "source": "https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering"
+    },
+    {
+      "id": 227,
+      "section": "セクション71: SWR（stale-while-revalidate）",
+      "title": "SWR の名前の由来",
+      "question": "SWR という名前の由来となった HTTP キャッシュ戦略の正式名称はどれですか？",
+      "options": [
+        "stale-while-revalidate",
+        "service-worker-refresh",
+        "synchronous-web-request",
+        "server-wide-replication"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "SWR は HTTP の Cache-Control ヘッダーで使われる `stale-while-revalidate` 戦略に由来します。RFC 5861 で定義されたこの戦略は、キャッシュが stale（期限切れ）でもまず古いデータを返し（stale）、バックグラウンドで最新データを取得（revalidate）するというものです。Vercel の SWR ライブラリはこの考え方をクライアント側データフェッチに応用しています。",
+      "source": "https://swr.vercel.app/"
+    },
+    {
+      "id": 228,
+      "section": "セクション71: SWR（stale-while-revalidate）",
+      "title": "SEO と SWR の相性",
+      "question": "SEO が重要なコンテンツに SWR（CSR でのデータフェッチ）を使うべきでない理由として最も適切なものはどれですか？",
+      "options": [
+        "SWR はデータを暗号化するため、検索エンジンがコンテンツを読めなくなる",
+        "SWR は初回レンダリング時に HTML が空であり、Googlebot の JS レンダリングキューに依存するためインデックスが遅延する",
+        "SWR はサーバーサイドでしか動作しないため、ブラウザに HTML が届かない",
+        "SWR のキャッシュ戦略が robots.txt と競合するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "SWR を CSR で使う場合、初期 HTML は `<div id=\"root\"></div>` のような空の状態でブラウザに届きます。コンテンツは JavaScript 実行後に描画されるため、Googlebot は JS レンダリングキュー（数時間〜数日の遅延）を経由してからでないとコンテンツを認識できません。また、Twitter や Slack 等のクローラーは JS を実行しないため、OGP タグも機能しません。ただし、ログイン必須の管理画面のように SEO が不要な画面では SWR + CSR で問題ありません。",
+      "source": "https://swr.vercel.app/ / https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics"
+    },
+    {
+      "id": 229,
+      "section": "セクション72: CSS position: sticky と関連プロパティ",
+      "title": "top: 0 の 0 に単位は必要か",
+      "question": "Tailwind CSS の `top-0` は `top: 0px` を生成します。CSS の仕様上、`top: 0` と `top: 0px` の違いについて MDN Web Docs の記述に基づく正しい説明はどれですか？",
+      "code": "/* Tailwind が生成する CSS */\n.top-0 {\n  top: 0px;\n}\n\n/* 手書きでも有効な CSS */\n.header {\n  top: 0;\n}",
+      "options": [
+        "`top: 0` は無効な CSS であり、必ず `top: 0px` のように単位を付けなければならない",
+        "`0` は次元を持たない特別な値なので単位を省略でき、`top: 0` と `top: 0px` は同じ意味になる",
+        "`top: 0` は `top: 0%` と解釈されるため、`top: 0px` とは異なる",
+        "`top: 0` は `top: auto` のエイリアスとして扱われる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "MDN Web Docs によると、CSS の `<length>` 値には通常単位が必要ですが、値が `0` の場合は例外です。0 はどの単位でも同じ距離（ゼロ）を表すため、単位を省略できます。したがって `top: 0` と `top: 0px` は完全に等価です。Tailwind CSS は明示的に `0px` を生成しますが、手書き CSS では `top: 0` で問題ありません。",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/CSS/top"
+    },
+    {
+      "id": 230,
+      "section": "セクション72: CSS position: sticky と関連プロパティ",
+      "title": "z-index の値は相対的か絶対的か",
+      "question": "管理画面のヘッダーに `z-10`（`z-index: 10`）が設定されています。これを `z-5`（`z-index: 5`）に変更しても問題ないかを判断するために、MDN Web Docs の z-index の説明に基づく正しい理解はどれですか？",
+      "code": "/* 現在の設定 */\nheader { z-index: 10; }\n\n/* 変更案 */\nheader { z-index: 5; }",
+      "options": [
+        "z-index の数値は CSS 仕様で用途ごとに予約されており、ヘッダーには必ず 10 以上を使わなければならない",
+        "z-index は同一スタッキングコンテキスト内での相対的な順序を決めるだけなので、他の要素より大きければ 5 でも 10 でも結果は同じ",
+        "z-index: 5 は z-index: 10 の半分の透明度で描画される",
+        "z-index は 0〜9 の範囲しか有効でないため、10 は実質 0 と同じ扱いになる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "MDN Web Docs によると、z-index はスタッキングコンテキスト内での要素の重なり順を決める整数値であり、数値自体に絶対的な意味はありません。重要なのは同じスタッキングコンテキスト内の他の要素との相対的な大小関係です。ヘッダーより前面に出る要素がなければ z-index: 5 でも z-index: 10 でも視覚的な結果は同じです。ただし、将来モーダル（z-40）やドロップダウンメニュー（z-20）を追加する可能性を考慮して、ヘッダーに z-10 程度の余裕を持たせるのが一般的な慣習です。",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/CSS/z-index"
+    },
+    {
+      "id": 231,
+      "section": "セクション72: CSS position: sticky と関連プロパティ",
+      "title": "position: sticky が機能する条件",
+      "question": "MDN Web Docs によると、`position: sticky` を指定した要素が「張り付く」動作をするために必須の条件はどれですか？",
+      "code": "/* パターン A: 動作する */\nheader {\n  position: sticky;\n  top: 0;\n}\n\n/* パターン B: 動作しない */\nheader {\n  position: sticky;\n  /* top, right, bottom, left いずれも未指定 */\n}",
+      "options": [
+        "z-index を 1 以上に設定する",
+        "top, right, bottom, left のうち少なくとも1つを auto 以外の値に設定する",
+        "親要素に overflow: hidden を設定する",
+        "display: flex または display: grid を親要素に設定する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "MDN Web Docs には「少なくとも1つの inset プロパティ（top, right, bottom, left 等）を auto 以外の値に設定する必要がある。両方の inset プロパティが auto の場合、その軸では sticky ではなく relative として振る舞う」と明記されています。つまり `position: sticky` だけ書いても、top 等の閾値を指定しなければ張り付き動作は発生しません。管理画面の `sticky top-0` は top: 0 を指定しているため正しく機能します。",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
+    },
+    {
+      "id": 232,
+      "section": "セクション72: CSS position: sticky と関連プロパティ",
+      "title": "z-index: auto と z-index: 0 の違い",
+      "question": "MDN Web Docs によると、`z-index: auto`（デフォルト値）と `z-index: 0` の違いとして正しいものはどれですか？",
+      "options": [
+        "まったく同じであり、どちらもスタッキングコンテキストを生成する",
+        "auto はスタッキングコンテキストを生成しないが、0 は新しいスタッキングコンテキストを生成する",
+        "auto はスタック順が 0 になるが、0 はスタック順が -1 になる",
+        "auto は positioned 要素にのみ有効で、0 は static 要素にも有効"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "MDN Web Docs によると、z-index: auto のスタックレベルは 0 ですが、新しいスタッキングコンテキストは生成しません。一方 z-index: 0（整数値）はスタックレベルが 0 であると同時に、新しいローカルスタッキングコンテキストを生成します。この違いは子要素の重なり順に影響します。auto の場合、子要素の z-index は親の外側の要素と直接比較されますが、0 の場合は新しいスタッキングコンテキスト内に閉じ込められます。",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/CSS/z-index"
+    },
+    {
+      "id": 233,
+      "section": "セクション72: CSS position: sticky と関連プロパティ",
+      "title": "position: static で top が効かない理由",
+      "question": "次の CSS で `.box` が 30px 下にずれない理由として、MDN Web Docs の記述に基づく正しい説明はどれですか？",
+      "code": ".box {\n  /* position 未指定 → デフォルトは static */\n  top: 30px;\n  left: 20px;\n}",
+      "options": [
+        "top と left を同時に指定しているため、値が打ち消し合ってゼロになる",
+        "position が static（デフォルト）の場合、top / right / bottom / left プロパティは効果を持たない",
+        "px 単位は position と併用できず、% 単位でなければならない",
+        "top: 30px は構文エラーであり、ブラウザに無視される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "MDN Web Docs の top プロパティのページでは、position の値ごとの効果が明記されています。position: static の場合、top プロパティは「has no effect（効果なし）」です。top / right / bottom / left が機能するのは position が relative, absolute, fixed, sticky のいずれかの場合に限られます。CSS として記述すること自体は有効ですが、static 要素に対しては完全に無視されます。",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/CSS/top"
+    },
+    {
+      "id": 234,
+      "section": "セクション72: CSS position: sticky と関連プロパティ",
+      "title": "position: relative の実務上の主な用途",
+      "question": "`position: relative` を指定しつつ top / left 等を指定しないケースが実務では多く見られます。この場合の主な目的として最も適切なものはどれですか？",
+      "code": "/* 親 */\n.card {\n  position: relative; /* top 等は指定しない */\n}\n\n/* 子 */\n.badge {\n  position: absolute;\n  top: 0;\n  right: 0;\n}",
+      "options": [
+        "relative を指定すると要素の描画が GPU アクセラレーションされ、パフォーマンスが向上するため",
+        "子要素の position: absolute の基準点（containing block）にするため",
+        "スクロール時に要素が画面上部に固定されるようにするため",
+        "要素のデフォルトの margin と padding をリセットするため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "MDN Web Docs によると、position: absolute の要素は最寄りの positioned 祖先（static 以外の position を持つ祖先）を基準に配置されます。親に position: relative を指定することで、absolute な子要素の基準点（containing block）として機能させるのが実務上最も一般的な用途です。relative 自体は top 等を指定しなければ見た目に変化はなく、ドキュメントフローにも影響しません。",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
+    },
+    {
+      "id": 235,
+      "section": "セクション73: Dart late と null safety",
+      "title": "late がコンパイル時ではなくランタイムで制約を強制する意味",
+      "question": "Dart 公式 docs では `late` について “enforce this variable's constraints at runtime instead of at compile time” と説明されています。次の宣言に対する理解として最も正しいものはどれですか？",
+      "code": "late SharedPreferences sharedPref;",
+      "options": [
+        "宣言と同時に `SharedPreferences.getInstance()` が自動実行され、`sharedPref` に即座に値が入る",
+        "コンパイル時の definite assignment チェックの代わりに、未初期化のまま読み出したときにランタイムで検査される",
+        "`late` を付けると変数自体が存在しなくなり、初回代入時までメモリは一切使われない",
+        "`late` を付けた変数は暗黙に nullable になり、未代入時は常に `null` を返す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`late` は「あとで必ず初期化する」という前提で、コンパイル時の初期化保証を緩め、その代わりに実行時チェックへ回す仕組みです。このため `late SharedPreferences sharedPref;` という宣言だけでは `SharedPreferences` の取得処理は走りません。実際の値は後で代入する必要があり、代入前に読み出すと `LateInitializationError` になります。",
+      "source": "https://dart.dev/null-safety/understanding-null-safety / https://dart.dev/language/variables"
+    },
+    {
+      "id": 236,
+      "section": "セクション73: Dart late と null safety",
+      "title": "preferences と references の意味の違い",
+      "question": "`late SharedPreferences sharedPref;` を説明する文脈で、`preferences` と `references` の違いとして最も正しいものはどれですか？",
+      "code": "late SharedPreferences sharedPref;",
+      "options": [
+        "`preferences` は参照、`references` は設定値を意味するので、2語はほぼ同義で入れ替えてよい",
+        "`preferences` は設定や選好、`references` は参照を意味するため、`SharedPreferences` を「設定保存」と説明しつつ、変数にはオブジェクトへの reference が入ると区別するのが正しい",
+        "`preferences` はメモリアドレス、`references` はディスク領域を意味する技術用語である",
+        "`references` は Dart では予約語なので、公式 docs では `preferences` の代わりに使われている"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`preferences` は一般英語として「設定・好み・選好」を表します。一方 `references` は「参照」です。したがって `SharedPreferences` という API 名は「共有設定」を指しており、変数 `sharedPref` に入るものを説明する時は「SharedPreferences オブジェクトへの参照が入る」と言うのが正確です。名前に `Preferences` が含まれていることと、実行時に変数が保持する reference は別概念です。",
+      "source": "Dart variables store references / SharedPreferences naming"
+    },
+    {
+      "id": 237,
+      "section": "セクション74: Flutter プラットフォームとバインディング",
+      "title": "Flutter における「プラットフォーム」の意味",
+      "question": "Flutter の文脈で「プラットフォーム側」とは何を指すか。",
+      "options": [
+        "Dart で記述された UI コンポーネント群",
+        "Android・iOS など OS 側のネイティブ環境",
+        "Flutter SDK のビルドツールチェーン",
+        "pub.dev で配布されるパッケージ群"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Flutter では Dart で UI を記述するが、SharedPreferences・カメラ・通知・位置情報など端末固有の機能を使う際は OS 側（Android、iOS、Web、macOS 等）とやり取りする。この OS 側のネイティブ環境を「プラットフォーム」と呼ぶ。",
+      "source": "https://docs.flutter.dev/platform-integration/platform-channels"
+    },
+    {
+      "id": 238,
+      "section": "セクション74: Flutter プラットフォームとバインディング",
+      "title": "WidgetsFlutterBinding.ensureInitialized() の役割",
+      "question": "main() 関数内で runApp() より前に WidgetsFlutterBinding.ensureInitialized() を呼ぶ必要があるのはどのような場合か。",
+      "options": [
+        "StatefulWidget を使用する場合",
+        "runApp() の前にプラットフォーム側の機能（SharedPreferences 等）を利用する場合",
+        "複数の MaterialApp を定義する場合",
+        "リリースビルドを行う場合"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "WidgetsFlutterBinding.ensureInitialized() は Flutter の Dart コードと OS 側のネイティブ機能をつなぐバインディングを初期化する。runApp() は内部でこれを自動的に行うが、runApp() より前に SharedPreferences などプラットフォーム機能を使う場合は、明示的に呼び出して先にバインディングを確立する必要がある。",
+      "source": "https://api.flutter.dev/flutter/widgets/WidgetsFlutterBinding/ensureInitialized.html"
+    },
+    {
+      "id": 239,
+      "section": "セクション74: Flutter プラットフォームとバインディング",
+      "title": "Flutter の共通コードとプラットフォーム固有コードの関係",
+      "question": "Flutter アプリにおいて、Dart で書かれた共通コードからカメラや通知などの OS 固有機能を利用する仕組みとして正しいものはどれか。",
+      "options": [
+        "Dart コードから直接 OS の API を呼び出す",
+        "プラットフォームチャネルを介して Dart 側と OS 側が通信する",
+        "OS 固有機能は Flutter では利用できない",
+        "ビルド時に Dart コードがネイティブコードに完全変換される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Flutter は Platform Channels という仕組みで Dart 側とプラットフォーム側（Android/iOS 等）を接続する。SharedPreferences、SystemChrome、カメラ、通知、位置情報などの OS 固有機能はすべてこの通信機構を通じて利用される。Dart コードが直接 OS の API を呼ぶわけではない。",
+      "source": "https://docs.flutter.dev/platform-integration/platform-channels"
+    },
+    {
+      "id": 240,
+      "section": "セクション75: Docker / Migration トラブルシュート",
+      "title": "ERR_EMPTY_RESPONSE の背後にあった本当の原因",
+      "question": "管理画面で `http://localhost:8082/api/admin/quizzes?sort=updated_newest&page=1` へのアクセス時に `Failed to load resource: net::ERR_EMPTY_RESPONSE` が出ていました。調査すると backend のログには `duplicate key value violates unique constraint \"quizzes_pkey\"` と `Dirty database version 4. Fix and force version.` が出ていました。この状況の原因と解決策として最も適切なものはどれですか？",
+      "code": "// browser\n:8082/api/admin/quizzes?sort=updated_newest&page=1\nFailed to load resource: net::ERR_EMPTY_RESPONSE\n\n// backend log\nmigration failed: duplicate key value violates unique constraint \"quizzes_pkey\"\nDirty database version 4. Fix and force version.",
+      "options": [
+        "Vite の proxy 設定不足が原因なので、vite.config.ts に proxy を追加するだけで直る",
+        "認証トークン切れが原因なので、再ログインだけで直る",
+        "seed migration が既存の quizzes データと主キー衝突して backend が起動失敗し、HTTP 応答を返せていなかった。重複しない形に migration を直し、dirty な schema_migrations を修復して再起動する必要がある",
+        "ブラウザキャッシュ破損が原因なので、ハードリロードで backend の migration も自動修復される"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`ERR_EMPTY_RESPONSE` はフロントの fetch 記述ミスではなく、接続先サーバーが正常な HTTP レスポンスを返す前に落ちている時にも発生します。今回の実原因は seed migration 004 が `quizzes` テーブルの既存データと主キー衝突を起こし、その途中で DB が `version=4, dirty=true` になって backend が起動失敗していたことです。対処としては、migration を再実行可能な形に修正し、`schema_migrations` の dirty 状態を解消した上で backend を再起動します。その後は `ERR_EMPTY_RESPONSE` ではなく、未認証なら `401` のような通常の HTTP 応答が返るようになります。",
+      "source": "backend/migrations/004_seed_quizzes_128_234.up.sql / backend/main.go / docker logs backend-api-1"
+    },
+    {
+      "id": 241,
+      "section": "セクション76: Matt Pocock - TypeScript の実践",
+      "title": "TypeScript 採用による Airbnb のバグ防止率",
+      "question": "Matt Pocock が紹介した事例によると、Airbnb が TypeScript に移行した際、防止可能だったバグの割合はどのくらいか。",
+      "options": [
+        "約 15%",
+        "約 25%",
+        "約 38%",
+        "約 50%"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Matt Pocock は Kent C. Dodds との対談で Airbnb の TypeScript 移行事例を引用し、'I can't remember what the exact figure was, but it was something like 38%' と述べている。Matt 本人が概算と断っている数値だが、TypeScript の型システムがコンパイル時に多くのバグを検出できることを示す事例として紹介された。",
+      "source": "https://www.epicweb.dev/bonuses/interviews-with-experts/the-magic-of-typescript-with-matt-pocock"
+    },
+    {
+      "id": 242,
+      "section": "セクション76: Matt Pocock - TypeScript の実践",
+      "title": "外部データ境界における Zod の推奨理由",
+      "question": "Matt Pocock と Kent C. Dodds が fetch のレスポンスに対してジェネリクスで型を付ける手法を危険だと警告している理由はどれか。",
+      "code": "const data = await fetch('/api/user').then(r => r.json()) as User;",
+      "options": [
+        "ジェネリクスを使うとバンドルサイズが増大するため",
+        "実行時にはデータの中身を検証しておらず、any を隠しているだけだから",
+        "TypeScript コンパイラがジェネリクスを最適化できないため",
+        "fetch API がジェネリクスをサポートしていないため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "fetch のレスポンスを as User やジェネリクスで型付けしても、実行時のデータが本当にその型に合致するかは検証されない。見た目は型安全だが、内部的には any を隠しているだけである。Matt Pocock はこの問題の代替案として Zod などのランタイム検証ツールでデータ境界を実際にチェックすることを推奨している。",
+      "source": "https://www.epicweb.dev/bonuses/interviews-with-experts/the-magic-of-typescript-with-matt-pocock"
+    },
+    {
+      "id": 243,
+      "section": "セクション76: Matt Pocock - TypeScript の実践",
+      "title": "interface と type のパフォーマンス差",
+      "question": "Matt Pocock が指摘した、TypeScript における interface が交差型（& 演算子による type）よりパフォーマンス上有利な理由はどれか。",
+      "code": "// interface\ninterface User extends Base {\n  name: string;\n}\n\n// type + 交差型\ntype User = Base & {\n  name: string;\n};",
+      "options": [
+        "interface は JavaScript にコンパイルされるが type はされないため",
+        "interface extends による名前付け継承で TypeScript のキャッシュ効率が向上するため",
+        "interface は V8 エンジンの隠しクラスに直接マッピングされるため",
+        "type は毎回新しいオブジェクトをヒープに確保するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Matt Pocock によると、interface extends は名前付け継承として TypeScript コンパイラがキャッシュしやすい。一方、交差型（&）は毎回型の合成を評価する必要があり、キャッシュ効率が劣る。ただし Matt は「両者は第一級プリミティブであり、一貫性強制は不要」とも述べている。",
+      "source": "https://www.epicweb.dev/bonuses/interviews-with-experts/the-magic-of-typescript-with-matt-pocock"
+    },
+    {
+      "id": 244,
+      "section": "セクション76: Matt Pocock - TypeScript の実践",
+      "title": "interface の宣言マージの落とし穴",
+      "question": "TypeScript で同名の interface を2回宣言した場合、どのような挙動になるか。",
+      "code": "interface Config {\n  host: string;\n}\n\ninterface Config {\n  port: number;\n}",
+      "options": [
+        "コンパイルエラーになる",
+        "後の宣言が前の宣言を上書きする",
+        "自動的にマージされ、host と port の両方を持つ型になる",
+        "どちらの宣言も無視される"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "TypeScript の interface には宣言マージ（declaration merging）という機能があり、同名の interface は自動的に統合される。これは意図的に使う場面もあるが、意図せず同名にしてしまった場合、バグの原因になる。Matt Pocock はこれを interface の落とし穴として指摘している。type の場合は同名で重複宣言するとコンパイルエラーになるため、この問題は起きない。",
+      "source": "https://www.epicweb.dev/bonuses/interviews-with-experts/the-magic-of-typescript-with-matt-pocock"
+    },
+    {
+      "id": 245,
+      "section": "セクション76: Matt Pocock - TypeScript の実践",
+      "title": "Matt Pocock の戻り値型アノテーションに対する見解",
+      "question": "Matt Pocock は関数の戻り値型を常に明示すべきだと考えているか。",
+      "options": [
+        "常に明示すべき。型推論に頼るのは危険である",
+        "常に省略すべき。TypeScript の型推論は十分に正確である",
+        "常に明示すべきではないが、必要で意味がある場面では明示すべき",
+        "ライブラリ開発でのみ明示し、アプリケーションコードでは常に省略すべき"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Matt Pocock は 'I think you shouldn't always require explicit return types. I still think you should use return types when you need to and when it makes sense' と述べている。「常に明示」ルールには反対だが、必要に応じて明示する柔軟な姿勢である。具体的にどの場面で必要かについて厳密な分類は示しておらず、文脈次第としている。",
+      "source": "https://www.epicweb.dev/bonuses/interviews-with-experts/the-magic-of-typescript-with-matt-pocock"
     }
   ]
 }
