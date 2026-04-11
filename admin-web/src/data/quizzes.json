@@ -3908,6 +3908,22 @@
       "correctAnswerIndex": 2,
       "explanation": "Matt Pocock は 'I think you shouldn't always require explicit return types. I still think you should use return types when you need to and when it makes sense' と述べている。「常に明示」ルールには反対だが、必要に応じて明示する柔軟な姿勢である。具体的にどの場面で必要かについて厳密な分類は示しておらず、文脈次第としている。",
       "source": "https://www.epicweb.dev/bonuses/interviews-with-experts/the-magic-of-typescript-with-matt-pocock"
+    },
+    {
+      "id": 246,
+      "section": "セクション77: コード設計原則",
+      "title": "Zod スキーマとサンプルデータのコロケーション",
+      "question": "次のように `IntroSchema` と `introToYourselfSample` を同じファイルに置く方針の主目的として最も適切なのはどれですか？",
+      "code": "const IntroSchema = z.object({\n  name: z.string(),\n  age: z.number().int(),\n  // ...\n});\n\nexport type IntroToYourself = z.infer<typeof IntroSchema>;\n\nexport const introToYourselfSample: IntroToYourself = {\n  name: 'Kosuke',\n  age: 30,\n  // ...\n};",
+      "options": [
+        "schema とサンプルを同居させると、フィールドを追加した瞬間にサンプル側が型エラーになり、セットで修正すべきことがすぐ分かるから",
+        "TypeScript は別ファイルから z.infer を実行できないため",
+        "Zod は単一ファイル内でしか import/export できないため",
+        "Vite は JSON や Zod を複数ファイルで扱うとバンドルできないため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Kent C. Dodds が提唱する Colocation では、一緒に変更されるものは同じ場所に置きます。Zod スキーマと代表サンプルを同じファイルに置くと、フィールドを追加・削除した際にサンプルが即座にコンパイルエラーになり、両者を同時に更新することが明確になります。また shape に関する単一の情報源として読めるため理解が速くなります。",
+      "source": "https://kentcdodds.com/blog/colocation"
     }
   ]
 }
