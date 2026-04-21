@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import type { Quiz } from '../types/quiz'
-import { resolveSourceLinks } from '../utils/sourceLinks'
+import type { Quiz } from '../../types/quiz'
+import { resolveSourceLinks } from './sourceLinks'
 import {
   calculateScore,
   getAllQuizzes,
   getRandomQuizzes,
   groupQuizzesBySection,
   isAnswerCorrect,
-} from '../utils/quizUtils'
+} from './quizUtils'
 
 const allQuizzes = getAllQuizzes()
 const sectionCount = groupQuizzesBySection().size

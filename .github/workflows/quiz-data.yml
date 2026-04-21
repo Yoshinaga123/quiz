@@ -1,0 +1,64 @@
+name: Quiz Data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "admin-web/src/data/quizzes.json"
+      - "backend/seeds/**"
+      - "backend/migrations/**"
+      - "scripts/**"
+      - ".github/workflows/quiz-data.yml"
+  pull_request:
+    paths:
+      - "admin-web/src/data/quizzes.json"
+      - "backend/seeds/**"
+      - "backend/migrations/**"
+      - "scripts/**"
+      - ".github/workflows/quiz-data.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Quiz JSON lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Lint candidate pool
+        run: python3 scripts/lint_quizzes.py admin-web/src/data/quizzes.json
+      - name: Lint production seed
+        run: python3 scripts/lint_quizzes.py backend/seeds/quizzes.production.json
+
+  drift:
+    name: Production seed drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check production seed drift
+        run: |
+          python3 scripts/check_quiz_drift.py \
+            --seed backend/seeds/quizzes.production.json \
+            --migrations-dir backend/migrations \
+            --print-diff
+
+  diff-summary:
+    name: Diff candidate vs production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Summarize differences
+        run: |
+          python3 scripts/diff_quiz_data.py \
+            admin-web/src/data/quizzes.json \
+            backend/seeds/quizzes.production.json

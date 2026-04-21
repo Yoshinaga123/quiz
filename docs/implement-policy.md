@@ -100,7 +100,39 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 - 「最新技術だから」という理由だけでアーキテクチャを変更する
 - 小規模アプリで分割しすぎ、通信回数増加で逆効果にする
 
-# 実装ポリシー3: コーディング方針
+# 実装ポリシー3: 設定管理
+
+## 基本方針
+- 環境ごとに変わる設定値はコードへ直書きせず、コード外へ分離する
+- 原則は The Twelve-Factor App の Config に従う
+- 参照: https://12factor.net/ja/config
+
+## このプロジェクトで外出しする対象
+- `DB_HOST` / `DB_PORT` / `DB_USER` / `DB_PASSWORD` / `DB_NAME`
+- `ADMIN_USER` / `ADMIN_PASSWORD`
+- `JWT_SECRET`
+- `QUIZ_SEED_GENERATOR_SCRIPT`
+- frontend の API base URL など、環境によって変わる接続先
+
+## コードに置いてよいもの
+- ルーティングや初期化順序など、アプリの構造そのもの
+- ドメインルールや固定仕様
+- seed データそのもの (`quizzes.production.json` など)
+
+## 運用ルール
+- ローカル開発では `.env.example` を配布し、各自が `.env` を作る
+- 本番機密値はリポジトリに commit しない
+- `dev/stg/prod` のような環境名で設定をグルーピングせず、変数を独立に管理する
+- デフォルト値をコードに置く場合は、ローカル開発で安全な値に限定する
+
+## エラーメッセージ方針
+- エラーメッセージは verbose に記述する
+- 英語と日本語を併記し、英語を先、日本語を後に置く
+- 英語は検索性・ログ解析を優先し、日本語は開発者への説明を補う
+- 可能なら 1 行目に英語の要約、2 行目に日本語の説明を書く
+- 対処方法が明確な場合は、日本語で次の行動も補足する
+
+# 実装ポリシー4: コーディング方針
 
 ## 基本方針
 - ソースコードは AI が好むモダンで宣言的な記法を是とする
@@ -148,6 +180,7 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 - 1ファイル1コンポーネントを原則とする
 - ロジックはカスタムフックに切り出す
 - UI とロジックを分離する
+- 「使い回せそう」という理由だけで `utils/` などの共有ディレクトリへ移さず、利用元と同じディレクトリにユーティリティ関数を置く。元ファイルが削除された際にユーティリティとテストだけが残る事故を防ぎ、必要な場所から存在を即座に確認できるようにする
 
 ## 計測に関する方針
 - 最適化の前に React DevTools Profiler で計測する
@@ -157,7 +190,7 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 - グローバル state は最小限にする
 - サーバーの状態とクライアントの状態を分けて考える
 
-# 実装ポリシー4: Google Search Central 準拠
+# 実装ポリシー5: Google Search Central 準拠
 
 ## 基本方針
 公開 Web アプリは、Google Search Central のガイドラインに準拠することを前提に設計・実装する。特に JavaScript を多用する画面では、「Google に発見される URL 構造」「クロール可能なリンク」「適切なインデックス制御」を最初から要件に含める。
@@ -189,7 +222,7 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 - Google Search Central: Creating helpful, reliable, people-first content
   https://developers.google.com/search/docs/fundamentals/creating-helpful-content
 
-# 実装ポリシー5: 入力バリデーションとエラー契約
+# 実装ポリシー6: 入力バリデーションとエラー契約
 
 ## 基本方針
 クイズアプリの入力検証は、`admin-web` と `mobile` では UX 改善のために、`backend` ではセキュリティと整合性保証のために行う。最終判定は常に `backend` が担当する。
@@ -210,7 +243,7 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 ## 詳細
 詳細ルールは [validation-policy.md](./validation-policy.md) を参照する。
 
-# 実装ポリシー6: 初期化の責務と順序
+# 実装ポリシー7: 初期化の責務と順序
 
 ## 基本方針
 初期化は暗黙依存にせず、どこで何を初期化するかを明示する。constructor や build/render に重い初期化や非同期 I/O を押し込まない。

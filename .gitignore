@@ -3,3 +3,7 @@ dist/
 .env
 *.log
 .DS_Store
+backend/tmp/server
+backend/view-counter
+__pycache__/
+*.pyc

@@ -1,0 +1,29 @@
+name: OpenAPI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/api/**"
+      - ".github/workflows/openapi.yml"
+  pull_request:
+    paths:
+      - "docs/api/**"
+      - ".github/workflows/openapi.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Validate OpenAPI specs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Redocly CLI
+        run: npm install --no-save @redocly/cli@^1
+      - name: Lint specs
+        run: npx --yes @redocly/cli lint docs/api/public-quiz-api.yaml

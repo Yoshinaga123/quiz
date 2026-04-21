@@ -3,8 +3,8 @@
  * 純粋関数のみ定義する。
  */
 
-import type { Quiz, QuizzesData, QuizWithAnswer } from '../types/quiz'
-import quizzesData from '../data/quizzes.json'
+import type { Quiz, QuizzesData, QuizWithAnswer } from '../../types/quiz'
+import quizzesData from '../../data/quizzes.json'
 
 /**
  * すべてのクイズを取得

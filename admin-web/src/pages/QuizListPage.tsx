@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { deleteQuiz, toggleQuizPush, toggleQuizStatus } from '../api/admin'
-import { getErrorMessage } from '../api/errors'
+import { deleteQuiz, syncProductionQuizzes, toggleQuizPush, toggleQuizStatus } from '../api/admin'
+import { ApiError, getErrorMessage } from '../api/errors'
 import { handleUnauthorized } from '../auth/session'
 import DeleteQuizDialog from '../components/DeleteQuizDialog'
 import JsonQuizPreviewSection from '../components/JsonQuizPreviewSection'
@@ -28,6 +28,39 @@ type SearchDraft = {
 
 function formatDateTime(value: string): string {
   return formatter.format(new Date(value))
+}
+
+function getSyncProductionErrorMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    switch (error.status) {
+      case 400:
+        return `反映リクエストが不正です: ${error.message}`
+      case 401:
+        return '認証が切れています。再ログインしてから再実行してください。'
+      case 403:
+        return 'この操作を実行する権限がありません。'
+      case 404:
+        return `production.json が見つかりません: ${error.message}`
+      case 409:
+        return `同期ジョブの競合または dirty database により反映できません: ${error.message}`
+      case 422:
+        return `production.json の内容が不正です: ${error.message}`
+      case 500:
+        return `サーバー内部で反映に失敗しました: ${error.message}`
+      case 502:
+      case 503:
+      case 504:
+        return `バックエンドが一時的に利用できません: ${error.message}`
+      default:
+        return `production.json の反映に失敗しました (${error.status}): ${error.message}`
+    }
+  }
+
+  if (error instanceof TypeError) {
+    return 'バックエンドへ接続できません。API サーバーが起動しているか確認してください。'
+  }
+
+  return `production.json の反映に失敗しました: ${getErrorMessage(error)}`
 }
 
 function createDraft(searchParams: URLSearchParams): SearchDraft {
@@ -136,6 +169,7 @@ function QuizListPage() {
   const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(null)
   const [quizToDelete, setQuizToDelete] = useState<Quiz | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isSyncingProduction, setIsSyncingProduction] = useState(false)
   const navigate = useNavigate()
   const { showFlash } = useFlash()
 
@@ -212,6 +246,29 @@ function QuizListPage() {
     }
   }
 
+  const handleSyncProduction = async () => {
+    const shouldSync = window.confirm(
+      'quizzes.production.json からマイグレーションを生成し、DB を完全同期します。JSON に存在しないクイズは削除されます。続行しますか？',
+    )
+    if (!shouldSync) {
+      return
+    }
+
+    setIsSyncingProduction(true)
+    try {
+      const result = await syncProductionQuizzes()
+      await mutate()
+      showFlash(
+        `migration ${result.migrationVersion} を生成・適用しました。反映 ${result.seededCount}件 / 削除 ${result.deletedCount}件 / up: ${result.upPath}`,
+      )
+    } catch (err) {
+      if (handleUnauthorized(err, navigate)) return
+      showFlash(getSyncProductionErrorMessage(err))
+    } finally {
+      setIsSyncingProduction(false)
+    }
+  }
+
   const paginationItems = getPaginationItems(page, totalPages)
 
   return (
@@ -226,6 +283,14 @@ function QuizListPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
+          <button
+            className={`${pillButtonClassName} border border-[#8b5e00]/20 bg-[#f9c952]/12 text-[#7a5a00] disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none`}
+            disabled={isSyncingProduction}
+            onClick={() => void handleSyncProduction()}
+            type="button"
+          >
+            {isSyncingProduction ? 'DB反映中...' : 'production.json を DB 反映'}
+          </button>
           <button
             className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy`}
             onClick={() => void mutate()}

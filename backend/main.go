@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"crypto/rand"
 	"database/sql"
 	"embed"
 	"encoding/json"
@@ -8,31 +11,45 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/big"
 	"net/http"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 	"github.com/shirou/gopsutil/mem"
 )
 
 //go:embed migrations/*.sql
 var migrationsFS embed.FS
 
+const verificationPrompt = "quzzesアカウントの安全性を確保するために、IDを確認する必要があります。確認コードを送信してください。"
+const defaultProductionSeedPath = "seeds/quizzes.production.json"
+const defaultMigrationsDir = "migrations"
+const defaultSeedMigrationName = "seed_quizzes"
+const defaultSeedGeneratorScript = "../scripts/generate_migration.py"
+
 type server struct {
-	db            *sql.DB
-	adminUser     string
-	adminPassword string
-	jwtSecret     []byte
+	db                   *sql.DB
+	adminUser            string
+	adminPassword        string
+	jwtSecret            []byte
+	verificationMu       sync.Mutex
+	pendingVerifications map[string]verificationChallenge
+	seedMu               sync.Mutex
 }
 
 type rowScanner interface {
@@ -40,7 +57,8 @@ type rowScanner interface {
 }
 
 type errorResponse struct {
-	Error string `json:"error"`
+	Error  string `json:"error"`
+	Detail string `json:"detail,omitempty"`
 }
 
 type healthResponse struct {
@@ -52,12 +70,42 @@ type countResponse struct {
 }
 
 type loginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username         string `json:"username"`
+	Password         string `json:"password"`
+	ChallengeID      string `json:"challengeId"`
+	VerificationCode string `json:"verificationCode"`
 }
 
 type loginResponse struct {
 	Token string `json:"token"`
+}
+
+type verificationResponse struct {
+	Message     string `json:"message"`
+	ChallengeID string `json:"challengeId"`
+	Code        string `json:"code,omitempty"`
+}
+
+type verificationChallenge struct {
+	Username  string
+	Code      string
+	ExpiresAt time.Time
+}
+
+func generateChallengeID() (string, error) {
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", b), nil
+}
+
+func generateVerificationCode() (string, error) {
+	n, err := rand.Int(rand.Reader, big.NewInt(1000000))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%06d", n.Int64()), nil
 }
 
 type quiz struct {
@@ -97,6 +145,51 @@ type quizPayload struct {
 	PushEnabled        bool     `json:"pushEnabled"`
 }
 
+type productionSeedDocument struct {
+	Quizzes []productionSeedQuiz `json:"quizzes"`
+}
+
+type productionSeedQuiz struct {
+	ID                 int64    `json:"id"`
+	Section            string   `json:"section"`
+	Title              string   `json:"title"`
+	Question           string   `json:"question"`
+	Code               *string  `json:"code,omitempty"`
+	Options            []string `json:"options"`
+	CorrectAnswerIndex int      `json:"correctAnswerIndex"`
+	Explanation        string   `json:"explanation"`
+	Source             string   `json:"source"`
+}
+
+type productionSeedSyncResponse struct {
+	SeededCount      int    `json:"seededCount"`
+	DeletedCount     int    `json:"deletedCount"`
+	Source           string `json:"source"`
+	MigrationVersion int    `json:"migrationVersion"`
+	UpPath           string `json:"upPath"`
+	DownPath         string `json:"downPath"`
+}
+
+type statusError struct {
+	Status  int
+	Message string
+	Err     error
+}
+
+func (e *statusError) Error() string {
+	if e.Message != "" {
+		return e.Message
+	}
+	if e.Err != nil {
+		return e.Err.Error()
+	}
+	return http.StatusText(e.Status)
+}
+
+func (e *statusError) Unwrap() error {
+	return e.Err
+}
+
 func getEnv(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
@@ -104,14 +197,120 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func initDB() (*sql.DB, error) {
+func getMigrationsDir() string {
+	return getEnv("QUIZ_MIGRATIONS_DIR", defaultMigrationsDir)
+}
+
+func getSeedGeneratorScriptPath() (string, error) {
+	candidates := []string{
+		os.Getenv("QUIZ_SEED_GENERATOR_SCRIPT"),
+		defaultSeedGeneratorScript,
+		filepath.Join("scripts", "generate_migration.py"),
+	}
+
+	for _, candidate := range candidates {
+		if candidate == "" {
+			continue
+		}
+
+		info, err := os.Stat(candidate)
+		if err == nil && !info.IsDir() {
+			return candidate, nil
+		}
+	}
+
+	return "", fmt.Errorf("seed generator script not found")
+}
+
+func getMigrateBinaryPath() (string, error) {
+	if value := os.Getenv("QUIZ_MIGRATE_BIN"); value != "" {
+		return value, nil
+	}
+
+	if path, err := exec.LookPath("migrate"); err == nil {
+		return path, nil
+	}
+
+	candidates := []string{
+		"/go/bin/migrate",
+		filepath.Join(os.Getenv("HOME"), ".local", "bin", "migrate"),
+	}
+	for _, candidate := range candidates {
+		if candidate == "" {
+			continue
+		}
+		info, err := os.Stat(candidate)
+		if err == nil && !info.IsDir() {
+			return candidate, nil
+		}
+	}
+
+	return "", fmt.Errorf("migrate binary not found")
+}
+
+func runCommand(ctx context.Context, name string, args ...string) (string, error) {
+	cmd := exec.CommandContext(ctx, name, args...)
+	output, err := cmd.CombinedOutput()
+	outputText := strings.TrimSpace(string(output))
+	if err != nil {
+		if outputText == "" {
+			return "", err
+		}
+		return "", fmt.Errorf("%w: %s", err, outputText)
+	}
+	return outputText, nil
+}
+
+func runCommandStdout(ctx context.Context, name string, args ...string) (string, error) {
+	cmd := exec.CommandContext(ctx, name, args...)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
+	output, err := cmd.Output()
+	outputText := strings.TrimSpace(string(output))
+	stderrText := strings.TrimSpace(stderr.String())
+	if err != nil {
+		if stderrText == "" {
+			return "", err
+		}
+		return "", fmt.Errorf("%w: %s", err, stderrText)
+	}
+
+	return outputText, nil
+}
+
+func newMigrator(db *sql.DB) (*migrate.Migrate, error) {
+	dbDriver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	migrationsDir := getMigrationsDir()
+	if info, err := os.Stat(migrationsDir); err == nil && info.IsDir() {
+		absDir, err := filepath.Abs(migrationsDir)
+		if err != nil {
+			return nil, err
+		}
+
+		return migrate.NewWithDatabaseInstance("file://"+absDir, "postgres", dbDriver)
+	}
+
+	srcDriver, err := iofs.New(migrationsFS, "migrations")
+	if err != nil {
+		return nil, err
+	}
+
+	return migrate.NewWithInstance("iofs", srcDriver, "postgres", dbDriver)
+}
+
+func databaseDSN() string {
 	host := getEnv("DB_HOST", "localhost")
 	port := getEnv("DB_PORT", "5432")
 	user := getEnv("DB_USER", "postgres")
 	password := getEnv("DB_PASSWORD", "password")
 	name := getEnv("DB_NAME", "counter")
 
-	dsn := fmt.Sprintf(
+	return fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host,
 		port,
@@ -119,38 +318,50 @@ func initDB() (*sql.DB, error) {
 		password,
 		name,
 	)
+}
 
-	db, err := sql.Open("postgres", dsn)
+func openAppDB() (*sql.DB, error) {
+	db, err := sql.Open("postgres", databaseDSN())
 	if err != nil {
 		return nil, err
 	}
 
 	if err := db.Ping(); err != nil {
+		_ = db.Close()
 		return nil, err
-	}
-
-	if err := runMigrations(db); err != nil {
-		return nil, fmt.Errorf("migration: %w", err)
 	}
 
 	return db, nil
 }
 
-func runMigrations(db *sql.DB) error {
-	srcDriver, err := iofs.New(migrationsFS, "migrations")
+func initDB() (*sql.DB, error) {
+	if err := runMigrations(); err != nil {
+		return nil, fmt.Errorf("migration: %w", err)
+	}
+
+	return openAppDB()
+}
+
+func runMigrations() error {
+	db, err := openAppDB()
 	if err != nil {
 		return err
 	}
 
-	dbDriver, err := postgres.WithInstance(db, &postgres.Config{})
+	m, err := newMigrator(db)
 	if err != nil {
+		_ = db.Close()
 		return err
 	}
-
-	m, err := migrate.NewWithInstance("iofs", srcDriver, "postgres", dbDriver)
-	if err != nil {
-		return err
-	}
+	defer func() {
+		sourceErr, databaseErr := m.Close()
+		if sourceErr != nil {
+			log.Printf("close migration source: %v", sourceErr)
+		}
+		if databaseErr != nil {
+			log.Printf("close migration database: %v", databaseErr)
+		}
+	}()
 
 	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return err
@@ -237,6 +448,380 @@ func normalizeQuizPayload(payload *quizPayload) error {
 	}
 
 	return nil
+}
+
+func normalizeProductionSeedQuiz(payload *productionSeedQuiz) error {
+	payload.Section = strings.TrimSpace(payload.Section)
+	payload.Title = strings.TrimSpace(payload.Title)
+	payload.Question = strings.TrimSpace(payload.Question)
+	payload.Explanation = strings.TrimSpace(payload.Explanation)
+	payload.Source = strings.TrimSpace(payload.Source)
+
+	if payload.Code != nil {
+		trimmed := strings.TrimSpace(*payload.Code)
+		if trimmed == "" {
+			payload.Code = nil
+		} else {
+			payload.Code = &trimmed
+		}
+	}
+
+	if payload.ID <= 0 {
+		return errors.New("id must be positive")
+	}
+	if payload.Section == "" {
+		return fmt.Errorf("section is required for quiz id %d", payload.ID)
+	}
+	if payload.Title == "" {
+		return fmt.Errorf("title is required for quiz id %d", payload.ID)
+	}
+	if payload.Question == "" {
+		return fmt.Errorf("question is required for quiz id %d", payload.ID)
+	}
+	if payload.Explanation == "" {
+		return fmt.Errorf("explanation is required for quiz id %d", payload.ID)
+	}
+	if payload.Source == "" {
+		return fmt.Errorf("source is required for quiz id %d", payload.ID)
+	}
+	if len(payload.Options) < 2 {
+		return fmt.Errorf("at least two options are required for quiz id %d", payload.ID)
+	}
+
+	for index := range payload.Options {
+		payload.Options[index] = strings.TrimSpace(payload.Options[index])
+		if payload.Options[index] == "" {
+			return fmt.Errorf("option %d is required for quiz id %d", index+1, payload.ID)
+		}
+	}
+
+	if payload.CorrectAnswerIndex < 0 || payload.CorrectAnswerIndex >= len(payload.Options) {
+		return fmt.Errorf("correctAnswerIndex is out of range for quiz id %d", payload.ID)
+	}
+
+	return nil
+}
+
+func validateProductionSeedDocument(document *productionSeedDocument) error {
+	seenIDs := make(map[int64]struct{}, len(document.Quizzes))
+	for _, quiz := range document.Quizzes {
+		if _, exists := seenIDs[quiz.ID]; exists {
+			return fmt.Errorf("duplicate quiz id in production seed: %d", quiz.ID)
+		}
+		seenIDs[quiz.ID] = struct{}{}
+	}
+
+	return nil
+}
+
+func getProductionSeedPath() string {
+	if value := os.Getenv("QUIZ_PRODUCTION_SEED_PATH"); value != "" {
+		return value
+	}
+	return defaultProductionSeedPath
+}
+
+func loadProductionSeedDocument(seedPath string) (productionSeedDocument, error) {
+	content, err := os.ReadFile(seedPath)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return productionSeedDocument{}, &statusError{
+				Status:  http.StatusNotFound,
+				Message: fmt.Sprintf("production seed file not found: %s", seedPath),
+				Err:     err,
+			}
+		}
+		return productionSeedDocument{}, &statusError{
+			Status:  http.StatusInternalServerError,
+			Message: fmt.Sprintf("failed to read production seed file: %s", seedPath),
+			Err:     err,
+		}
+	}
+
+	var document productionSeedDocument
+	if err := json.Unmarshal(content, &document); err != nil {
+		return productionSeedDocument{}, &statusError{
+			Status:  http.StatusUnprocessableEntity,
+			Message: fmt.Sprintf("production seed JSON is invalid: %s", seedPath),
+			Err:     err,
+		}
+	}
+
+	for index := range document.Quizzes {
+		if err := normalizeProductionSeedQuiz(&document.Quizzes[index]); err != nil {
+			return productionSeedDocument{}, &statusError{
+				Status:  http.StatusUnprocessableEntity,
+				Message: err.Error(),
+				Err:     err,
+			}
+		}
+	}
+
+	if err := validateProductionSeedDocument(&document); err != nil {
+		return productionSeedDocument{}, &statusError{
+			Status:  http.StatusUnprocessableEntity,
+			Message: err.Error(),
+			Err:     err,
+		}
+	}
+
+	return document, nil
+}
+
+func countDeletedQuizzes(ctx context.Context, db *sql.DB, ids []int64) (int, error) {
+	var deletedCount int
+
+	if len(ids) == 0 {
+		if err := db.QueryRowContext(ctx, `SELECT COUNT(*) FROM quizzes`).Scan(&deletedCount); err != nil {
+			return 0, err
+		}
+		return deletedCount, nil
+	}
+
+	if err := db.QueryRowContext(
+		ctx,
+		`SELECT COUNT(*) FROM quizzes WHERE NOT (id = ANY($1))`,
+		pq.Array(ids),
+	).Scan(&deletedCount); err != nil {
+		return 0, err
+	}
+
+	return deletedCount, nil
+}
+
+func parseCreatedMigrationPaths(output string) (string, string, error) {
+	lines := strings.Split(output, "\n")
+	var upPath string
+	var downPath string
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+
+		if strings.HasSuffix(trimmed, ".up.sql") {
+			upPath = filepath.ToSlash(trimmed)
+		}
+		if strings.HasSuffix(trimmed, ".down.sql") {
+			downPath = filepath.ToSlash(trimmed)
+		}
+	}
+
+	if upPath == "" || downPath == "" {
+		return "", "", fmt.Errorf("unexpected migrate create output: %s", output)
+	}
+
+	return upPath, downPath, nil
+}
+
+func migrationVersionFromPath(path string) (int, error) {
+	base := filepath.Base(path)
+	underscore := strings.IndexByte(base, '_')
+	if underscore <= 0 {
+		return 0, fmt.Errorf("invalid migration filename: %s", base)
+	}
+	return strconv.Atoi(base[:underscore])
+}
+
+func generateProductionSeedMigrationSQL(ctx context.Context, mode, seedPath string) (string, error) {
+	scriptPath, err := getSeedGeneratorScriptPath()
+	if err != nil {
+		return "", fmt.Errorf("locate seed generator script: %w", err)
+	}
+
+	pythonBin := getEnv("QUIZ_PYTHON_BIN", "python3")
+	log.Printf("[migration] generating %s SQL: %s %s --mode %s --input %s", mode, pythonBin, scriptPath, mode, seedPath)
+
+	output, err := runCommandStdout(
+		ctx,
+		pythonBin,
+		scriptPath,
+		"--mode",
+		mode,
+		"--input",
+		seedPath,
+		"--source-label",
+		filepath.Base(seedPath),
+	)
+	if err != nil {
+		return "", fmt.Errorf("run %s %s (mode=%s): %w", pythonBin, scriptPath, mode, err)
+	}
+
+	if output == "" {
+		return "", fmt.Errorf("generated %s SQL is empty (script=%s, input=%s)", mode, scriptPath, seedPath)
+	}
+
+	log.Printf("[migration] generated %s SQL: %d bytes", mode, len(output))
+	return output + "\n", nil
+}
+
+func displayMigrationPath(actualPath string) string {
+	migrationsDir := getMigrationsDir()
+	filename := filepath.Base(actualPath)
+	if filepath.IsAbs(migrationsDir) {
+		return filepath.ToSlash(filepath.Join(migrationsDir, filename))
+	}
+	return filepath.ToSlash(filepath.Join("backend", migrationsDir, filename))
+}
+
+func createProductionSeedMigrationFiles(ctx context.Context, seedPath string) (int, string, string, error) {
+	migrationsDir := getMigrationsDir()
+	log.Printf("[migration] migrationsDir=%s, seedPath=%s", migrationsDir, seedPath)
+
+	if err := os.MkdirAll(migrationsDir, 0o755); err != nil {
+		return 0, "", "", fmt.Errorf("mkdir %s: %w", migrationsDir, err)
+	}
+
+	migrateBin, err := getMigrateBinaryPath()
+	if err != nil {
+		return 0, "", "", fmt.Errorf("locate migrate binary: %w", err)
+	}
+	log.Printf("[migration] migrate binary: %s", migrateBin)
+
+	createOutput, err := runCommand(
+		ctx,
+		migrateBin,
+		"create",
+		"-ext",
+		"sql",
+		"-dir",
+		migrationsDir,
+		"-seq",
+		"-digits",
+		"3",
+		defaultSeedMigrationName,
+	)
+	if err != nil {
+		return 0, "", "", fmt.Errorf("migrate create: %w", err)
+	}
+	log.Printf("[migration] migrate create output: %s", createOutput)
+
+	upRelativePath, downRelativePath, err := parseCreatedMigrationPaths(createOutput)
+	if err != nil {
+		return 0, "", "", fmt.Errorf("parse migration paths from output %q: %w", createOutput, err)
+	}
+	log.Printf("[migration] up=%s, down=%s", upRelativePath, downRelativePath)
+
+	version, err := migrationVersionFromPath(upRelativePath)
+	if err != nil {
+		return 0, "", "", fmt.Errorf("extract version from %s: %w", upRelativePath, err)
+	}
+
+	upSQL, err := generateProductionSeedMigrationSQL(ctx, "up", seedPath)
+	if err != nil {
+		_ = os.Remove(upRelativePath)
+		_ = os.Remove(downRelativePath)
+		return 0, "", "", fmt.Errorf("generate up SQL: %w", err)
+	}
+
+	downSQL, err := generateProductionSeedMigrationSQL(ctx, "down", seedPath)
+	if err != nil {
+		_ = os.Remove(upRelativePath)
+		_ = os.Remove(downRelativePath)
+		return 0, "", "", fmt.Errorf("generate down SQL: %w", err)
+	}
+
+	if err := os.WriteFile(upRelativePath, []byte(upSQL), 0o644); err != nil {
+		_ = os.Remove(upRelativePath)
+		_ = os.Remove(downRelativePath)
+		return 0, "", "", fmt.Errorf("write %s: %w", upRelativePath, err)
+	}
+	if err := os.WriteFile(downRelativePath, []byte(downSQL), 0o644); err != nil {
+		_ = os.Remove(upRelativePath)
+		_ = os.Remove(downRelativePath)
+		return 0, "", "", fmt.Errorf("write %s: %w", downRelativePath, err)
+	}
+
+	log.Printf("[migration] created version %d successfully", version)
+	return version, displayMigrationPath(upRelativePath), displayMigrationPath(downRelativePath), nil
+}
+
+func applyGeneratedMigrations() error {
+	db, err := openAppDB()
+	if err != nil {
+		return err
+	}
+
+	m, err := newMigrator(db)
+	if err != nil {
+		_ = db.Close()
+		return err
+	}
+	defer func() {
+		sourceErr, databaseErr := m.Close()
+		if sourceErr != nil {
+			log.Printf("close migration source: %v", sourceErr)
+		}
+		if databaseErr != nil {
+			log.Printf("close migration database: %v", databaseErr)
+		}
+	}()
+
+	if err := m.Up(); err != nil {
+		var dirtyErr migrate.ErrDirty
+		if errors.As(err, &dirtyErr) {
+			return &statusError{
+				Status:  http.StatusConflict,
+				Message: fmt.Sprintf("database is dirty at migration version %d", dirtyErr.Version),
+				Err:     err,
+			}
+		}
+		if errors.Is(err, migrate.ErrNoChange) {
+			return nil
+		}
+		return &statusError{
+			Status:  http.StatusInternalServerError,
+			Message: "failed to apply generated migration",
+			Err:     err,
+		}
+	}
+
+	return nil
+}
+
+func (s *server) syncProductionSeedQuizzes(ctx context.Context) (productionSeedSyncResponse, error) {
+	seedPath := getProductionSeedPath()
+	document, err := loadProductionSeedDocument(seedPath)
+	if err != nil {
+		return productionSeedSyncResponse{}, err
+	}
+
+	ids := make([]int64, 0, len(document.Quizzes))
+	for _, quiz := range document.Quizzes {
+		ids = append(ids, quiz.ID)
+	}
+
+	deletedCount, err := countDeletedQuizzes(ctx, s.db, ids)
+	if err != nil {
+		return productionSeedSyncResponse{}, &statusError{
+			Status:  http.StatusInternalServerError,
+			Message: "failed to calculate replace impact",
+			Err:     err,
+		}
+	}
+
+	version, upPath, downPath, err := createProductionSeedMigrationFiles(ctx, seedPath)
+	if err != nil {
+		return productionSeedSyncResponse{}, &statusError{
+			Status:  http.StatusInternalServerError,
+			Message: "failed to generate production seed migration files",
+			Err:     err,
+		}
+	}
+
+	if err := applyGeneratedMigrations(); err != nil {
+		return productionSeedSyncResponse{}, err
+	}
+
+	return productionSeedSyncResponse{
+		SeededCount:      len(document.Quizzes),
+		DeletedCount:     deletedCount,
+		Source:           seedPath,
+		MigrationVersion: version,
+		UpPath:           upPath,
+		DownPath:         downPath,
+	}, nil
 }
 
 func scanQuiz(scanner rowScanner) (quiz, error) {
@@ -614,6 +1199,77 @@ func (s *server) recordLoginLog(username string, success bool, r *http.Request) 
 	}
 }
 
+func (s *server) createVerificationChallenge(username string) (string, string, error) {
+	challengeID, err := generateChallengeID()
+	if err != nil {
+		return "", "", err
+	}
+	code, err := generateVerificationCode()
+	if err != nil {
+		return "", "", err
+	}
+
+	s.verificationMu.Lock()
+	s.pendingVerifications[challengeID] = verificationChallenge{
+		Username:  username,
+		Code:      code,
+		ExpiresAt: time.Now().Add(5 * time.Minute),
+	}
+	s.verificationMu.Unlock()
+
+	log.Printf("verification code for %s: %s (challenge %s)", username, code, challengeID)
+
+	return challengeID, code, nil
+}
+
+func (s *server) consumeVerification(username, challengeID, code string) bool {
+	s.verificationMu.Lock()
+	defer s.verificationMu.Unlock()
+
+	challenge, ok := s.pendingVerifications[challengeID]
+	if !ok {
+		return false
+	}
+	if challenge.Username != username {
+		return false
+	}
+	if time.Now().After(challenge.ExpiresAt) {
+		delete(s.pendingVerifications, challengeID)
+		return false
+	}
+	if challenge.Code != code {
+		return false
+	}
+
+	delete(s.pendingVerifications, challengeID)
+	return true
+}
+
+func (s *server) handleRequestLoginVerification(w http.ResponseWriter, r *http.Request) {
+	var payload loginRequest
+	if err := decodeJSON(r, &payload); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid login payload")
+		return
+	}
+
+	if payload.Username != s.adminUser || payload.Password != s.adminPassword {
+		writeError(w, http.StatusUnauthorized, "invalid credentials")
+		return
+	}
+
+	challengeID, code, err := s.createVerificationChallenge(payload.Username)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to create verification challenge")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, verificationResponse{
+		Message:     verificationPrompt,
+		ChallengeID: challengeID,
+		Code:        code,
+	})
+}
+
 func (s *server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var payload loginRequest
 	if err := decodeJSON(r, &payload); err != nil {
@@ -624,6 +1280,17 @@ func (s *server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	if payload.Username != s.adminUser || payload.Password != s.adminPassword {
 		s.recordLoginLog(payload.Username, false, r)
 		writeError(w, http.StatusUnauthorized, "invalid credentials")
+		return
+	}
+
+	if payload.ChallengeID == "" || payload.VerificationCode == "" {
+		writeError(w, http.StatusBadRequest, "verification code required")
+		return
+	}
+
+	if !s.consumeVerification(payload.Username, payload.ChallengeID, payload.VerificationCode) {
+		s.recordLoginLog(payload.Username, false, r)
+		writeError(w, http.StatusUnauthorized, "invalid or expired verification code")
 		return
 	}
 
@@ -1081,6 +1748,34 @@ func (s *server) handleTogglePush(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, item)
 }
 
+func (s *server) handleSyncProductionQuizzes(w http.ResponseWriter, r *http.Request) {
+	if !s.seedMu.TryLock() {
+		writeError(w, http.StatusConflict, "production seed sync is already running")
+		return
+	}
+	defer s.seedMu.Unlock()
+
+	result, err := s.syncProductionSeedQuizzes(r.Context())
+	if err != nil {
+		var statusErr *statusError
+		if errors.As(err, &statusErr) {
+			detail := ""
+			if statusErr.Err != nil {
+				detail = statusErr.Err.Error()
+			}
+			log.Printf("[ERROR] syncProductionSeedQuizzes: %s: %v", statusErr.Message, statusErr.Err)
+			writeJSON(w, statusErr.Status, errorResponse{Error: statusErr.Message, Detail: detail})
+			return
+		}
+
+		log.Printf("[ERROR] syncProductionSeedQuizzes: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to sync production seed")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, result)
+}
+
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
@@ -1106,8 +1801,10 @@ func (s *server) routes() http.Handler {
 	mux.HandleFunc("GET /", s.handleHealth)
 	mux.HandleFunc("GET /counter", s.handleGetCounter)
 	mux.HandleFunc("POST /counter", s.handleIncrementCounter)
+	mux.HandleFunc("POST /api/admin/login/verification", s.handleRequestLoginVerification)
 	mux.HandleFunc("POST /api/admin/login", s.handleLogin)
 	mux.Handle("GET /api/admin/quizzes", s.requireAuth(http.HandlerFunc(s.handleListQuizzes)))
+	mux.Handle("POST /api/admin/quizzes/sync-production", s.requireAuth(http.HandlerFunc(s.handleSyncProductionQuizzes)))
 	mux.Handle("GET /api/admin/quizzes/{id}", s.requireAuth(http.HandlerFunc(s.handleGetQuiz)))
 	mux.Handle("POST /api/admin/quizzes", s.requireAuth(http.HandlerFunc(s.handleCreateQuiz)))
 	mux.Handle("PUT /api/admin/quizzes/{id}", s.requireAuth(http.HandlerFunc(s.handleUpdateQuiz)))
@@ -1183,10 +1880,11 @@ func main() {
 	defer db.Close()
 
 	s := &server{
-		db:            db,
-		adminUser:     getEnv("ADMIN_USER", "admin"),
-		adminPassword: getEnv("ADMIN_PASSWORD", "password"),
-		jwtSecret:     []byte(getEnv("JWT_SECRET", "dev-only-secret")),
+		db:                   db,
+		adminUser:            getEnv("ADMIN_USER", "admin"),
+		adminPassword:        getEnv("ADMIN_PASSWORD", "password"),
+		jwtSecret:            []byte(getEnv("JWT_SECRET", "dev-only-secret")),
+		pendingVerifications: make(map[string]verificationChallenge),
 	}
 
 	if err := http.ListenAndServe(":8080", s.routes()); err != nil {

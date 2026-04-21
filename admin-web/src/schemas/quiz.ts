@@ -38,6 +38,15 @@ export const quizListResponseSchema = z.object({
   totalPages: z.number().int().nonnegative(),
 })
 
+export const productionQuizSyncResponseSchema = z.object({
+  seededCount: z.number().int().nonnegative(),
+  deletedCount: z.number().int().nonnegative(),
+  source: z.string().min(1),
+  migrationVersion: z.number().int().positive(),
+  upPath: z.string().min(1),
+  downPath: z.string().min(1),
+})
+
 export const quizPayloadSchema = z
   .object({
     section: z.string().trim().min(1, 'セクションは必須です'),

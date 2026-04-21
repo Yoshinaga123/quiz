@@ -1,14 +1,46 @@
-import { loginRequestSchema, loginResponseSchema } from '../schemas/auth'
-import { quizListResponseSchema, quizPayloadSchema, quizSchema } from '../schemas/quiz'
-import type { LoginCredentials, Quiz, QuizListResponse, QuizPayload, QuizSearchParams } from '../types/admin'
+import {
+  loginRequestSchema,
+  loginResponseSchema,
+  loginChallengeResponseSchema,
+  loginVerificationSchema,
+} from '../schemas/auth'
+import {
+  productionQuizSyncResponseSchema,
+  quizListResponseSchema,
+  quizPayloadSchema,
+  quizSchema,
+} from '../schemas/quiz'
+import type {
+  LoginCredentials,
+  ProductionQuizSyncResponse,
+  LoginVerificationChallenge,
+  LoginVerificationPayload,
+  Quiz,
+  QuizListResponse,
+  QuizPayload,
+  QuizSearchParams,
+} from '../types/admin'
 import { requestJson, requestVoid } from './client'
 
-export async function login(credentials: LoginCredentials): Promise<string> {
+export async function requestLoginVerification(
+  credentials: LoginCredentials
+): Promise<LoginVerificationChallenge> {
   const payload = loginRequestSchema.parse(credentials)
+  return requestJson({
+    path: '/api/admin/login/verification',
+    method: 'POST',
+    body: payload,
+    schema: loginChallengeResponseSchema,
+    requiresAuth: false,
+  })
+}
+
+export async function login(payload: LoginVerificationPayload): Promise<string> {
+  const body = loginVerificationSchema.parse(payload)
   const response = await requestJson({
     path: '/api/admin/login',
     method: 'POST',
-    body: payload,
+    body,
     schema: loginResponseSchema,
     requiresAuth: false,
   })
@@ -84,5 +116,13 @@ export async function toggleQuizPush(id: number | string): Promise<Quiz> {
     path: `/api/admin/quizzes/${id}/push`,
     method: 'PATCH',
     schema: quizSchema,
+  })
+}
+
+export async function syncProductionQuizzes(): Promise<ProductionQuizSyncResponse> {
+  return requestJson({
+    path: '/api/admin/quizzes/sync-production',
+    method: 'POST',
+    schema: productionQuizSyncResponseSchema,
   })
 }

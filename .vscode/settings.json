@@ -1,5 +1,18 @@
 {
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
   "css.lint.unknownAtRules": "ignore",
   "scss.lint.unknownAtRules": "ignore",
-  "less.lint.unknownAtRules": "ignore"
+  "less.lint.unknownAtRules": "ignore",
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "admin-web/src/data/quizzes\\.json$",
+        "cmd": "Bash(python3 scripts/generate_migration.py)"
+      }
+    ]
+  }
 }

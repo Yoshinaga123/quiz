@@ -1,0 +1,289 @@
+openapi: 3.1.0
+info:
+  title: Public Quiz API
+  version: 0.1.0-draft
+  description: |
+    ユーザー向けクイズアプリ（`web/`, `mobile/`）から呼び出される公開 API のドラフト仕様。
+
+    - 認証はオプション。匿名ユーザーでもクイズの取得と回答送信が可能。
+    - 個人特定情報は持たず、回答ログはアプリ内 ID で集計する（ADR 0008 参照）。
+    - レスポンス境界は `web/src/schemas/quiz.ts` の Zod スキーマと一対一で一致させる
+      （docs/implement-policy.md「外部入力の検証」原則）。
+
+    本ファイルは仕様の合意を取るためのドラフトであり、サーバー実装は段階的に追加する。
+servers:
+  - url: http://localhost:8082
+    description: Local development (backend/docker-compose.yml)
+  - url: https://api.example.com
+    description: Production (placeholder)
+
+tags:
+  - name: quizzes
+    description: 公開クイズの取得
+  - name: attempts
+    description: 回答記録（任意送信）
+  - name: meta
+    description: メタ情報
+
+paths:
+  /healthz:
+    get:
+      tags: [meta]
+      summary: ヘルスチェック
+      operationId: getHealthz
+      responses:
+        "200":
+          description: 稼働中
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ok
+
+  /v1/quizzes:
+    get:
+      tags: [quizzes]
+      summary: 公開対象クイズの一覧
+      operationId: listPublicQuizzes
+      description: |
+        管理画面で `status = published` に設定されたクイズのみを返す。
+        section 指定時は前方一致ではなく完全一致でフィルタする。
+      parameters:
+        - in: query
+          name: section
+          required: false
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: クイズ一覧
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/quizzes/{quizId}:
+    get:
+      tags: [quizzes]
+      summary: 単一クイズの取得
+      operationId: getPublicQuiz
+      parameters:
+        - in: path
+          name: quizId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: クイズ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quiz"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/sections:
+    get:
+      tags: [quizzes]
+      summary: 公開セクション一覧
+      operationId: listSections
+      responses:
+        "200":
+          description: セクション一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [sections]
+                properties:
+                  sections:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SectionSummary"
+
+  /v1/attempts:
+    post:
+      tags: [attempts]
+      summary: クイズセッションの結果を匿名送信
+      operationId: submitAttempt
+      description: |
+        匿名統計のためのオプション送信。クライアントが自前で生成する `clientSessionId`
+        を冪等キーとして用い、同じ ID で複数回送信されても結果は変わらない。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttemptCreateRequest"
+      responses:
+        "202":
+          description: 受付成功（非同期で集計）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttemptAccepted"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+components:
+  schemas:
+    Quiz:
+      type: object
+      required:
+        - id
+        - section
+        - title
+        - question
+        - options
+        - correctAnswerIndex
+        - explanation
+        - source
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        section:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        question:
+          type: string
+          minLength: 1
+        code:
+          type: string
+        options:
+          type: array
+          minItems: 2
+          items:
+            type: string
+            minLength: 1
+        correctAnswerIndex:
+          type: integer
+          minimum: 0
+          description: 0-indexed。`options.length` 未満であること。
+        explanation:
+          type: string
+          minLength: 1
+        source:
+          type: string
+          minLength: 1
+
+    QuizListResponse:
+      type: object
+      required: [quizzes, totalCount, generatedAt]
+      properties:
+        quizzes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Quiz"
+        totalCount:
+          type: integer
+          minimum: 0
+        generatedAt:
+          type: string
+          format: date-time
+
+    SectionSummary:
+      type: object
+      required: [section, count]
+      properties:
+        section:
+          type: string
+          minLength: 1
+        count:
+          type: integer
+          minimum: 0
+
+    AttemptCreateRequest:
+      type: object
+      required: [clientSessionId, completedAt, answers]
+      properties:
+        clientSessionId:
+          type: string
+          format: uuid
+        completedAt:
+          type: string
+          format: date-time
+        section:
+          type: string
+        answers:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/AttemptAnswer"
+
+    AttemptAnswer:
+      type: object
+      required: [quizId, selectedIndex, isCorrect]
+      properties:
+        quizId:
+          type: integer
+          minimum: 1
+        selectedIndex:
+          type: integer
+          minimum: 0
+        isCorrect:
+          type: boolean
+        answeredAt:
+          type: string
+          format: date-time
+
+    AttemptAccepted:
+      type: object
+      required: [clientSessionId, status]
+      properties:
+        clientSessionId:
+          type: string
+        status:
+          type: string
+          enum: [accepted]
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: 入力検証エラー
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: 該当リソースなし
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InternalError:
+      description: サーバー内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

@@ -7,6 +7,8 @@ import LoginPage from './pages/LoginPage'
 
 const QuizListPage = lazy(() => import('./pages/QuizListPage'))
 const QuizFormPage = lazy(() => import('./pages/QuizFormPage'))
+const ArchitecturesPage = lazy(() => import('./pages/ArchitecturesPage'))
+const StackShowcase = lazy(() => import('./pages/StackShowcase'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -16,6 +18,8 @@ function App() {
         <Suspense fallback={<div className="grid min-h-screen place-items-center text-[#4f5d75]">読み込み中...</div>}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/architectures" element={<ArchitecturesPage />} />
+            <Route path="/stack" element={<StackShowcase />} />
 
             <Route element={<ProtectedRoute />}>
               <Route element={<AdminLayout />}>

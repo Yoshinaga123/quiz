@@ -3,6 +3,17 @@ export interface LoginCredentials {
   password: string
 }
 
+export interface LoginVerificationPayload extends LoginCredentials {
+  challengeId: string
+  verificationCode: string
+}
+
+export interface LoginVerificationChallenge {
+  message: string
+  challengeId: string
+  code?: string
+}
+
 export type QuizStatus = 'published' | 'unpublished'
 export type QuizSort = 'updated_newest' | 'updated_oldest' | 'created_newest' | 'created_oldest'
 
@@ -28,6 +39,15 @@ export interface QuizListResponse {
   page: number
   perPage: number
   totalPages: number
+}
+
+export interface ProductionQuizSyncResponse {
+  seededCount: number
+  deletedCount: number
+  source: string
+  migrationVersion: number
+  upPath: string
+  downPath: string
 }
 
 export interface QuizSearchParams {

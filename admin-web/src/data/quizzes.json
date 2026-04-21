@@ -3924,6 +3924,3017 @@
       "correctAnswerIndex": 0,
       "explanation": "Kent C. Dodds が提唱する Colocation では、一緒に変更されるものは同じ場所に置きます。Zod スキーマと代表サンプルを同じファイルに置くと、フィールドを追加・削除した際にサンプルが即座にコンパイルエラーになり、両者を同時に更新することが明確になります。また shape に関する単一の情報源として読めるため理解が速くなります。",
       "source": "https://kentcdodds.com/blog/colocation"
+    },
+    {
+      "id": 247,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "SSH 接続時の認証キー",
+      "question": "SSH 経由で GitHub に接続する際、認証に使用されるのはどちらのキーか？",
+      "options": [
+        "公開鍵（public key）",
+        "秘密鍵（private key）",
+        "パスフレーズ",
+        "Personal Access Token"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "GitHub 公式ドキュメントには 'When you connect via SSH, you authenticate using a private key file on your local machine.' と記載されている。SSH 接続時の認証には秘密鍵が使用され、公開鍵は GitHub アカウント側に登録するものである。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/about-ssh"
+    },
+    {
+      "id": 248,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "未使用 SSH キーの自動削除",
+      "question": "GitHub は、セキュリティ上の理由から1年間使用されなかった SSH キーをどうするか？",
+      "options": [
+        "無効化して通知する",
+        "自動的に削除する",
+        "読み取り専用に変更する",
+        "パスフレーズのリセットを要求する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "GitHub 公式ドキュメントには 'If you haven't used your SSH key for a year, then GitHub will automatically delete your inactive SSH key as a security precaution.' と記載されている。セキュリティ予防措置として、1年間使用されなかった SSH キーは自動的に削除される。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/about-ssh"
+    },
+    {
+      "id": 249,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "推奨 SSH キーアルゴリズム",
+      "question": "GitHub 公式ドキュメントで新しい SSH キーを生成する際に推奨されているアルゴリズムはどれか？",
+      "code": "ssh-keygen -t ??? -C \"your_email@example.com\"",
+      "options": [
+        "rsa",
+        "dsa",
+        "ed25519",
+        "ecdsa"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "公式ドキュメントのコマンド例は `ssh-keygen -t ed25519 -C \"your_email@example.com\"` であり、Ed25519 が推奨されている。Ed25519 をサポートしないレガシシステムでのみ RSA（4096ビット）が代替として案内されている。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+    },
+    {
+      "id": 250,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "DSA キーのサポート廃止",
+      "question": "GitHub が 2022年3月15日以降サポートを廃止した SSH キーの種類はどれか？",
+      "options": [
+        "RSA キー (`ssh-rsa`)",
+        "Ed25519 キー (`ssh-ed25519`)",
+        "DSA キー (`ssh-dss`)",
+        "ECDSA キー (`ssh-ecdsa`)"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "公式ドキュメントに『それ以降、DSA キー (`ssh-dss`) はサポートされなくなりました。GitHub の個人用アカウントに新しい DSA キーを追加することはできません。』と記載されている。セキュリティ強化の一環としての措置である。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+    },
+    {
+      "id": 251,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "ssh-agent の役割",
+      "question": "SSH キーのパスフレーズを毎回入力したくない場合、どのツールにキーを追加すればよいか？",
+      "options": [
+        "git-credential-manager",
+        "ssh-agent",
+        "gpg-agent",
+        "keychain"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "公式ドキュメントに『キーにパスフレーズがあり、キーを使用するたびにパスフレーズを入力したくない場合は、SSH エージェントにキーを追加できます。SSH エージェントでは SSH キーを管理し、パスフレーズを記憶します。』と記載されている。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+    },
+    {
+      "id": 252,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "RSA キーの SHA-2 要件",
+      "question": "2021年11月2日以降に生成された RSA キーが満たさなければならない要件はどれか？",
+      "options": [
+        "鍵長が 8192 ビット以上であること",
+        "SHA-2 署名アルゴリズムを使用すること",
+        "パスフレーズが必須であること",
+        "ハードウェアセキュリティキーと併用すること"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "公式ドキュメントに『その日以降に生成される RSA キーは、SHA-2 署名アルゴリズムを使用する必要があります。SHA-2 署名を使用するには、一部の古いクライアントをアップグレードする必要があります。』と記載されている。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+    },
+    {
+      "id": 253,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "SSH キーの用途選択",
+      "question": "GitHub アカウントに SSH 公開鍵を追加する際、キーの用途として選択できるのはどれか？",
+      "options": [
+        "認証（authentication）または署名（signing）",
+        "暗号化（encryption）または復号（decryption）",
+        "プッシュ（push）またはプル（pull）",
+        "読み取り（read）または書き込み（write）"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "公式ドキュメントに『キーの種類として、認証または署名のいずれかを選びます。』と記載されている。認証と署名の両方に同じ SSH キーを使用する場合は、2回アップロードする必要がある。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account"
+    },
+    {
+      "id": 254,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "SSH 公式英文の日本語訳",
+      "question": "以下の英文の正しい日本語訳はどれか？\n\n'You must also add the public SSH key to your account on GitHub before you use the key to authenticate or sign commits.'",
+      "options": [
+        "SSH キーを使用して認証やコミット署名を行う前に、秘密鍵を GitHub アカウントに追加する必要がある",
+        "SSH キーを使用して認証やコミット署名を行った後に、公開鍵を GitHub アカウントに追加する必要がある",
+        "SSH キーを使用して認証やコミット署名を行う前に、公開鍵を GitHub アカウントに追加する必要がある",
+        "SSH キーを使用して認証やコミット署名を行うには、秘密鍵と公開鍵の両方を GitHub に追加する必要がある"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "'public SSH key' が公開鍵、'before' が『〜する前に』を意味する。秘密鍵はローカルに保持し、公開鍵のみ GitHub に登録する。誤訳選択肢は秘密鍵・公開鍵の取り違え、before/after の誤訳をそれぞれ含んでいる。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/about-ssh"
+    },
+    {
+      "id": 255,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "ハードウェアセキュリティキー用コマンド",
+      "question": "ハードウェアセキュリティキー用の SSH キーを生成する際、Ed25519 アルゴリズムをサポートしていない場合に使用すべきコマンドはどれか？",
+      "options": [
+        "`ssh-keygen -t rsa -b 4096 -C \"email@example.com\"`",
+        "`ssh-keygen -t ecdsa-sk -C \"email@example.com\"`",
+        "`ssh-keygen -t dsa -C \"email@example.com\"`",
+        "`ssh-keygen -t ed25519 -C \"email@example.com\"`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "公式ドキュメントに『コマンドが失敗し、エラー invalid format または feature not supported を受け取る場合は、Ed25519 アルゴリズムをサポートしていないハードウェアセキュリティキーを使っている可能性があります。代わりに ssh-keygen -t ecdsa-sk -C ... を入力します。』と記載されている。-sk サフィックスはセキュリティキー対応を示す。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+    },
+    {
+      "id": 256,
+      "section": "セクション78: GitHub SSH 認証",
+      "title": "SAML SSO 環境での SSH キー承認",
+      "question": "SAML シングルサインオンを使用する Organization のリポジトリに SSH キーでアクセスするために必要な追加手順は何か？",
+      "options": [
+        "SSH キーを再生成する",
+        "SSH キーを承認（authorize）する",
+        "SSH キーにパスフレーズを追加する",
+        "SSH キーを管理者に送信する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "公式ドキュメントに 'To use your SSH key with a repository owned by an organization that uses SAML single sign-on, you must authorize the key.' と記載されている。キーの再生成やパスフレーズ追加は不要で、既存のキーを Organization 向けに承認する操作が必要である。",
+      "source": "https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/about-ssh"
+    },
+    {
+      "id": 257,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "production JSON の役割",
+      "question": "`backend/seeds/quizzes.production.json` の役割として最も適切なものはどれですか？",
+      "options": [
+        "管理画面の見た目だけを調整する Tailwind 設定ファイル",
+        "本番反映対象のクイズを保持し、DB 同期やマイグレーション生成の入力に使う JSON",
+        "ログイン用 JWT の秘密鍵を保存する JSON",
+        "React Router のルーティング定義ファイル"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`backend/seeds/quizzes.production.json` は本番反映対象のクイズデータを持つテンプレートであり、管理画面の同期 API や seed SQL 生成の入力として使われる。",
+      "source": "docs/quiz-data-workflow.md / backend/seeds/quizzes.production.json"
+    },
+    {
+      "id": 258,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "generate_migration.py の責務",
+      "question": "`python3 scripts/generate_migration.py < backend/seeds/quizzes.production.json` の説明として正しいものはどれですか？",
+      "options": [
+        "マイグレーション番号を自動採番して DB へ即時適用する",
+        "JSON を読み取って SQL テキストを stdout に出力する",
+        "quizzes.production.json を React 用 JSX に変換する",
+        "DB の既存クイズを JSON に書き戻す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`generate_migration.py` は seed JSON を読み取り、`INSERT ... ON CONFLICT ...` などの SQL テキストを標準出力へ出す。ファイル作成や採番は別処理で行う。",
+      "source": "scripts/generate_migration.py"
+    },
+    {
+      "id": 259,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "golang-migrate create の役割",
+      "question": "`migrate create -ext sql -dir backend/migrations -seq -digits 3 seed_quizzes` を使う主目的はどれですか？",
+      "code": "migrate create -ext sql -dir backend/migrations -seq -digits 3 seed_quizzes",
+      "options": [
+        "既存マイグレーションを自動的にロールバックするため",
+        "番号付きの `up.sql` / `down.sql` 雛形を正しい命名規則で作るため",
+        "PostgreSQL のテーブル定義を JSON に変換するため",
+        "React 管理画面の API クライアントを生成するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`golang-migrate create` は連番付きの `NNN_name.up.sql` / `NNN_name.down.sql` を生成し、採番やファイル名の管理を肩代わりする。",
+      "source": "scripts/create_seed_migration.py / golang-migrate"
+    },
+    {
+      "id": 260,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "Upsert の更新条件",
+      "question": "`ON CONFLICT (id) DO UPDATE` に変更した後の挙動として正しいものはどれですか？",
+      "options": [
+        "同じ ID が存在しても常に挿入をスキップする",
+        "同じ ID の行があれば、タイトルや選択肢が少しでも違うと更新される",
+        "同じ ID があると必ずエラーになる",
+        "ID が同じ場合は `created_at` だけ更新される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`ON CONFLICT (id) DO UPDATE SET ...` では競合した ID の行を上書き更新する。`section`、`title`、`question`、`options` など指定したカラムが新しい値へ更新される。",
+      "source": "scripts/generate_migration.py / backend/migrations/006_seed_quizzes.up.sql"
+    },
+    {
+      "id": 261,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "down.sql の性質",
+      "question": "今回の seed 用 `down.sql` の性質として最も適切なのはどれですか？",
+      "options": [
+        "更新前のレコード内容を完全に復元できる",
+        "今回の seed 対象 ID を削除する簡易ロールバックであり、更新前データまでは戻さない",
+        "DB スキーマを 001 の状態まで戻す",
+        "マイグレーションの `dirty` フラグだけを消す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "この `down.sql` は seed 対象 ID の削除が主目的であり、Upsert 前の値をスナップショットから復元する仕組みは持たない。",
+      "source": "docs/quiz-data-workflow.md / scripts/generate_migration.py"
+    },
+    {
+      "id": 262,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "管理画面ボタンの呼び先",
+      "question": "管理画面の `production.json を DB 反映` ボタンを押したとき、最初にフロントが呼ぶ API はどれですか？",
+      "options": [
+        "`POST /api/admin/quizzes/sync-production`",
+        "`GET /api/admin/quizzes`",
+        "`PATCH /api/admin/quizzes/{id}/status`",
+        "`POST /api/admin/login/verification`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "一覧画面の同期ボタンは `syncProductionQuizzes()` を呼び、認証付きで `POST /api/admin/quizzes/sync-production` を送る。",
+      "source": "admin-web/src/pages/QuizListPage.tsx / admin-web/src/api/admin.ts / backend/main.go"
+    },
+    {
+      "id": 263,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "同期 API が読むファイル",
+      "question": "管理画面の同期 API が既定で読み込むファイルパスはどれですか？",
+      "options": [
+        "`admin-web/src/data/quizzes.json`",
+        "`backend/seeds/quizzes.production.json`",
+        "`backend/migrations/006_seed_quizzes.up.sql`",
+        "`docs/quiz-data-workflow.md`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "バックエンドは既定で `seeds/quizzes.production.json` を読み込む。リポジトリ上では `backend/seeds/quizzes.production.json` に相当する。",
+      "source": "backend/main.go"
+    },
+    {
+      "id": 264,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "replace モードの意味",
+      "question": "管理画面ボタンの同期仕様が replace モードに変更された後、正しい説明はどれですか？",
+      "options": [
+        "JSON にある ID だけ追加し、JSON にない ID はそのまま残す",
+        "JSON にある ID は Upsert し、JSON にない ID は DB から削除する",
+        "JSON の内容は無視して常に DB 全件を保持する",
+        "JSON にない ID だけを別テーブルへ移動する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "replace モードでは `quizzes.production.json` を正とみなし、存在しない ID を削除することで DB と JSON の内容を一致させる。",
+      "source": "backend/main.go / docs/quiz-data-workflow.md"
+    },
+    {
+      "id": 265,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "空配列での replace 同期",
+      "question": "`quizzes.production.json` の中身が次のように正しい JSON で、`quizzes` 配列が空だった場合の挙動はどれですか？\n\n`{\"quizzes\": []}`",
+      "options": [
+        "422 で拒否され、DB は変更されない",
+        "`quizzes` テーブルが全件削除される",
+        "最新 1 件だけが残る",
+        "`schema_migrations` テーブルだけが削除される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "replace モードでは JSON を正として扱うため、`quizzes` 配列が空なら DB 側の `quizzes` テーブルも空に同期される。",
+      "source": "backend/main.go / docs/quiz-data-workflow.md"
+    },
+    {
+      "id": 266,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "同期時の status / push の扱い",
+      "question": "管理画面ボタンの同期 API が `status` と `push_enabled` を扱う方法として正しいものはどれですか？",
+      "options": [
+        "既存行でも毎回 `published` / `true` に上書きする",
+        "既存行では保持し、新規行だけ `unpublished` / `false` で挿入する",
+        "常に JSON から `status` と `push_enabled` を読む",
+        "同期時には `status` と `push_enabled` を NULL にする"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "production seed JSON には `status` と `push_enabled` を持たせていないため、既存行では現在値を保持し、新規行のみ既定値 `unpublished` / `false` で作成する。",
+      "source": "backend/main.go"
+    },
+    {
+      "id": 267,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "422 エラーの意味",
+      "question": "管理画面の同期 API が 422 を返すケースとして最も適切なものはどれですか？",
+      "options": [
+        "JWT が期限切れで再ログインが必要なとき",
+        "`quizzes.production.json` の JSON 構文が壊れている、またはクイズデータが不正なとき",
+        "API サーバーが起動していないとき",
+        "削除モーダルのスクロールが足りないとき"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "422 は入力データが妥当でないことを表す。今回の実装では、壊れた JSON、重複 ID、必須項目不足、`correctAnswerIndex` の範囲外などが該当する。",
+      "source": "backend/main.go / admin-web/src/pages/QuizListPage.tsx"
+    },
+    {
+      "id": 268,
+      "section": "セクション79: クイズ同期 & 管理画面運用",
+      "title": "削除モーダルのスクロール修正",
+      "question": "削除モーダルで長い内容を安全に表示するために行った修正として正しいものはどれですか？",
+      "options": [
+        "モーダルを `position: static` に変更した",
+        "オーバーレイに `overflow-y-auto`、ダイアログ本文に `max-height` と内部スクロールを追加した",
+        "コードブロックをすべて削除した",
+        "モーダルを別ページ遷移に置き換えた"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "モーダル本体を viewport 高さ内に収め、本文領域だけをスクロール可能にすることで、長い問題文やコードを含んでも操作ボタンが見失われにくくなった。",
+      "source": "admin-web/src/components/DeleteQuizDialog.tsx"
+    },
+    {
+      "id": 269,
+      "section": "セクション80: Docker & ファイルパーミッション",
+      "title": "コンテナ内で生成されたファイルの削除",
+      "question": "バインドマウント（`- .:/app`）でホストとコンテナがファイルを共有している環境で、コンテナ内の root プロセスが生成した migration ファイルを削除する際に `docker compose exec api rm ...` を使用しました。ホスト側から直接 `rm` せずコンテナ内で実行した理由として正しいものはどれですか？",
+      "options": [
+        "バインドマウントは読み取り専用なのでホスト側からは削除できない",
+        "コンテナ内のプロセス（root）が作成したファイルはホスト側でも root 所有になるため、一般ユーザーでは削除できない",
+        "コンテナ内のファイルシステムはホストとは独立しているため、ホスト側からは見えない",
+        "golang-migrate がファイルをロックしているため、同じプロセス空間から削除する必要がある"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "コンテナ内で migrate create を実行したプロセスは root で動いているため、生成されたファイルはホスト側でも root:root の所有になる。一般ユーザー（uid=1000）ではホスト側から rm しても Permission denied になる。docker compose exec api rm ... ならコンテナ内で root として実行されるので削除できる。ホスト側から削除するなら sudo rm が必要。",
+      "source": "https://docs.docker.com/engine/storage/bind-mounts/"
+    },
+    {
+      "id": 270,
+      "section": "セクション81: Python 辞書と型システム",
+      "title": "dict.get() の役割",
+      "question": "以下のコードで `data.get('quizzes')` を使っている理由として正しいものはどれですか？\n\n```python\ndata = json.load(file)\nquizzes = data.get('quizzes')\nif not isinstance(quizzes, list):\n    raise ValueError(\"JSON must contain a 'quizzes' array.\")\n```",
+      "options": [
+        "data はリスト型なので、インデックスではなくキーでアクセスするために get() を使っている",
+        "get() はクラスメソッドであり、インスタンスからは呼べないため特別な構文が必要",
+        "キーが存在しない場合に KeyError ではなく None を返すため、次の isinstance チェックで丁寧にエラーメッセージを出せる",
+        "get() は辞書を深いコピーして返すため、元の data を壊さない"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "dict.get() はキーが存在しなければ None を返す辞書のインスタンスメソッド。data['quizzes'] だとキーがない場合に KeyError が発生するが、get() なら None が返り、次の isinstance チェックで ValueError として分かりやすいメッセージを出せる。",
+      "source": "https://docs.python.org/3/library/stdtypes.html#dict.get"
+    },
+    {
+      "id": 271,
+      "section": "セクション81: Python 辞書と型システム",
+      "title": "json.load() の戻り値の型",
+      "question": "`json.load()` の戻り値について正しい説明はどれですか？\n\n```python\ndata = json.load(file)\ndata.get('quizzes')\n```",
+      "options": [
+        "静的型は dict[str, Any] であり、常に辞書が返ることが型レベルで保証されている",
+        "静的型は Any であり型は確定していないが、実行時に辞書を含む JSON を読めば動的に dict 型になる",
+        "戻り値は str 型であり、json.loads() で再度パースする必要がある",
+        "静的型は object であり、.get() を呼ぶにはキャストが必須"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "json.load() の戻り値の型定義は Any である。静的には型が確定しないが、実行時に JSON の内容に応じて dict や list などの Python オブジェクトになる。そのため isinstance() による実行時の型チェックが重要な役割を果たす。",
+      "source": "https://docs.python.org/3/library/json.html#json.load"
+    },
+    {
+      "id": 272,
+      "section": "セクション81: Python 辞書と型システム",
+      "title": "isinstance による実行時型チェック",
+      "question": "以下のコードで `isinstance(quizzes, list)` によるチェックが重要な理由として最も適切なものはどれですか？\n\n```python\ndata: Any = json.load(file)\nquizzes = data.get('quizzes')\nif not isinstance(quizzes, list):\n    raise ValueError(\"JSON must contain a 'quizzes' array.\")\n```",
+      "options": [
+        "Python の型注釈は実行時に型を強制するため、isinstance は冗長だが可読性のために書いている",
+        "json.load() の戻り値は Any で静的に型が確定せず、型注釈だけでは実行時の保証がないため、isinstance で実際の型を検証する必要がある",
+        "isinstance は型注釈を自動的に更新するために使われている",
+        "data.get() が常にリストを返すことを確認するための形式的なチェック"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Python の型注釈はあくまで開発者とエディタへのヒントであり、実行時には型を強制しない。json.load() が返す Any 型のデータが期待通りのリストであることを保証するには、isinstance() による実行時チェックが不可欠。これにより不正な JSON に対して分かりやすい ValueError を返せる。",
+      "source": "https://docs.python.org/3/library/functions.html#isinstance"
+    },
+    {
+      "id": 273,
+      "section": "セクション82: os.fspath と __fspath__ プロトコル",
+      "title": "os.fspath() が内部で呼ぶもの",
+      "question": "以下のコードで `os.fspath(p)` は内部で何を呼びますか？\n\n```python\nfrom pathlib import Path\nimport os\n\np = Path('data/quizzes.json')\nresult = os.fspath(p)\n```",
+      "options": [
+        "p.__str__() を呼んで文字列に変換する",
+        "p.__fspath__() を呼んでパス文字列を取得する",
+        "p.__repr__() を呼んでオブジェクトの表現を返す",
+        "p.__path__() を呼んでファイルの絶対パスを返す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "os.fspath() は引数が str/bytes ならそのまま返し、それ以外の場合は __fspath__() メソッドを呼ぶ。Path は __fspath__() を定義しているため、os.fspath(p) は p.__fspath__() を呼んでパス文字列を返す。",
+      "source": "https://docs.python.org/3/library/os.html#os.fspath"
+    },
+    {
+      "id": 274,
+      "section": "セクション82: os.fspath と __fspath__ プロトコル",
+      "title": "os.fspath() の引数ごとの動作",
+      "question": "以下の3つの `os.fspath()` 呼び出しについて、動作の組み合わせとして正しいものはどれですか？\n\n```python\nos.fspath('file.txt')    # (A)\nos.fspath(b'file.txt')   # (B)\nos.fspath(123)           # (C)\n```",
+      "options": [
+        "(A) 'file.txt' (B) TypeError (C) TypeError",
+        "(A) 'file.txt' (B) 'file.txt' (C) '123'",
+        "(A) 'file.txt' (B) b'file.txt' (C) TypeError",
+        "(A) b'file.txt' (B) b'file.txt' (C) TypeError"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "os.fspath() は str と bytes はそのまま通す。__fspath__() も定義していない型（int など）には TypeError を発生させる。str → str、bytes → bytes でそれぞれ型を保持して返す。",
+      "source": "https://docs.python.org/3/library/os.html#os.fspath"
+    },
+    {
+      "id": 275,
+      "section": "セクション82: os.fspath と __fspath__ プロトコル",
+      "title": "os.fspath() が存在する理由",
+      "question": "`os.fspath()` と `__fspath__` プロトコルが Python に用意されている理由として最も適切なものはどれですか？",
+      "options": [
+        "Path オブジェクトを JSON にシリアライズするため",
+        "ファイルの存在確認を行うため",
+        "str, bytes, Path など様々なパス表現を統一的に str/bytes に変換し、低レベル関数との互換性を確保するため",
+        "ファイルパスをバリデーションしてセキュリティを担保するため"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "os.open() など C 由来の低レベル関数は文字列しか受け付けない。Path オブジェクトなど様々なパス表現を安全に str/bytes に変換する共通インターフェースとして os.fspath() と __fspath__ プロトコルが用意されている。",
+      "source": "https://peps.python.org/pep-0519/"
+    },
+    {
+      "id": 276,
+      "section": "セクション82: os.fspath と __fspath__ プロトコル",
+      "title": "PathLike による型安全なパス表現",
+      "question": "以下のコードはすべて `open()` に渡せてしまいます。\n\n```python\nopen(str(None))   # → open('None')\nopen(str(123))    # → open('123')\nopen('John')      # → 'John' というファイルが作られる\n```\n\n`__fspath__` プロトコル（PEP 519）がこの問題に対して提供する解決策として最も適切なものはどれですか？",
+      "options": [
+        "open() が受け付ける文字列をファイル名として有効なもののみに制限する",
+        "str 型を廃止し、すべてのパスを Path オブジェクトで表現することを強制する",
+        "PathLike を実装したオブジェクトだけが「パスである」と明示的に宣言でき、ただの文字列とパスを型レベルで区別できるようにする",
+        "open() に渡す前にファイルの存在確認を自動で行い、存在しなければ TypeError を発生させる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "str 型はあらゆる文字列を表すため、パスとして意図していない値でも open() に渡せてしまう。PEP 519 の __fspath__ プロトコルにより、PathLike を実装したオブジェクトだけが「これはパスである」と型レベルで宣言できる。後方互換のため str/bytes も引き続き受け付けるが、新しいコードでは Path を使うことで意図を明示できる。",
+      "source": "https://peps.python.org/pep-0519/"
+    },
+    {
+      "id": 277,
+      "section": "セクション83: pathlib と作業ディレクトリ",
+      "title": "Path.cwd() の意味",
+      "question": "以下のコードが返すものとして正しいものはどれですか？\n\n```python\nfrom pathlib import Path\n\ncurrent = Path.cwd()\n```",
+      "options": [
+        "スクリプトファイル自身が置かれているディレクトリ（__file__ と同じ）",
+        "プロセスの現在の作業ディレクトリ（Current Working Directory）— コマンドを実行した場所",
+        "ユーザーのホームディレクトリ",
+        "一時ファイル用のディレクトリ（/tmp など）"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Path.cwd() は Current Working Directory の略で、プロセスが現在の作業ディレクトリとしているパスを返す。これはコマンドを実行した場所に依存するため、同じスクリプトでも実行ディレクトリが変わると結果が変わる。スクリプト自身の場所が欲しい場合は Path(__file__).parent を使う。",
+      "source": "https://docs.python.org/3/library/pathlib.html#pathlib.Path.cwd"
+    },
+    {
+      "id": 278,
+      "section": "セクション83: pathlib と作業ディレクトリ",
+      "title": "Path.cwd() と Path(__file__).parent の違い",
+      "question": "以下のコードを `/home/user/project` で `python3 scripts/tool.py` として実行した場合、`a` と `b` の値として正しいものはどれですか？\n\n```python\n# /home/user/project/scripts/tool.py\nfrom pathlib import Path\n\na = Path.cwd()\nb = Path(__file__).parent\n```",
+      "options": [
+        "a = /home/user/project, b = /home/user/project/scripts",
+        "a = /home/user/project/scripts, b = /home/user/project",
+        "a も b も /home/user/project/scripts",
+        "a も b も /home/user/project"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Path.cwd() はコマンドを実行したディレクトリ（/home/user/project）を返す。Path(__file__).parent はスクリプトファイル自身の置き場所（/home/user/project/scripts）を返す。両者は実行位置とスクリプト位置が違うと異なる値になるため、用途に応じて使い分ける必要がある。",
+      "source": "https://docs.python.org/3/library/pathlib.html#pathlib.Path.cwd"
+    },
+    {
+      "id": 279,
+      "section": "セクション84: Python isinstance と型チェック",
+      "title": "isinstance() の基本動作",
+      "question": "Python の組み込み関数 `isinstance()` の説明として、最も正しいものはどれですか？\n\n```python\nclass Animal: pass\nclass Dog(Animal): pass\n\nd = Dog()\nprint(isinstance(d, Animal))  # ?\n```",
+      "options": [
+        "引数のオブジェクトが指定したクラス、またはそのサブクラスのインスタンスである場合に True を返す",
+        "指定したクラスと完全に同一の型の場合のみ True を返し、サブクラスは常に False になる",
+        "オブジェクトが指定した属性（attribute）を持っているかを判定する関数である",
+        "継承関係を無視し、クラス名の文字列を比較して一致するかを返す"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "isinstance(obj, cls) は、obj が cls のインスタンス、または cls のサブクラスのインスタンスであれば True を返す組み込み関数。継承階層を考慮するため、厳密な型一致のみを判定する type(obj) is cls と異なり、派生クラスも含めた柔軟な型チェックが可能になる。上の例では Dog が Animal のサブクラスなので True を返す。",
+      "source": "https://docs.python.org/3/library/functions.html#isinstance"
+    },
+    {
+      "id": 280,
+      "section": "セクション85: JSON と Python の型マッピング",
+      "title": "json.load() が返す型",
+      "question": "以下の JSON を `json.load()` で読み込んだとき、`data` と `data['items']` の Python での型として正しい組み合わせはどれですか？\n\n```json\n{\n  \"items\": [1, 2, 3]\n}\n```\n\n```python\nimport json\nwith open('data.json') as f:\n    data = json.load(f)\n```",
+      "options": [
+        "data は list、data['items'] は dict",
+        "data は dict、data['items'] は list",
+        "data は tuple、data['items'] は set",
+        "data も data['items'] も str"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Python 標準ライブラリの json モジュールは、JSON の object を dict に、JSON の array を list に変換する。したがって最外側の `{...}` は dict、その値 `[1, 2, 3]` は list になる。他にも JSON の string は str、number は int/float、true/false は True/False、null は None に対応する。",
+      "source": "https://docs.python.org/3/library/json.html#json-to-py-table"
+    },
+    {
+      "id": 281,
+      "section": "セクション84: Python isinstance と型チェック",
+      "title": "isinstance() と type() の違い・classinfo タプル",
+      "question": "以下のコードの出力として正しいものはどれですか？\n\n```python\nclass Animal: pass\nclass Dog(Animal): pass\n\nd = Dog()\n\na = isinstance(d, Animal)\nb = type(d) is Animal\nc = isinstance(d, (int, Animal))\n```",
+      "options": [
+        "a=True,  b=True,  c=True",
+        "a=True,  b=False, c=True",
+        "a=False, b=False, c=False",
+        "a=True,  b=True,  c=False"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "isinstance() は継承階層を考慮し、d が Animal のサブクラス Dog のインスタンスであるため True。一方 type(d) is Animal は厳密な型一致のみを見るため、実際の型 Dog とは一致せず False。isinstance の第2引数にタプルを渡すと、いずれかに該当すれば True を返すため、(int, Animal) でも Animal に該当して True となる。通常の型チェックでは継承を考慮できる isinstance が推奨される。",
+      "source": "https://docs.python.org/3/library/functions.html#isinstance"
+    },
+    {
+      "id": 282,
+      "section": "セクション86: Python の None 判定と truthy / falsy",
+      "title": "`if x is not None:` と `if x:` の違い",
+      "question": "以下のコードの A, B の出力結果として正しい組み合わせはどれですか？\n\n```python\ninput_path = \"\"\n\nif input_path is not None:\n    print(\"A\")\n\nif input_path:\n    print(\"B\")\n```",
+      "options": [
+        "A も B も出力される",
+        "A のみ出力される",
+        "B のみ出力される",
+        "どちらも出力されない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`is not None` は値が None かどうかだけを厳密に判定する。空文字列 `\"\"` は None ではないので A は出力される。一方 `if input_path:` は truthy / falsy 判定で、空文字・0・空リスト・None などはすべて falsy として扱われるため B は出力されない。CLI の `--input` のように「指定されたかどうか」を判定したい場面では、空文字を「未指定」と誤判定しないよう `is not None` を使うのが安全。PEP 8 でも None との比較は `is` / `is not` を使うことが推奨されている。",
+      "source": "https://peps.python.org/pep-0008/#programming-recommendations"
+    },
+    {
+      "id": 283,
+      "section": "セクション87: Python 標準ライブラリ select モジュール",
+      "title": "select モジュールの役割とプラットフォーム差",
+      "question": "Python 公式ドキュメントの次の記述について、内容の説明として最も適切なものはどれですか？\n\n> This module provides access to the select() and poll() functions available in most operating systems, devpoll() available on Solaris and derivatives, epoll() available on Linux 2.5+ and kqueue() available on most BSD. Note that on Windows, it only works for sockets; on other operating systems, it also works for other file types (in particular, on Unix, it works on pipes). It cannot be used on regular files to determine whether a file has grown since it was last read.",
+      "options": [
+        "OS が提供する I/O 多重化プリミティブ (select / poll / epoll / kqueue / devpoll) への薄いラッパーで、Windows ではソケットのみ、Unix ではパイプなど他のファイル種別にも使えるが、通常ファイルに対して「前回読み込み以降に拡張されたか」を知る用途には使えない",
+        "すべての OS において、通常ファイルを含むあらゆるファイル種別に対して使用でき、ファイルが追記されたかどうかを監視するために利用できる",
+        "epoll と kqueue は Python が独自実装したクロスプラットフォームな API であり、Windows でもソケット以外のファイルを監視できる",
+        "select モジュールは非同期 I/O ライブラリ asyncio の代替であり、通常ファイルのサイズ変化を検知するために設計されている"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "select モジュールは OS が提供する I/O 多重化の仕組みへのアクセスを提供するもので、具体的には POSIX 系の `select()` / `poll()`、Solaris 系の `devpoll()`、Linux 2.5+ の `epoll()`、BSD 系の `kqueue()` をラップする。Windows では実装の制約からソケットに対してのみ動作し、Unix 系ではパイプなどソケット以外のファイル種別にも使える。重要な制限として、通常ファイル (regular files) は常に「読み書き可能」として扱われるため、`select` 系 API で監視しても tail -f 的な「最後に読んだ位置からファイルが増えたかどうか」を知る用途には使えない。その用途には inotify や kqueue の EVFILT_VNODE、あるいは watchdog のようなファイルシステムイベント監視が必要になる。",
+      "source": "https://docs.python.org/3/library/select.html"
+    },
+    {
+      "id": 284,
+      "section": "セクション88: Unix 系 OS と BSD",
+      "title": "BSD とは何か",
+      "question": "Python 公式ドキュメントの select モジュールの説明に「kqueue() available on most BSD」という記述があります。ここでいう **BSD** の説明として最も適切なものはどれですか？",
+      "options": [
+        "Microsoft が開発した Windows 向けのネットワークスタックの略称で、主にソケット通信 API を指す",
+        "カリフォルニア大学バークレー校 (UCB) で開発された Unix 派生系 OS、およびそこから派生した FreeBSD / OpenBSD / NetBSD / macOS (Darwin) などの Unix 系 OS 群の総称。ソケット API や TCP/IP 実装の起源としても知られ、緩いライセンス (BSD ライセンス) でも有名",
+        "Linux カーネル 2.5 以降で導入された、epoll の後継となる I/O 多重化 API の規格名",
+        "POSIX 標準の正式名称で、すべての Unix 系 OS が従うべき API 仕様を定めた国際規格"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "**BSD** は **Berkeley Software Distribution** の略で、1970〜80 年代にカリフォルニア大学バークレー校が AT&T Unix をベースに独自拡張を加えて配布した Unix 派生系 OS、およびそこから枝分かれした一連の Unix 系 OS (FreeBSD / OpenBSD / NetBSD / DragonFly BSD など) の総称。現代の TCP/IP 実装や BSD ソケット API、vi、C シェルなどは BSD 由来であり、macOS / iOS のカーネル (Darwin) も FreeBSD 由来のコードを多数取り込んでいる。ライセンスも緩い「BSD ライセンス」として知られる。Python ドキュメントの `kqueue() available on most BSD` は、FreeBSD を起点に多くの BSD 系 OS (macOS を含む) で使える I/O 多重化機構を指しており、Linux の epoll に相当する。",
+      "source": "https://en.wikipedia.org/wiki/Berkeley_Software_Distribution"
+    },
+    {
+      "id": 285,
+      "section": "セクション89: Python select.select の仕様",
+      "title": "select.select の戻り値・timeout・Windows の制約",
+      "question": "Python 公式ドキュメントの `select.select(rlist, wlist, xlist, timeout=None)` の説明として **誤っているもの** はどれですか？",
+      "options": [
+        "戻り値は (rlist_ready, wlist_ready, xlist_ready) の 3 つのリストで、それぞれ引数で渡したイテラブルのサブセット (準備完了したもののみ) になる。タイムアウトした場合は 3 つとも空リストになる",
+        "timeout に None を渡すと、少なくとも 1 つの fd が ready になるまでブロックする。0 を渡すとブロックせずに現在の状態を返すポーリングになる",
+        "Windows では通常のファイルオブジェクトは渡せず、ソケットのみ受け付ける (内部で WinSock の select を使うため、WinSock 由来でない fd は扱えない)",
+        "Python 3.5 以降、シグナルで select がブロック中断された場合、常に InterruptedError が送出されるようになり、呼び出し側で必ずリトライ処理を書く必要がある"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Python 3.5 以降は **PEP 475** によって逆の挙動に変わっており、**シグナル (EINTR) で中断された場合は残り時間を再計算して自動的にリトライする** ようになった (シグナルハンドラ自身が Python 例外を送出した場合を除く)。これにより呼び出し側で EINTR をハンドリングする定型コードが不要になった、というのがポイント。他の選択肢は正しい: (1) 戻り値は引数のサブセットで、タイムアウト時は 3 つとも空リスト。(2) `timeout=None` は無限ブロック、`0` はノンブロッキングのポーリング。(3) Windows では WinSock 制約によりソケットのみ対応し、ファイルオブジェクトは渡せない。また引数は「fd の整数」か「`fileno()` を持つオブジェクト」を受け取り、3 つとも空の iterable を渡すのは Unix のみ許容される (Windows 不可) という点も覚えておくとよい。",
+      "source": "https://docs.python.org/3/library/select.html#select.select"
+    },
+    {
+      "id": 286,
+      "section": "セクション90: 英文読解 (Python チュートリアル)",
+      "title": "構文エラーと例外の導入文を読む",
+      "question": "Python 公式チュートリアル「Errors and Exceptions」冒頭の次の英文の趣旨として最も適切なものはどれですか？\n\n> Until now error messages haven't been more than mentioned, but if you have tried out the examples you have probably seen some. There are (at least) two distinguishable kinds of errors: syntax errors and exceptions.",
+      "options": [
+        "これまではエラーメッセージについて簡単に触れる程度だったが、例を実際に試していればいくつか目にしているはずだ。エラーには少なくとも 2 種類、区別できるものがある: 構文エラーと例外だ",
+        "これまでエラーメッセージについては一切説明してこなかったので、読者はまだ一度もエラーを見ていないはずだ。エラーは構文エラーと例外の 2 つだけに厳密に分類される",
+        "これまで紹介した例はすべてエラーなしで動作するよう設計されている。エラーには構文エラーと例外があるが、両者に実質的な違いはない",
+        "これから紹介する例を実行するとかならずエラーが出る。エラーは構文エラー・例外・警告の 3 種類に正確に分けられる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "原文のポイントは 3 つ。(a) `haven't been more than mentioned` = 「言及される以上のことはされていない」= これまでは軽く触れる程度だった、という含意。(b) `if you have tried out the examples you have probably seen some` = 「例を試していたならおそらくいくつか (エラーを) 見たことがあるはず」という読者への呼びかけ。(c) `(at least) two distinguishable kinds of errors: syntax errors and exceptions` = 「少なくとも区別できる 2 種類のエラーがある: 構文エラーと例外」で、`at least` は「他にも分類はあり得るが、大きく分けて最低でも 2 種類」というニュアンス。したがって選択肢 1 が正解。選択肢 2 は `haven't been more than mentioned` を「全く説明してこなかった」と誤読し、かつ `at least` を無視して「2 つだけに厳密分類」と言っている点が誤り。3 は「両者に違いはない」が原文と逆 (原文は `distinguishable = 区別できる` と明言)。4 は「警告を含む 3 種類」という原文にない情報を追加しており誤り。",
+      "source": "https://docs.python.org/3/tutorial/errors.html"
+    },
+    {
+      "id": 287,
+      "section": "セクション90: 英文読解 (Python チュートリアル)",
+      "title": "構文エラー (parsing error) の定義文を読む",
+      "question": "Python 公式チュートリアル「Errors and Exceptions」の次の英文の意味として最も適切なものはどれですか？\n\n> Syntax errors, also known as parsing errors, are perhaps the most common kind of complaint you get while you are still learning Python.",
+      "options": [
+        "構文エラー (syntax errors) はパースエラー (parsing errors) とも呼ばれ、Python を学び始めたばかりの頃に遭遇する「文句を言われる」タイプのエラーとしては、おそらく最もよく見かけるものだ",
+        "構文エラーとパースエラーは別物であり、Python 学習者はまずパースエラーに遭遇し、その後に構文エラーを学ぶことになる",
+        "構文エラーは Python を十分に習熟した上級者だけが遭遇するまれなエラーで、初心者にはほとんど見る機会がない",
+        "構文エラーは常にランタイム (実行時) に発生するエラーであり、プログラムの実行を途中まで進めた後にはじめて検出される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ポイントは (a) `also known as parsing errors` = 「パースエラーとも呼ばれる」で、構文エラーとパースエラーは **同じもの** (同義) であること。(b) `perhaps the most common kind of complaint you get` の `complaint` はここではインタプリタから出される「苦情 = エラーメッセージ」の比喩で、「最もよくある種類のエラー」と解釈するのが自然。(c) `while you are still learning Python` = 「Python をまだ学んでいる間に」= 学習初期に特によく見る、というニュアンス。よって選択肢 1 が正解。選択肢 2 は「別物」が誤り (`also known as` は同義)。3 は「上級者のみ」が原文の `while you are still learning` と真逆。4 は「ランタイムに発生」が誤りで、構文エラーは **コードを実行する前のパース (字句・構文解析) 段階** で検出される (これに対して例外は実行時に発生する、というのがチュートリアル全体のコントラスト)。",
+      "source": "https://docs.python.org/3/tutorial/errors.html#syntax-errors"
+    },
+    {
+      "id": 288,
+      "section": "セクション91: Python SyntaxError の見分け方",
+      "title": "while True print(...) が出すエラーの種類",
+      "question": "次の Python インタプリタの出力について、このエラーはどの種類のエラーに該当しますか？\n\n```text\n>>> while True print('Hello world')\n  File \"<stdin>\", line 1\n    while True print('Hello world')\n               ^^^^^\nSyntaxError: invalid syntax\n```",
+      "options": [
+        "構文エラー (SyntaxError / parsing error)。`while` 文のヘッダの末尾に必要なコロン `:` が欠けており、パース段階で検出されるため、print は一度も実行されない",
+        "実行時例外 (RuntimeError)。while ループが無限に回ってしまうことをインタプリタが検出して停止させた結果出力されたエラー",
+        "名前エラー (NameError)。`print` という関数名がスコープ内で見つからないことによるエラー",
+        "型エラー (TypeError)。`True` と文字列を比較しようとして型の不一致が起きた"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "このエラーは **SyntaxError (構文エラー / parsing error)** で、原因は `while True` の直後にコロン `:` が欠けている点。正しくは `while True: print('Hello world')` と書く必要がある。パーサがトークンを読んでいる途中で「`while` 文のヘッダが閉じられていない」と判断し、最初に異常を検出した位置 (ここでは `print`) に `^^^^^` を当ててエラーメッセージを表示する。構文エラーはコード実行前の **パース (字句・構文解析) 段階** で検出されるため、`print('Hello world')` は一度も実行されない。選択肢 2 (RuntimeError) は誤り: そもそも実行に到達していないし、Python は無限ループそのものをエラーにしない。3 (NameError) は誤り: `print` は組み込み関数として常に参照可能で、エラーメッセージも `invalid syntax` であって `name 'print' is not defined` ではない。4 (TypeError) も誤り: 比較や演算は行われていない。`File \"<stdin>\", line 1` と `SyntaxError:` というラベル、そして `^^^^^` が当たっている位置から「文法ミス」と読み取るのがポイント。\n\n**補足 (公式チュートリアルより):** 「パーサは問題のある行 (offending line) を繰り返し表示し、**エラーが検出された位置** を指す小さな矢印を表示する。ただし、その位置が必ずしも修正すべき場所とは限らないことに注意。この例ではエラーは `print()` の位置で検出されているが、実際の原因はその直前にコロン `:` が欠けていることにある。」── つまり **矢印 `^` が指すのは「容疑者の位置 (= 検出位置)」であって「真犯人の位置 (= 修正すべき場所)」ではない**。パーサは「ここまでは文法的に OK、ここで急に合わなくなった」という検出時点を示すだけなので、矢印の **1〜数トークン手前** を疑うのが鉄則。\n\n**ファイル名と行番号について:** 出力の先頭に表示される `File \"<stdin>\", line 1` の **ファイル名と行番号** は、入力がファイル由来だった場合にどこを見ればよいかを教えるためのもの。`<stdin>` は対話モード (REPL) で入力された行であることを示す特別な名称で、`< >` で囲まれているのは「実ファイルではない」というマーカー (同様に `<string>` は `exec()` / `eval()` に渡した文字列、`<module>` はモジュールトップレベルを示す)。スクリプトファイルから実行した場合はここが `File \"/path/to/script.py\", line 42` のような **実パス + 行番号** になり、エディタで該当行に直接ジャンプできる。矢印 `^` が指す検出位置と、この行番号の組み合わせが「どこから原因を追えばよいか」の出発点になる。",
+      "source": "https://docs.python.org/3/tutorial/errors.html#syntax-errors"
+    },
+    {
+      "id": 289,
+      "section": "セクション90: 英文読解 (Python チュートリアル)",
+      "title": "例外 (Exceptions) の導入文を読む",
+      "question": "Python 公式チュートリアル「Errors and Exceptions」の次の英文の趣旨として最も適切なものはどれですか？\n\n> Even if a statement or expression is syntactically correct, it may cause an error when an attempt is made to execute it. Errors detected during execution are called exceptions and are not unconditionally fatal: you will soon learn how to handle them in Python programs. Most exceptions are not handled by programs, however, and result in error messages as shown here.",
+      "options": [
+        "構文的に正しい文や式でも実行時にエラーになることがあり、そうした実行時検出エラーを「例外」と呼ぶ。例外は必ずしもプログラムを終了させるわけではなく、Python プログラム内で処理 (ハンドリング) できる。ただし多くの例外は処理されず、結果としてエラーメッセージとして表示される",
+        "構文エラーと例外は同じものであり、どちらもパース段階で検出される。Python プログラムでは例外を処理する手段が存在しないため、発生すると常にプログラムが強制終了する",
+        "例外は常にプログラムを致命的 (fatal) に停止させる。したがってエラーメッセージが表示された時点で、プログラム側で復旧することは原理的に不可能である",
+        "構文的に正しいコードは実行時にエラーを出すことが絶対にない。実行時エラーが出た場合は必ず構文の書き直しが必要である"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "原文のキーとなる 3 つの対比・限定を押さえるのがポイント。(a) `Even if ... syntactically correct, it may cause an error when ... execute it` = 「構文的に正しくても、実行時にエラーになることがある」→ 構文エラーと例外はタイミングが違う (構文エラーはパース時、例外は実行時)。(b) `not unconditionally fatal` = 「無条件に致命的ではない」→ `try` / `except` で捕まえれば回復でき、常にプログラムが死ぬわけではない。(c) `Most exceptions are not handled by programs, however, and result in error messages` = 「ただし実際には多くの例外は処理されず、エラーメッセージとして表示される」→ ハンドリング可能であることと、実際にされているかは別問題。以上から選択肢 1 が正解。選択肢 2 は「構文エラーと例外は同じ」「処理する手段が存在しない」が誤り (むしろチュートリアルは両者を明確に区別し、処理方法を学ぶと予告している)。3 は `not unconditionally fatal` を真逆に解釈しており誤り。4 は「構文的に正しいコードは実行時エラーを出さない」がまさに原文の `Even if ... it may cause an error` と矛盾する。",
+      "source": "https://docs.python.org/3/tutorial/errors.html#exceptions"
+    },
+    {
+      "id": 290,
+      "section": "セクション92: Python 組み込み例外の見分け方",
+      "title": "Traceback から例外クラスを当てる",
+      "question": "Python インタプリタで以下の 3 つの式をそれぞれ実行しました。A・B・C の Traceback で発生している例外クラスの組み合わせとして正しいものはどれですか？\n\n```text\n# A\n>>> 10 * (1/0)\nTraceback (most recent call last):\n  File \"<stdin>\", line 1, in <module>\n???: division by zero\n\n# B\n>>> 4 + spam*3\nTraceback (most recent call last):\n  File \"<stdin>\", line 1, in <module>\n???: name 'spam' is not defined\n\n# C\n>>> '2' + 2\nTraceback (most recent call last):\n  File \"<stdin>\", line 1, in <module>\n???: can only concatenate str (not \"int\") to str\n```",
+      "options": [
+        "A: ZeroDivisionError / B: NameError / C: TypeError",
+        "A: ArithmeticError / B: SyntaxError / C: ValueError",
+        "A: ZeroDivisionError / B: TypeError / C: NameError",
+        "A: RuntimeError / B: NameError / C: TypeError"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "いずれも **構文は正しいが実行時に失敗する** 典型的な組み込み例外の例。(A) `1/0` は 0 による除算で **`ZeroDivisionError: division by zero`**。`ZeroDivisionError` は `ArithmeticError` のサブクラスなので「より具体的な方」を選ぶのが正解 (選択肢 2 の `ArithmeticError` は間違いではないが出力されるクラス名とは異なる)。(B) `spam` という名前はどのスコープにも定義されていないため **`NameError: name 'spam' is not defined`**。構文的には識別子として正しいのでパースは通り、**実行時に名前解決で失敗** する点がポイント (SyntaxError ではない)。(C) `str` と `int` を `+` で連結しようとしたため **`TypeError: can only concatenate str (not \"int\") to str`**。Python は暗黙の型変換をしないので、文字列結合したいなら `'2' + str(2)`、数値加算したいなら `int('2') + 2` のように明示変換が必要。したがって正解は選択肢 1。Traceback の最終行 `例外クラス名: メッセージ` の形式を覚えておけば、メッセージ部分から例外クラスを逆引きできる。",
+      "source": "https://docs.python.org/3/tutorial/errors.html#exceptions"
+    },
+    {
+      "id": 291,
+      "section": "セクション92: Python 組み込み例外の見分け方",
+      "title": "Traceback 最終行のフォーマット",
+      "question": "Python 公式チュートリアルには「The last line of the error message indicates what happened.」という記述があります。この **Traceback の最終行** が「何が起こったか」を示す際の **フォーマット (書式)** として正しいものはどれですか？\n\n例:\n```text\nTraceback (most recent call last):\n  File \"<stdin>\", line 1, in <module>\nZeroDivisionError: division by zero\n```",
+      "options": [
+        "`例外クラス名: エラーメッセージ` の形式で 1 行にまとめて出力される (例: `ZeroDivisionError: division by zero`)。クラス名とメッセージはコロン + 半角スペースで区切られる",
+        "`File \"<ファイル名>\", line <行番号>` の形式で、どのファイルの何行目でエラーが起きたかのみが出力される",
+        "`Traceback (most recent call last):` の形式で、スタックの一番上 (最も古い呼び出し) のみを示す",
+        "JSON 形式 `{\"type\": \"ZeroDivisionError\", \"message\": \"division by zero\"}` で機械可読な構造化データとして出力される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Python の Traceback の最終行は **`例外クラス名: エラーメッセージ`** という書式で、クラス名とメッセージは `: ` (コロン + 半角スペース) で区切られる。例えば `ZeroDivisionError: division by zero`、`NameError: name 'spam' is not defined`、`TypeError: can only concatenate str (not \"int\") to str` など。この一行を読めば「**どの種類の例外が** (クラス名) **なぜ起きたか** (メッセージ)」がほぼ分かるように設計されている。選択肢 2 の `File \"...\", line N` は **スタックフレーム行** (最終行より上に出る、どこで起きたかを示す行) であって、「何が起こったか」を示す最終行ではない。3 の `Traceback (most recent call last):` は **ヘッダ行** (最初の行) で、これから呼び出し履歴を出すという宣言にすぎない。4 の JSON 形式は誤り ── Python 標準の Traceback はプレーンテキストで出力される (構造化ログが欲しい場合は `traceback` モジュールや `logging` の設定で自分で整形する必要がある)。Traceback を読むときは **「一番下の行 = What happened」「その上のフレーム = Where it happened」** と覚えておくとよい。",
+      "source": "https://docs.python.org/3/tutorial/errors.html#exceptions"
+    },
+    {
+      "id": 292,
+      "section": "セクション92: Python 組み込み例外の見分け方",
+      "title": "「何を間違えたか」で Python 組み込み例外を分類する",
+      "question": "次の A〜D のコードを実行したとき、それぞれ発生する **組み込み例外** の組み合わせとして最も適切なものはどれですか？「**何を間違えたか**」というメンタルモデル (名前 / 型 / 値 / 位置 / リソース) で考えてください。\n\n```python\n# A: 存在しない dict キーにアクセス\nd = {\"x\": 1}\n_ = d[\"y\"]\n\n# B: 型が合わない演算 (None に対してメソッド呼び出し)\nobj = None\nobj.lower()\n\n# C: 型は合うが値が不正な変換\n_ = int(\"abc\")\n\n# D: list の範囲外インデックスアクセス\nxs = [1, 2, 3]\n_ = xs[10]\n```",
+      "options": [
+        "A: KeyError (位置/キーの間違い) / B: AttributeError (名前・属性の間違い) / C: ValueError (値の間違い) / D: IndexError (位置の間違い)",
+        "A: IndexError / B: TypeError / C: TypeError / D: KeyError",
+        "A: NameError / B: NameError / C: SyntaxError / D: ZeroDivisionError",
+        "A: KeyError / B: TypeError / C: ValueError / D: NameError"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "「**何を間違えたか**」で覚えると迷いにくい: **名前 (identifier)** を間違えた → `NameError` / `AttributeError` / `ImportError`、**型 (type)** を間違えた → `TypeError`、**値 (value)** を間違えた → `ValueError` / `ZeroDivisionError`、**位置 (index/key)** を間違えた → `IndexError` (list) / `KeyError` (dict)、**リソース** が無い → `FileNotFoundError` など。\n\n本問の対応は以下のとおり。\n(A) `d[\"y\"]` — dict に存在しないキーでアクセス → **`KeyError: 'y'`** (「位置/キー」の間違い。dict はハッシュでキーを引くため IndexError ではない)。\n(B) `None.lower()` — `None` は `lower` 属性を持たないので **`AttributeError: 'NoneType' object has no attribute 'lower'`** (「名前・属性」の間違い。**`TypeError` ではない** 点に注意 ── Python では「属性アクセスの失敗」は `AttributeError` に分類される)。\n(C) `int(\"abc\")` — 型 (str) は `int()` が受け付けるが、その **値が整数として不正** → **`ValueError: invalid literal for int() with base 10: 'abc'`** (「値」の間違い。型は合っている)。\n(D) `xs[10]` — list の長さを超えるインデックス → **`IndexError: list index out of range`** (「位置」の間違い)。\n\nしたがって正解は選択肢 1。選択肢 2 は A と D が dict/list で入れ替わっており誤り。3 は全く見当違い。4 は D を `NameError` とする点が誤り (`xs` はちゃんと定義されている)。なお (B) を `TypeError` としがちな誤答の典型例: Python は **属性ルックアップの失敗を `AttributeError`** に分類し、引数の型ミスマッチや演算子対応不可 (`'a' + 1` など) を **`TypeError`** に分類するという使い分けがある。",
+      "source": "https://docs.python.org/3/library/exceptions.html"
+    },
+    {
+      "id": 293,
+      "section": "セクション93: Python 例外クラス階層",
+      "title": "Exception hierarchy — 親クラスはどれか",
+      "question": "Python 公式ドキュメント `Built-in exceptions` の `Exception hierarchy` には、組み込み例外の継承関係が以下のように記載されています (抜粋)。\n\n```text\nBaseException\n ├── BaseExceptionGroup\n ├── GeneratorExit\n ├── KeyboardInterrupt\n ├── SystemExit\n └── Exception\n      ├── ArithmeticError\n      │    ├── FloatingPointError\n      │    ├── OverflowError\n      │    └── ZeroDivisionError\n      ├── AssertionError\n      ├── AttributeError\n      ├── LookupError\n      │    ├── IndexError\n      │    └── KeyError\n      ├── NameError\n      │    └── UnboundLocalError\n      ├── OSError\n      │    ├── FileNotFoundError\n      │    ├── PermissionError\n      │    └── TimeoutError\n      ├── TypeError\n      ├── ValueError\n      │    └── UnicodeError\n      └── ...\n```\n\nこの階層図に基づく記述として **正しいもの** はどれですか？",
+      "options": [
+        "`except LookupError:` を書くと、`IndexError` と `KeyError` の両方を一括して捕捉できる。また `except Exception:` は `KeyboardInterrupt` と `SystemExit` を **捕捉しない** (これらは `Exception` ではなく `BaseException` の直下にあるため)",
+        "`KeyboardInterrupt` と `SystemExit` は `Exception` のサブクラスなので、`except Exception:` で意図せず捕捉されてしまう。これを避けるには必ず `except BaseException:` を使う必要がある",
+        "`ZeroDivisionError` は `Exception` の直接の子クラスであり、`ArithmeticError` とは無関係である。したがって `except ArithmeticError:` で `ZeroDivisionError` を捕捉することはできない",
+        "`FileNotFoundError` は `Exception` の直接の子クラスであり、`except OSError:` では捕捉できない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "公式の `Exception hierarchy` で継承関係を正しく読み取れば答えは選択肢 1。\n\n(1) **正しい**: `IndexError` と `KeyError` はいずれも **`LookupError` のサブクラス** として記載されているため、`except LookupError:` で両方まとめて捕捉できる。また `KeyboardInterrupt` / `SystemExit` / `GeneratorExit` / `BaseExceptionGroup` は **`Exception` ではなく `BaseException` の直下** にあるため、`except Exception:` では捕捉されない ── これが「通常は `except Exception:` を使う」とされる根拠 (Ctrl+C や `sys.exit()` を誤って握りつぶさないため)。\n\n(2) **誤り**: `KeyboardInterrupt` と `SystemExit` は `Exception` の子ではなく **`BaseException` 直下**。したがって `except Exception:` では **捕捉されない** (これは安全な挙動)。`except BaseException:` を使う必要があるのはむしろ **避けるべきケース**。\n\n(3) **誤り**: 階層図の通り `ZeroDivisionError` は **`ArithmeticError` のサブクラス** (`ArithmeticError ├── ZeroDivisionError`)。`except ArithmeticError:` で `ZeroDivisionError` / `OverflowError` / `FloatingPointError` をまとめて捕捉できる。\n\n(4) **誤り**: 階層図の通り `FileNotFoundError` は **`OSError` のサブクラス**。`except OSError:` で `FileNotFoundError` / `PermissionError` / `TimeoutError` などをまとめて捕捉できる (Python 3.3 以降、旧 `IOError` / `EnvironmentError` は `OSError` に統合された)。\n\n**実務ポイント**: 「どのサブクラスが来ても対応が同じ」なら親 (`OSError`, `LookupError`, `ArithmeticError`) で一括 catch、対応を分けたいなら具体例外で個別 catch、プロセス境界のセーフティネットでは `except Exception:` を使い、`except BaseException:` や裸の `except:` は避ける、が鉄則。",
+      "source": "https://docs.python.org/3/library/exceptions.html#exception-hierarchy"
+    },
+    {
+      "id": 294,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "except (ValueError, TypeError) as e の意味",
+      "question": "次のコード片にある `except (ValueError, TypeError) as e:` の説明として最も正しいものはどれですか？\n\n```python\ntry:\n    x = int(input(\"Please enter a number: \"))\n    break\nexcept (ValueError, TypeError) as e:\n    print(\"Oops! That was no valid number. Try again...\")\n```",
+      "code": "try:\n    x = int(input(\"Please enter a number: \"))\n    break\nexcept (ValueError, TypeError) as e:\n    print(\"Oops! That was no valid number. Try again...\")",
+      "options": [
+        "`ValueError` または `TypeError` のどちらが起きても同じ except 節で捕捉し、例外オブジェクトは `e` に束縛される",
+        "`ValueError` と `TypeError` が同時に 2 つ起きた場合だけ except 節が実行される",
+        "タプルに入れた例外は継承関係がないと書けない",
+        "`as e` を書くと例外は握りつぶされず、必ず自動で再送出される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "except に例外クラスのタプルを書くと、そのいずれかにマッチした場合に同じハンドラが実行される。`as e` は捕捉した例外インスタンスを変数 `e` で参照するための構文で、メッセージや `.args` を取り出せる。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 295,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "while True ループを抜ける条件",
+      "question": "次のコードで `while True` ループが `break` によって終了するのはどんなときですか？\n\n```python\nwhile True:\n    try:\n        x = int(input(\"Please enter a number: \"))\n        break\n    except (ValueError, TypeError):\n        print(\"Oops! That was no valid number. Try again...\")\n```",
+      "code": "while True:\n    try:\n        x = int(input(\"Please enter a number: \"))\n        break\n    except (ValueError, TypeError):\n        print(\"Oops! That was no valid number. Try again...\")",
+      "options": [
+        "`int(...)` が成功し、例外が発生しなかったとき",
+        "`ValueError` が起きた直後",
+        "ユーザーが Ctrl+C を押したとき",
+        "入力が空文字だったときは必ず `break` する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`break` は try 節の中にあり、`int(input(...))` が正常に整数へ変換できた場合だけ到達する。`ValueError` や `TypeError` が起きると except に飛ぶのでループは継続する。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 296,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "KeyboardInterrupt を個別に処理する意図",
+      "question": "次のコードで `except KeyboardInterrupt:` を別に書いている理由として最も適切なものはどれですか？\n\n```python\nexcept KeyboardInterrupt:\n    print(\"\\nInput cancelled by user. Exiting.\")\n    traceback.print_exc()\n    exit()\n```",
+      "code": "except KeyboardInterrupt:\n    print(\"\\nInput cancelled by user. Exiting.\")\n    traceback.print_exc()\n    exit()",
+      "options": [
+        "Ctrl+C による中断を入力値エラーとは分けて扱い、メッセージ表示後に終了するため",
+        "`KeyboardInterrupt` は `ValueError` のサブクラスなので、先に書かないと捕捉できないため",
+        "`KeyboardInterrupt` を捕捉すると Python は必ず再起動するため",
+        "これを書かないと `int()` は一切例外を投げなくなるため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Ctrl+C で発生する `KeyboardInterrupt` は、単なる入力ミス (`ValueError`) とは意味が違う。サンプルではユーザー中断として明示的に扱い、メッセージとトレースバックを出して終了している。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 297,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "print(e) と print(e.args) の違い",
+      "question": "例外を `except ValueError as e:` で受けたとき、`print(e)` と `print(e.args)` の関係として正しいものはどれですか？",
+      "code": "except ValueError as e:\n    print(e)\n    print(e.args)",
+      "options": [
+        "`print(e)` は人向けの文字列表現を表示し、`print(e.args)` は例外に渡された引数のタプルを表示する",
+        "どちらも常に同じ型・同じ内容を表示する",
+        "`e.args` は整数しか入れられないので文字列エラーでは使えない",
+        "`print(e)` は例外クラス名だけを表示し、メッセージ本文は出ない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "組み込み例外は通常 `__str__()` を定義しているため、`print(e)` では読みやすいメッセージが出る。一方 `e.args` はコンストラクタに渡された生の引数群で、タプルとして保持される。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 298,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "Exception('spam', 'eggs') の args",
+      "question": "次のコードを実行したとき、`inst.args` の値として正しいものはどれですか？\n\n```python\ntry:\n    raise Exception('spam', 'eggs')\nexcept Exception as inst:\n    print(inst.args)\n```",
+      "code": "try:\n    raise Exception('spam', 'eggs')\nexcept Exception as inst:\n    print(inst.args)",
+      "options": [
+        "`('spam', 'eggs')`",
+        "`['spam', 'eggs']`",
+        "`'spam eggs'`",
+        "`None`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "例外インスタンスに渡した複数引数は `.args` にタプルで保存される。サンプルではその後 `x, y = inst.args` とアンパックしている。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 299,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "x, y = inst.args の意味",
+      "question": "次のコードで `x` と `y` には最終的に何が入りますか？\n\n```python\ntry:\n    raise Exception('spam', 'eggs')\nexcept Exception as inst:\n    x, y = inst.args\n```",
+      "code": "try:\n    raise Exception('spam', 'eggs')\nexcept Exception as inst:\n    x, y = inst.args",
+      "options": [
+        "`x` に `'spam'`、`y` に `'eggs'` が入る",
+        "`x` に `('spam', 'eggs')`、`y` に `None` が入る",
+        "`x` に例外クラス、`y` に例外メッセージが入る",
+        "アンパックできず `TypeError` になる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`.args` は 2 要素タプル `('spam', 'eggs')` なので、そのまま順番に `x`, `y` へアンパックできる。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 300,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "ファイル読込サンプルで ValueError が起きる条件",
+      "question": "次のサンプルでは、どのようなときに `except ValueError:` が実行されますか？\n\n```python\ntry:\n    f = open('myfile.txt', mode='r')\n    s = f.readline()\n    i = int(s.strip())\nexcept OSError as err:\n    print('OS error:', err)\nexcept ValueError:\n    print('Could not convert data to an integer.')\n```",
+      "code": "try:\n    f = open('myfile.txt', mode='r')\n    s = f.readline()\n    i = int(s.strip())\nexcept OSError as err:\n    print('OS error:', err)\nexcept ValueError:\n    print('Could not convert data to an integer.')",
+      "options": [
+        "ファイルは開けたが、読み込んだ文字列を `int(...)` に変換できなかったとき",
+        "ファイルそのものが存在しないとき",
+        "`open()` が成功したときは必ず ValueError になる",
+        "`strip()` は常に `OSError` を送出するので ValueError にはならない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`OSError` はファイル操作レベルの失敗、`ValueError` は値変換の失敗。サンプルは「開けない」「開けるが中身が整数ではない」を分けて処理している。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 301,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "for ループ内の else が実行される条件",
+      "question": "次のコードの `else:` 節が実行される条件として正しいものはどれですか？\n\n```python\nfor arg in sys.argv[1:]:\n    try:\n        f = open(arg, 'r')\n    except OSError:\n        print('cannot open', arg)\n    else:\n        print(arg, 'has', len(f.readlines()), 'lines')\n        f.close()\n```",
+      "code": "for arg in sys.argv[1:]:\n    try:\n        f = open(arg, 'r')\n    except OSError:\n        print('cannot open', arg)\n    else:\n        print(arg, 'has', len(f.readlines()), 'lines')\n        f.close()",
+      "options": [
+        "その反復で try 節に例外が発生しなかったとき",
+        "例外が発生した直後に自動で実行される",
+        "`except OSError` が実行された後に必ず続けて実行される",
+        "for ループが最後まで回り切ったあと 1 回だけ実行される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "try/except の `else` は「例外が起きなかったときだけ」実行される。`for ... else` とは別物で、このサンプルでは各ファイルを正常に開けた場合だけ行数を表示している。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 302,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "this_fails() が送出する例外",
+      "question": "次の関数呼び出しで捕捉される例外として正しいものはどれですか？\n\n```python\ndef this_fails():\n    x = 1 / 0\n\ntry:\n    this_fails()\nexcept ZeroDivisionError as err:\n    print('Handling run-time error:', err)\n```",
+      "code": "def this_fails():\n    x = 1 / 0\n\ntry:\n    this_fails()\nexcept ZeroDivisionError as err:\n    print('Handling run-time error:', err)",
+      "options": [
+        "`ZeroDivisionError`",
+        "`ValueError`",
+        "`ArithmeticException`",
+        "`RuntimeError`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`1 / 0` は Python では `ZeroDivisionError` を送出する。関数の中で起きても、呼び出し元の try/except まで例外が伝播するので捕捉できる。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 303,
+      "section": "セクション94: Python try / except サンプル読解",
+      "title": "例外は関数境界を越えて伝播する",
+      "question": "サンプルの次のコメントの趣旨として最も適切なものはどれですか？\n\n> Exception handlers do not handle only exceptions that occur immediately in the try clause\n\n```python\ndef this_fails():\n    x = 1 / 0\n\ntry:\n    this_fails()\nexcept ZeroDivisionError:\n    ...\n```",
+      "code": "def this_fails():\n    x = 1 / 0\n\ntry:\n    this_fails()\nexcept ZeroDivisionError:\n    ...",
+      "options": [
+        "try 節の中で直接書いた式だけでなく、その中で呼び出した関数から伝播してきた例外も捕捉できる",
+        "except 節は関数内で起きた例外を絶対に捕捉できない",
+        "関数呼び出しが 1 段でも入ると Python の例外処理は無効になる",
+        "伝播した例外は必ず `RuntimeError` に変換される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "例外はコールスタックをさかのぼって伝播する。したがって try 節の中で呼んだ関数内の `ZeroDivisionError` も、呼び出し元の `except ZeroDivisionError` で捕捉できる。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/input_number_try_example.py"
+    },
+    {
+      "id": 304,
+      "section": "セクション95: Python 独自例外と継承",
+      "title": "例外クラス継承の基本",
+      "question": "次の定義に基づく説明として最も正しいものはどれですか？\n\n```python\nclass GrandFather(Exception):\n    pass\n\nclass Father(GrandFather):\n    pass\n\nclass Son(Father):\n    pass\n```",
+      "code": "class GrandFather(Exception):\n    pass\n\nclass Father(GrandFather):\n    pass\n\nclass Son(Father):\n    pass",
+      "options": [
+        "`Son` は `Father` と `GrandFather` の両方のサブクラスでもある",
+        "`Son` は `Father` のサブクラスだが `GrandFather` とは無関係である",
+        "`Father` は `Exception` を継承していないので raise できない",
+        "独自例外クラスは必ずメソッドを 1 つ以上定義しないと使えない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "継承は連鎖するので、`Son` は `Father` の子であり、同時に `GrandFather` と `Exception` のサブクラスでもある。そのため親クラスの except でも捕捉できる。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/exception_hierarchy_example.py"
+    },
+    {
+      "id": 305,
+      "section": "セクション95: Python 独自例外と継承",
+      "title": "except の順序が結果を変える",
+      "question": "次の 1 つ目のループで、`raise Son()` のときに出力されるものはどれですか？\n\n```python\ntry:\n    raise Son()\nexcept Son:\n    print('son')\nexcept Father:\n    print('Father')\nexcept GrandFather:\n    print('GrandFather')\n```",
+      "code": "try:\n    raise Son()\nexcept Son:\n    print('son')\nexcept Father:\n    print('Father')\nexcept GrandFather:\n    print('GrandFather')",
+      "options": [
+        "`son`",
+        "`Father`",
+        "`GrandFather`",
+        "どの except にも一致せず未処理例外になる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`Son` 自身に一致する最初の except が実行される。より具体的な例外を先に書いているため、親クラスのハンドラまで落ちない。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/exception_hierarchy_example.py"
+    },
+    {
+      "id": 306,
+      "section": "セクション95: Python 独自例外と継承",
+      "title": "親クラスを先に書くとどうなるか",
+      "question": "次の 2 つ目のループでは、`GrandFather` を最初に捕捉しています。このとき `raise Son()` で何が出力されますか？\n\n```python\ntry:\n    raise Son()\nexcept GrandFather:\n    print('GrandFather')\nexcept Son:\n    print('son')\nexcept Father:\n    print('Father')\n```",
+      "code": "try:\n    raise Son()\nexcept GrandFather:\n    print('GrandFather')\nexcept Son:\n    print('son')\nexcept Father:\n    print('Father')",
+      "options": [
+        "`GrandFather`",
+        "`son`",
+        "`Father`",
+        "捕捉されず例外終了する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`Son` は `GrandFather` のサブクラスでもあるため、先に書かれた `except GrandFather` がマッチしてしまう。except は上から順に評価され、最初に一致したものだけが実行される。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/exception_hierarchy_example.py"
+    },
+    {
+      "id": 307,
+      "section": "セクション95: Python 独自例外と継承",
+      "title": "2つ目のループの出力パターン",
+      "question": "次のループを `GrandFather`, `Father`, `Son` の順に `raise` したとき、出力の並びとして正しいものはどれですか？\n\n```python\nfor c in [GrandFather, Father, Son]:\n    try:\n        raise c()\n    except GrandFather:\n        print('GrandFather')\n    except Son:\n        print('son')\n    except Father:\n        print('Father')\n```",
+      "code": "for c in [GrandFather, Father, Son]:\n    try:\n        raise c()\n    except GrandFather:\n        print('GrandFather')\n    except Son:\n        print('son')\n    except Father:\n        print('Father')",
+      "options": [
+        "`GrandFather`, `GrandFather`, `GrandFather`",
+        "`GrandFather`, `Father`, `son`",
+        "`GrandFather`, `son`, `Father`",
+        "`son`, `Father`, `GrandFather`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "先頭の `except GrandFather` が親クラスとして 3 種類すべてに一致するため、後ろの `except Son` と `except Father` は到達しない。",
+      "source": "samples/python_study/8.3_Handling_Exceptions/exception_hierarchy_example.py"
+    },
+    {
+      "id": 308,
+      "section": "セクション96: Python raise と再送出",
+      "title": "raise ValueError の意味",
+      "question": "次の説明として正しいものはどれですか？\n\n```python\nraise ValueError\n```",
+      "code": "raise ValueError",
+      "options": [
+        "例外クラスをそのまま渡しており、Python が引数なしで暗黙にインスタンス化して送出する",
+        "`ValueError` という文字列を送出している",
+        "`ValueError` は `BaseException` のサブクラスではないので実行時に SyntaxError になる",
+        "この書き方では必ず `ValueError()` と `TypeError()` が同時に送出される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "raise には例外インスタンスだけでなく例外クラスも渡せる。クラスを渡した場合、Python はコンストラクタを引数なしで呼んで例外オブジェクトを作る。",
+      "source": "samples/python_study/8.4_Raising_Exceptions/raising_exceptions_example.py"
+    },
+    {
+      "id": 309,
+      "section": "セクション96: Python raise と再送出",
+      "title": "bare raise の意味",
+      "question": "次の except 節にある `raise` 単独記法の意味として最も適切なものはどれですか？\n\n```python\ntry:\n    raise NameError('HiThere')\nexcept NameError:\n    print('An exception flew by!')\n    raise\n```",
+      "code": "try:\n    raise NameError('HiThere')\nexcept NameError:\n    print('An exception flew by!')\n    raise",
+      "options": [
+        "現在処理中の同じ例外をそのまま再送出する",
+        "`NameError` を `RuntimeError` に自動変換して送出する",
+        "except 節の中で発生した新しい例外だけを送出する",
+        "例外を握りつぶして正常終了に変える"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "except 節の中で引数なし `raise` を使うと、今まさに捕捉している例外を再送出する。ログを出してから上位へ伝播させたいときによく使う。",
+      "source": "samples/python_study/8.4_Raising_Exceptions/raising_exceptions_example.py"
+    },
+    {
+      "id": 310,
+      "section": "セクション96: Python raise と再送出",
+      "title": "再送出後の最終結果",
+      "question": "次のコードをそのまま実行した場合、最終的な挙動として正しいものはどれですか？\n\n```python\ntry:\n    raise NameError('HiThere')\nexcept NameError:\n    print('An exception flew by!')\n    raise\n```",
+      "code": "try:\n    raise NameError('HiThere')\nexcept NameError:\n    print('An exception flew by!')\n    raise",
+      "options": [
+        "メッセージを 1 回表示した後、`NameError` が再び未処理例外として表に出る",
+        "print された時点で例外は消えるので正常終了する",
+        "最終的に `ValueError` へ変換される",
+        "`raise` 行は except 節の中では無視される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`print` でメッセージを出しただけでは例外は解決しない。引数なし `raise` により同じ `NameError('HiThere')` が再送出され、上位で捕捉されなければトレースバック付きで終了する。",
+      "source": "samples/python_study/8.4_Raising_Exceptions/raising_exceptions_example.py"
+    },
+    {
+      "id": 311,
+      "section": "セクション96: Python raise と再送出",
+      "title": "どんなものを raise できるか",
+      "question": "サンプル冒頭の説明に沿うと、`raise` に渡せるものとして正しい組み合わせはどれですか？",
+      "code": "# raise には何を渡せるか？",
+      "options": [
+        "例外インスタンス、または `BaseException` 系を継承した例外クラス",
+        "任意の文字列と整数だけ",
+        "関数オブジェクトだけ",
+        "辞書やリストだけ"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Python の `raise` は、例外インスタンスか例外クラスを受け取る。クラスであれば `BaseException` のサブクラスである必要がある。",
+      "source": "samples/python_study/8.4_Raising_Exceptions/raising_exceptions_example.py"
+    },
+    {
+      "id": 312,
+      "section": "セクション97: Python 例外連鎖",
+      "title": "例外連鎖サンプルの最終例外",
+      "question": "次のコードを実行したとき、最終的に外へ出る例外はどれですか？\n\n```python\ntry:\n    open('database.sqlite')\nexcept OSError:\n    raise RuntimeError('unable to handle error')\n```",
+      "code": "try:\n    open('database.sqlite')\nexcept OSError:\n    raise RuntimeError('unable to handle error')",
+      "options": [
+        "`RuntimeError('unable to handle error')`",
+        "`OSError` だけが出て `RuntimeError` は無視される",
+        "`NameError`",
+        "例外は消えて正常終了する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "except 節の中で新しく `RuntimeError` を送出しているので、最終的に外へ出るのはそちら。ただし元の `OSError` も文脈情報として例外連鎖に残る。",
+      "source": "samples/python_study/8.5_exception_chaining/exception_chaining.py"
+    },
+    {
+      "id": 313,
+      "section": "セクション97: Python 例外連鎖",
+      "title": "During handling of the above exception の意味",
+      "question": "次のサンプルで `open('database.sqlite')` が失敗したあとに `RuntimeError` を送出すると、トレースバック中に現れる `During handling of the above exception, another exception occurred:` という表示の意味として最も適切なものはどれですか？",
+      "code": "try:\n    open('database.sqlite')\nexcept OSError:\n    raise RuntimeError('unable to handle error')",
+      "options": [
+        "最初の例外 (`OSError`) を処理している最中に、別の例外 (`RuntimeError`) が発生したという暗黙の例外連鎖を示す",
+        "2 つの例外が完全に無関係に並行実行されたことを示す",
+        "`RuntimeError` が `OSError` のサブクラスであることを示す",
+        "Python が例外メッセージを自動で翻訳したことを示す"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "これは implicit exception chaining の表示で、元の例外が `__context__` としてぶら下がっていることを表す。『最初の失敗を処理しようとしていたら、さらに別の例外が起きた』という文脈が保持される。",
+      "source": "samples/python_study/8.5_exception_chaining/exception_chaining.py"
+    },
+    {
+      "id": 314,
+      "section": "セクション98: Python with 文とクリーンアップ",
+      "title": "The problem with this code の意味",
+      "question": "次の英文の意味として最も適切なものはどれですか？\n\n> The problem with this code is that it leaves the file open for an indeterminate amount of time after this part of the code has finished executing.",
+      "code": "for line in open(\"myfile.txt\"):\n    print(line, end=\"\")",
+      "options": [
+        "このコードの問題は、この部分のコードの実行が終わったあとも、ファイルをどれだけの時間開いたままにするのか分からない状態にしてしまうことだ",
+        "このコードの問題は、ファイルを開く前に必ず `print` が失敗することだ",
+        "このコードの問題は、ファイルを閉じるのが早すぎてループが1回も回らないことだ",
+        "このコードの問題は、ファイルの内容を自動的に削除してしまうことだ"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`The problem with this code` は『このコードの問題』、`leaves the file open` は『ファイルを開いたままにする』、`for an indeterminate amount of time` は『どれくらいの長さか定まらない時間のあいだ』という意味。つまり、ループ本体の実行が終わってもファイルクローズのタイミングが明示されず、後始末が遅れる可能性を指摘している。こうしたケースでは `with open(...) as f:` を使うと、ブロックを抜けた時点でファイルが確実に閉じられる。",
+      "source": "samples/python_study/8.8_predefined_clean_up_actions/predefined_clean_up_actions.py"
+    },
+    {
+      "id": 315,
+      "section": "セクション99: 英文読解 (接続詞と文構造)",
+      "title": "but は何をつないでいるか",
+      "question": "次の英文について、`but` の文法的な説明として最も適切なものはどれですか？\n\n> This is not an issue in simple scripts, but can be a problem for larger applications.",
+      "code": "This is not an issue in simple scripts, but can be a problem for larger applications.",
+      "options": [
+        "`but` は等位接続詞で、前半の節と後半の節を対比的につないでいる。後半では主語 `this` が省略されていると考えられる",
+        "`but` は前置詞で、直後の `can be a problem` を名詞句にしている",
+        "`but` は従属接続詞で、後半全体を原因を表す副詞節にしている",
+        "`but` は関係代名詞で、直前の `scripts` を修飾している"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "この `but` は等位接続詞で、`This is not an issue in simple scripts` と `(This) can be a problem for larger applications` を対比的に結んでいる。後半は前半と同じ主語 `This` が省略された形と考えると理解しやすい。したがって文全体は『これは単純なスクリプトでは問題ではないが、より大きなアプリケーションでは問題になりうる』という意味になる。",
+      "source": "samples/python_study/8.8_predefined_clean_up_actions/predefined_clean_up_actions.py"
+    },
+    {
+      "id": 316,
+      "section": "セクション99: 英文読解 (接続詞と文構造)",
+      "title": "allow A to do の基本構文",
+      "question": "次の英文に出てくる `allows objects like files to be used ...` の文法説明として最も適切なものはどれですか？\n\n> The with statement allows objects like files to be used in a way that ensures they are always cleaned up promptly and correctly.",
+      "code": "The with statement allows objects like files to be used in a way that ensures they are always cleaned up promptly and correctly.",
+      "options": [
+        "`allow A to do` の形で、『A が〜できるようにする』を表している。ここでは受け身の `to be used` になっている",
+        "`allow` は自動詞で、`objects like files` は副詞句として働いている",
+        "`to be used` は `statement` を修飾する形容詞的用法の不定詞である",
+        "`like files` は動詞 `allows` を修飾する副詞句である"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "この文の中心は `allow A to do` で、『A が〜するのを可能にする』という構文。ここでは `A = objects like files`、`to do = to be used ...` で、受け身になっているため『ファイルのようなオブジェクトが、そのようなやり方で使われることを可能にする』という意味になる。`like files` は `objects` を後ろから説明する句である。",
+      "source": "Python tutorial / with statement"
+    },
+    {
+      "id": 317,
+      "section": "セクション99: 英文読解 (接続詞と文構造)",
+      "title": "条件・譲歩の副詞節を見抜く",
+      "question": "次の英文で、条件・譲歩を表す副詞節に当たる部分はどれですか？\n\n> After the statement is executed, the file f is always closed, even if a problem was encountered while processing the lines.",
+      "code": "After the statement is executed, the file f is always closed, even if a problem was encountered while processing the lines.",
+      "options": [
+        "`After the statement is executed`",
+        "`the file f is always closed`",
+        "`even if a problem was encountered while processing the lines`",
+        "`while processing the lines`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`even if ...` は『たとえ〜でも』を表す接続表現で、条件・譲歩の副詞節を導く。この文では `After the statement is executed` が時を表す副詞節、`the file f is always closed` が主節、`while processing the lines` は `encountered` にかかる時の副詞句に近い働きで、条件・譲歩を表している中心部分は `even if a problem was encountered while processing the lines` である。",
+      "source": "Python tutorial / with statement"
+    },
+    {
+      "id": 318,
+      "section": "セクション99: 英文読解 (接続詞と文構造)",
+      "title": "時の副詞節を見抜く",
+      "question": "次の英文で、時を表す副詞節に当たる部分はどれですか？\n\n> After the statement is executed, the file f is always closed, even if a problem was encountered while processing the lines.",
+      "code": "After the statement is executed, the file f is always closed, even if a problem was encountered while processing the lines.",
+      "options": [
+        "`After the statement is executed`",
+        "`the file f is always closed`",
+        "`even if a problem was encountered while processing the lines`",
+        "`a problem was encountered`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`After ...` は『〜のあとで』を表し、時の副詞節を導く。この文では `After the statement is executed` が『その文が実行されたあとで』という時間関係を示し、主節 `the file f is always closed` にかかっている。一方、`even if ...` は条件・譲歩の副詞節であり、`a problem was encountered` はそれ単体では従属接続詞を含まないため、この文の時の副詞節そのものではない。",
+      "source": "Python tutorial / with statement"
+    },
+    {
+      "id": 319,
+      "section": "セクション99: 英文読解 (接続詞と文構造)",
+      "title": "leave the file open の構文",
+      "question": "次の英文の下線部 `leaves the file open` の文法的な構造として正しいものはどれですか？\n\n> The problem with this code is that it leaves the file open for an indeterminate amount of time.",
+      "code": "The problem with this code is that it leaves the file open for an indeterminate amount of time.",
+      "options": [
+        "SVO構文で、`open` は副詞として `leaves` を修飾している",
+        "SVOC構文で、`the file` が目的語、`open` が目的語補語（形容詞）である",
+        "SVC構文で、`the file open` が補語のかたまりになっている",
+        "SVO構文で、`open` は `the file` を後置修飾する形容詞である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`leave + O + C` で『O を C の状態のままにしておく』という SVOC の形。ここでは `the file` が目的語、`open` が目的語補語の形容詞で、『ファイルを開いたままにしておく』という意味になる。`open` は副詞ではなく、また `the file open` 全体が補語になっているわけでもない。",
+      "source": "samples/python_study/8.8_predefined_clean_up_actions/predefined_clean_up_actions.py"
+    },
+    {
+      "id": 320,
+      "section": "セクション99: 英文読解 (接続詞と文構造)",
+      "title": "The problem is that の構文",
+      "question": "次の文の空欄に入る最も適切なものはどれですか？\n\n> The problem with this code is ___ it leaves the file open for an indeterminate amount of time.",
+      "code": "The problem with this code is ___ it leaves the file open for an indeterminate amount of time.",
+      "options": [
+        "`what`",
+        "`which`",
+        "`that`",
+        "`how`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`The problem is that ...` は『問題は〜ということだ』という基本構文で、`that` 節が内容を表す名詞節として補語の役割を果たす。`what` や `which` はここでは関係代名詞・疑問詞の用法になってしまい不自然で、`how` も『どのように』という意味になって文意に合わない。",
+      "source": "samples/python_study/8.8_predefined_clean_up_actions/predefined_clean_up_actions.py"
+    },
+    {
+      "id": 321,
+      "section": "セクション99: 英文読解 (接続詞と文構造)",
+      "title": "even if と置き換えられないもの",
+      "question": "次の文の `even if` と置き換えられないものはどれですか？\n\n> the file f is always closed, even if a problem was encountered",
+      "code": "the file f is always closed, even if a problem was encountered",
+      "options": [
+        "`even though`",
+        "`unless`",
+        "`regardless of whether`",
+        "`no matter if`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`even if` は『たとえ〜でも』という譲歩を表す。`unless` は『〜でない限り』という条件を表し、意味の向きが逆になるため置き換えられない。一方、`even though`・`regardless of whether`・`no matter if` は細かなニュアンス差はあるものの、この文脈では近い発想で使える。",
+      "source": "Python tutorial / with statement"
+    },
+    {
+      "id": 322,
+      "section": "セクション99: 英文読解 (接続詞と文構造)",
+      "title": "while processing the lines の省略",
+      "question": "次の文の `while processing the lines` について、最も自然な補い方として適切なものはどれですか？\n\n> even if a problem was encountered while processing the lines",
+      "code": "even if a problem was encountered while processing the lines",
+      "options": [
+        "`it was`",
+        "`a problem was being`",
+        "`there was`",
+        "`one is`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`while processing the lines` は、文脈上『`(it was) processing the lines`』のように主語と `be` 動詞が省略された形と考えるのが最も自然。ここでの `it` はコードや処理の流れを受ける一般的な主語として理解できる。`a problem was being ...` と補うのは不自然で、`there was` や `one is` も文意に合わない。",
+      "source": "Python tutorial / with statement"
+    },
+    {
+      "id": 323,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "形式主語 it を見抜く",
+      "question": "次の文の `it` が指すものとして正しいものはどれですか？\n\n> There are situations where it is necessary to report several exceptions that have occurred.",
+      "code": "There are situations where it is necessary to report several exceptions that have occurred.",
+      "options": [
+        "`situations`",
+        "`exceptions`",
+        "形式主語（意味上の主語は `to report` 以下）",
+        "`This`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`it is necessary to ...` の `it` は形式主語で、真主語は後ろの `to report several exceptions that have occurred`。英語では長い不定詞句を後ろへ回し、前にダミーの `it` を置くことがよくある。したがって `it` が具体的に `situations` や `exceptions` を指しているわけではない。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 324,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "may have failed の時制と意味",
+      "question": "次の文の `may have failed` の文法的な意味として正しいものはどれですか？\n\n> when several tasks may have failed in parallel",
+      "code": "when several tasks may have failed in parallel",
+      "options": [
+        "現在の推量（〜かもしれない）",
+        "未来の可能性（〜するかもしれない）",
+        "過去の推量（〜したかもしれない）",
+        "過去の習慣（〜したものだ）"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`may have + 過去分詞` は『〜したかもしれない』という過去に対する推量を表す。ここでは `failed` が過去分詞なので、『複数のタスクが並行して失敗したかもしれないとき』という意味になる。単なる現在や未来の可能性ではない。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 325,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "rather than の後ろの形",
+      "question": "次の文の `rather than` の後に続く動詞の形として最も適切なものはどれですか？\n\n> it is desirable to continue execution and collect multiple errors rather than ___ the first exception.",
+      "code": "it is desirable to continue execution and collect multiple errors rather than ___ the first exception.",
+      "options": [
+        "`raising`",
+        "`to raise`",
+        "`having raised`",
+        "`raise`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ここでは `to continue execution and collect multiple errors rather than raise the first exception` のように、前の動詞句と並列になる原形 `raise` が最も自然。`rather than` の後ろは文脈によって動名詞もあり得るが、この文では `continue / collect / raise` の並列関係を見るのがポイント。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 326,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "where の用法を見分ける",
+      "question": "次の 2 つの `where` の用法の組み合わせとして正しいものはどれですか？\n\n(A) `situations where it is necessary to report several exceptions`\n(B) `other use cases where it is desirable to continue execution`",
+      "code": "(A) situations where it is necessary to report several exceptions\n(B) other use cases where it is desirable to continue execution",
+      "options": [
+        "(A) 関係代名詞　(B) 関係副詞",
+        "(A) 接続詞　(B) 関係代名詞",
+        "(A) 関係副詞　(B) 関係副詞",
+        "(A) 関係副詞　(B) 接続詞"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "どちらの `where` も先行詞 `situations` / `use cases` を修飾する関係副詞。`where` は具体的な場所だけでなく、`situation` や `case` のような抽象的な場面・状況を表す名詞にも使える。したがって両方とも『〜のような状況で』という意味合いを作っている。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 327,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "This is often the case の意味",
+      "question": "次の文で `This is often the case` の意味として最も適切なものはどれですか？\n\n> This is often the case in concurrency frameworks.",
+      "code": "This is often the case in concurrency frameworks.",
+      "options": [
+        "これは並行処理フレームワークにおいて問題となることが多い",
+        "これは並行処理フレームワークでよく当てはまる",
+        "これは並行処理フレームワークで頻繁に起きる例外だ",
+        "これは並行処理フレームワークで必要とされることが多い"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`this is the case` は『これが当てはまる』『これが実情だ』という慣用表現。`often` が入ると『よく当てはまる』となる。`happen` や `occur` のように出来事が起こること自体を言うのではなく、ある説明や状況が特定の文脈で妥当することを述べている。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 328,
+      "section": "セクション101: 英文法 (形式主語 it)",
+      "title": "It is important that の形",
+      "question": "次の空欄に入る最も適切なものはどれですか？\n\n> It is important ___ you study every day.",
+      "code": "It is important ___ you study every day.",
+      "options": [
+        "`for`",
+        "`of`",
+        "`that`",
+        "`what`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`It is important that ...` の形で、`that` 節が形式主語 `it` の内容を表す。`for` や `of` では後ろに完全な節をそのまま続けられず、`what` だと『何が』の意味になって不自然。",
+      "source": "English grammar / anticipatory it"
+    },
+    {
+      "id": 329,
+      "section": "セクション101: 英文法 (形式主語 it)",
+      "title": "It is no use doing の真主語",
+      "question": "次の文の形式主語 `it` の真主語として正しいものはどれですか？\n\n> It is no use trying to persuade him.",
+      "code": "It is no use trying to persuade him.",
+      "options": [
+        "`to persuade him`",
+        "`trying to persuade him`",
+        "`him`",
+        "`persuade him`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`It is no use doing ...` は『〜しても無駄だ』という慣用表現で、真主語は動名詞句 `trying to persuade him`。`to persuade him` ではなく、`trying` を含む動名詞全体が内容を担っている。",
+      "source": "English grammar / anticipatory it"
+    },
+    {
+      "id": 330,
+      "section": "セクション101: 英文法 (形式主語 it)",
+      "title": "whether が導く名詞節",
+      "question": "次の文の空欄に入る最も適切なものはどれですか？\n\n> It remains unclear ___ the new policy will succeed.",
+      "code": "It remains unclear ___ the new policy will succeed.",
+      "options": [
+        "`that`",
+        "`what`",
+        "`whether`",
+        "`which`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "ここでは『新しい方針が成功するかどうか』という意味が必要なので `whether` が適切。`that` は事実内容をそのまま述べるときに使い、`what` や `which` は選択や内容そのものを問う語で、この文意には合わない。",
+      "source": "English grammar / anticipatory it"
+    },
+    {
+      "id": 331,
+      "section": "セクション101: 英文法 (形式主語 it)",
+      "title": "文法的に誤っている文を選ぶ",
+      "question": "次の 4 つの文のうち、文法的に誤っているものはどれですか？",
+      "code": "1. It is easy to forget her name.\n2. It is surprising that he passed the exam.\n3. It is no use to cry over spilt milk.\n4. It is uncertain how the situation will develop.",
+      "options": [
+        "`It is easy to forget her name.`",
+        "`It is surprising that he passed the exam.`",
+        "`It is no use to cry over spilt milk.`",
+        "`It is uncertain how the situation will develop.`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`It is no use ...` の後ろは通常、動名詞を用いて `It is no use crying over spilt milk.` とする。不定詞 `to cry` はこの慣用表現では不自然。他の 3 文は、形式主語 `it` の後に不定詞・that節・疑問詞節が続く正しい形。",
+      "source": "English grammar / anticipatory it"
+    },
+    {
+      "id": 332,
+      "section": "セクション101: 英文法 (形式主語 it)",
+      "title": "how が導く疑問詞節",
+      "question": "次の文の空欄に入る最も適切なものはどれですか？\n\n> It is amazing ___ she managed to finish the project alone.",
+      "code": "It is amazing ___ she managed to finish the project alone.",
+      "options": [
+        "`what`",
+        "`how`",
+        "`whether`",
+        "`which`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ここでは『彼女がどのようにして一人でそのプロジェクトを終えたか』という意味になるため、方法を表す `how` が最適。`whether` は『〜かどうか』、`what` や `which` は内容や選択肢を問う語であり、文意に合わない。",
+      "source": "English grammar / anticipatory it"
+    },
+    {
+      "id": 333,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "where の用法を見抜く",
+      "question": "次の文の `where` の用法として正しいものはどれですか？\n\n> There are situations where it is necessary to report several exceptions.",
+      "code": "There are situations where it is necessary to report several exceptions.",
+      "options": [
+        "疑問副詞（『どこで』の意味）",
+        "接続詞（『〜のところに』の意味）",
+        "関係代名詞（`situations` を目的語として修飾）",
+        "関係副詞（`situations` を先行詞として修飾）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`where` は場所を表す名詞だけでなく、`situation` や `case` のような抽象名詞も先行詞にとれる。この文では `situations where ...` 全体で『〜のような状況』を表しており、`where` の後ろは `it is necessary ...` という完全な節になっているため、関係副詞と考えるのが適切。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 334,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "形式主語文の書き換え",
+      "question": "次の文を書き換えたとき、空欄に入る最も適切なものはどれですか？\n\n> It is necessary to report several exceptions that have occurred.\n> = ___ several exceptions that have occurred is necessary.",
+      "code": "It is necessary to report several exceptions that have occurred.\n= ___ several exceptions that have occurred is necessary.",
+      "options": [
+        "`Report`",
+        "`Reported`",
+        "`Reporting`",
+        "`To have reported`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "形式主語 `it` の真主語は `to report ...` だが、同じ内容を主語位置に置き換えるときは動名詞 `Reporting ...` でも自然な英文になる。`To report ...` も文法的には可能だが選択肢にないため、ここでは `Reporting` が最も適切。`To have reported` は完了不定詞で時制の意味がずれてしまう。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 335,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "that have occurred を省けない理由",
+      "question": "次の文の `that have occurred` を省略できない理由として最も適切なものはどれですか？\n\n> it is necessary to report several exceptions that have occurred",
+      "code": "it is necessary to report several exceptions that have occurred",
+      "options": [
+        "`that` が形式主語だから",
+        "`exceptions` が抽象名詞だから",
+        "`that have occurred` が `exceptions` の範囲を限定しているから",
+        "現在完了形は省略できないというルールがあるから"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`that have occurred` は限定用法の関係詞節で、『発生した例外』というように `exceptions` の範囲を絞っている。これをまるごと省くと、単に『例外一般』を報告するという意味に変わってしまうため、そのままでは省略できない。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 336,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "where を in which に書き換える",
+      "question": "次の文の `There are situations where ...` とほぼ同じ意味になるように書き換えたとき、最も適切なものはどれですか？\n\n> There are situations where it is necessary to report several exceptions.",
+      "code": "There are situations where it is necessary to report several exceptions.",
+      "options": [
+        "`There are situations which it is necessary to report several exceptions.`",
+        "`There are situations that it is necessary to report several exceptions.`",
+        "`There are situations in which it is necessary to report several exceptions.`",
+        "`There are situations what it is necessary to report several exceptions.`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "関係副詞 `where` は、`in which` のような『前置詞 + 関係代名詞』に書き換えられることがある。この文では `situations where ...` = `situations in which ...` と考えられる。`which` や `that` だけでは前置詞が欠け、`what` は先行詞を含む語なので不適切。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 337,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "have occurred の現在完了の意味",
+      "question": "次の文で現在完了形 `have occurred` が使われている理由として最も適切なものはどれですか？\n\n> it is necessary to report several exceptions that have occurred",
+      "code": "it is necessary to report several exceptions that have occurred",
+      "options": [
+        "過去の推量を表すため",
+        "未来の予定を表すため",
+        "現在進行中の動作を表すため",
+        "過去に発生し現在も関連している状態を表すため"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "現在完了形は、過去に起きた出来事が現在の状況とつながっていることを表す。`have occurred` は『すでに発生していて、今その報告が必要な例外』というニュアンスを持つ。単純過去 `occurred` だと、現在とのつながりがやや弱くなる。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 338,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "may have failed の近い言い換え",
+      "question": "次の文の `may have failed` を別の表現に書き換えたとき、意味が最も近いものはどれか。\n\n> when several tasks may have failed in parallel",
+      "code": "when several tasks may have failed in parallel",
+      "options": [
+        "`when several tasks should have failed in parallel`",
+        "`when several tasks must have failed in parallel`",
+        "`when several tasks might have failed in parallel`",
+        "`when several tasks would have failed in parallel`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`may have failed` は過去の推量『失敗したかもしれない』を表す。`might have failed` もほぼ同義で、`might` のほうがわずかに可能性が低いニュアンスを持つ。一方 `must have failed` は『失敗したに違いない』、`should have failed` は『失敗すべきだった』、`would have failed` は仮定法的な『失敗しただろう』であり意味が異なる。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 339,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "rather than の後ろで許される形",
+      "question": "次の文の `rather than` の後に続く動詞の形として文法的に正しいものをすべて選んだ組み合わせはどれか。\n\n> it is desirable to continue execution and collect multiple errors rather than ___ the first exception.",
+      "code": "it is desirable to continue execution and collect multiple errors rather than ___ the first exception.",
+      "options": [
+        "`raise` のみ",
+        "`raising` のみ",
+        "`raise` と `raising` の両方",
+        "`to raise` のみ"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`rather than` の後ろには原形 `raise` も動名詞 `raising` も文法的に現れうる。ただし、この文では前の `to continue` / `collect` との並列を考えると原形 `raise` がより自然。`to raise` は一般に `rather than` の直後では選ばれにくい。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 340,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "where の言い換え",
+      "question": "次の文の `where` を別の表現に書き換えたとき、最も適切なものはどれか。\n\n> there are also other use cases where it is desirable to continue execution",
+      "code": "there are also other use cases where it is desirable to continue execution",
+      "options": [
+        "`there are also other use cases which it is desirable to continue execution`",
+        "`there are also other use cases that it is desirable to continue execution`",
+        "`there are also other use cases in which it is desirable to continue execution`",
+        "`there are also other use cases what it is desirable to continue execution`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "関係副詞 `where` は `前置詞 + 関係代名詞` に書き換えられ、この場合は `in which` が対応する。`which` や `that` だけでは前置詞が欠け、`what` は先行詞を含む語なので使えない。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 341,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "the case の同じ意味",
+      "question": "次の文の `This is often the case` の `case` と同じ意味で使われているものはどれか。\n\n> This is often the case in concurrency frameworks",
+      "code": "This is often the case in concurrency frameworks",
+      "options": [
+        "`He bought a new case for his smartphone.`",
+        "`The doctor examined a serious medical case.`",
+        "`That is not the case at all.`",
+        "`We need to make a strong case for the proposal.`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "ここでの `the case` は『実情・事実・当てはまること』という慣用表現。`That is not the case at all.` の `case` も同じで『それは事実ではない』という意味になる。他の選択肢はそれぞれ『入れ物』『症例』『主張・論拠』で意味が異なる。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 342,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "文全体の対比構造",
+      "question": "次の文全体の構造として最も正しいものはどれか。\n\n> This is often the case in concurrency frameworks, when several tasks may have failed in parallel, but there are also other use cases where it is desirable to continue execution and collect multiple errors rather than raise the first exception.",
+      "code": "This is often the case in concurrency frameworks, when several tasks may have failed in parallel, but there are also other use cases where it is desirable to continue execution and collect multiple errors rather than raise the first exception.",
+      "options": [
+        "主語 + 動詞 + 目的語 の単文",
+        "条件節 + 主節 の複文",
+        "等位接続詞 `but` による 2 つの節の対比構造",
+        "関係副詞節が主節を修飾する複文"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "文全体は `This is often the case ...` という前半と、`but there are also other use cases ...` という後半が、等位接続詞 `but` で結ばれた対比構造。前半は『並行処理フレームワークではよく当てはまる』、後半は『ただし他のユースケースもある』という対照を示している。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 343,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "it is desirable to の真主語",
+      "question": "次の文の形式主語構文において、真主語として正しいものはどれか。\n\n> it is desirable to continue execution and collect multiple errors rather than raise the first exception",
+      "code": "it is desirable to continue execution and collect multiple errors rather than raise the first exception",
+      "options": [
+        "`it`",
+        "`desirable`",
+        "`execution`",
+        "`to continue execution and collect multiple errors rather than raise the first exception`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`it is desirable to ...` の `it` は形式主語で、真主語は後ろの不定詞句全体。ここでは `to continue execution` と `collect multiple errors` が並列し、さらに `rather than raise the first exception` が加わって、『最初の例外を送出するのではなく実行を続けて複数のエラーを集めること』全体が内容になっている。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 344,
+      "section": "セクション102: Python 実行環境と alternatives",
+      "title": "update-alternatives --install の引数",
+      "question": "次のコマンドにおける 4 つの位置引数の説明として最も正しいものはどれですか？\n\n> sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1",
+      "code": "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1",
+      "options": [
+        "`/usr/bin/python3` は実体バイナリ、`python3` は実行ユーザー名、`/usr/bin/python3.11` はリンクグループ名、`1` は Python のメジャーバージョンを表す",
+        "`/usr/bin/python3` は master link、`python3` は alternatives 名、`/usr/bin/python3.11` は候補パス、`1` は優先度を表す",
+        "`/usr/bin/python3` は `PATH` 追加先、`python3` はシェル組み込み名、`/usr/bin/python3.11` は shebang 用エイリアス、`1` は CPU アーキテクチャを表す",
+        "`/usr/bin/python3` は alternatives 名、`python3` は候補パス、`/usr/bin/python3.11` は slave link、`1` は root 権限レベルを表す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`update-alternatives --install <link> <name> <path> <priority>` の形。ここでは `/usr/bin/python3` が総称リンク (master link)、`python3` が alternatives のグループ名、`/usr/bin/python3.11` が登録する実体パス、`1` が優先度。優先度は auto モード時の選択に使われ、数値が大きい候補が優先される。",
+      "source": "Debian/Ubuntu `update-alternatives` / Python interpreter management"
+    },
+    {
+      "id": 345,
+      "section": "セクション102: Python 実行環境と alternatives",
+      "title": "python3 実行時の参照経路",
+      "question": "このコマンドで `python3` の alternatives グループが管理されているとき、`/usr/bin/python3` と実体バイナリの関係として最も適切なものはどれですか？",
+      "code": "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1",
+      "options": [
+        "`/usr/bin/python3` は常に通常ファイルのままで、毎回 `python3.11` がメモリ上に直接マッピングされる",
+        "`/usr/bin/python3` は通常 `/etc/alternatives/python3` を指すシンボリックリンクになり、その先が選択中の実体 (`/usr/bin/python3.11` など) を指す",
+        "`/usr/bin/python3` は bash の alias に置き換えられるため、シンボリックリンクは関係しない",
+        "`/usr/bin/python3` は `pip3` が存在するときだけ `python3.11` へリンクされる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Debian 系の `update-alternatives` は、総称名 (`/usr/bin/python3`) を `/etc/alternatives/python3` に向け、その先を選択中の候補へ向ける二段階リンクで管理するのが基本。これにより候補の差し替えを一元管理できる。",
+      "source": "Debian/Ubuntu `update-alternatives` / Python interpreter management"
+    },
+    {
+      "id": 346,
+      "section": "セクション102: Python 実行環境と alternatives",
+      "title": "影響を受けない起動方法",
+      "question": "`/usr/bin/python3` の alternatives だけを `python3.11` に切り替えた場合、通常この変更の影響を直接は受けないものはどれですか？",
+      "code": "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1",
+      "options": [
+        "シェルで `python3 script.py` を実行する",
+        "shebang が `#!/usr/bin/python3` のスクリプトを実行する",
+        "shebang が `#!/usr/bin/env python3` のスクリプトを、`PATH` に `/usr/bin` がある通常環境で実行する",
+        "shebang が `#!/usr/bin/python3.10` のスクリプトを実行する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`#!/usr/bin/python3.10` のように特定バージョンの実行ファイルを絶対パスで指定している場合、`/usr/bin/python3` の総称リンクを書き換えても参照先は変わらない。一方 `python3` コマンド、`#!/usr/bin/python3`、`#!/usr/bin/env python3` は環境次第で総称名 `python3` の変更の影響を受ける。",
+      "source": "Python shebang / Debian alternatives"
+    },
+    {
+      "id": 347,
+      "section": "セクション102: Python 実行環境と alternatives",
+      "title": "既存 virtualenv / venv への影響",
+      "question": "すでに作成済みの Python 仮想環境 (`venv`) がある状態で、このコマンドによりシステムの `/usr/bin/python3` の alternatives を変更したときの説明として最も適切なものはどれですか？",
+      "code": "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1",
+      "options": [
+        "既存のすべての `venv` は自動的に再生成され、内部 Python も必ず `3.11` に置き換わる",
+        "既存の `venv` は作成時に結び付いた実行環境を基本的に保持するため、システム側の `python3` 切り替えだけで中身が自動アップグレードされるわけではない",
+        "既存の `venv` は以後すべて壊れ、起動不能になる",
+        "`venv` は常に `/usr/bin/python3` を毎回たどる設計なので、切り替え直後から必ず新バージョンを使う"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "仮想環境は作成時の Python 実行環境に基づいて構成される。システムの総称名 `python3` を切り替えても、既存の `venv` の interpreter や site-packages が自動で別バージョンへ移行されるわけではない。必要なら新しい interpreter で作り直すのが安全。",
+      "source": "Python `venv` / interpreter management"
+    },
+    {
+      "id": 348,
+      "section": "セクション102: Python 実行環境と alternatives",
+      "title": "pip の食い違いを避ける方法",
+      "question": "`update-alternatives` で `python3` の向き先を変えたあと、`pip3` が別 interpreter を向いている可能性を避けつつ、『今 `python3` として選ばれている interpreter』に対して確実にパッケージを入れたい。最も安全なコマンドはどれですか？",
+      "code": "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1",
+      "options": [
+        "`pip3 install <package>`",
+        "`python3 -m pip install <package>`",
+        "`/etc/alternatives/python3 install <package>`",
+        "`update-alternatives --config pip3`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`pip3` というコマンド名は、`python3` の向き先と必ずしも一致しない。`python3 -m pip` の形にすると、実際に起動された `python3` 自身の `pip` モジュールを使うため、interpreter と package install 先の食い違いを避けやすい。",
+      "source": "Python packaging / interpreter management"
+    },
+    {
+      "id": 349,
+      "section": "セクション102: Python 実行環境と alternatives",
+      "title": "priority と auto モードの挙動",
+      "question": "`python3` の alternatives グループが auto モードで、すでに `/usr/bin/python3.12` が priority `2` で登録済みだとする。この状態で次のコマンドを実行した直後、選ばれる候補として最も可能性が高いものはどれですか？\n\n> sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1",
+      "code": "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1",
+      "options": [
+        "新しく追加した `/usr/bin/python3.11` が必ず選ばれる",
+        "priority がより高い `/usr/bin/python3.12` が選ばれ続ける",
+        "`python3.11` と `python3.12` がラウンドロビンで交互に選ばれる",
+        "priority は `--install` では無視されるため、どちらが選ばれるか未定である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "auto モードでは、通常は優先度が最も高い候補が選ばれる。したがって priority `2` の `/usr/bin/python3.12` がすでにあるなら、priority `1` の `/usr/bin/python3.11` を追加しても自動では 3.11 に切り替わらない。手動で切り替えるなら `update-alternatives --config python3` などを使う。",
+      "source": "Debian/Ubuntu `update-alternatives` / Python interpreter management"
+    },
+    {
+      "id": 350,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "wraps a list ... so that の和訳",
+      "question": "次の文を日本語に訳したとき、最も適切なものはどれか。\n\n> The builtin ExceptionGroup wraps a list of exception instances so that they can be raised together.",
+      "code": "The builtin ExceptionGroup wraps a list of exception instances so that they can be raised together.",
+      "options": [
+        "組み込みの ExceptionGroup は、例外インスタンスのリストを一緒に発生させるためにラップされる。",
+        "組み込みの ExceptionGroup は、例外インスタンスのリストをまとめて発生させられるようにラップする。",
+        "組み込みの ExceptionGroup は、例外インスタンスのリストをラップするので、それらは一緒に発生する。",
+        "組み込みの ExceptionGroup は、例外インスタンスのリストをラップしたあと、それらをまとめて発生させる。"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`so that they can be raised together` は目的を表す副詞節で、『それらをまとめて送出できるように』という意味。したがって、ExceptionGroup が例外インスタンスのリストをラップする目的を表した選択肢が正しい。受動態にしてしまう訳や、単なる結果・時系列として読む訳は不適切。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 351,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "itself の強調を訳す",
+      "question": "次の文を日本語に訳したとき、`itself` の訳として最も適切なものはどれか。\n\n> It is an exception itself, so it can be caught like any other exception.",
+      "code": "It is an exception itself, so it can be caught like any other exception.",
+      "options": [
+        "それ自体が例外に似ているため、他の例外と同様に捕捉できる。",
+        "それは例外そのものではないが、他の例外と同様に捕捉できる。",
+        "それ自体が例外であるため、他のあらゆる例外と同様に捕捉できる。",
+        "それは例外の一種であるため、一部の例外と同様に捕捉できる。"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`itself` は強調の再帰代名詞で、『それ自体が』『まさにそれ自身が』の意味。`It is an exception itself` は『それ自体が例外である』となる。意味を弱めて『似ている』にしたり、否定にしたり、`any other exception` を『一部の例外』と狭めるのは不正確。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 352,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "so の訳し分け",
+      "question": "次の文の `so` の訳として最も適切なものはどれか。\n\n> It is an exception itself, so it can be caught like any other exception.",
+      "code": "It is an exception itself, so it can be caught like any other exception.",
+      "options": [
+        "〜できるように",
+        "〜にもかかわらず",
+        "〜の場合は",
+        "だから・したがって"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ここでの `so` は結果を表す接続詞で、『だから』『したがって』と訳すのが自然。`〜できるように` は `so that` の訳であり、単独の `so` とは異なる。譲歩や条件の意味でもない。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 353,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "2文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> The builtin ExceptionGroup wraps a list of exception instances so that they can be raised together. It is an exception itself, so it can be caught like any other exception.",
+      "code": "The builtin ExceptionGroup wraps a list of exception instances so that they can be raised together. It is an exception itself, so it can be caught like any other exception.",
+      "options": [
+        "組み込みの ExceptionGroup は例外インスタンスのリストをラップする。それは例外ではないが、他の例外と同様に捕捉できる。",
+        "組み込みの ExceptionGroup は例外インスタンスのリストをまとめて発生させる。それ自体も例外であるが、他の例外とは異なる方法で捕捉する必要がある。",
+        "組み込みの ExceptionGroup は例外インスタンスのリストをラップし、それらをまとめて発生させたあとに捕捉する。",
+        "組み込みの ExceptionGroup は、例外インスタンスのリストをまとめて発生させられるようにラップする。それ自体が例外であるため、他のあらゆる例外と同様に捕捉することができる。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "第1文の `so that ...` は目的『〜できるように』、第2文の `so ...` は結果『だから』『そのため』を表す。この2つを正しく訳し分け、`itself` を『それ自体が』、`like any other exception` を『他のあらゆる例外と同様に』と自然に処理している選択肢が最適。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 354,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "like any other exception の和訳",
+      "question": "次の文の `like any other exception` の訳として最も適切なものはどれか。\n\n> it can be caught like any other exception",
+      "code": "it can be caught like any other exception",
+      "options": [
+        "ある例外と同じように",
+        "どの例外とも異なるように",
+        "いくつかの例外と同様に",
+        "他のあらゆる例外と同様に"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`any other ...` は『他のどの〜でも』『他のあらゆる〜』という広い範囲を指す。したがって `like any other exception` は『他のあらゆる例外と同様に』が最も適切。範囲を狭めて『ある例外』『いくつかの例外』とする訳は不正確。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 355,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "extracts from the group の和訳",
+      "question": "次の文を日本語に訳したとき、最も適切なものはどれか。\n\n> each except* clause extracts from the group exceptions of a certain type",
+      "code": "each except* clause extracts from the group exceptions of a certain type",
+      "options": [
+        "各 `except*` 節はグループ内のすべての例外を特定の型に変換する。",
+        "各 `except*` 節はグループから特定の型の例外を削除する。",
+        "各 `except*` 節はグループから特定の型の例外を抽出する。",
+        "各 `except*` 節は特定の型の例外をグループにまとめる。"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`extracts from the group` は『グループから抽出する』、`exceptions of a certain type` は『特定の型の例外』という意味。`of a certain type` は `exceptions` を修飾する前置詞句であり、変換・削除・追加を意味しているわけではない。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 356,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "which shows ... の用法",
+      "question": "次の文の `which` の用法と訳として最も適切なものはどれか。\n\n> In the following example, which shows a nested exception group, each except* clause extracts〜",
+      "code": "In the following example, which shows a nested exception group, each except* clause extracts ...",
+      "options": [
+        "限定用法の関係代名詞で『ネストされた例外グループを示す例において』",
+        "疑問代名詞で『どの例がネストされた例外グループを示すか』",
+        "非限定用法の関係代名詞で『次の例はネストされた例外グループを示しているが』",
+        "限定用法の関係代名詞で『ネストされた例外グループを示す次の例において』"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "コンマに挟まれた `which` は非限定用法の関係代名詞で、先行詞 `the following example` に補足説明を加えている。限定用法のように先行詞の範囲を絞るのではなく、『そしてその例は〜を示している』という補足的なニュアンスで訳すのが自然。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 357,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "while letting ... propagate の和訳",
+      "question": "次の文の `while letting all other exceptions propagate` の訳として最も適切なものはどれか。\n\n> while letting all other exceptions propagate to other clauses",
+      "code": "while letting all other exceptions propagate to other clauses",
+      "options": [
+        "他のすべての例外が他の節へ伝播するのを防ぎながら",
+        "他のすべての例外が他の節へ伝播した後で",
+        "他のすべての例外が他の節へ伝播するかどうかを確認しながら",
+        "他のすべての例外が他の節へ伝播するままにしながら"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`let + O + 原形不定詞` は『O が〜するままにする』『O に〜させる』という形。ここでは `letting all other exceptions propagate` で『他のすべての例外が伝播するままにして』という意味になる。`while` は『〜する一方で』という対比を表し、防ぐという意味ではない。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 358,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "eventually to be reraised の和訳",
+      "question": "次の文の `eventually to be reraised` の訳として最も適切なものはどれか。\n\n> letting all other exceptions propagate to other clauses and eventually to be reraised",
+      "code": "letting all other exceptions propagate to other clauses and eventually to be reraised",
+      "options": [
+        "最終的に再送出されることなく",
+        "最終的に再送出されるべきではなく",
+        "すぐに再送出されるために",
+        "最終的に再送出されるために"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`eventually` は『最終的に・いずれは』、`to be reraised` は受動態の不定詞で『再送出されること』を表す。ここでは『他の節へ伝播し、最終的には再送出される』という流れを述べており、否定や『すぐに』の意味は含まれない。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 359,
+      "section": "セクション100: 英文読解 (Python ExceptionGroup)",
+      "title": "except* 節の説明文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> In the following example, which shows a nested exception group, each except* clause extracts from the group exceptions of a certain type while letting all other exceptions propagate to other clauses and eventually to be reraised.",
+      "code": "In the following example, which shows a nested exception group, each except* clause extracts from the group exceptions of a certain type while letting all other exceptions propagate to other clauses and eventually to be reraised.",
+      "options": [
+        "次の例はネストされた例外グループを示しており、各 `except*` 節はグループ内のすべての例外を抽出し、特定の型の例外だけを他の節へ伝播させる。",
+        "次の例はネストされた例外グループを示しており、各 `except*` 節は特定の型の例外をグループに追加する一方で、他のすべての例外が最終的に再送出されるのを防ぐ。",
+        "次の例はネストされた例外グループを示しており、各 `except*` 節はグループから特定の型の例外を抽出し、他のすべての例外を最終的に削除する。",
+        "次の例はネストされた例外グループを示しており、各 `except*` 節はグループから特定の型の例外を抽出する一方で、他のすべての例外が他の節へ伝播し最終的に再送出されるままにする。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`extracts ...` と `while letting ...` の対比構造を保ちながら、`which shows ...` を補足説明として自然に処理している訳が正しい。`except*` 節は特定の型を抽出し、それ以外は他の節へ伝播し、最終的には再送出される、という説明になっている。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 360,
+      "section": "セクション103: 英文読解 (Python 例外オブジェクト)",
+      "title": "in order to be raised の和訳",
+      "question": "次の文の `in order to be raised` の訳として最も適切なものはどれか。\n\n> When an exception is created in order to be raised",
+      "code": "When an exception is created in order to be raised",
+      "options": [
+        "送出されたために",
+        "送出されることなく",
+        "送出されるかどうかを確認するために",
+        "送出されるために"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`in order to ...` は目的を表す不定詞句で『〜するために』。ここでは `to be raised` が受動態の不定詞なので、『送出されるために』となる。過去の理由や否定の意味は含まれない。",
+      "source": "Python tutorial / errors and exceptions"
+    },
+    {
+      "id": 361,
+      "section": "セクション103: 英文読解 (Python 例外オブジェクト)",
+      "title": "initialize with の with の用法",
+      "question": "次の文の `with information` の `with` の用法として最も適切なものはどれか。\n\n> it is usually initialized with information that describes the error",
+      "code": "it is usually initialized with information that describes the error",
+      "options": [
+        "対立『〜に反して』",
+        "原因『〜のせいで』",
+        "付帯・手段『〜を使って・〜とともに』",
+        "譲歩『〜にもかかわらず』"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "ここでの `with` は、付帯・手段を表す前置詞で、『情報とともに』『情報を用いて』という意味。`initialize with ...` は技術文脈でよく見られる『〜で初期化する』という表現で、対立・原因・譲歩ではない。",
+      "source": "Python tutorial / errors and exceptions"
+    },
+    {
+      "id": 362,
+      "section": "セクション103: 英文読解 (Python 例外オブジェクト)",
+      "title": "関係代名詞節の数を数える",
+      "question": "次の文に含まれる関係代名詞節の数として正しいものはどれか。\n\n> it is usually initialized with information that describes the error that has occurred",
+      "code": "it is usually initialized with information that describes the error that has occurred",
+      "options": [
+        "0個",
+        "1個",
+        "2個",
+        "3個"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`that describes the error` が `information` を修飾する関係詞節、`that has occurred` が `the error` を修飾する関係詞節で、合計 2 個ある。後ろの関係詞節が前の関係詞節の中の名詞をさらに修飾する、入れ子に近い形になっている。",
+      "source": "Python tutorial / errors and exceptions"
+    },
+    {
+      "id": 363,
+      "section": "セクション103: 英文読解 (Python 例外オブジェクト)",
+      "title": "has occurred の現在完了の意味",
+      "question": "次の文の `that has occurred` に現在完了形が使われている理由として最も適切なものはどれか。\n\n> information that describes the error that has occurred",
+      "code": "information that describes the error that has occurred",
+      "options": [
+        "未来に発生する予定のエラーを表すため",
+        "現在進行中のエラーを表すため",
+        "過去の推量を表すため",
+        "過去に発生し現在も関連しているエラーを表すため"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "現在完了形 `has occurred` は、過去に起きた出来事が現在と結び付いていることを表す。ここでは『すでに発生しており、その内容を今説明する必要があるエラー』というニュアンスになり、単純過去より現在との関連が強い。",
+      "source": "Python tutorial / errors and exceptions"
+    },
+    {
+      "id": 364,
+      "section": "セクション103: 英文読解 (Python 例外オブジェクト)",
+      "title": "例外生成文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> When an exception is created in order to be raised, it is usually initialized with information that describes the error that has occurred.",
+      "code": "When an exception is created in order to be raised, it is usually initialized with information that describes the error that has occurred.",
+      "options": [
+        "例外が送出された後、発生したエラーを説明する情報とともに通常初期化される。",
+        "例外が生成されるとき、それは送出されるために発生したエラーの情報を削除する。",
+        "例外が送出されるために生成される場合、それは発生したエラーを説明する情報なしに初期化されることが多い。",
+        "例外が送出されるために生成される場合、通常、発生したエラーを説明する情報とともに初期化される。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`When ...` の副詞節は『送出されるために生成される場合』、主節の `is usually initialized` は『通常初期化される』、`with information that describes ...` は『〜を説明する情報とともに』となる。これらを過不足なく自然にまとめているのが正解。",
+      "source": "Python tutorial / errors and exceptions"
+    },
+    {
+      "id": 365,
+      "section": "セクション104: 英文読解 (Python add_note と traceback)",
+      "title": "cases where の where の用法",
+      "question": "次の文の `where` の用法として正しいものはどれか。\n\n> There are cases where it is useful to add information after the exception was caught.",
+      "code": "There are cases where it is useful to add information after the exception was caught.",
+      "options": [
+        "疑問副詞（『どこで』の意味）",
+        "関係代名詞（`cases` を目的語として修飾）",
+        "接続詞（『〜のところに』の意味）",
+        "関係副詞（`cases` を先行詞として修飾）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`where` は `cases` のような抽象名詞も先行詞にとれる関係副詞。`where` の後ろは `it is useful to add information` という完全な節になっており、関係代名詞のように欠けた要素がない点が見分け方のポイント。",
+      "source": "Python tutorial / exceptions `add_note()`"
+    },
+    {
+      "id": 366,
+      "section": "セクション104: 英文読解 (Python add_note と traceback)",
+      "title": "it is useful to の真主語",
+      "question": "次の文の形式主語構文において、真主語として正しいものはどれか。\n\n> there are cases where it is useful to add information after the exception was caught",
+      "code": "there are cases where it is useful to add information after the exception was caught",
+      "options": [
+        "`it`",
+        "`cases`",
+        "`information`",
+        "`to add information after the exception was caught`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`it is useful to ...` の `it` は形式主語で、真主語は後ろの不定詞句全体。ここでは `after the exception was caught` まで含めて『例外が捕捉された後で情報を追加すること』が内容になっている。",
+      "source": "Python tutorial / exceptions `add_note()`"
+    },
+    {
+      "id": 367,
+      "section": "セクション104: 英文読解 (Python add_note と traceback)",
+      "title": "add_note(note) を説明する関係詞節",
+      "question": "次の文の関係代名詞節が修飾している名詞として正しいものはどれか。\n\n> exceptions have a method add_note(note) that accepts a string and adds it to the exception's notes list",
+      "code": "exceptions have a method add_note(note) that accepts a string and adds it to the exception's notes list",
+      "options": [
+        "`exceptions`",
+        "`a method add_note(note)`",
+        "`a string`",
+        "`the exception's notes list`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "関係代名詞 `that` の先行詞は直前の `a method add_note(note)`。`that accepts a string and adds it to ...` という節全体が、このメソッドの機能を説明している。`exceptions` は文全体の主語であり、先行詞ではない。",
+      "source": "Python tutorial / exceptions `add_note()`"
+    },
+    {
+      "id": 368,
+      "section": "セクション104: 英文読解 (Python add_note と traceback)",
+      "title": "adds it to ... の it が指すもの",
+      "question": "次の文の `it` が指すものとして正しいものはどれか。\n\n> that accepts a string and adds it to the exception's notes list",
+      "code": "that accepts a string and adds it to the exception's notes list",
+      "options": [
+        "`the method`",
+        "`the exception`",
+        "`the notes list`",
+        "`a string`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`accepts a string` と `adds it to ...` が `and` で並列になっており、`it` は直前の目的語 `a string` を受けている。意味は『文字列を受け取り、それを例外の notes list に追加する』。",
+      "source": "Python tutorial / exceptions `add_note()`"
+    },
+    {
+      "id": 369,
+      "section": "セクション104: 英文読解 (Python add_note と traceback)",
+      "title": "in the order they were added の役割",
+      "question": "次の文の `in the order they were added` の文法的な役割として最も適切なものはどれか。\n\n> The standard traceback rendering includes all notes, in the order they were added, after the exception.",
+      "code": "The standard traceback rendering includes all notes, in the order they were added, after the exception.",
+      "options": [
+        "主語を修飾する形容詞句",
+        "動詞 `includes` の目的語",
+        "`all notes` の様態を表す挿入句",
+        "文全体の条件を表す副詞節"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "コンマで挟まれた `in the order they were added` は、`all notes` がどのような順序で含まれるかを補足する挿入句。取り除いても文は成立し、`they` は `all notes` を、`were added` は受動態を表している。",
+      "source": "Python tutorial / exceptions `add_note()`"
+    },
+    {
+      "id": 370,
+      "section": "セクション104: 英文読解 (Python add_note と traceback)",
+      "title": "受動態になっている表現を選ぶ",
+      "question": "次の文の受動態として使われている表現をすべて選んだ組み合わせとして正しいものはどれか。\n\n> There are cases where it is useful to add information after the exception was caught.\n> The standard traceback rendering includes all notes, in the order they were added, after the exception.",
+      "code": "There are cases where it is useful to add information after the exception was caught.\nThe standard traceback rendering includes all notes, in the order they were added, after the exception.",
+      "options": [
+        "`was caught` のみ",
+        "`were added` のみ",
+        "`was caught` と `were added` と `is useful`",
+        "`was caught` と `were added`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`was caught` と `were added` はどちらも `be + 過去分詞` の受動態。`is useful` は `be動詞 + 形容詞` で、受動態ではなく形式主語構文の述語部分である。受動態と形容詞述語を区別するのがポイント。",
+      "source": "Python tutorial / exceptions `add_note()`"
+    },
+    {
+      "id": 371,
+      "section": "セクション105: 英文読解 (Python ExceptionGroup と文脈情報)",
+      "title": "when collecting ... の役割",
+      "question": "次の文の `when collecting exceptions into an exception group` の文法的な役割として正しいものはどれか。\n\n> when collecting exceptions into an exception group, we may want to add context information",
+      "code": "when collecting exceptions into an exception group, we may want to add context information",
+      "options": [
+        "主語を修飾する形容詞句",
+        "時・条件を表す分詞構文",
+        "目的を表す不定詞句",
+        "結果を表す副詞節"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`when + 現在分詞` の形で、完全な形は `when we are collecting exceptions into an exception group` と考えられる。主語 `we` と `be動詞` が省略された分詞構文で、時や条件のニュアンスを表す。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 372,
+      "section": "セクション105: 英文読解 (Python ExceptionGroup と文脈情報)",
+      "title": "may want to add の意味",
+      "question": "次の文の `may want to add` の意味として最も適切なものはどれか。\n\n> we may want to add context information for the individual errors",
+      "code": "we may want to add context information for the individual errors",
+      "options": [
+        "必ず追加しなければならない",
+        "追加するべきではないかもしれない",
+        "追加することができない",
+        "追加したいと思うかもしれない"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`may` は可能性や控えめな推量を表し、`want to ...` は『〜したい』を表す。合わせて `may want to ...` は『〜したいと思うかもしれない』『〜したくなる場合がある』という控えめな表現になる。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 373,
+      "section": "セクション105: 英文読解 (Python ExceptionGroup と文脈情報)",
+      "title": "indicating ... の修飾先",
+      "question": "次の文の `indicating when this error has occurred` の文法的な役割として正しいものはどれか。\n\n> each exception in the group has a note indicating when this error has occurred",
+      "code": "each exception in the group has a note indicating when this error has occurred",
+      "options": [
+        "主語 `each exception` を修飾する現在分詞句",
+        "動詞 `has` を修飾する副詞句",
+        "目的語 `a note` を修飾する現在分詞句",
+        "文全体の結果を表す分詞構文"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`indicating ...` は現在分詞句で、直前の名詞 `a note` を後ろから修飾している。意味は『このエラーがいつ発生したかを示すノート』で、関係詞節 `a note that indicates ...` に近い働き。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 374,
+      "section": "セクション105: 英文読解 (Python ExceptionGroup と文脈情報)",
+      "title": "when this error has occurred の役割",
+      "question": "次の文の `when this error has occurred` の文法的な役割として正しいものはどれか。\n\n> a note indicating when this error has occurred",
+      "code": "a note indicating when this error has occurred",
+      "options": [
+        "時を表す副詞節",
+        "条件を表す副詞節",
+        "`a note` を修飾する関係副詞節",
+        "`indicating` の目的語となる間接疑問文（名詞節）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ここでの `when` は『いつ〜したか』を表す間接疑問文を導いており、節全体で名詞節として `indicating` の内容になっている。時を表す副詞節の `when` ではない点が重要。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 375,
+      "section": "セクション105: 英文読解 (Python ExceptionGroup と文脈情報)",
+      "title": "each exception in the group の一致",
+      "question": "次の文の `each exception in the group` について、動詞の形として正しいものはどれか。\n\n> ___ each exception in the group has a note",
+      "code": "___ each exception in the group has a note",
+      "options": [
+        "`Each exceptions in the group have`",
+        "`Each exceptions in the group has`",
+        "`Each exception in the group have`",
+        "`Each exception in the group has`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`each` は常に単数扱いなので、名詞は単数形 `exception`、動詞も三人称単数の `has` になる。`in the group` は修飾句であって、動詞の数には影響しない。",
+      "source": "English grammar / subject-verb agreement"
+    },
+    {
+      "id": 376,
+      "section": "セクション105: 英文読解 (Python ExceptionGroup と文脈情報)",
+      "title": "context information 文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> For example, when collecting exceptions into an exception group, we may want to add context information for the individual errors. In the following each exception in the group has a note indicating when this error has occurred.",
+      "code": "For example, when collecting exceptions into an exception group, we may want to add context information for the individual errors. In the following each exception in the group has a note indicating when this error has occurred.",
+      "options": [
+        "例えば、例外グループから例外を取り出す際に、すべてのエラーに共通のコンテキスト情報を追加しなければならない。以下の例では、グループ内のすべての例外が発生したエラーの内容を示すノートを持っている。",
+        "例えば、例外を例外グループに収集する際に、個々のエラーに対してコンテキスト情報を削除したい場合がある。以下の例では、グループ内のそれぞれの例外がエラーの種類を示すノートを持っている。",
+        "例えば、例外を例外グループに収集する際に、個々のエラーに対してコンテキスト情報を追加したい場合がある。以下の例では、グループ内のそれぞれの例外がこのエラーがいつ発生したかを示すノートを持っている。",
+        "例えば、例外グループを収集する際に、個々のエラーに対してコンテキスト情報を追加する必要はない。以下の例では、グループ内のいくつかの例外がエラーの発生時刻を示すノートを持っている。"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`when collecting exceptions into an exception group` は『例外を例外グループに収集する際に』、`may want to add` は『追加したい場合がある』、`indicating when this error has occurred` は『このエラーがいつ発生したかを示す』となる。これらをすべて自然に反映している選択肢が正解。",
+      "source": "Python docs / Exception groups"
+    },
+    {
+      "id": 377,
+      "section": "セクション106: 英文読解 (Python 自動化とスクリプト)",
+      "title": "find that の that の役割",
+      "question": "次の文の `that` の文法的な役割として正しいものはどれか。\n\n> you find that there's some task you'd like to automate",
+      "code": "you find that there's some task you'd like to automate",
+      "options": [
+        "関係代名詞（`task` を修飾）",
+        "指示代名詞（『それ』の意味）",
+        "関係副詞（`find` を修飾）",
+        "接続詞（`find` の目的語となる名詞節を導く）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`find that ...` の `that` は名詞節を導く接続詞で、`find` の目的語になっている。後ろには `there's some task ...` という完全な節が続いており、関係代名詞のように欠けた要素はない。",
+      "source": "Python tutorial / introduction to scripting"
+    },
+    {
+      "id": 378,
+      "section": "セクション106: 英文読解 (Python 自動化とスクリプト)",
+      "title": "you'd like to automate の修飾関係",
+      "question": "次の文の `you'd like to automate` の文法的な役割として正しいものはどれか。\n\n> there's some task you'd like to automate",
+      "code": "there's some task you'd like to automate",
+      "options": [
+        "`there's` の補語となる形容詞節",
+        "`task` を修飾する関係代名詞節（目的格の関係代名詞が省略）",
+        "`task` を修飾する関係副詞節",
+        "時を表す副詞節"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "完全な形は `some task (that/which) you'd like to automate`。`automate` の目的語が欠けているので、目的格の関係代名詞 `that/which` が省略された関係詞節と判断できる。",
+      "source": "Python tutorial / introduction to scripting"
+    },
+    {
+      "id": 379,
+      "section": "セクション106: 英文読解 (Python 自動化とスクリプト)",
+      "title": "or と and の並列構造",
+      "question": "次の文の並列構造として正しいものはどれか。\n\n> you may wish to perform a search-and-replace over a large number of text files, or rename and rearrange a bunch of photo files in a complicated way",
+      "code": "you may wish to perform a search-and-replace over a large number of text files, or rename and rearrange a bunch of photo files in a complicated way",
+      "options": [
+        "`perform` と `rename` のみが並列",
+        "`perform`・`rename`・`rearrange` の3つが並列",
+        "`perform a search-and-replace ...` と `rename and rearrange a bunch of photo files ...` の2つが `or` で並列、かつ `rename` と `rearrange` が `and` で並列",
+        "`search`・`replace`・`rename`・`rearrange` の4つが並列"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`may wish to` に続く動作として、`perform ...` と `rename and rearrange ...` が `or` で並列になっている。さらに後半では `rename` と `rearrange` が `and` で並列になっており、入れ子の並列構造を作っている。",
+      "source": "Python tutorial / introduction to scripting"
+    },
+    {
+      "id": 380,
+      "section": "セクション106: 英文読解 (Python 自動化とスクリプト)",
+      "title": "eventually の和訳",
+      "question": "次の文の `eventually` の訳として最も適切なものはどれか。\n\n> If you do much work on computers, eventually you find that there's some task you'd like to automate.",
+      "code": "If you do much work on computers, eventually you find that there's some task you'd like to automate.",
+      "options": [
+        "突然",
+        "めったに",
+        "すでに",
+        "やがて・最終的に"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`eventually` は『やがて』『最終的に』『いずれは』を表す副詞で、時間の経過の中でそうなるというニュアンスを持つ。`suddenly`・`rarely`・`already` とは意味が異なる。",
+      "source": "Python tutorial / introduction to scripting"
+    },
+    {
+      "id": 381,
+      "section": "セクション106: 英文読解 (Python 自動化とスクリプト)",
+      "title": "over a large number of text files の和訳",
+      "question": "次の文の `over a large number of text files` の訳として最も適切なものはどれか。\n\n> you may wish to perform a search-and-replace over a large number of text files",
+      "code": "you may wish to perform a search-and-replace over a large number of text files",
+      "options": [
+        "多数のテキストファイルを超えて",
+        "多数のテキストファイルの上に",
+        "多数のテキストファイルに対して・わたって",
+        "多数のテキストファイルの代わりに"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "ここでの `over` は物理的な『上に』ではなく、範囲・対象を表して『〜に対して』『〜にわたって』の意味。`perform a search-and-replace over ...` で『多数のファイルに対して検索置換を行う』となる。",
+      "source": "Python tutorial / introduction to scripting"
+    },
+    {
+      "id": 382,
+      "section": "セクション106: 英文読解 (Python 自動化とスクリプト)",
+      "title": "自動化紹介文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> If you do much work on computers, eventually you find that there's some task you'd like to automate. For example, you may wish to perform a search-and-replace over a large number of text files, or rename and rearrange a bunch of photo files in a complicated way. Perhaps you'd like to write a small custom database, or a specialized GUI application, or a simple game.",
+      "code": "If you do much work on computers, eventually you find that there's some task you'd like to automate. For example, you may wish to perform a search-and-replace over a large number of text files, or rename and rearrange a bunch of photo files in a complicated way. Perhaps you'd like to write a small custom database, or a specialized GUI application, or a simple game.",
+      "options": [
+        "コンピュータで少し作業をすれば、すぐに自動化できないタスクがあることに気づく。例えば、少数のテキストファイルを検索したり、写真ファイルを簡単に整理したりすることができる。また、大規模なデータベースや複雑なGUIアプリケーションを作りたいと思うかもしれない。",
+        "コンピュータで多くの作業をするなら、突然自動化したいタスクが見つかるだろう。例えば、多数のテキストファイルを削除したり、たくさんの写真ファイルを複雑な方法でコピーしたりすることがある。おそらく、大きなデータベースや汎用のGUIアプリケーション、または複雑なゲームを書きたいと思うだろう。",
+        "コンピュータで多くの作業をするなら、やがて自動化すべきタスクが必ず見つかる。例えば、少数のテキストファイルに検索と置換を実行したり、写真ファイルを単純な方法で名前変更したりする必要がある。また、大きなデータベースや専用のGUIアプリケーションを書かなければならない。",
+        "コンピュータで多くの作業をするなら、やがて自動化したいタスクが出てくることに気づくだろう。例えば、多数のテキストファイルに対して検索と置換を実行したり、たくさんの写真ファイルを複雑な方法で名前変更・並べ替えしたりしたい場合があるかもしれない。あるいは、小さなカスタムデータベース、専用のGUIアプリケーション、またはシンプルなゲームを作りたいと思うかもしれない。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`eventually`、`you'd like to automate`、`may wish to`、`a bunch of`、`in a complicated way`、`Perhaps` をすべて自然に訳し、`rename and rearrange` の並列も正しく反映しているのが正解。他の選択肢は `much work`・`eventually`・動詞の意味・助動詞のニュアンスを取り違えている。",
+      "source": "Python tutorial / introduction to scripting"
+    },
+    {
+      "id": 383,
+      "section": "セクション107: 英文読解 (Python 拡張と言語設計)",
+      "title": "may have to work ... but find ... の構造",
+      "question": "次の文の `may have to work〜 but find〜` の構造として正しいものはどれか。\n\n> you may have to work with several C/C++/Java libraries but find the usual write/compile/test/re-compile cycle is too slow",
+      "code": "you may have to work with several C/C++/Java libraries but find the usual write/compile/test/re-compile cycle is too slow",
+      "options": [
+        "`may have to work` と `but find` が異なる主語を持つ2つの独立した文",
+        "`may` が `have to work` にのみかかり、`find` は別の助動詞を持つ",
+        "`have to work` と `find` が `but` で対比される独立した節",
+        "`may` が `have to work` と `find` の両方にかかり、`but` で対比される並列構造"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "構造としては `you may have to work ... but (may) find ...` と考えるのが自然で、2つ目の `may` は省略されている。したがって `but` は『作業しなければならないかもしれないが、一方で〜と感じるかもしれない』という対比を作っている。",
+      "source": "Python docs / extending and embedding"
+    },
+    {
+      "id": 384,
+      "section": "セクション107: 英文読解 (Python 拡張と言語設計)",
+      "title": "find writing ... a tedious task の SVOC",
+      "question": "次の文の `find writing the testing code a tedious task` の SVOC 構造として正しいものはどれか。\n\n> find writing the testing code a tedious task",
+      "code": "find writing the testing code a tedious task",
+      "options": [
+        "S=`you`, V=`find`, O=`the testing code`, C=`a tedious task`",
+        "S=`you`, V=`find writing`, O=`the testing code`, C=`a tedious task`",
+        "S=`you`, V=`find`, O=`a tedious task`, C=`writing the testing code`",
+        "S=`you`, V=`find`, O=`writing the testing code`, C=`a tedious task`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`find + O + C` の SVOC 構文で、『O を C だと感じる』の意味になる。ここでは `writing the testing code` という動名詞句全体が目的語、`a tedious task` が目的語補語。動名詞句を途中で分割しないことがポイント。",
+      "source": "Python docs / extending and embedding"
+    },
+    {
+      "id": 385,
+      "section": "セクション107: 英文読解 (Python 拡張と言語設計)",
+      "title": "could use の could のニュアンス",
+      "question": "次の文の `that could use an extension language` の `could` の意味として最も適切なものはどれか。\n\n> you've written a program that could use an extension language",
+      "code": "you've written a program that could use an extension language",
+      "options": [
+        "過去の能力『使うことができた』",
+        "過去の習慣『使うことがあった』",
+        "可能性・仮定『使えると便利な・使えるかもしれない』",
+        "過去の推量『使ったに違いない』"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "ここでの `could` は過去の能力ではなく、仮定的・可能性的なニュアンスで、『拡張言語を使えると便利な』『使えるかもしれない』という意味に近い。`must have` のような過去の強い推量でもない。",
+      "source": "Python docs / extending and embedding"
+    },
+    {
+      "id": 386,
+      "section": "セクション107: 英文読解 (Python 拡張と言語設計)",
+      "title": "a whole new language の whole の役割",
+      "question": "次の文の `a whole new language` の `whole` の役割として正しいものはどれか。\n\n> you don't want to design and implement a whole new language for your application",
+      "code": "you don't want to design and implement a whole new language for your application",
+      "options": [
+        "名詞（『全体』の意味）",
+        "副詞（『まったく・完全に』という強調）",
+        "形容詞（『全体の』という意味で `language` を修飾）",
+        "形容詞（`new` を強調し『まったく新しい』という意味）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`a whole new ...` の `whole` は、`new` を強めて『まったく新しい』という意味合いを作る。語法上は `brand new` に近い強調で、単に『全体の言語』という意味ではない。",
+      "source": "English usage / Python docs context"
+    },
+    {
+      "id": 387,
+      "section": "セクション107: 英文読解 (Python 拡張と言語設計)",
+      "title": "may have to の和訳",
+      "question": "次の文の `may have to` の訳として最も適切なものはどれか。\n\n> you may have to work with several C/C++/Java libraries",
+      "code": "you may have to work with several C/C++/Java libraries",
+      "options": [
+        "〜するべきだ",
+        "〜することができる",
+        "〜する必要はない",
+        "〜しなければならないかもしれない"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`may` は可能性・推量、`have to` は義務を表すため、合わせると『〜しなければならないかもしれない』という控えめな義務になる。`should`・`can`・`don't have to` とは意味が異なる。",
+      "source": "English modal verbs / Python docs context"
+    },
+    {
+      "id": 388,
+      "section": "セクション107: 英文読解 (Python 拡張と言語設計)",
+      "title": "拡張と言語設計の段落全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> If you're a professional software developer, you may have to work with several C/C++/Java libraries but find the usual write/compile/test/re-compile cycle is too slow. Perhaps you're writing a test suite for such a library and find writing the testing code a tedious task. Or maybe you've written a program that could use an extension language, and you don't want to design and implement a whole new language for your application.",
+      "code": "If you're a professional software developer, you may have to work with several C/C++/Java libraries but find the usual write/compile/test/re-compile cycle is too slow. Perhaps you're writing a test suite for such a library and find writing the testing code a tedious task. Or maybe you've written a program that could use an extension language, and you don't want to design and implement a whole new language for your application.",
+      "options": [
+        "プロのソフトウェア開発者であれば、いくつかのC/C++/Javaライブラリを使って作業しなければならず、通常のサイクルが速すぎると感じるかもしれない。おそらくそのようなライブラリのテストスイートを書いていて、テストコードを書くことを楽しい作業だと感じているだろう。もしくは、拡張言語を必要としないプログラムを書いたが、まったく新しい言語を設計・実装したいという場合もあるだろう。",
+        "プロのソフトウェア開発者でなくても、いくつかのC/C++/Javaライブラリを使って作業する必要があり、通常の書く・コンパイル・テスト・再コンパイルのサイクルが遅すぎると感じることがある。おそらくそのようなライブラリのテストスイートを読んでいて、テストコードを書くことを重要な作業だと感じているかもしれない。",
+        "プロのソフトウェア開発者であれば、いくつかのC/C++/Javaライブラリを削除しなければならない一方で、通常のサイクルが遅すぎると感じるかもしれない。おそらくそのようなライブラリのテストスイートを書いていて、テストコードを書くことを重要な作業だと感じているだろう。もしくは、拡張言語を使えるプログラムをすでに書いたが、新しい言語を設計したいという場合もあるだろう。",
+        "プロのソフトウェア開発者であれば、いくつかのC/C++/Javaライブラリを使って作業しなければならない一方で、通常の書く・コンパイル・テスト・再コンパイルのサイクルが遅すぎると感じるかもしれない。あるいは、そのようなライブラリのテストスイートを書いていて、テストコードを書くことを退屈な作業だと感じているかもしれない。もしくは、拡張言語を使えると便利なプログラムをすでに書いたものの、アプリケーションのためにまったく新しい言語を設計・実装したくないという場合もあるだろう。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`may have to work ... but find ...`、`a tedious task`、`could use`、`a whole new language`、`don't want to` をすべて自然に訳しているのが正解。誤答は `too slow` を逆に訳したり、`tedious` を肯定的に解したり、`work with` を別の動作へすり替えたりしている。",
+      "source": "Python docs / extending and embedding"
+    },
+    {
+      "id": 389,
+      "section": "セクション108: 英文読解 (Python の特徴と比較)",
+      "title": "offering ... の分詞句の役割",
+      "question": "次の文の `offering much more structure and support for large programs` の文法的な役割として正しいものはどれか。\n\n> it is a real programming language, offering much more structure and support for large programs than shell scripts or batch files can offer",
+      "code": "it is a real programming language, offering much more structure and support for large programs than shell scripts or batch files can offer",
+      "options": [
+        "主語 `it` を修飾する形容詞句",
+        "動詞 `is` の目的語となる動名詞句",
+        "時を表す分詞構文",
+        "`a real programming language` を補足説明する現在分詞句"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "コンマの後の `offering ...` は現在分詞句で、直前の `a real programming language` を補足説明している。意味としては `which offers ...` に近く、動名詞のように文の要素として目的語になるわけではない。",
+      "source": "Python tutorial / whetting your appetite"
+    },
+    {
+      "id": 390,
+      "section": "セクション108: 英文読解 (Python の特徴と比較)",
+      "title": "being a very-high-level language の意味役割",
+      "question": "次の文の `being a very-high-level language` の文法的な役割として正しいものはどれか。\n\n> being a very-high-level language, it has high-level data types built in",
+      "code": "being a very-high-level language, it has high-level data types built in",
+      "options": [
+        "時を表す分詞構文（『〜のとき』）",
+        "条件を表す分詞構文（『〜であれば』）",
+        "譲歩を表す分詞構文（『〜にもかかわらず』）",
+        "理由を表す分詞構文（『〜であるため』）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ここでは `because it is a very-high-level language` に近い理由の意味で使われている。『非常に高水準な言語であるため、高水準のデータ型が組み込まれている』という因果関係が自然。",
+      "source": "Python tutorial / whetting your appetite"
+    },
+    {
+      "id": 391,
+      "section": "セクション108: 英文読解 (Python の特徴と比較)",
+      "title": "has high-level data types built in の構造",
+      "question": "次の文の `has high-level data types built in` の文法構造として正しいものはどれか。\n\n> it has high-level data types built in",
+      "code": "it has high-level data types built in",
+      "options": [
+        "S=`it`, V=`has built`, O=`high-level data types`, 副詞=`in`",
+        "S=`it`, V=`has`, O=`built`, C=`high-level data types`",
+        "S=`it`, V=`has`, O=`high-level data types`, C=`built in`（SVOC構文）",
+        "S=`it`, V=`has in`, O=`high-level data types`, 形容詞=`built`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`have + O + past participle` の形で、『O が〜された状態にある』『O を〜してある』を表す SVOC 構文。ここでは `high-level data types` が目的語、`built in` がその状態を表す目的語補語になっている。",
+      "source": "English grammar / Python docs context"
+    },
+    {
+      "id": 392,
+      "section": "セクション108: 英文読解 (Python の特徴と比較)",
+      "title": "yet の用法",
+      "question": "次の文の `yet` の用法として正しいものはどれか。\n\n> Python is applicable to a much larger problem domain than Awk or even Perl, yet many things are at least as easy in Python as in those languages.",
+      "code": "Python is applicable to a much larger problem domain than Awk or even Perl, yet many things are at least as easy in Python as in those languages.",
+      "options": [
+        "副詞（『まだ』の意味）",
+        "副詞（『すでに』の意味）",
+        "副詞（『さらに』の意味）",
+        "逆接の接続詞（『それでも・しかし』の意味）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ここでの `yet` は `but` に近い逆接の接続詞で、『それでも』『しかし』の意味を表す。副詞の `yet`（まだ）は別用法。前半と後半の内容を逆説的につないでいるのがポイント。",
+      "source": "Python tutorial / whetting your appetite"
+    },
+    {
+      "id": 393,
+      "section": "セクション108: 英文読解 (Python の特徴と比較)",
+      "title": "at least as easy ... の和訳",
+      "question": "次の文の `at least as easy in Python as in those languages` の訳として最も適切なものはどれか。\n\n> many things are at least as easy in Python as in those languages",
+      "code": "many things are at least as easy in Python as in those languages",
+      "options": [
+        "Pythonではそれらの言語よりも簡単なことが多い",
+        "Pythonではそれらの言語よりも難しいことが多い",
+        "Pythonではそれらの言語と同じくらい難しいことが多い",
+        "Pythonではそれらの言語と少なくとも同じくらい簡単なことが多い"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`as ... as` は同等比較で『同じくらい〜』、`at least` は『少なくとも』。合わせると『少なくとも同じくらい簡単』となり、『同等以上に簡単』という含みを持つ。",
+      "source": "Python tutorial / whetting your appetite"
+    },
+    {
+      "id": 394,
+      "section": "セクション108: 英文読解 (Python の特徴と比較)",
+      "title": "Python の特徴説明全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> Python is simple to use, but it is a real programming language, offering much more structure and support for large programs than shell scripts or batch files can offer. On the other hand, Python also offers much more error checking than C, and, being a very-high-level language, it has high-level data types built in, such as flexible arrays and dictionaries. Because of its more general data types Python is applicable to a much larger problem domain than Awk or even Perl, yet many things are at least as easy in Python as in those languages.",
+      "code": "Python is simple to use, but it is a real programming language, offering much more structure and support for large programs than shell scripts or batch files can offer. On the other hand, Python also offers much more error checking than C, and, being a very-high-level language, it has high-level data types built in, such as flexible arrays and dictionaries. Because of its more general data types Python is applicable to a much larger problem domain than Awk or even Perl, yet many things are at least as easy in Python as in those languages.",
+      "options": [
+        "Pythonは使いにくいが本格的なプログラミング言語であり、シェルスクリプトやバッチファイルと同程度の構造とサポートを提供する。一方でPythonはCよりもエラーチェックが少なく、低水準な言語であるため、低水準なデータ型が組み込まれている。より限定的なデータ型を持つためPythonはAwkやPerlよりも狭い問題領域にしか適用できず、多くのことがそれらの言語よりも難しい。",
+        "Pythonは使いやすく、シェルスクリプトやバッチファイルと同じ程度の構造とサポートしか提供しない簡易的な言語だ。一方でPythonはCと同程度のエラーチェックを提供し、高水準なデータ型が組み込まれている。より汎用的なデータ型を持つためPythonはAwkやPerlと同じ問題領域に適用でき、多くのことがそれらの言語よりも難しい。",
+        "Pythonは使いやすいが本格的なプログラミング言語であり、シェルスクリプトやバッチファイルよりも少ない構造とサポートを提供する。一方でPythonはCよりもエラーチェックが多く、高水準なデータ型が組み込まれている。より汎用的なデータ型を持つためPythonはAwkやPerlよりも広い問題領域に適用できるが、多くのことがそれらの言語よりも難しい。",
+        "Pythonは使いやすいが本格的なプログラミング言語であり、シェルスクリプトやバッチファイルよりも大規模なプログラムに対してはるかに多くの構造とサポートを提供する。一方でPythonはCよりもはるかに多くのエラーチェックを提供し、非常に高水準な言語であるため柔軟な配列や辞書のような高水準なデータ型が組み込まれている。より汎用的なデータ型を持つためPythonはAwkはおろかPerlよりもはるかに広い問題領域に適用できるが、それでも多くのことはPythonではそれらの言語と少なくとも同じくらい簡単だ。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`much more structure and support`、`much more error checking`、`being a very-high-level language`、`even Perl`、`yet`、`at least as easy` をすべて正確に訳しているのが正解。誤答は比較や逆接、理由、語彙の強さを取り違えている。",
+      "source": "Python tutorial / whetting your appetite"
+    },
+    {
+      "id": 395,
+      "section": "セクション109: 英文読解 (Python モジュールと標準ライブラリ)",
+      "title": "allows you to split の構造",
+      "question": "次の文の `allows you to split` の文法構造として正しいものはどれか。\n\n> Python allows you to split your program into modules",
+      "code": "Python allows you to split your program into modules",
+      "options": [
+        "S=`Python`, V=`allows`, O=`to split`, C=`you`",
+        "S=`Python`, V=`allows to split`, O=`you`, C=`your program`",
+        "S=`Python`, V=`allows`, O=`your program`, C=`to split`",
+        "S=`Python`, V=`allows`, O=`you`, C=`to split your program into modules`（SVOC構文）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`allow + O + to不定詞` の形で、『O が〜することを可能にする』を表す。ここでは `you` が目的語、`to split your program into modules` が目的語補語。`split A into B` で『A を B に分割する』という表現にもなっている。",
+      "source": "Python tutorial / modules"
+    },
+    {
+      "id": 396,
+      "section": "セクション109: 英文読解 (Python モジュールと標準ライブラリ)",
+      "title": "that can be reused ... の修飾先",
+      "question": "次の文の `that can be reused in other Python programs` の文法的な役割として正しいものはどれか。\n\n> modules that can be reused in other Python programs",
+      "code": "modules that can be reused in other Python programs",
+      "options": [
+        "`Python` を修飾する関係代名詞節",
+        "`program` を修飾する関係代名詞節",
+        "文全体の結果を表す副詞節",
+        "`modules` を修飾する関係代名詞節"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "関係代名詞 `that` の先行詞は `modules`。`can be reused` は『再利用できる』という助動詞 + 受動態で、`in other Python programs` がその利用先を示している。",
+      "source": "Python tutorial / modules"
+    },
+    {
+      "id": 397,
+      "section": "セクション109: 英文読解 (Python モジュールと標準ライブラリ)",
+      "title": "to start learning to program の構造",
+      "question": "次の文の `to start learning to program in Python` における不定詞の構造として正しいものはどれか。\n\n> as examples to start learning to program in Python",
+      "code": "as examples to start learning to program in Python",
+      "options": [
+        "`to start` のみが不定詞で `learning to program` は動名詞句",
+        "`to program` のみが不定詞で `start learning` は動詞句",
+        "`to start` と `to program` が同じ階層で並列する不定詞",
+        "`to start learning ...` と `to program ...` が連鎖する二重の不定詞構造"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`to start learning to program` は、不定詞 `to start` に動名詞 `learning` が続き、その `learning` の内容としてさらに `to program` が続く連鎖構造。『Pythonでプログラミングすることを学び始めるための』という意味になる。",
+      "source": "Python tutorial / modules"
+    },
+    {
+      "id": 398,
+      "section": "セクション109: 英文読解 (Python モジュールと標準ライブラリ)",
+      "title": "and even interfaces の even の役割",
+      "question": "次の文の `and even interfaces` の `even` の役割として正しいものはどれか。\n\n> things like file I/O, system calls, sockets, and even interfaces to graphical user interface toolkits like Tk",
+      "code": "things like file I/O, system calls, sockets, and even interfaces to graphical user interface toolkits like Tk",
+      "options": [
+        "副詞（『均等に』の意味）",
+        "形容詞（『平らな』の意味）",
+        "接続詞（『〜でさえあれば』の意味）",
+        "副詞（`interfaces` を強調し『〜さえも』の意味）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`even` は副詞として直後の `interfaces` を強調し、『インターフェースさえも』というニュアンスを加えている。並列された要素の最後に置かれ、意外性のある項目を際立たせる用法。",
+      "source": "English usage / Python docs context"
+    },
+    {
+      "id": 399,
+      "section": "セクション109: 英文読解 (Python モジュールと標準ライブラリ)",
+      "title": "comes with の和訳",
+      "question": "次の文の `comes with` の訳として最も適切なものはどれか。\n\n> It comes with a large collection of standard modules",
+      "code": "It comes with a large collection of standard modules",
+      "options": [
+        "〜と一緒に来る",
+        "〜から生まれる",
+        "〜に取り組む",
+        "〜を備えている・〜が付属している"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`come with ...` は『〜を備えている』『〜が付属している』という慣用表現。ここでは Python が標準モジュール群を最初から持っていることを述べている。直訳の『一緒に来る』では文脈に合わない。",
+      "source": "Python tutorial / modules"
+    },
+    {
+      "id": 400,
+      "section": "セクション109: 英文読解 (Python モジュールと標準ライブラリ)",
+      "title": "モジュール紹介文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> Python allows you to split your program into modules that can be reused in other Python programs. It comes with a large collection of standard modules that you can use as the basis of your programs — or as examples to start learning to program in Python. Some of these modules provide things like file I/O, system calls, sockets, and even interfaces to graphical user interface toolkits like Tk.",
+      "code": "Python allows you to split your program into modules that can be reused in other Python programs. It comes with a large collection of standard modules that you can use as the basis of your programs — or as examples to start learning to program in Python. Some of these modules provide things like file I/O, system calls, sockets, and even interfaces to graphical user interface toolkits like Tk.",
+      "options": [
+        "Pythonは他のプログラムからモジュールをインポートすることを可能にする。Pythonには少数の標準モジュールが付属しており、それらはプログラムの最終的な成果物として使える。これらのモジュールはすべて、ファイル操作やTkのようなGUIツールキットへのインターフェースを提供する。",
+        "Pythonはプログラムを複数のファイルに分割することを可能にするが、それらは他のPythonプログラムでは再利用できない。Pythonには標準モジュールのコレクションが付属しており、プログラムの基盤としてのみ使える。これらのモジュールの一部はファイルI/Oやソケットを提供するが、GUIへのインターフェースは提供しない。",
+        "Pythonは他のプログラムで再利用できるモジュールにプログラムを分割することを可能にする。Pythonには大規模な標準モジュールのコレクションが付属しており、プログラムの基盤としてのみ使える。これらのモジュールはすべてファイルI/O、システムコール、ソケットを提供するが、GUIへのインターフェースは提供しない。",
+        "Pythonは他のPythonプログラムで再利用できるモジュールにプログラムを分割することを可能にする。Pythonには大規模な標準モジュールのコレクションが付属しており、プログラムの基盤として、あるいはPythonでのプログラミングを学び始めるための例として使える。これらのモジュールの一部はファイルI/O、システムコール、ソケット、さらにはTkのようなGUIツールキットへのインターフェースのようなものを提供する。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`that can be reused`、`as the basis ... or as examples ...`、`to start learning to program`、`Some of these modules`、`and even interfaces` をすべて正確に反映しているのが正解。他の選択肢は `split into modules` の意味、`can be reused`、`Some of`、GUIインターフェースの有無などを誤っている。",
+      "source": "Python tutorial / modules"
+    },
+    {
+      "id": 401,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "Ubuntu 22.04 の `python` コマンド既定動作",
+      "question": "Ubuntu 22.04で `python` コマンドを実行したとき、デフォルトの挙動として正しいものはどれか。",
+      "code": "python",
+      "options": [
+        "Python 2.x が実行される",
+        "Python 3.x が実行される",
+        "Python 2.x と Python 3.x のどちらかを選択するメニューが表示される",
+        "コマンド自体が存在せずエラーになる"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Ubuntu 22.04 ではデフォルトで `python` コマンドは存在しない。これは Python 2.x と Python 3.x の共存時代の経緯から、意図的に `python` という名前でインストールしない仕様によるもの。`python-is-python2` または `python-is-python3` パッケージを入れると初めて `python` コマンドが定義される。",
+      "source": "Ubuntu / Debian Python packaging policy"
+    },
+    {
+      "id": 402,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "`python -m http.server` の動作",
+      "question": "`python -m http.server 8080` を実行したときの動作として正しいものはどれか。",
+      "code": "python -m http.server 8080",
+      "options": [
+        "ポート8080でFTPサーバーを起動する",
+        "ポート8080でSSHサーバーを起動する",
+        "ポート8080でメールサーバーを起動する",
+        "カレントディレクトリをポート8080でHTTPサーバーとして公開する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`python -m module` はモジュールをスクリプトとして実行する構文。`http.server` モジュールはカレントディレクトリを簡易 Web サーバーとして公開する機能を持つ。`-m` は内部的にそのモジュールのソースを実行する形に近い。",
+      "source": "Python standard library `http.server`"
+    },
+    {
+      "id": 403,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "`apt_pkg` エラーの根本原因",
+      "question": "次のトラブルの根本原因として最も適切なものはどれか。\n\n> Ubuntu 22.04で `python3 -V` を実行すると `Python 3.11.0rc1` と表示されるが、OS標準ツールが `ModuleNotFoundError` を起こした。",
+      "code": "python3 -V\n# -> Python 3.11.0rc1\n# OS tool -> ModuleNotFoundError: No module named 'apt_pkg'",
+      "options": [
+        "Python 3.11.0rc1 はリリース候補版であるためモジュールが不完全だった",
+        "`python3-apt` パッケージが破損していた",
+        "`/usr/bin/python3` が `update-alternatives` 経由で `python3.11` に切り替わっており、OS標準の `python3.10` と不整合になっていた",
+        "Ubuntu 22.04 は Python 3.11 に対応していない"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Ubuntu 22.04 の標準 Python は `python3.10` であり、`python3-apt` 由来の `apt_pkg` は `python3.10` 向けにビルドされている。`update-alternatives` などで `python3.11` に切り替えると、OS ツールが `python3.11` で `python3.10` 向けの `apt_pkg` を読もうとして不整合が起きる。",
+      "source": "Ubuntu Python packaging / `python3-apt`"
+    },
+    {
+      "id": 404,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "`ln -sf` による alternatives 復旧",
+      "question": "次のコマンドの意味として正しいものはどれか。\n\n> sudo ln -sf /usr/bin/python3.10 /etc/alternatives/python3",
+      "code": "sudo ln -sf /usr/bin/python3.10 /etc/alternatives/python3",
+      "options": [
+        "`python3.10` を削除して `python3.11` にリンクする",
+        "`python3.10` のシンボリックリンクを `/usr/bin` に新規作成する",
+        "`python3.10` を `/etc/alternatives/` にコピーする",
+        "`/etc/alternatives/python3` のシンボリックリンクを `python3.10` に強制的に上書きして戻す"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`ln -sf` の `-s` はシンボリックリンク作成、`-f` は既存リンクの強制上書き。このコマンドにより `/etc/alternatives/python3 -> /usr/bin/python3.10` というリンクへ戻され、`/usr/bin/python3 -> /etc/alternatives/python3 -> /usr/bin/python3.10` という参照チェーンが復元される。",
+      "source": "Unix symbolic links / Debian alternatives"
+    },
+    {
+      "id": 405,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "Ubuntu 22.04 で Python 3.11 を安全に使う方法",
+      "question": "Ubuntu 22.04において、開発用に Python 3.11 を使う場合の最も安全な方法はどれか。",
+      "code": "python3.11\npython3.11 -m venv .venv",
+      "options": [
+        "`sudo ln -sf /usr/bin/python3.11 /usr/bin/python3` でシステムPythonを書き換える",
+        "`update-alternatives` でシステムの `python3` を `python3.11` に切り替える",
+        "`python3` コマンドを削除して `python3.11` を代わりに配置する",
+        "`python3.11` を直接使うか `python3.11 -m venv .venv` で仮想環境を作成して分離する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "OS 標準の `python3` は Ubuntu 自体を動かすための Python であり、切り替えると OS ツールとの不整合が起きやすい。開発用 Python はシステムから分離し、`python3.11` を直接使うか、`venv` で仮想環境を作って使うのが安全。",
+      "source": "Python `venv` / Ubuntu best practices"
+    },
+    {
+      "id": 406,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "`python3 -m zipfile -c` の動作",
+      "question": "次のコマンドの説明として正しいものはどれか。\n\n> python3 -m zipfile -c archive.zip file1.txt file2.txt",
+      "code": "python3 -m zipfile -c archive.zip file1.txt file2.txt",
+      "options": [
+        "`archive.zip` を展開して `file1.txt` と `file2.txt` を取り出す",
+        "`archive.zip` の内容を一覧表示する",
+        "`archive.zip` が壊れていないか検証する",
+        "`file1.txt` と `file2.txt` を `archive.zip` という名前の zip ファイルに圧縮する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`python -m zipfile` は `zipfile` モジュールをスクリプトとして実行する。`-c` (`create`) は新しい zip アーカイブを作るオプションで、指定ファイルを `archive.zip` にまとめる。展開は通常 `-e` を使う。",
+      "source": "Python standard library `zipfile`"
+    },
+    {
+      "id": 407,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "Ubuntu 22.04 で `/usr/bin/python` がない理由",
+      "question": "Ubuntu 22.04で `/usr/bin/python` が存在しない理由として最も適切なものはどれか。",
+      "code": "ls -l /usr/bin/python",
+      "options": [
+        "Python自体がインストールされていないため",
+        "Ubuntu 22.04はPythonを公式サポートしていないため",
+        "Python 2 と Python 3 の混在時代の経緯から、`python` コマンドをデフォルトでインストールしない方針が取られているため",
+        "セキュリティ上の理由でシンボリックリンクが禁止されているため"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Ubuntu や Debian 系では、Python 2 と Python 3 が混在していた時代の経緯から、`python` という名前をデフォルトで提供しない方針が取られてきた。そのため通常は `python3` を明示して使う。必要なら `python-is-python3` などで `python` コマンドを追加できる。",
+      "source": "Ubuntu / Debian Python command policy"
+    },
+    {
+      "id": 408,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "`python` を `python3` に向ける公式寄りの方法",
+      "question": "`/usr/bin/python` を `python3` に向けたい場合、Ubuntu が公式に推奨する方法として正しいものはどれか。",
+      "code": "sudo apt install python-is-python3",
+      "options": [
+        "`sudo ln -sf /usr/bin/python3 /usr/bin/python` で直接シンボリックリンクを作成する",
+        "`update-alternatives` で `/usr/bin/python3` を `python3.11` に切り替える",
+        "`sudo apt install python-is-python3` をインストールする",
+        "`.bashrc` に `alias python=python3` を追記する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Ubuntu では `python-is-python3` パッケージの導入が案内されており、これにより `python` から `python3` への適切なリンクがパッケージ管理下で提供される。手動の `ln -sf` は動くことはあるが、パッケージ管理の外での変更なので推奨されにくい。",
+      "source": "Ubuntu package `python-is-python3`"
+    },
+    {
+      "id": 409,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "Ubuntu 22.04 の `python3` の参照チェーン",
+      "question": "Ubuntu 22.04において `python3` コマンドが指すものとして正しいものはどれか。",
+      "code": "ls -l /usr/bin/python3\nls -l /etc/alternatives/python3",
+      "options": [
+        "`/usr/bin/python3.11` に直接リンクされている",
+        "`/etc/alternatives/python3` を経由せず直接 `python3.10` を指す",
+        "`update-alternatives` の設定に関わらず常に最新版を指す",
+        "`/etc/alternatives/python3` を経由して `/usr/bin/python3.10` を指すシンボリックリンクチェーンになっている"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "今回の環境では `python3` が `/usr/bin/python3 -> /etc/alternatives/python3 -> /usr/bin/python3.10` というチェーンで管理されていた。この中間リンクが `python3.11` を向くと、Ubuntu 22.04 標準ツールとの不整合が起き得る。",
+      "source": "Observed environment / Debian alternatives"
+    },
+    {
+      "id": 410,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "`apt_pkg` の `ModuleNotFoundError` の原因",
+      "question": "Ubuntu 22.04で `python3` が `python3.11` を指していたとき、`apt_pkg` で `ModuleNotFoundError` が発生した根本原因として正しいものはどれか。",
+      "code": "python3 -c \"import apt_pkg\"",
+      "options": [
+        "`python3.11` にはモジュールのインポート機能がないため",
+        "`apt_pkg` パッケージ自体が破損していたため",
+        "`python3.11` は Ubuntu 22.04 の公式リポジトリに存在しないため",
+        "`apt_pkg` は Ubuntu 22.04 標準の `python3.10` 向けにビルドされており、`python3.11` からは読み込めないため"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`apt_pkg` は `python3-apt` 由来の拡張モジュールで、Ubuntu 22.04 では標準の `python3.10` 向けに用意されている。`python3` を `python3.11` へ切り替えると ABI やインストール先の不整合により import に失敗し、`ModuleNotFoundError` が起こる。",
+      "source": "Ubuntu `python3-apt` / Python ABI compatibility"
+    },
+    {
+      "id": 411,
+      "section": "セクション110: Python コマンドと実行環境",
+      "title": "Ubuntu 22.04 で Python 3.11 を安全に使う原則",
+      "question": "Ubuntu 22.04で開発用に Python 3.11 を安全に使う方法として最も適切なものはどれか。",
+      "code": "python3.11\npython3.11 -m venv .venv",
+      "options": [
+        "`sudo update-alternatives --config python3` でシステムの `python3` を `python3.11` に切り替える",
+        "`sudo ln -sf /usr/bin/python3.11 /usr/bin/python3` でシステムPythonを書き換える",
+        "`python3.11` を削除して `python3.10` に統一する",
+        "`python3.11` を直接使うか `python3.11 -m venv .venv` で仮想環境を作成してシステムPythonと分離する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "OS 標準の `python3` は Ubuntu 自体を支える Python であり、切り替えると `apt` 系や `command-not-found` などのツールと不整合を起こしやすい。開発用の 3.11 はシステムから分離し、直接 `python3.11` を使うか `venv` で閉じ込めるのが安全。",
+      "source": "Ubuntu docs / Python development best practices"
+    },
+    {
+      "id": 412,
+      "section": "セクション111: 英文読解 (Python REPL の終了方法)",
+      "title": "動名詞句が主語になる文",
+      "question": "次の文の主語として正しいものはどれか。\n\n> Typing an end-of-file character (Control-D on Unix, Control-Z on Windows) at the primary prompt causes the interpreter to exit with a zero exit status.",
+      "code": "Typing an end-of-file character (Control-D on Unix, Control-Z on Windows) at the primary prompt causes the interpreter to exit with a zero exit status.",
+      "options": [
+        "`an end-of-file character`",
+        "`the primary prompt`",
+        "`the interpreter`",
+        "`Typing an end-of-file character (Control-D on Unix, Control-Z on Windows) at the primary prompt`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "この文では `Typing ... at the primary prompt` という動名詞句全体が主語になっている。括弧内の `Control-D ...` は挿入された補足説明で、主語の中心は『EOF文字を入力すること』という行為全体。動名詞句は単数扱いなので動詞は `causes` となる。",
+      "source": "Python tutorial / interactive mode"
+    },
+    {
+      "id": 413,
+      "section": "セクション111: 英文読解 (Python REPL の終了方法)",
+      "title": "cause + O + to do の構造",
+      "question": "次の文の `causes the interpreter to exit` の文法構造として正しいものはどれか。\n\n> Typing〜causes the interpreter to exit with a zero exit status.",
+      "code": "Typing ... causes the interpreter to exit with a zero exit status.",
+      "options": [
+        "S=`Typing〜`, V=`causes to exit`, O=`the interpreter`",
+        "S=`Typing〜`, V=`causes`, O=`a zero exit status`, C=`to exit`",
+        "S=`Typing〜`, V=`causes`, O=`the interpreter`, C=`to exit with a zero exit status`（SVOC構文）",
+        "S=`the interpreter`, V=`causes`, O=`Typing〜`, C=`to exit`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`cause + O + to不定詞` は『Oを〜させる』を表す SVOC 構文。ここでは `the interpreter` が目的語、`to exit with a zero exit status` が目的語補語となる。`make` と違って `cause` の後ろでは通常 `to不定詞` が必要。",
+      "source": "English grammar / Python tutorial context"
+    },
+    {
+      "id": 414,
+      "section": "セクション111: 英文読解 (Python REPL の終了方法)",
+      "title": "with a zero exit status の with の用法",
+      "question": "次の文の `with a zero exit status` の `with` の用法として正しいものはどれか。\n\n> causes the interpreter to exit with a zero exit status",
+      "code": "causes the interpreter to exit with a zero exit status",
+      "options": [
+        "対立『〜に反して』",
+        "原因『〜のせいで』",
+        "手段『〜を使って』",
+        "付帯状況『〜の状態で・〜とともに』"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ここでの `with` は付帯状況を表し、『ゼロの終了ステータスという状態で』の意味になる。手段ではなく、終了時の状態や結果を添えている点がポイント。",
+      "source": "Python tutorial / interactive mode"
+    },
+    {
+      "id": 415,
+      "section": "セクション111: 英文読解 (Python REPL の終了方法)",
+      "title": "by + 動名詞 の用法",
+      "question": "次の文の `by typing the following command` の文法的な役割として正しいものはどれか。\n\n> you can exit the interpreter by typing the following command: quit()",
+      "code": "you can exit the interpreter by typing the following command: quit()",
+      "options": [
+        "目的を表す不定詞句",
+        "条件を表す副詞節",
+        "結果を表す分詞構文",
+        "手段を表す前置詞句（`by + 動名詞`）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`by + 動名詞` は『〜することによって』という手段・方法を表す。ここでは `quit()` を入力することでインタープリターを終了できる、という意味。目的を表す `to不定詞` とは異なる。",
+      "source": "English grammar / Python tutorial context"
+    },
+    {
+      "id": 416,
+      "section": "セクション111: 英文読解 (Python REPL の終了方法)",
+      "title": "If that doesn't work の that が指すもの",
+      "question": "次の文の `If that doesn't work` の `that` が指すものとして最も適切なものはどれか。\n\n> Typing an end-of-file character (Control-D on Unix, Control-Z on Windows) at the primary prompt causes the interpreter to exit with a zero exit status. If that doesn't work, you can exit the interpreter by typing the following command: quit().",
+      "code": "Typing an end-of-file character ... causes the interpreter to exit ... If that doesn't work, you can exit the interpreter by typing the following command: quit().",
+      "options": [
+        "`quit()` コマンドの入力",
+        "`zero exit status` での終了",
+        "Windowsでの `Control-Z` の入力のみ",
+        "プライマリプロンプトで EOF 文字（Control-D または Control-Z）を入力する操作全体"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`that` は直前の文全体、つまり『プライマリプロンプトで EOF 文字を入力してインタープリターを終了させる操作』を受けている。特定のキー1つや `quit()` のことではなく、前文の方法全体を指す。",
+      "source": "Python tutorial / interactive mode"
+    },
+    {
+      "id": 417,
+      "section": "セクション111: 英文読解 (Python REPL の終了方法)",
+      "title": "REPL 終了方法の説明文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> Typing an end-of-file character (Control-D on Unix, Control-Z on Windows) at the primary prompt causes the interpreter to exit with a zero exit status. If that doesn't work, you can exit the interpreter by typing the following command: quit().",
+      "code": "Typing an end-of-file character (Control-D on Unix, Control-Z on Windows) at the primary prompt causes the interpreter to exit with a zero exit status. If that doesn't work, you can exit the interpreter by typing the following command: quit().",
+      "options": [
+        "プライマリプロンプトでファイル終端文字を入力すると、インタープリターがエラーステータスで強制終了する。その場合は `quit()` コマンドを入力することでエラーを回避できる。",
+        "プライマリプロンプトで Control-D または Control-Z を入力すると、インタープリターが一時停止する。再開するには `quit()` を入力する必要がある。",
+        "UnixではControl-D、WindowsではControl-Zを入力することでインタープリターを起動できる。起動しない場合は `quit()` コマンドを使用する。",
+        "プライマリプロンプトでファイル終端文字（UnixではControl-D、WindowsではControl-Z）を入力すると、インタープリターがゼロの終了ステータスで終了する。それが機能しない場合は、次のコマンドを入力することでインタープリターを終了できる：`quit()`。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`causes the interpreter to exit`、`with a zero exit status`、`If that doesn't work`、`by typing the following command` をすべて正しく訳しているのが正解。誤答は `zero exit status` をエラー扱いにしたり、『一時停止』『起動』のように動作そのものを取り違えている。",
+      "source": "Python tutorial / interactive mode"
+    },
+    {
+      "id": 418,
+      "section": "セクション112: 英文読解 (Python 対話例の読み方)",
+      "title": "are distinguished の用法",
+      "question": "次の文の `are distinguished` の文法的な用法として正しいものはどれか。\n\n> input and output are distinguished by the presence or absence of prompts",
+      "code": "input and output are distinguished by the presence or absence of prompts",
+      "options": [
+        "be動詞 + 形容詞 の第2文型",
+        "be動詞 + 現在分詞 の進行形",
+        "be動詞 + 過去分詞 の受動態",
+        "be動詞 + 不定詞 の予定・義務"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`distinguish A from B` / `distinguish A by ...` の受動態で、『入力と出力はプロンプトの有無によって区別される』という意味。`by ...` が区別の手段・基準を示しており、受動態であることがわかる。",
+      "source": "Python tutorial / interactive mode examples"
+    },
+    {
+      "id": 419,
+      "section": "セクション112: 英文読解 (Python 対話例の読み方)",
+      "title": "presence or absence の訳",
+      "question": "次の文の `presence or absence` の訳として最も適切なものはどれか。\n\n> distinguished by the presence or absence of prompts",
+      "code": "distinguished by the presence or absence of prompts",
+      "options": [
+        "存在と不在の両方",
+        "存在するか存在しないかの選択",
+        "存在することの重要性",
+        "有無"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`presence` は『存在・あること』、`absence` は『不在・ないこと』なので、`presence or absence of prompts` は日本語では簡潔に『プロンプトの有無』と訳すのが自然。",
+      "source": "English usage / Python tutorial context"
+    },
+    {
+      "id": 420,
+      "section": "セクション112: 英文読解 (Python 対話例の読み方)",
+      "title": "to repeat the example の役割",
+      "question": "次の文の `to repeat the example` の文法的な役割として正しいものはどれか。\n\n> to repeat the example, you must type everything after the prompt",
+      "code": "to repeat the example, you must type everything after the prompt",
+      "options": [
+        "主語となる名詞的用法",
+        "名詞を修飾する形容詞的用法",
+        "結果を表す副詞的用法",
+        "目的を表す副詞的用法"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "文頭の `to repeat the example` は『例を再現するには』『再現するために』という意味で、主節全体を修飾する副詞的用法。文脈上は目的・条件に近いニュアンスを持つ。",
+      "source": "Python tutorial / interactive mode examples"
+    },
+    {
+      "id": 421,
+      "section": "セクション112: 英文読解 (Python 対話例の読み方)",
+      "title": "on a line by itself の意味",
+      "question": "次の文の `on a line by itself` の意味として正しいものはどれか。\n\n> a secondary prompt on a line by itself in an example means you must type a blank line",
+      "code": "a secondary prompt on a line by itself in an example means you must type a blank line",
+      "options": [
+        "他の行と並んで表示される",
+        "自動的に生成される行に",
+        "複数行にわたって表示される",
+        "それ単体で1行を占めている"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`by itself` は『それ単独で』『それだけで』という意味。`on a line by itself` で『単独で1行にある』『それだけで1行を占めている』という慣用的表現になる。",
+      "source": "English idiom / Python tutorial context"
+    },
+    {
+      "id": 422,
+      "section": "セクション112: 英文読解 (Python 対話例の読み方)",
+      "title": "be used to + 不定詞 の用法",
+      "question": "次の文の `this is used to end a multi-line command` の `be used to` の用法として正しいものはどれか。\n\n> this is used to end a multi-line command",
+      "code": "this is used to end a multi-line command",
+      "options": [
+        "過去の習慣『以前は〜するのに慣れていた』",
+        "現在の習慣『〜することに慣れている』",
+        "目的『〜するために使われる』",
+        "仮定『〜するために使われるだろう』"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`be used to + 動詞の原形不定詞` は『〜するために使われる』という目的の受動態。`be used to + 動名詞`（〜することに慣れている）と混同しやすいが、ここでは後ろが `to end` なので不定詞であり、目的を表している。",
+      "source": "English grammar / used to vs be used to"
+    },
+    {
+      "id": 423,
+      "section": "セクション112: 英文読解 (Python 対話例の読み方)",
+      "title": "対話例の読み方の説明文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> In the following examples, input and output are distinguished by the presence or absence of prompts (>>> and …): to repeat the example, you must type everything after the prompt, when the prompt appears; lines that do not begin with a prompt are output from the interpreter. Note that a secondary prompt on a line by itself in an example means you must type a blank line; this is used to end a multi-line command.",
+      "code": "In the following examples, input and output are distinguished by the presence or absence of prompts (>>> and ...): to repeat the example, you must type everything after the prompt, when the prompt appears; lines that do not begin with a prompt are output from the interpreter. Note that a secondary prompt on a line by itself in an example means you must type a blank line; this is used to end a multi-line command.",
+      "options": [
+        "以下の例では、`>>>` と `...` はそれぞれ入力と出力を表している。プロンプトの後に何かを入力する必要はなく、プロンプトがない行がユーザーの入力である。`...` が単独で表示された場合はコマンドが完了したことを意味する。",
+        "以下の例では、プロンプトの種類によって入力と出力が区別される。例を再現するにはプロンプトの前にあるすべてを入力しなければならない。`...` が単独で表示された場合は次のコマンドに進むことを意味する。",
+        "以下の例では、`>>>` と `...` はインタープリターの出力を表している。プロンプトがある行はすべてインタープリターからの出力であり、プロンプトがない行がユーザーの入力となる。",
+        "以下の例では、入力と出力はプロンプト（`>>>` と `...`）の有無によって区別される。例を再現するにはプロンプトが表示されたときにプロンプトの後にあるすべてを入力しなければならず、プロンプトで始まらない行はインタープリターの出力である。`...` が単独で1行を占めている場合は空白行を入力する必要があり、これは複数行コマンドを終了させるために使われる。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`by the presence or absence of prompts`、`everything after the prompt`、`lines that do not begin with a prompt are output`、`on a line by itself`、`is used to end a multi-line command` をすべて正確に反映しているのが正解。他の選択肢は入力と出力の関係、`after` の意味、`...` の役割を取り違えている。",
+      "source": "Python tutorial / interactive mode examples"
+    },
+    {
+      "id": 424,
+      "section": "セクション113: 英文読解 (Python ドキュメントUI)",
+      "title": "by clicking on >>> の役割",
+      "question": "次の文の `by clicking on >>>` の文法的な役割として正しいものはどれか。\n\n> You can toggle the display of prompts and output by clicking on >>> in the upper-right corner of an example box.",
+      "code": "You can toggle the display of prompts and output by clicking on >>> in the upper-right corner of an example box.",
+      "options": [
+        "目的を表す不定詞句",
+        "条件を表す副詞節",
+        "結果を表す分詞構文",
+        "手段を表す前置詞句（`by + 動名詞`）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`by + 動名詞` は『〜することによって』という手段・方法を表す。ここでは `>>>` をクリックすることによって表示を切り替えられる、という意味で、目的の `to不定詞` ではない。",
+      "source": "Python docs site / example UI"
+    },
+    {
+      "id": 425,
+      "section": "セクション113: 英文読解 (Python ドキュメントUI)",
+      "title": "toggle の意味",
+      "question": "次の文の `toggle` の意味として最も適切なものはどれか。\n\n> You can toggle the display of prompts and output",
+      "code": "You can toggle the display of prompts and output",
+      "options": [
+        "削除する",
+        "追加する",
+        "固定する",
+        "オン・オフを切り替える"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`toggle` は2つの状態を交互に切り替えることを表す動詞で、UI 文脈では『表示・非表示を切り替える』『オン・オフを切り替える』の意味になる。",
+      "source": "English UI terminology / Python docs site"
+    },
+    {
+      "id": 426,
+      "section": "セクション113: 英文読解 (Python ドキュメントUI)",
+      "title": "If〜, then〜 の条件と帰結",
+      "question": "次の文の `If〜, then〜` の構造として正しいものはどれか。\n\n> If you hide the prompts and output for an example, then you can easily copy and paste the input lines into your interpreter.",
+      "code": "If you hide the prompts and output for an example, then you can easily copy and paste the input lines into your interpreter.",
+      "options": [
+        "`If` 節が結果を表し `then` 節が条件を表す",
+        "`If` 節と `then` 節が対等な並列関係にある",
+        "`then` は時間の順序を表す副詞で条件とは無関係",
+        "`If` 節が条件を表し `then` 節がその帰結を表す"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`If ... , then ...` は典型的な条件と帰結の構文で、『もし〜なら、そうすれば〜』という意味を作る。ここでは `If you hide ...` が条件、`then you can ...` がその結果としての帰結。",
+      "source": "English conditional structure / Python docs site"
+    },
+    {
+      "id": 427,
+      "section": "セクション113: 英文読解 (Python ドキュメントUI)",
+      "title": "copy and paste の並列構造",
+      "question": "次の文の `copy and paste` の文法的な構造として正しいものはどれか。\n\n> you can easily copy and paste the input lines into your interpreter",
+      "code": "you can easily copy and paste the input lines into your interpreter",
+      "options": [
+        "`copy` が動詞、`and paste the input lines` が副詞句",
+        "`copy and paste` が複合名詞として目的語になっている",
+        "`copy` が形容詞、`paste` が動詞として機能している",
+        "`copy` と `paste` が `and` で並列する動詞で、共通の目的語 `the input lines` を持つ"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`copy` と `paste` は2つの動詞が `and` で並列された形で、どちらも `the input lines` を共通の目的語としている。`easily` は両方にかかる副詞、`into your interpreter` は方向を示す前置詞句。",
+      "source": "English coordination / Python docs site"
+    },
+    {
+      "id": 428,
+      "section": "セクション113: 英文読解 (Python ドキュメントUI)",
+      "title": "the display of prompts and output の和訳",
+      "question": "次の文の `the display of prompts and output` の訳として最も適切なものはどれか。\n\n> You can toggle the display of prompts and output",
+      "code": "You can toggle the display of prompts and output",
+      "options": [
+        "プロンプトと出力を表示するボタン",
+        "プロンプトと出力の切り替え機能",
+        "プロンプトと出力の入力欄",
+        "プロンプトと出力の表示"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`display` はここでは名詞で『表示』、`of prompts and output` がその内容を示している。全体で『プロンプトと出力の表示』となり、`toggle` と組み合わせて『表示を切り替える』という意味になる。",
+      "source": "English UI terminology / Python docs site"
+    },
+    {
+      "id": 429,
+      "section": "セクション113: 英文読解 (Python ドキュメントUI)",
+      "title": "ドキュメントUI説明文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> You can toggle the display of prompts and output by clicking on >>> in the upper-right corner of an example box. If you hide the prompts and output for an example, then you can easily copy and paste the input lines into your interpreter.",
+      "code": "You can toggle the display of prompts and output by clicking on >>> in the upper-right corner of an example box. If you hide the prompts and output for an example, then you can easily copy and paste the input lines into your interpreter.",
+      "options": [
+        "サンプルボックスの左上にある `>>>` をクリックすると、プロンプトと出力が永久に削除される。プロンプトと出力を削除すれば、インタープリターから入力行を取り出すことができる。",
+        "サンプルボックスの右上にある `>>>` をクリックすると、入力行のみが表示される。プロンプトと出力を表示した状態では、入力行を自分のインタープリターにコピーできない。",
+        "サンプルボックスの右上にある `>>>` をクリックすると、プロンプトと出力の両方が常に表示される。プロンプトと出力を表示すれば、入力行を簡単にコピーして貼り付けることができる。",
+        "サンプルボックスの右上隅にある `>>>` をクリックすることで、プロンプトと出力の表示を切り替えることができる。例のプロンプトと出力を非表示にすれば、入力行を自分のインタープリターに簡単にコピーして貼り付けることができる。"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`toggle`、`in the upper-right corner`、`by clicking on`、`If you hide ...`、`copy and paste`、`into your interpreter` をすべて自然に訳しているのが正解。他の選択肢は `upper-right`、`toggle`、`hide` の意味や条件と帰結の関係を取り違えている。",
+      "source": "Python docs site / example UI"
+    },
+    {
+      "id": 430,
+      "section": "セクション114: 英文読解 (Python REPL 導入)",
+      "title": "Let's try の用法",
+      "question": "次の文の `Let's try` の文法的な用法として正しいものはどれか。\n\n> Let's try some simple Python commands.",
+      "code": "Let's try some simple Python commands.",
+      "options": [
+        "仮定法『〜したとしたら』",
+        "受動態『〜させられる』",
+        "過去形『〜しようとした』",
+        "勧誘の命令形『〜しましょう』"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`Let's ...` は `Let us ...` の短縮形で、『〜しましょう』と相手を誘う勧誘の命令表現。通常の命令形が相手だけへの指示なのに対し、`Let's` は話し手も含めた行動の提案になる。",
+      "source": "English imperative / Python tutorial"
+    },
+    {
+      "id": 431,
+      "section": "セクション114: 英文読解 (Python REPL 導入)",
+      "title": "Start ... and wait ... の並列命令",
+      "question": "次の文の `Start the interpreter and wait for the primary prompt` の構造として正しいものはどれか。\n\n> Start the interpreter and wait for the primary prompt, >>>.",
+      "code": "Start the interpreter and wait for the primary prompt, >>>.",
+      "options": [
+        "`Start` が動詞、`the interpreter and wait` が目的語、`for the primary prompt` が副詞句",
+        "`Start the interpreter` が条件節、`wait for the primary prompt` が主節",
+        "`Start` と `wait` が異なる主語を持つ2つの独立した文",
+        "`Start` と `wait` が `and` で並列する命令形で、どちらも読者への指示を表す"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`Start the interpreter` と `wait for the primary prompt` はどちらも命令文で、共通の主語 `you` が省略されている。`and` で並列され、読者に順に行動を促している。",
+      "source": "Python tutorial / interactive mode"
+    },
+    {
+      "id": 432,
+      "section": "セクション114: 英文読解 (Python REPL 導入)",
+      "title": "It shouldn't take long の It の用法",
+      "question": "次の文の `It` の用法として正しいものはどれか。\n\n> (It shouldn't take long.)",
+      "code": "(It shouldn't take long.)",
+      "options": [
+        "前文の `the interpreter` を指す代名詞",
+        "前文の `the primary prompt` を指す代名詞",
+        "天候・時間を表す非人称の `it`",
+        "形式主語（真主語はインタープリターの起動にかかる時間）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ここでの `It takes ...` は、何かに時間がかかることを述べる形式的な `it` の用法。文脈上は『インタープリターを起動してプロンプトが出るまでの時間』をぼんやり受けており、単なる物や天候を指す `it` ではない。",
+      "source": "English anticipatory it / Python tutorial"
+    },
+    {
+      "id": 433,
+      "section": "セクション114: 英文読解 (Python REPL 導入)",
+      "title": "shouldn't の推量的用法",
+      "question": "次の文の `shouldn't` の意味として最も適切なものはどれか。\n\n> It shouldn't take long.",
+      "code": "It shouldn't take long.",
+      "options": [
+        "〜してはいけない（禁止）",
+        "〜すべきではない（義務の否定）",
+        "〜しないだろう（単純な否定の推量）",
+        "〜のはずがない（否定の推量）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ここでの `shouldn't` は禁止ではなく、『時間はかからないはずだ』という穏やかな否定の推量を表している。`mustn't` のような禁止とは異なり、話し手の見込みを述べる用法。",
+      "source": "English modal verbs / Python tutorial context"
+    },
+    {
+      "id": 434,
+      "section": "セクション114: 英文読解 (Python REPL 導入)",
+      "title": "wait for the primary prompt の和訳",
+      "question": "次の文の `wait for the primary prompt` の訳として最も適切なものはどれか。\n\n> Start the interpreter and wait for the primary prompt, >>>.",
+      "code": "Start the interpreter and wait for the primary prompt, >>>.",
+      "options": [
+        "プライマリプロンプトを入力してください",
+        "プライマリプロンプトを確認してください",
+        "プライマリプロンプトを削除してください",
+        "プライマリプロンプトを待ってください"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`wait for ...` は『〜を待つ』という慣用表現。ここでは `>>>` が表示されるまで待つ、という意味であり、『確認する』『入力する』『削除する』ではない。",
+      "source": "English verb phrase / Python tutorial"
+    },
+    {
+      "id": 435,
+      "section": "セクション114: 英文読解 (Python REPL 導入)",
+      "title": "REPL導入文全体の和訳",
+      "question": "次の文全体の日本語訳として最も適切なものはどれか。\n\n> Let's try some simple Python commands. Start the interpreter and wait for the primary prompt, >>>. (It shouldn't take long.)",
+      "code": "Let's try some simple Python commands. Start the interpreter and wait for the primary prompt, >>>. (It shouldn't take long.)",
+      "options": [
+        "いくつかの複雑なPythonコマンドを試してみましょう。インタープリターを終了してセカンダリプロンプト `...` を待ってください。（時間がかかるはずです。）",
+        "簡単なPythonコマンドをすべて試してみましょう。インタープリターを起動してプライマリプロンプトが表示されたら入力してください。（時間はかかりません。）",
+        "いくつかの簡単なPythonコマンドを確認しましょう。インタープリターを再起動してプライマリプロンプト `>>>` が消えるまで待ってください。（時間はかからないはずです。）",
+        "いくつかの簡単なPythonコマンドを試してみましょう。インタープリターを起動してプライマリプロンプト `>>>` を待ってください。（時間はかからないはずです。）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`Let's try`、`Start the interpreter`、`wait for the primary prompt`、`It shouldn't take long` をすべて自然に訳しているのが正解。誤答は `simple` を逆にしたり、`Start` を『終了』『再起動』にしたり、`shouldn't` を逆方向に解釈したりしている。",
+      "source": "Python tutorial / interactive mode"
+    },
+    {
+      "id": 436,
+      "section": "セクション115: 英文法 (仮定法)",
+      "title": "仮定法過去の be動詞",
+      "question": "次の文の空欄に入る最も適切なものはどれか。\n\n> If it ___ a little warmer, we would go out for a walk.",
+      "code": "If it ___ a little warmer, we would go out for a walk.",
+      "options": [
+        "`is`",
+        "`was`",
+        "`were`",
+        "`will be`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "主節に `would + 動詞原形` があるため、この文は現在の事実に反する仮定を表す仮定法過去と判断できる。仮定法過去では、`be` 動詞は主語の人称・数にかかわらず原則として `were` を用いる。口語では `was` も見られるが、文法的に最も標準的なのは `were`。",
+      "source": "English grammar / subjunctive mood"
+    },
+    {
+      "id": 437,
+      "section": "セクション116: Python 文字列リテラル",
+      "title": "SyntaxError になる文字列定義",
+      "question": "次のうち、Pythonで `SyntaxError` になる文字列の定義を**すべて含む組み合わせ**として正しいものはどれですか？",
+      "code": "A. r\"C:\\Temp\\\"\nB. \"C:\\Temp\\\"\nC. r\"C:\\Temp\" + \"\\\"\nD. r\"C:\\Temp\"",
+      "options": [
+        "`A` のみ",
+        "`A` と `B` のみ",
+        "`A`・`B`・`C`",
+        "`B`・`C`・`D`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "この問題では **`A`・`B`・`C` が `SyntaxError`、`D` は正常**。`A: r\"C:\\Temp\\\"` は raw 文字列だが、**raw 文字列は末尾を奇数個のバックスラッシュで終われない**ため `unterminated string literal` になる。`B: \"C:\\Temp\\\"` は通常文字列で、末尾の `\\` が閉じクォートをエスケープしてしまい、やはり文字列が終わらない。`C: r\"C:\\Temp\" + \"\\\"` は前半の raw 文字列 `r\"C:\\Temp\"` 自体は正しいが、後半の通常文字列 `\"\\\"` が壊れているため `SyntaxError`。`D: r\"C:\\Temp\"` は末尾がバックスラッシュではないので正しい raw 文字列であり、エラーにはならない。つまり、**raw 文字列特有の問題が当てはまるのは `A` だけ**で、`B` と `C` は通常文字列側のクォート終端ミスによる `SyntaxError`。",
+      "source": "Python lexical analysis / string and bytes literals"
     }
   ]
 }
