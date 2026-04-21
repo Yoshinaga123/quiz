@@ -6935,6 +6935,134 @@
       "correctAnswerIndex": 2,
       "explanation": "この問題では **`A`・`B`・`C` が `SyntaxError`、`D` は正常**。`A: r\"C:\\Temp\\\"` は raw 文字列だが、**raw 文字列は末尾を奇数個のバックスラッシュで終われない**ため `unterminated string literal` になる。`B: \"C:\\Temp\\\"` は通常文字列で、末尾の `\\` が閉じクォートをエスケープしてしまい、やはり文字列が終わらない。`C: r\"C:\\Temp\" + \"\\\"` は前半の raw 文字列 `r\"C:\\Temp\"` 自体は正しいが、後半の通常文字列 `\"\\\"` が壊れているため `SyntaxError`。`D: r\"C:\\Temp\"` は末尾がバックスラッシュではないので正しい raw 文字列であり、エラーにはならない。つまり、**raw 文字列特有の問題が当てはまるのは `A` だけ**で、`B` と `C` は通常文字列側のクォート終端ミスによる `SyntaxError`。",
       "source": "Python lexical analysis / string and bytes literals"
+    },
+    {
+      "id": 438,
+      "section": "セクション117: Python `decimal` モジュール",
+      "title": "正確な `0.1` を作る `Decimal` の初期化",
+      "question": "`from decimal import Decimal` を実行した後、正確な `0.1` を表現するために最も適切なインスタンス化の方法はどれですか？",
+      "code": "from decimal import Decimal",
+      "options": [
+        "`Decimal(\"0.1\")`",
+        "`Decimal(1/10)`",
+        "`float(Decimal(\"0.1\"))`",
+        "`Decimal(0.1)`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "正解は `Decimal(\"0.1\")`。`Decimal` で十進数を正確に扱いたいときは、**文字列から生成する**のが基本。`Decimal(0.1)` はすでに2進浮動小数で近似された `0.1` を取り込むため不正確になりうる。`Decimal(1/10)` も `1/10` が先に `float` として評価されるので同じ問題を含む。`float(Decimal(\"0.1\"))` は逆に `Decimal` を `float` に戻してしまい、正確性を失う。",
+      "source": "Python standard library `decimal`"
+    },
+    {
+      "id": 439,
+      "section": "セクション118: Python 関数引数と落とし穴",
+      "title": "可変デフォルト引数の共有",
+      "question": "以下の関数を定義した直後に、`append_to_list(1)` と `append_to_list(2)` を連続して実行しました。2回目の戻り値はどうなりますか？",
+      "code": "def append_to_list(val, my_list=[]):\n    my_list.append(val)\n    return my_list",
+      "options": [
+        "`[2]`",
+        "`TypeError` が発生する",
+        "`[1, 2]`",
+        "`[[1], 2]`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "正解は `C` の `[1, 2]`。デフォルト引数の `[]` は**関数呼び出し時ではなく定義時に1回だけ作られる**ため、2回の呼び出しで同じリストオブジェクトが使い回される。1回目の `append_to_list(1)` でリストは `[1]` になり、続く `append_to_list(2)` ではその同じリストに `2` が追加されて `[1, 2]` が返る。可変オブジェクトをデフォルト引数に置くと起きやすい典型的な落とし穴で、通常は `my_list=None` として関数内で新しいリストを作る書き方が推奨される。",
+      "source": "Python gotchas / default argument values"
+    },
+    {
+      "id": 440,
+      "section": "セクション119: Python アンパック代入",
+      "title": "スター付き代入で集められる値",
+      "question": "`a, *b, c = [1, 2, 3, 4, 5]` を実行した後、変数 `b` の値とデータ型として正しいものはどれですか？",
+      "code": "a, *b, c = [1, 2, 3, 4, 5]",
+      "options": [
+        "値: `[2, 3, 4]`, 型: `list`",
+        "値: `(2, 3, 4)`, 型: `tuple`",
+        "値: `[1, 2, 3, 4, 5]`, 型: `list`",
+        "値: `2`, 型: `int`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "正解は `A`。この代入では先頭の `a` が `1`、末尾の `c` が `5` を受け取り、間に残った `2, 3, 4` が `*b` にまとめて入る。重要なのは、**スター付き代入で集められた部分は常に `list` になる**こと。したがって `b` は `[2, 3, 4]` という `list` になる。",
+      "source": "Python iterable unpacking"
+    },
+    {
+      "id": 441,
+      "section": "セクション120: Python オブジェクト同一性と整数キャッシュ",
+      "title": "`is` と小さな整数キャッシュ",
+      "question": "標準的な `CPython` の対話モードで次のコードを実行したとき、出力される結果はどうなりますか？",
+      "code": "a = 256\nb = 256\nc = 257\nd = 257\nprint(a is b, c is d)",
+      "options": [
+        "`True True`",
+        "`True False`",
+        "`False True`",
+        "`False False`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "正解は `B` の `True False`。標準的な `CPython` では、**`-5` から `256` までの小さな整数はキャッシュされて使い回される**ため、`256` までは同一オブジェクトになりやすく、`a is b` は `True` になる。一方 `257` はその範囲外なので、対話モードで別々の代入文として評価すると通常は別オブジェクトとなり、`c is d` は `False` になる。なおこれは `CPython` 実装依存の最適化であり、`is` で数値の等しさを判定すべきではない。値の比較には常に `==` を使うべきで、同一性比較 `is` は `None` などに使うのが原則。",
+      "source": "CPython integer caching / object identity"
+    },
+    {
+      "id": 442,
+      "section": "セクション121: Python リストと参照共有",
+      "title": "二次元リストと `*` 演算子の落とし穴",
+      "question": "`matrix = [[0] * 2] * 2` を実行して作成した配列に対し、`matrix[0][0] = 1` を実行しました。直後の `print(matrix)` の出力はどうなりますか？",
+      "code": "matrix = [[0] * 2] * 2\nmatrix[0][0] = 1\nprint(matrix)",
+      "options": [
+        "`[[1, 0], [0, 0]]`",
+        "`TypeError` が発生する",
+        "`[[1, 1], [1, 1]]`",
+        "`[[1, 0], [1, 0]]`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "正解は `D` の `[[1, 0], [1, 0]]`。`[[0] * 2] * 2` は、内側のリスト `[0, 0]` を2回**複製しているように見えるが、実際には同じリストオブジェクトへの参照を2個並べている**。そのため `matrix[0][0] = 1` で1行目を変更すると、2行目も同じオブジェクトを見ているので連動して変わる。`*` 演算子はネストした可変オブジェクトの深いコピーを作るわけではなく、参照を繰り返すだけ、というのがポイント。安全に独立した二次元リストを作るには `[[0] * 2 for _ in range(2)]` のように書く。",
+      "source": "Python list repetition / mutable nested objects"
+    },
+    {
+      "id": 443,
+      "section": "セクション122: Python 例外処理フロー",
+      "title": "`try ... except ... else ... finally` の `else` が走る条件",
+      "question": "`try ... except ... else ... finally` 構文において、`else` ブロックのコードが実行される条件はどれですか？",
+      "code": "try:\n    ...\nexcept Exception:\n    ...\nelse:\n    ...\nfinally:\n    ...",
+      "options": [
+        "例外の発生有無に関わらず常に",
+        "`except` ブロックで処理できない例外が発生したとき",
+        "例外が発生したときのみ",
+        "`try` ブロック内で例外が発生せず、正常に完了したとき"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "正解は `D`。`else` は、**`try` ブロックで例外が発生せず、最後まで正常に実行されたときだけ**実行される。`except` で捕まえた場合には `else` は実行されないし、捕まえられない例外が出た場合は `finally` を経て上位に送出される。`if` の `else` とは少し違い、『例外が起きなかった場合の処理』を分けて書くための場所と考えると分かりやすい。",
+      "source": "Python tutorial / errors and exceptions"
+    },
+    {
+      "id": 444,
+      "section": "セクション123: Python 真偽値評価",
+      "title": "`bool(x)` が `True` になる値",
+      "question": "次のうち、`bool(x)` で評価したときに結果が `True` になる `x` の値はどれですか？",
+      "code": "bool(x)",
+      "options": [
+        "`x = ()`",
+        "`x = \"False\"`",
+        "`x = 0.0`",
+        "`x = []`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "正解は `B` の `\"False\"`。Python では**空でない文字列は中身に関係なく真 (`True`)** として扱われる。したがって文字列が `\"False\"` であっても、長さが1以上あるので `bool(x)` は `True` になる。一方、空タプル `()`、数値の `0.0`、空リスト `[]` はいずれも偽 (`False`) と評価される。文字列では『書かれている単語の意味』ではなく、『空かどうか』が判定基準になる。",
+      "source": "Python truth value testing"
+    },
+    {
+      "id": 445,
+      "section": "セクション124: Python REPL の特殊変数",
+      "title": "対話モードの `_` の役割",
+      "question": "Pythonの対話型インタプリタ（REPL）において、変数 `_` （アンダースコア単体）が持つ特別な役割は何ですか？",
+      "code": "_",
+      "options": [
+        "未定義の変数を表すプレースホルダーとして機能する",
+        "最後に評価されて画面に出力された式の値を保持している",
+        "直前にインポートされたモジュールの名前空間を参照する",
+        "前回発生した例外のトレースバック情報を格納している"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "正解は `B`。標準的な Python の対話モードでは、`_` は**最後に評価されて表示された式の結果**を自動的に保持する特別な名前として使われる。たとえば `2 + 3` を評価して `5` が表示された直後なら、`_ * 2` のようにしてその結果を再利用できる。これは REPL 特有の便利機能であり、通常のスクリプト中で同じ意味を持つわけではない。",
+      "source": "Python tutorial / interactive calculator"
     }
   ]
 }
