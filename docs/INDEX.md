@@ -22,7 +22,7 @@
 | [0003](./adr/0003-styling-tailwindcss.md) | Accepted | スタイリングに Tailwind CSS を採用 |
 | [0004](./adr/0004-login-verification-code-flow.md) | Accepted | ログインの検証コードフロー |
 | [0005](./adr/0005-user-facing-web-quiz-app.md) | Accepted | ユーザー向け Web クイズアプリ (`web/`) |
-| [0006](./adr/0006-public-quiz-api.md) | Proposed | 公開クイズ API の仕様分離 |
+| [0006](./adr/0006-public-quiz-api.md) | Accepted | 公開クイズ API の仕様分離 |
 | [0007](./adr/0007-push-notification-delivery.md) | Proposed | プッシュ通知の配信方式 |
 | [0008](./adr/0008-user-attempt-history.md) | Proposed | ユーザー回答履歴の保存方式 |
 | [0009](./adr/0009-mobile-state-management.md) | Accepted | モバイル版の状態管理と層構造 |
