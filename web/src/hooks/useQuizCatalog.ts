@@ -1,16 +1,21 @@
-import { useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { getApiBaseUrl } from '../api/client'
+import { fetchQuizzes } from '../api/quiz'
 import { STARTER_QUIZZES } from '../data/quizzes'
 import { quizzesSchema } from '../schemas/quiz'
 import type { Quiz } from '../types/quiz'
 
-/**
- * 公開クイズデータの取得エントリポイント。
- *
- * 現状は starter pack を同期で返す。`GET /v1/quizzes` 統合時は
- * このフックを非同期（useEffect + state か SWR 等）に書き直す必要がある。
- * fetchQuizzes() は Promise<Quiz[]> を返すため単純な置換では済まない。
- */
-function loadQuizzes(): Quiz[] {
+type QuizCatalogSource = 'starter' | 'api'
+
+export interface QuizCatalogState {
+  quizzes: readonly Quiz[]
+  isLoading: boolean
+  errorMessage: string | null
+  source: QuizCatalogSource
+  reload: () => void
+}
+
+function loadStarterQuizzes(): Quiz[] {
   const parsed = quizzesSchema.safeParse(STARTER_QUIZZES)
   if (!parsed.success) {
     throw new Error('STARTER_QUIZZES is malformed: ' + parsed.error.message)
@@ -18,6 +23,55 @@ function loadQuizzes(): Quiz[] {
   return parsed.data
 }
 
-export function useQuizCatalog(): readonly Quiz[] {
-  return useMemo(() => loadQuizzes(), [])
+export function useQuizCatalog(): QuizCatalogState {
+  const starterQuizzes = useMemo(() => loadStarterQuizzes(), [])
+  const [quizzes, setQuizzes] = useState<readonly Quiz[]>(starterQuizzes)
+  const [isLoading, setIsLoading] = useState(() => getApiBaseUrl() !== null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [source, setSource] = useState<QuizCatalogSource>('starter')
+  const [reloadKey, setReloadKey] = useState(0)
+
+  useEffect(() => {
+    if (getApiBaseUrl() === null) {
+      return undefined
+    }
+
+    const controller = new AbortController()
+
+    fetchQuizzes({ signal: controller.signal })
+      .then((items) => {
+        if (controller.signal.aborted) return
+        setQuizzes(items)
+        setSource('api')
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return
+        setQuizzes(starterQuizzes)
+        setSource('starter')
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to load quizzes from API')
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoading(false)
+        }
+      })
+
+    return () => controller.abort()
+  }, [reloadKey, starterQuizzes])
+
+  const reload = useCallback(() => {
+    if (getApiBaseUrl() !== null) {
+      setIsLoading(true)
+      setErrorMessage(null)
+    }
+    setReloadKey((current) => current + 1)
+  }, [])
+
+  return {
+    quizzes,
+    isLoading,
+    errorMessage,
+    source,
+    reload,
+  }
 }

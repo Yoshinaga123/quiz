@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 
 /**
  * 公開 API 呼び出しの薄いクライアント。
@@ -62,7 +62,7 @@ const parseJsonSafe = async (response: Response): Promise<unknown> => {
   }
   try {
     return JSON.parse(text);
-  } catch (error) {
+  } catch {
     throw new ApiError(
       `Failed to parse JSON response (${response.status})`,
       response.status,

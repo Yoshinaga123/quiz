@@ -37,6 +37,13 @@ def generate_env(output_path: Path) -> None:
         value = prompt_field(key, default)
         lines.append(f"{key}={value}")
 
+    lines.extend(
+        [
+            "QUIZ_PYTHON_BIN=python3",
+            "QUIZ_MIGRATIONS_DIR=migrations",
+        ]
+    )
+
     output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"\n{output_path} を生成しました。")
 

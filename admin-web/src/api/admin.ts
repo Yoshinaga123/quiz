@@ -10,11 +10,17 @@ import {
   quizPayloadSchema,
   quizSchema,
 } from '../schemas/quiz'
+import {
+  pushDeliveryListResponseSchema,
+  pushDispatchResponseSchema,
+} from '../schemas/push'
 import type {
   LoginCredentials,
   ProductionQuizSyncResponse,
   LoginVerificationChallenge,
   LoginVerificationPayload,
+  PushDeliveryListResponse,
+  PushDispatchResponse,
   Quiz,
   QuizListResponse,
   QuizPayload,
@@ -124,5 +130,20 @@ export async function syncProductionQuizzes(): Promise<ProductionQuizSyncRespons
     path: '/api/admin/quizzes/sync-production',
     method: 'POST',
     schema: productionQuizSyncResponseSchema,
+  })
+}
+
+export async function dispatchMockPush(): Promise<PushDispatchResponse> {
+  return requestJson({
+    path: '/api/admin/push/dispatch',
+    method: 'POST',
+    schema: pushDispatchResponseSchema,
+  })
+}
+
+export async function fetchPushDeliveries(): Promise<PushDeliveryListResponse> {
+  return requestJson({
+    path: '/api/admin/push/deliveries',
+    schema: pushDeliveryListResponseSchema,
   })
 }

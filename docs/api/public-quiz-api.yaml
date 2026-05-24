@@ -22,6 +22,8 @@ tags:
     description: 公開クイズの取得
   - name: attempts
     description: 回答記録（任意送信）
+  - name: push
+    description: Push 通知モック feed
   - name: meta
     description: メタ情報
 
@@ -117,6 +119,27 @@ paths:
                     items:
                       $ref: "#/components/schemas/SectionSummary"
 
+  /v1/push/feed:
+    get:
+      tags: [push]
+      summary: 最新 mock Push 配信の取得
+      operationId: getMockPushFeed
+      description: |
+        Push 通知 Phase A（mock）用の公開 feed。
+        `push_deliveries` に記録された最新の `channel = mock` / `status = mock_sent` の配信を 1 件返す。
+        本物の FCM / APNs 配信ではなく、mobile がローカル通知を表示するための開発用エンドポイント。
+      responses:
+        "200":
+          description: 最新 mock 配信
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PushFeed"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/attempts:
     post:
       tags: [attempts]
@@ -211,6 +234,29 @@ components:
         count:
           type: integer
           minimum: 0
+
+    PushFeed:
+      type: object
+      required: [deliveryId, quizId, title, body, sentAt, channel]
+      properties:
+        deliveryId:
+          type: integer
+          minimum: 1
+        quizId:
+          type: integer
+          minimum: 1
+        title:
+          type: string
+          minLength: 1
+        body:
+          type: string
+          minLength: 1
+        sentAt:
+          type: string
+          format: date-time
+        channel:
+          type: string
+          enum: [mock]
 
     AttemptCreateRequest:
       type: object

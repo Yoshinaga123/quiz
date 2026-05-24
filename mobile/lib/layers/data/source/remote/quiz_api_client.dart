@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:quiz_mobile/layers/data/dto/push_feed_dto.dart';
 import 'package:quiz_mobile/layers/domain/errors/quiz_failure.dart';
 
 /// 公開クイズ API（ADR 0006）を叩く薄い HTTP クライアント。
@@ -77,6 +78,14 @@ class QuizApiClient {
       return jsonDecode(body);
     } on FormatException catch (e) {
       throw QuizParseFailure(message: 'Invalid JSON from $uri: ${e.message}');
+    }
+  }
+
+  Future<PushFeedDto?> fetchPushFeed() async {
+    try {
+      return PushFeedDto.fromJson(await getJson('/v1/push/feed'));
+    } on QuizNotFoundFailure {
+      return null;
     }
   }
 

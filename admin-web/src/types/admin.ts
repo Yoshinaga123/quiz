@@ -50,6 +50,35 @@ export interface ProductionQuizSyncResponse {
   downPath: string
 }
 
+export interface PushDispatchResponse {
+  deliveryId: number
+  quizId: number
+  title: string
+  channel: 'mock'
+  targetCount: number
+  status: 'mock_sent'
+  sentAt: string
+}
+
+export interface PushDelivery {
+  deliveryId: number
+  quizId: number
+  title: string
+  channel: string
+  targetCount: number
+  status: string
+  errorDetail?: string
+  sentAt: string
+}
+
+export interface PushDeliveryListResponse {
+  items: PushDelivery[]
+  total: number
+  page: number
+  perPage: number
+  totalPages: number
+}
+
 export interface QuizSearchParams {
   title?: string
   section?: string

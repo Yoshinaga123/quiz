@@ -35,7 +35,7 @@ function parseLimit(raw: string | null): number {
 }
 
 function QuizPlayPage() {
-  const quizzes = useQuizCatalog()
+  const { quizzes } = useQuizCatalog()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { appendRecord } = useHistory()

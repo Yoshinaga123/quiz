@@ -46,9 +46,9 @@ ADR 0002 が SPA 採用を既に決定しているため、本 ADR ではその�
 
 ### 3. バックエンド未拡張のまま単独で動く構成
 
-- 現時点で `backend/main.go` は公開クイズ取得 API（認証不要の `GET /api/quizzes` 等）を持たない。
-- `web/` を **インラインの starter pack（`src/data/quizzes.ts`）** で立ち上げ、後から `loadQuizzes()` の中身だけを fetch + zod 検証へ差し替えられる構造にした。
-- これにより「バックエンドの公開 API 設計が固まっていない」「DB 接続前提のローカル動作が難しい」といった阻害要因に縛られず、UI/UX を先に確立できる。
+- 本 ADR 決定時点では `backend/main.go` に公開クイズ取得 API がなかった。
+- そのため `web/` を **インラインの starter pack（`src/data/quizzes.ts`）** で立ち上げ、後から `loadQuizzes()` の中身だけを fetch + zod 検証へ差し替えられる構造にした。
+- その後 [ADR 0006](./0006-public-quiz-api.md) で `GET /v1/quizzes` 等が実装済みだが、`web/` の `useQuizCatalog` は starter pack 同期取得のまま。クライアント側 API 統合は後続イテレーションとする。
 
 ### 4. 履歴の保存先
 
@@ -71,21 +71,28 @@ ADR 0002 が SPA 採用を既に決定しているため、本 ADR ではその�
 
 ### Negative
 
-- 候補プール（`admin-web/src/data/quizzes.json`、437 問）と `web/src/data/quizzes.ts`（10 問）でデータが二重化している。次フェーズで以下のいずれかに統一する必要がある:
-  1. `backend` に公開 API を追加し、両方をそこから取得する
+- 候補プール（`admin-web/src/data/quizzes.json`）と `web/src/data/quizzes.ts`（starter pack）でデータが二重化している。公開 API（`/v1/quizzes`）は backend 側で提供済みだが、`web/` がまだ呼んでいないため、次フェーズで以下のいずれかに統一する必要がある:
+  1. `web/` を `fetchQuizzes()` 経由で Public API から取得する（推奨）
   2. ルートに共通パッケージ（例: `quizzes-data/`）を作り、両者から import する
 - LocalStorage はユーザーが端末・ブラウザ・プロファイルを切り替えると引き継がれない。本格運用時にはアカウント連携の履歴 API が必要。
 
-## 移行の指針（Web 公開 API 追加時）
+## 移行の指針（Public API 統合）
 
-1. `backend` に `GET /api/quizzes` と `GET /api/quizzes/{id}` を **認証不要** で追加し、`status = 'published'` のみ返す
-2. `web/src/api/quiz.ts` を新設し、`requestJson` と zod 検証で取得する（`admin-web/src/api/client.ts` と同じパターン）
-3. `web/src/hooks/useQuizCatalog.ts` の `loadQuizzes()` を fetch 実装に差し替える
-4. `STARTER_QUIZZES` はオフライン/フォールバック用途として `web/src/data/quizzes.ts` に残す
+[ADR 0006](./0006-public-quiz-api.md) に従い backend 側は実装済み。残タスクはクライアント統合。
+
+| ステップ | 状態 | 内容 |
+| --- | --- | --- |
+| 1 | ✅ 完了 | `backend` に `GET /v1/quizzes`, `GET /v1/quizzes/{id}`, `GET /v1/sections` を認証不要で提供（`status = published` のみ） |
+| 2 | ✅ 完了 | `web/src/api/quiz.ts` で `fetchQuizzes()` + zod 検証を実装 |
+| 3 | ⏳ 未完了 | `web/src/hooks/useQuizCatalog.ts` を非同期化し、`fetchQuizzes()` を呼ぶ |
+| 4 | ⏳ 未完了 | ローディング・エラー状態を画面に伝播。`STARTER_QUIZZES` をフォールバックとして残すか決める |
+
+`web/.env.example` の `VITE_API_BASE_URL` に backend の URL（例: `http://localhost:8082`）を設定すると API 統合の準備が整う。
 
 ## 関連
 
 - ADR 0002: Frontend Architecture Selection (SPA)
 - ADR 0003: Styling with Tailwind CSS
+- ADR 0006: Public Quiz API の仕様分離
 - 実装ポリシー: `../implement-policy.md`
 - データワークフロー: `../quiz-data-workflow.md`

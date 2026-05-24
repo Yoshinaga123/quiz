@@ -1,7 +1,7 @@
 # データモデル
 
 現在の永続データ、seed JSON、API へ露出する投影モデルの関係を整理する。
-対象は 2026-05-10 時点で **実装済みのモデル** を中心とし、ADR にだけ存在する将来モデルは最後に分離して記載する。
+対象は 2026-05-25 時点で **実装済みのモデル** を中心とし、ADR にだけ存在する将来モデルは最後に分離して記載する。
 
 ## 全体像
 
@@ -11,10 +11,12 @@ flowchart LR
     Quizzes["quizzes table"]
     Views["views table"]
     LoginLogs["login_logs table"]
+    PushDeliveries["push_deliveries table"]
     Counter["counter endpoints"]
     AdminQuiz["admin quiz JSON"]
     PublicQuiz["public quiz JSON"]
     SectionSummary["section summary aggregate"]
+    MockPushFeed["mock push feed JSON"]
     MobileQuiz["mobile Quiz entity"]
     Verification["pendingVerifications memory map"]
     Attempts["attempts tables planned only"]
@@ -23,6 +25,8 @@ flowchart LR
     Quizzes -->|full record| AdminQuiz
     Quizzes -->|published only| PublicQuiz
     Quizzes -->|GROUP BY section| SectionSummary
+    Quizzes -->|push target| PushDeliveries
+    PushDeliveries -->|latest mock delivery| MockPushFeed
     PublicQuiz --> MobileQuiz
     Counter --> Views
     Attempts -. ADR 0008 only .-> Quizzes
@@ -35,8 +39,9 @@ flowchart LR
 | `quizzes` | `id` | クイズ本体 | 公開状態と push 対象フラグを保持する中心テーブル |
 | `views` | `id` | PV カウンター | 実質 1 行だけを使う singleton テーブル |
 | `login_logs` | `id` | 管理ログイン監査 | 成功・失敗の監査ログを append-only で保持する |
+| `push_deliveries` | `id` | Push 通知配信履歴 | Phase A では mock 配信のみ記録する |
 
-現時点の実テーブル間には **外部キー関係がない**。`quizzes` が単独で完結し、`views` と `login_logs` は補助データとして独立している。
+現時点で `push_deliveries.quiz_id` は `quizzes.id` への外部キーを持つ。`views` と `login_logs` は補助データとして独立している。
 
 ## `quizzes` テーブル
 
@@ -99,6 +104,27 @@ flowchart LR
 - verification challenge の発行時点では書き込まれない
 - `created_at DESC` の index を持つ
 
+## `push_deliveries` テーブル
+
+`push_deliveries` は Push 通知配信履歴を記録するテーブルである。
+Phase A では Firebase / FCM へは送らず、mock 配信として「送信したつもり」の履歴だけを保持する。
+
+| カラム | 型 | 必須 | 役割 |
+| --- | --- | --- | --- |
+| `id` | `BIGSERIAL` | yes | 配信履歴 ID |
+| `quiz_id` | `BIGINT` | yes | 配信対象クイズ。`quizzes.id` への外部キー |
+| `channel` | `VARCHAR(20)` | yes | 配信チャネル。Phase A は `mock`、将来 `fcm` を想定 |
+| `target_count` | `INT` | yes | 配信対象数。mock では `0` |
+| `status` | `VARCHAR(20)` | yes | 配信状態。Phase A は `mock_sent`、将来 `failed` などを想定 |
+| `error_detail` | `TEXT` | no | 失敗時の詳細。mock 成功時は未使用 |
+| `sent_at` | `TIMESTAMPTZ` | yes | 配信記録時刻 |
+
+### 実装上の注意
+
+- `sent_at DESC` と `quiz_id` の index を持つ
+- `GET /v1/push/feed` は、このテーブルから最新の `channel = 'mock'` かつ `status = 'mock_sent'` の 1 件を返す予定
+- 本番 FCM 配信に必要な `device_tokens` はまだ未実装であり、このテーブルには端末トークンを保存しない
+
 ## Seed JSON と投影モデル
 
 永続テーブルだけ見ると API とのズレが見えにくいため、主要な JSON 形状も整理する。
@@ -110,6 +136,7 @@ flowchart LR
 | `quiz` | 管理 API の完全レコード | `quizzes` のほぼ 1:1 表現 |
 | `publicQuiz` | 公開 API の出力 | `status`, `pushEnabled`, `createdAt`, `updatedAt` を意図的に隠す |
 | `sectionSummary` | 公開 API の集計出力 | `quizzes` から `section` 単位で件数集計した派生モデル |
+| `mockPushFeed` | 公開 API の出力予定 | `push_deliveries` と `quizzes` を JOIN した最新 mock 配信 |
 | `mobile Quiz` | Flutter domain entity | `publicQuiz` を domain に写した形で、管理用メタデータを持たない |
 
 ## 変換フロー
@@ -123,6 +150,8 @@ flowchart TD
     AdminQuiz["quiz"]
     PublicQuiz["publicQuiz"]
     SectionSummary["sectionSummary"]
+    PushDelivery["pushDelivery"]
+    MockPushFeed["mockPushFeed"]
     MobileDto["PublicQuizDto"]
     MobileEntity["Quiz entity"]
 
@@ -132,6 +161,8 @@ flowchart TD
     QuizTable -->|admin API scanQuiz| AdminQuiz
     QuizTable -->|public API scanPublicQuiz| PublicQuiz
     QuizTable -->|aggregate by section| SectionSummary
+    QuizTable -->|mock push dispatch target| PushDelivery
+    PushDelivery -->|latest feed projection| MockPushFeed
     PublicQuiz --> MobileDto
     MobileDto --> MobileEntity
 ```
@@ -141,6 +172,7 @@ flowchart TD
 - seed JSON は「本番シードテンプレート」であり、正本ではない
 - 管理 API は公開状態や push 設定を含む完全モデルを返す
 - 公開 API は利用者に不要な運用メタデータを落として返す
+- Push 通知 mock feed は配信履歴とクイズ題名・本文を合成した投影モデルとして扱う
 - Flutter は公開 API DTO をさらに domain entity へ写像する
 
 ## 非永続・一時モデル
@@ -168,8 +200,10 @@ ADR 0008 と OpenAPI ドラフトには、匿名集計用の `attempts` / `attem
 | `attempts` | Proposed only | `docs/adr/0008-user-attempt-history.md` |
 | `attempt_answers` | Proposed only | `docs/adr/0008-user-attempt-history.md` |
 | `POST /v1/attempts` | OpenAPI draft only | `docs/api/public-quiz-api.yaml` |
+| `device_tokens` | Proposed only | `docs/adr/0007-push-notification-delivery.md` |
+| FCM / cron delivery | Proposed only | `docs/adr/0007-push-notification-delivery.md` |
 
-このため、2026-05-10 時点の実データモデルとしては `quizzes`, `views`, `login_logs` の 3 テーブルだけを正とする。
+このため、2026-05-25 時点の実データモデルとしては `quizzes`, `views`, `login_logs`, `push_deliveries` の 4 テーブルを正とする。
 
 ## 更新ガイド
 
@@ -180,4 +214,5 @@ ADR 0008 と OpenAPI ドラフトには、匿名集計用の `attempts` / `attem
 | migration で新テーブル追加 | 永続テーブル、全体像 |
 | `quizzes` カラム追加・削除 | `quizzes` テーブル、投影モデル |
 | 公開 API のレスポンス変更 | Seed JSON と投影モデル、変換フロー |
+| Push 通知の配信履歴や feed 変更 | `push_deliveries` テーブル、変換フロー、将来モデル |
 | 回答履歴 API を実装 | 将来モデルを実装済みモデルへ昇格 |

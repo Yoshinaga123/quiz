@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect

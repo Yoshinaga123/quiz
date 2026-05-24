@@ -42,9 +42,9 @@ flowchart TD
 | グループ | エンドポイント | 主な処理 |
 | --- | --- | --- |
 | System | `GET /`, `GET /healthz`, `GET/POST /counter` | ヘルスチェック、PV カウンター |
-| Public | `GET /v1/quizzes`, `GET /v1/quizzes/{id}`, `GET /v1/sections` | 公開済みクイズだけを返す読み取り API |
+| Public | `GET /v1/quizzes`, `GET /v1/quizzes/{id}`, `GET /v1/sections`, `GET /v1/push/feed` | 公開済みクイズと mock Push feed を返す読み取り API |
 | Auth | `POST /api/admin/login/verification`, `POST /api/admin/login` | 検証コード発行、JWT 発行 |
-| Admin | `GET/POST /api/admin/quizzes`, `GET/PUT/DELETE /api/admin/quizzes/{id}`, `PATCH /status`, `PATCH /push`, `POST /sync-production` | 管理画面向け CRUD と seed 同期 |
+| Admin | `GET/POST /api/admin/quizzes`, `GET/PUT/DELETE /api/admin/quizzes/{id}`, `PATCH /status`, `PATCH /push`, `POST /sync-production`, `POST /api/admin/push/dispatch`, `GET /api/admin/push/deliveries` | 管理画面向け CRUD、seed 同期、mock Push 手動送信・履歴一覧 |
 
 ## Public API: `GET /v1/quizzes`
 
@@ -76,6 +76,32 @@ sequenceDiagram
 - `status = 'published'` を必ず付与するため、未公開クイズは返らない
 - 一覧レスポンスは `publicQuizListResponse`、個別取得は単一 `publicQuiz` を返す
 - 公開 API の失敗形式は `publicErrorResponse` で、`code` と `message` を返す
+
+## Public API: `GET /v1/push/feed`
+
+```mermaid
+sequenceDiagram
+    participant Mobile as Mobile
+    participant API as handleGetPublicPushFeed
+    participant DB as PostgreSQL
+
+    Mobile->>API: GET /v1/push/feed
+    API->>DB: SELECT latest mock_sent delivery JOIN quizzes
+    alt 配信履歴がない
+        API-->>Mobile: 404 public error (push_feed_not_found)
+    else 最新配信がある
+        DB-->>API: delivery + quiz title/question
+        API->>API: question から notification body を作る
+        API-->>Mobile: 200 pushFeedResponse
+    end
+```
+
+### 実装メモ
+
+- Phase A の Push 通知モック専用エンドポイント
+- 認証なしで呼べるが、返すのは最新の `channel = 'mock'` かつ `status = 'mock_sent'` の 1 件だけ
+- mobile は `deliveryId` を保存し、同じ配信を重複通知しない想定
+- 配信がない場合は `404` と `code = push_feed_not_found` を返す
 
 ## 管理ログインフロー
 
@@ -159,6 +185,7 @@ sequenceDiagram
 - `create` と `update` はどちらも `normalizeQuizPayload` を通し、`options` を JSONB 用に marshal する
 - `delete` は `RowsAffected` を確認して `404` と `204` を分ける
 - `status` と `push` のトグルは `UPDATE ... RETURNING` で更新後の 1 行をそのまま返す
+- `POST /api/admin/push/dispatch` は `pushMu.TryLock()` で同時実行を拒否し、mock 配信履歴を `push_deliveries` に記録する
 - 管理 API の失敗形式は `errorResponse` で、`error` と必要に応じて `detail` を返す
 
 ## Seed 同期リクエスト
@@ -186,4 +213,5 @@ Seed 同期の詳細シーケンスは、図の重複を避けるため `docs/ar
 | ルート追加・削除 | ルーティング一覧、入口図 |
 | 認証方式変更 | 管理ログインフロー、認証付き管理 API |
 | 公開 API の絞り込み条件変更 | Public API セクション |
+| Push mock feed / dispatch の変更 | ルーティング一覧、Public Push feed、認証付き管理 API |
 | Seed 同期の排他制御や生成手順変更 | Seed 同期リクエスト |

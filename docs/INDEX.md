@@ -20,10 +20,15 @@
 | [`./quiz-data-workflow.md`](./quiz-data-workflow.md) | クイズデータの 3 層フロー（候補プール → 本番シード → DB） |
 | [`./firebase-api-key-handling.md`](./firebase-api-key-handling.md) | Firebase API キーと `GoogleService-Info.plist` の扱い方針 |
 | [`./local-https-setup.md`](./local-https-setup.md) | ローカル開発環境の HTTPS 設定（自己署名証明書 + Vite） |
+| [`./counter-api.md`](./counter-api.md) | PV カウンター API（`/counter`、永続化は `views` テーブル） |
+| [`./push-notification-mock.md`](./push-notification-mock.md) | Push 通知 Phase A モック（手動送信 + feed + ローカル通知） |
 | [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |
 | [`./script-learning-tasks.md`](./script-learning-tasks.md) | 追加すると便利な開発スクリプトの学習課題 |
+| [`./backlog.md`](./backlog.md) | 未着手の改善タスク（出典品質・テスト基盤など） |
 | [`./initializer.md`](./initializer.md) | 初期化責務の所在 |
 | [`./late.md`](./late.md) | 遅延読み込みの方針 |
+| [`../backend/.env.example`](../backend/.env.example) | backend 環境変数テンプレート |
+| [`../web/.env.example`](../web/.env.example) | web 環境変数テンプレート |
 
 ## アーキテクチャ決定記録（ADR）
 
@@ -54,7 +59,7 @@
 | [`../web/README.md`](../web/README.md) | ユーザー向け Web アプリ（React + Vite） |
 | [`../web/tests/README.md`](../web/tests/README.md) | `web/` のテスト雛形と有効化手順 |
 | [`../mobile/README.md`](../mobile/README.md) | モバイル版（Flutter + Riverpod） |
-| [`../backend/`](../backend/) | Go API（README は未整備、`main.go` 参照） |
+| [`../backend/README.md`](../backend/README.md) | Go API（Public / Admin / 認証 / Seed 同期） |
 
 ## CI / 運用スクリプト
 

@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { deleteQuiz, syncProductionQuizzes, toggleQuizPush, toggleQuizStatus } from '../api/admin'
+import {
+  deleteQuiz,
+  dispatchMockPush,
+  fetchPushDeliveries,
+  syncProductionQuizzes,
+  toggleQuizPush,
+  toggleQuizStatus,
+} from '../api/admin'
 import { ApiError, getErrorMessage } from '../api/errors'
 import { handleUnauthorized } from '../auth/session'
 import DeleteQuizDialog from '../components/DeleteQuizDialog'
 import JsonQuizPreviewSection from '../components/JsonQuizPreviewSection'
 import { useFlash } from '../contexts/FlashContext'
 import { useQuizzes } from '../hooks/useQuizzes'
-import type { Quiz, QuizSearchParams, QuizSort } from '../types/admin'
+import type { PushDelivery, Quiz, QuizSearchParams, QuizSort } from '../types/admin'
 
 const formatter = new Intl.DateTimeFormat('ja-JP', {
   dateStyle: 'long',
@@ -19,7 +26,7 @@ const DEFAULT_SORT: QuizSort = 'updated_newest'
 const pillButtonClassName =
   'inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-medium transition duration-150 hover:-translate-y-0.5 hover:shadow-float'
 
-type SearchDraft = {
+interface SearchDraft {
   title: string
   section: string
   status: '' | 'published' | 'unpublished'
@@ -113,7 +120,7 @@ function createQueryState(searchParams: URLSearchParams): QuizSearchParams {
   }
 }
 
-function getPaginationItems(currentPage: number, totalPages: number): Array<number | 'ellipsis'> {
+function getPaginationItems(currentPage: number, totalPages: number): (number | 'ellipsis')[] {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, index) => index + 1)
   }
@@ -170,6 +177,9 @@ function QuizListPage() {
   const [quizToDelete, setQuizToDelete] = useState<Quiz | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isSyncingProduction, setIsSyncingProduction] = useState(false)
+  const [pushDeliveries, setPushDeliveries] = useState<PushDelivery[]>([])
+  const [isDispatchingPush, setIsDispatchingPush] = useState(false)
+  const [isLoadingDeliveries, setIsLoadingDeliveries] = useState(false)
   const navigate = useNavigate()
   const { showFlash } = useFlash()
 
@@ -182,6 +192,25 @@ function QuizListPage() {
       handleUnauthorized(error, navigate)
     }
   }, [error, navigate])
+
+  const loadPushDeliveries = async () => {
+    setIsLoadingDeliveries(true)
+    try {
+      const response = await fetchPushDeliveries()
+      setPushDeliveries(response.items)
+    } catch (err) {
+      if (handleUnauthorized(err, navigate)) return
+      showFlash(`Push配信履歴の取得に失敗しました: ${getErrorMessage(err)}`)
+    } finally {
+      setIsLoadingDeliveries(false)
+    }
+  }
+
+  useEffect(() => {
+    void loadPushDeliveries()
+    // 初回表示時だけ履歴を読む。認証エラー処理のため navigate は依存に含める。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate])
 
   const handleFilterSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -269,6 +298,31 @@ function QuizListPage() {
     }
   }
 
+  const handleDispatchMockPush = async () => {
+    const shouldDispatch = window.confirm(
+      'Push が ON かつ公開中のクイズから1件を選び、mock 配信履歴を作成します。続行しますか？',
+    )
+    if (!shouldDispatch) {
+      return
+    }
+
+    setIsDispatchingPush(true)
+    try {
+      const result = await dispatchMockPush()
+      await loadPushDeliveries()
+      showFlash(`mock Push を送信しました: #${result.quizId} ${result.title}`)
+    } catch (err) {
+      if (handleUnauthorized(err, navigate)) return
+      if (err instanceof ApiError && err.status === 422) {
+        showFlash('送信候補がありません。公開中かつ Push ON のクイズを用意してください。')
+        return
+      }
+      showFlash(`mock Push 送信に失敗しました: ${getErrorMessage(err)}`)
+    } finally {
+      setIsDispatchingPush(false)
+    }
+  }
+
   const paginationItems = getPaginationItems(page, totalPages)
 
   return (
@@ -292,6 +346,14 @@ function QuizListPage() {
             {isSyncingProduction ? 'DB反映中...' : 'production.json を DB 反映'}
           </button>
           <button
+            className={`${pillButtonClassName} border border-[#1768ac]/20 bg-[#1768ac]/10 text-[#0f4c81] disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none`}
+            disabled={isDispatchingPush}
+            onClick={() => void handleDispatchMockPush()}
+            type="button"
+          >
+            {isDispatchingPush ? 'mock Push 送信中...' : 'mock Push 送信'}
+          </button>
+          <button
             className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy`}
             onClick={() => void mutate()}
             type="button"
@@ -305,6 +367,61 @@ function QuizListPage() {
             新規作成
           </Link>
         </div>
+      </section>
+
+      <section className="mb-6 rounded-card border border-navy/12 bg-white/86 p-card shadow-card">
+        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="m-0 text-xl font-semibold text-navy">mock Push 配信履歴</h3>
+            <p className="mt-2 mb-0 text-sm text-[#4f5d75]">
+              Push が ON の公開クイズだけが送信候補です。mobile は最新履歴を `/v1/push/feed` から取得します。
+            </p>
+          </div>
+          <button
+            className={`${pillButtonClassName} border border-navy/12 bg-white/92 text-navy disabled:cursor-not-allowed disabled:opacity-55`}
+            disabled={isLoadingDeliveries}
+            onClick={() => void loadPushDeliveries()}
+            type="button"
+          >
+            {isLoadingDeliveries ? '履歴読み込み中...' : '履歴を再読み込み'}
+          </button>
+        </div>
+
+        {pushDeliveries.length === 0 ? (
+          <p className="m-0 rounded-surface border border-dashed border-navy/16 p-4 text-[#4f5d75]">
+            まだ mock Push 配信履歴はありません。
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-collapse">
+              <thead>
+                <tr className="bg-[#f8fafc] text-left text-[0.78rem] uppercase tracking-[0.08em] text-[#4f5d75]">
+                  <th className="border-b border-navy/8 px-3 py-3 font-medium">Delivery</th>
+                  <th className="border-b border-navy/8 px-3 py-3 font-medium">Quiz</th>
+                  <th className="border-b border-navy/8 px-3 py-3 font-medium">Status</th>
+                  <th className="border-b border-navy/8 px-3 py-3 font-medium">Target</th>
+                  <th className="border-b border-navy/8 px-3 py-3 font-medium">Sent At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pushDeliveries.slice(0, 10).map((delivery) => (
+                  <tr className="transition hover:bg-[#f8fafc]" key={delivery.deliveryId}>
+                    <td className="border-b border-navy/8 px-3 py-3 font-semibold text-navy">#{delivery.deliveryId}</td>
+                    <td className="border-b border-navy/8 px-3 py-3">
+                      <div className="grid gap-1">
+                        <strong>#{delivery.quizId} {delivery.title}</strong>
+                        <span className="text-xs text-[#4f5d75]">{delivery.channel}</span>
+                      </div>
+                    </td>
+                    <td className="border-b border-navy/8 px-3 py-3">{delivery.status}</td>
+                    <td className="border-b border-navy/8 px-3 py-3">{delivery.targetCount}</td>
+                    <td className="border-b border-navy/8 px-3 py-3 text-sm">{formatDateTime(delivery.sentAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
 
       <section className="mb-6 rounded-card border border-navy/12 bg-white/86 p-card shadow-card">

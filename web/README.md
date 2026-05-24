@@ -10,19 +10,13 @@
 - セッションごとの正答数・正答率・履歴を **ローカル** に保存する
 - 管理画面 (`admin-web/`) は CRUD のみ、こちらは回答体験のみ、と責務を完全分離する
 
-## 現状（バックエンド未統合）
+## 現状（Public API 接続）
 
-`backend/main.go` は `GET /v1/quizzes` を提供しているが、`web/` はまだ統合していない。
-現在は `src/data/quizzes.ts` に同梱した **starter pack（インライン定義）** を使って単独で動作する。
+`backend/main.go` は `GET /v1/quizzes` を提供している（[ADR 0006](../docs/adr/0006-public-quiz-api.md)）。
+`VITE_API_BASE_URL`（[`web/.env.example`](.env.example) 参照）が設定されている場合、`useQuizCatalog` は `fetchQuizzes()` 経由で `/v1/quizzes` を取得する。
 
-API 統合の際は以下が必要になる。
-
-1. `src/hooks/useQuizCatalog.ts` を非同期対応に書き換える（現状は同期 `Quiz[]` 返し。`fetchQuizzes()` は `Promise<Quiz[]>` のため、`useEffect + state` か SWR 等への変更が必要）
-2. `src/api/quiz.ts`（実装済み）の `fetchQuizzes()` を hook から呼び出す
-3. ローディング・エラー状態を呼び出し元の画面に伝播させる
-4. `STARTER_QUIZZES` をフォールバックとして残すか削除するかを決める
-
-の順で移行できるよう、データ取得は単一エントリ `loadQuizzes()` に閉じてある。
+未設定時、または API 取得に失敗した場合は `src/data/quizzes.ts` の **starter pack（インライン定義）** にフォールバックする。
+ホーム画面では API 読み込み中・API 利用中・フォールバック中の状態を表示する。
 
 ## スクリプト
 
@@ -68,3 +62,4 @@ src/
 - 管理画面: `../admin-web/`
 - モバイル: `../mobile/`
 - バックエンド: `../backend/`
+- 公開 API 仕様: `../docs/api/public-quiz-api.yaml`

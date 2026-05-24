@@ -11,7 +11,7 @@ const pillButtonClassName =
   'inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition duration-150 hover:-translate-y-0.5 hover:shadow-float disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none'
 
 function HomePage() {
-  const quizzes = useQuizCatalog()
+  const { quizzes, isLoading, errorMessage, source, reload } = useQuizCatalog()
   const { records } = useHistory()
   const navigate = useNavigate()
   const [section, setSection] = useState<string | null>(null)
@@ -45,6 +45,20 @@ function HomePage() {
       </section>
 
       <section className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card">
+        {isLoading || errorMessage !== null || source === 'api' ? (
+          <div className="mb-5 rounded-surface border border-navy/10 bg-white/70 px-4 py-3 text-sm text-[#4f5d75]">
+            {isLoading ? 'Public API からクイズを読み込み中です。' : null}
+            {!isLoading && source === 'api' ? 'Public API のクイズデータで動作中です。' : null}
+            {!isLoading && errorMessage !== null ? (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span>Public API から取得できないため starter pack で続行しています。</span>
+                <button className="font-semibold text-accent hover:underline" onClick={reload} type="button">
+                  再試行
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         <div className="grid gap-stack">
           <div>
             <h2 className="m-0 text-[1.15rem] font-semibold text-navy">セクションを選ぶ</h2>

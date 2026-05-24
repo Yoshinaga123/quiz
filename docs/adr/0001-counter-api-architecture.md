@@ -21,20 +21,20 @@ The endpoint contract is:
 We adopt the following design:
 
 1. Persistence uses PostgreSQL.
-- Store counter in table `counters` with fixed record `id = 1`.
-- Initialize schema and seed row at startup if missing.
+- Store the PV counter in table `views` with fixed record `id = 1`.
+- Initialize schema and seed row via migration `001_create_tables.up.sql` at startup.
 
 2. Concurrency control is delegated to database atomic update.
-- Use `UPDATE counters SET count = count + 1 WHERE id = 1 RETURNING count`.
+- Use `UPDATE views SET count = count + 1 WHERE id = 1 RETURNING count`.
 - Do not use in-process `sync.Mutex` for this API path.
 
-3. CORS uses explicit origin whitelist.
-- Allow only known development origins.
-- Do not reflect arbitrary `Origin` values in production behavior.
+3. CORS allows browser access from local frontend origins in development.
+- Current implementation reflects the request `Origin` header in `Access-Control-Allow-Origin` (see `withCORS` in `backend/main.go`).
+- Production deployments should revisit an explicit origin allowlist before public exposure.
 
 4. Response format is unified as JSON.
 - Success: `{ "count": number }`
-- Error: `{ "message": string }`
+- Error (admin/system handlers): `{ "error": string, "detail"?: string }`
 
 ## Consequences
 
@@ -42,7 +42,7 @@ We adopt the following design:
 
 - Count survives process restarts.
 - Concurrent updates remain consistent using DB atomic semantics.
-- Clear security posture for cross-origin browser access.
+- Local development works across varying Vite dev-server ports via Origin reflection.
 - Stable response shape for frontend error handling.
 
 ### Negative
@@ -60,8 +60,10 @@ We adopt the following design:
 - Rejected due to complexity around file locking and corruption handling under concurrency.
 
 3. Wildcard or origin-reflection CORS policy
-- Rejected for production due to broader attack surface.
+- Rejected as the long-term production default due to broader attack surface.
+- Accepted temporarily for local development because Vite may switch ports (for example 5173 to 5174).
 
 ## Notes
 
-This ADR documents architecture and operation policy. Detailed implementation examples are described in [Counter API implementation notes](../counter-api.md).
+- The HTTP path remains `/counter`, but the persistence table is named `views` (PV counter semantics).
+- This ADR documents architecture and operation policy. Detailed implementation notes are in [Counter API implementation notes](../counter-api.md).

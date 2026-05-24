@@ -13,7 +13,7 @@ function QuizResultPage() {
   const { recordId } = useParams<{ recordId: string }>()
   const { records } = useHistory()
   const location = useLocation()
-  const quizzes = useQuizCatalog()
+  const { quizzes } = useQuizCatalog()
 
   const fallbackRecord = (location.state as { record?: HistoryRecord } | null)?.record
   const record = useMemo<HistoryRecord | undefined>(() => {

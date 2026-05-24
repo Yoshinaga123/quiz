@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz_mobile/layers/data/service/local_notification_service.dart';
+import 'package:quiz_mobile/layers/data/service/push_feed_poller.dart';
 import 'package:quiz_mobile/layers/domain/entity/quiz.dart';
+import 'package:quiz_mobile/layers/domain/errors/quiz_failure.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/view/quiz_details_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/list_page/notifier/quiz_list_notifier.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/list_page/notifier/quiz_list_state.dart';
+import 'package:quiz_mobile/layers/presentation/using_riverpod/remote_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QuizListPage extends StatelessWidget {
   const QuizListPage({super.key});
@@ -22,13 +27,65 @@ class _QuizListView extends ConsumerStatefulWidget {
 }
 
 class _QuizListViewState extends ConsumerState<_QuizListView> {
+  final LocalNotificationService _notificationService =
+      LocalNotificationService();
+  PushFeedPoller? _pushFeedPoller;
+  bool _isCheckingPushFeed = false;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(quizListStateProvider.notifier).load();
+      _initializePushMock();
     });
+  }
+
+  Future<void> _initializePushMock() async {
+    await _notificationService.initialize(
+      onTap: (quizId) {
+        if (!mounted) return;
+        Navigator.of(context).push(QuizDetailsPage.route(quizId: quizId));
+      },
+    );
+
+    final preferences = await SharedPreferences.getInstance();
+    _pushFeedPoller = PushFeedPoller(
+      apiClient: ref.read(quizApiClientProvider),
+      notificationService: _notificationService,
+      preferences: preferences,
+    );
+    await _checkPushFeed(showResult: false);
+  }
+
+  Future<void> _checkPushFeed({required bool showResult}) async {
+    final poller = _pushFeedPoller;
+    if (poller == null || _isCheckingPushFeed) return;
+
+    setState(() {
+      _isCheckingPushFeed = true;
+    });
+
+    try {
+      final feed = await poller.checkLatest();
+      if (!mounted || !showResult) return;
+      final message = feed == null
+          ? 'mock Push はまだありません。'
+          : '最新 mock Push を確認しました: ${feed.title}';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    } on QuizFailure catch (failure) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('mock Push の確認に失敗しました: ${failure.message ?? failure}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCheckingPushFeed = false;
+        });
+      }
+    }
   }
 
   @override
@@ -55,6 +112,15 @@ class _QuizListViewState extends ConsumerState<_QuizListView> {
           'Quiz Mobile',
           style: theme.textTheme.titleLarge,
         ),
+        actions: [
+          IconButton(
+            tooltip: 'mock Push を確認',
+            onPressed: _isCheckingPushFeed
+                ? null
+                : () => _checkPushFeed(showResult: true),
+            icon: const Icon(Icons.notifications_active_outlined),
+          ),
+        ],
       ),
       body: DecoratedBox(
         decoration: const BoxDecoration(
