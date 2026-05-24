@@ -1,0 +1,1 @@
+/home/yoshinaga_kosuke/workspace/quiz/scripts/target_file.txt

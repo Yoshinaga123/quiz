@@ -6,8 +6,9 @@ import type { Quiz } from '../types/quiz'
 /**
  * 公開クイズデータの取得エントリポイント。
  *
- * 現状は starter pack をそのまま返す。バックエンドに `GET /api/quizzes`
- * が追加されたら、ここを fetch + zod 検証に置き換える。
+ * 現状は starter pack を同期で返す。`GET /v1/quizzes` 統合時は
+ * このフックを非同期（useEffect + state か SWR 等）に書き直す必要がある。
+ * fetchQuizzes() は Promise<Quiz[]> を返すため単純な置換では済まない。
  */
 function loadQuizzes(): Quiz[] {
   const parsed = quizzesSchema.safeParse(STARTER_QUIZZES)

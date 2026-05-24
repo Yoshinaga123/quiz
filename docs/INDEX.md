@@ -2,6 +2,14 @@
 
 クイズアプリのドキュメント一覧。リポジトリ全体の航海図として使う。
 
+## アーキテクチャ
+
+| ドキュメント | 概要 |
+| --- | --- |
+| [`./architecture/overview.md`](./architecture/overview.md) | システム構成概要（コンポーネント図・API 一覧・Seed 同期フロー） |
+| [`./architecture/backend-flow.md`](./architecture/backend-flow.md) | Go API の入口処理、公開 API、管理ログイン、認証付き CRUD の流れ |
+| [`./architecture/data-model.md`](./architecture/data-model.md) | 永続テーブル、seed JSON、公開 API への投影モデルの関係 |
+
 ## プロジェクト全体
 
 | ドキュメント | 概要 |
@@ -10,6 +18,10 @@
 | [`./implement-policy.md`](./implement-policy.md) | 実装ポリシー（Zod 検証、SPA 採用、Google Search Central 対応など） |
 | [`./validation-policy.md`](./validation-policy.md) | フロント／バックの入力検証ポリシー |
 | [`./quiz-data-workflow.md`](./quiz-data-workflow.md) | クイズデータの 3 層フロー（候補プール → 本番シード → DB） |
+| [`./firebase-api-key-handling.md`](./firebase-api-key-handling.md) | Firebase API キーと `GoogleService-Info.plist` の扱い方針 |
+| [`./local-https-setup.md`](./local-https-setup.md) | ローカル開発環境の HTTPS 設定（自己署名証明書 + Vite） |
+| [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |
+| [`./script-learning-tasks.md`](./script-learning-tasks.md) | 追加すると便利な開発スクリプトの学習課題 |
 | [`./initializer.md`](./initializer.md) | 初期化責務の所在 |
 | [`./late.md`](./late.md) | 遅延読み込みの方針 |
 

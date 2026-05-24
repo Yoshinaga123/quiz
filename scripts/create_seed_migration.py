@@ -2,18 +2,38 @@ import argparse
 import os
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
+# This line resolves the root dir of a project by navigating up two levels from the current file.
+# __file__ represents the path to the current file path.
+# .parent goes up one dir
+# This pattern is more robust than os.getcwd() because it works regardless of where you launch the script from.
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).parent.parent
+
+# The paths are being concatenated using the `/` operator in `Pathlib`
+LOGGER_PATH = ROOT_DIR / 'scripts' / 'create_seed_migration.log'
 DEFAULT_JSON = ROOT_DIR / 'backend' / 'seeds' / 'quizzes.production.json'
 DEFAULT_MIGRATIONS_DIR = ROOT_DIR / 'backend' / 'migrations'
 GENERATOR = ROOT_DIR / 'scripts' / 'generate_migration.py'
 
+# This is a type-annotated function of a function that writes log messages
+# None: No return value ()function with only side effects
+# strftime is abbreviation for "string format time"
+# datetime.now() Retrieves the current system date and time as a datetime object.
+def write_log(message: str) -> None:
+  timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+  try:
+    with LOGGER_PATH.open('a', encoding='utf-8') as log_file:
+      log_file.write(f'[{timestamp}] {message}\n')
+  except OSError as e:
+    print(f'Failed to write log: {e}', file=sys.stderr)
 
+# This function parses command-line arguments and returns them as a Namespace object.
 def parse_args() -> argparse.Namespace:
   parser = argparse.ArgumentParser(
-      description='Create quiz seed migrations with golang-migrate and fill them from JSON.',
+      description='Create quiz seed migrations with golang-migrate and fill them from JSON. golang-migrateを使ってクイズのシードマイグレーションを作成し、JSONから内容を埋める。',
   )
   parser.add_argument(
       '--input',
@@ -119,8 +139,10 @@ def main() -> None:
   migrations_dir = Path(args.dir).resolve()
 
   if not input_path.exists():
+    write_log(f'ERROR: Seed JSON not found: {input_path}')
     raise FileNotFoundError(f'Seed JSON not found: {input_path}')
   if not migrations_dir.exists():
+    write_log(f'ERROR: Migration directory not found: {migrations_dir}')
     raise FileNotFoundError(f'Migration directory not found: {migrations_dir}')
 
   up_path: Path | None = None
@@ -135,11 +157,12 @@ def main() -> None:
       down_path = None
     else:
       down_path.write_text(generate_sql('down', input_path), encoding='utf-8')
-  except Exception:
+  except Exception as e:
     if up_path and up_path.exists():
       up_path.unlink()
     if down_path and down_path.exists():
       down_path.unlink()
+    write_log(f'ERROR: {e}')
     raise
 
   print(f'created: {up_path}')

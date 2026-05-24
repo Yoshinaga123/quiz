@@ -1,6 +1,7 @@
 import { ApiError } from './errors'
+import { buildApiUrl } from './client'
 
-const COUNTER_URL = 'http://localhost:8082/counter'
+const COUNTER_URL = buildApiUrl('/counter')
 
 export interface CounterResponse {
     count: number

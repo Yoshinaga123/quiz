@@ -176,6 +176,16 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 - ゴルーチンは `context` でキャンセル可能にする
 - 責務でパッケージを分ける
 
+## C++原則
+C++ Core Guidelines に準拠する。
+
+- 定数は `#define` を使わず `constexpr` で定義する（Con.5, ES.31）
+- `enum class` を使う。単純な `enum` は使わない（Enum.1, Enum.3）
+- `enum class` の基底型はデフォルト（`int`）を使い、変える理由がある場合のみ変更する（Enum.6）
+- 外部に公開しない要素（定数・関数・型）はすべて無名名前空間に入れる（SF.22）
+- 変数名の長さはスコープの大きさに比例させる（NL.7）
+- 一貫した命名スタイルを使う（NL.8）
+
 ## ファイル・コンポーネント設計の方針
 - 1ファイル1コンポーネントを原則とする
 - ロジックはカスタムフックに切り出す

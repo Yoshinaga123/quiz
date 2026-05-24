@@ -7063,6 +7063,3494 @@
       "correctAnswerIndex": 1,
       "explanation": "正解は `B`。標準的な Python の対話モードでは、`_` は**最後に評価されて表示された式の結果**を自動的に保持する特別な名前として使われる。たとえば `2 + 3` を評価して `5` が表示された直後なら、`_ * 2` のようにしてその結果を再利用できる。これは REPL 特有の便利機能であり、通常のスクリプト中で同じ意味を持つわけではない。",
       "source": "Python tutorial / interactive calculator"
+    },
+    {
+      "id": 446,
+      "section": "セクション125: Pascal / Free Pascal Compiler 基礎",
+      "title": "Free Pascal の \"Free\" の意味",
+      "question": "「Free Pascal Compiler」の「Free」が意味するものとして、最も正確な説明はどれですか？",
+      "code": "Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64",
+      "options": [
+        "無料（価格ゼロ）のみを意味する",
+        "自由（オープンソース・GPL）のみを意味する",
+        "無料と自由（オープンソース）の両方を意味する",
+        "フリーウェアとして配布されているが、ソースコードは非公開である"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "「Free」は「無料（price-free）」と「自由（freedom）」の両方を意味します。Free Pascal は GPL ライセンスのオープンソースコンパイラであり、誰でも無料で入手・使用・改変・再配布できます。ソースコードも公開されています。",
+      "source": "Free Pascal project / GNU GPL"
+    },
+    {
+      "id": 447,
+      "section": "セクション126: Pascal / Free Pascal Compiler 基礎",
+      "title": "バージョン文字列の +dfsg-32 の意味",
+      "question": "`Free Pascal Compiler version 3.2.2+dfsg-32` における `+dfsg-32` の意味として正しいのはどれですか？",
+      "code": "Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64",
+      "options": [
+        "コンパイラが使用するメモリ上限が 32MB であることを示す",
+        "Debian が非フリー素材を除去してパッケージングした印で、-32 は Debian 側のパッケージリビジョン番号",
+        "コンパイラのデバッグシンボルフラグ（32 ビットデバッグモード）",
+        "x86_64 の 32 ビット互換モードでビルドされたことを示す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`+dfsg` は「Debian Free Software Guidelines」の略で、Debian/Ubuntu がパッケージングする際に非フリーなファイルを取り除いたことを示す印です。`-32` はその後に Debian 側が加えたパッケージ修正の回数（リビジョン番号）で、メモリやビット数とは無関係です。公式サイトから直接入手したバイナリにはこの表記は付きません。",
+      "source": "Debian Policy Manual / DFSG"
+    },
+    {
+      "id": 448,
+      "section": "セクション127: Pascal / Free Pascal Compiler 基礎",
+      "title": "Pascal for ループのコンパイルエラー",
+      "question": "以下の Pascal コードがコンパイルエラーになる主な原因はどれですか？",
+      "code": "begin\n  for i := 1 to 10 do\n    writeln(i);\nend.",
+      "options": [
+        "`writeln` は Pascal では使用できない手続きである",
+        "ループカウンタ `i` が `var` セクションで宣言されていない",
+        "for ループのブロックを `begin`/`end` で囲んでいない",
+        "プログラム末尾のピリオド `.` が不要である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Pascal では変数を使う前に `var` セクションで型宣言が必要です。`i` を宣言しないまま for ループで使うと `Identifier not found \"i\"` / `Illegal counter variable` などのエラーが発生します。正しくは `var i: integer;` を `begin` の前に追加します。`writeln` は標準手続きで問題なく使用でき、末尾のピリオドも Pascal プログラムの終端として必須です。",
+      "source": "Free Pascal / Pascal Language Reference"
+    },
+    {
+      "id": 449,
+      "section": "セクション128: Pascal / Python 比較",
+      "title": "Pascal の for 文の特性",
+      "question": "Pascal の for 文について正しいものはどれか。",
+      "code": "for i := 1 to 10 do\n  writeln(i);",
+      "options": [
+        "反復ステップを自由に定義できる",
+        "文字列やリストを直接反復できる",
+        "停止条件を定義できない",
+        "反復ステップが1固定で、結果的に常に等差数列になる"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Pascal の for 文は `for i := 1 to 10 do` のように開始値と終了値は定義できるが、ステップは常に1（または `downto` で-1）固定。そのため結果的に常に等差数列となる。これが Python の公式ドキュメントで「like in Pascal」と例示された理由。",
+      "source": "Python official docs / Pascal Language Reference"
+    },
+    {
+      "id": 450,
+      "section": "セクション129: Pascal / Python 比較",
+      "title": "Pascal における ordinal 型",
+      "question": "Pascal における ordinal 型として正しいものはどれか。",
+      "code": "",
+      "options": [
+        "real（浮動小数点）",
+        "複素数",
+        "boolean",
+        "配列"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "ordinal 型とは「型として大小関係が定義されており、かつ次の値・前の値が定まる型」のこと。boolean は `false < true` という順序が定義されているため ordinal 型。real は大小関係はあるが「次の値」が定まらないため ordinal 型ではない。複素数は大小関係自体が定義できないため ordinal 型ではない。",
+      "source": "Pascal Language Reference"
+    },
+    {
+      "id": 451,
+      "section": "セクション130: Pascal / Python 比較",
+      "title": "Python のシーケンス型",
+      "question": "次のうち Python のシーケンスとして正しいものをすべて含む選択肢はどれか。",
+      "code": "",
+      "options": [
+        "整数・浮動小数点・複素数",
+        "整数・文字列・辞書",
+        "リスト・文字列・タプル・range",
+        "リスト・辞書・集合"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Python のシーケンスは「順序を持ち、インデックスでアクセスできるデータ構造」。リスト・文字列・タプル・range が該当する。辞書（dict）は Python 3.7 以降で挿入順を保持するが、厳密にはシーケンス型ではない。集合（set）は順序を持たないためシーケンスではない。",
+      "source": "Python official docs / Data Model"
+    },
+    {
+      "id": 452,
+      "section": "セクション131: Pascal / Python 比較",
+      "title": "C と Pascal の for 文の共通点",
+      "question": "C と Pascal の for 文の共通点として正しいものはどれか。",
+      "code": "",
+      "options": [
+        "反復ステップが1固定である",
+        "文字列を直接反復できる",
+        "停止条件を定義できない",
+        "扱えるのは基本的に数値のみである"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "C も Pascal も for 文で扱えるのは基本的に数値のみ。C はステップを自由に定義できる点で Pascal より柔軟だが、数値しか扱えないという制約は共通している。Python はリストや文字列などあらゆるシーケンスを直接反復できる点で両者と本質的に異なる。",
+      "source": "C / Pascal / Python 言語仕様比較"
+    },
+    {
+      "id": 453,
+      "section": "セクション132: Pascal / Python 比較",
+      "title": "コードの言語識別",
+      "question": "次のコードはどの言語で書かれたものか。",
+      "code": "for i := 0 to 9 do\n  writeln(i);",
+      "options": [
+        "C",
+        "Python",
+        "Fortran",
+        "Pascal"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`:=` は Pascal の代入演算子、`to` は終了値の指定、`writeln` は Pascal の標準出力手続き。C は `for (int i = 0; i < 10; i++)` という構文、Python は `for i in range(10):` という構文で書く。",
+      "source": "Pascal Language Reference"
+    },
+    {
+      "id": 454,
+      "section": "セクション133: Pascal / Python 比較",
+      "title": "Python の for 文が very-high-level な理由",
+      "question": "Python の for 文が「very-high-level」と言われる理由として最も適切なものはどれか。",
+      "code": "for fruit in [\"apple\", \"banana\", \"cherry\"]:\n    print(fruit)",
+      "options": [
+        "反復ステップを自由に定義できるから",
+        "数値の等差数列を高速に処理できるから",
+        "C や Pascal と同じ構文で書けるから",
+        "開始値・終了値・反復ステップを一切指定せずにシーケンスをそのまま反復できるから"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Python の for 文は数値のカウンターという概念が不要で、シーケンスの要素をそのまま取り出せる。C や Pascal がカウンター変数の管理をプログラマーに委ねているのに対し、Python はその抽象化を言語レベルで実現している点が very-high-level たる所以。",
+      "source": "Python official docs / Guido van Rossum"
+    },
+    {
+      "id": 455,
+      "section": "セクション134: Python 設計思想",
+      "title": "TIMTOWTDI と Python の設計哲学の対比",
+      "question": "Perl のモットー TIMTOWTDI（There's More Than One Way To Do It）と Python の設計思想の対比として最も適切なものはどれか。",
+      "code": "# Python の Zen より\n# There should be one-- and preferably only one --obvious way to do it.",
+      "options": [
+        "Perl は一貫性を重視し、Python は柔軟性を重視する",
+        "Perl は初心者向けで、Python は上級者向けである",
+        "Perl はオープンソースではなく、Python はオープンソースである",
+        "Perl は多様性・柔軟性を重視し、Python は一つの明確な方法を推奨する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Larry Wall は「プログラマーはクリエイティブでありたいと思っており、コードを書く理由は人それぞれ異なる」という考えから Perl に複数の方法を用意した。一方 Python は Guido van Rossum が「一つの明確な方法があるべきだ（There should be one obvious way to do it）」という思想で設計しており、両者の設計哲学は対照的。これは Python の for 文がシーケンスをシンプルに反復する唯一の方法を提供していることにも表れている。",
+      "source": "The Zen of Python / Larry Wall / Perl design philosophy"
+    },
+    {
+      "id": 456,
+      "section": "セクション135: Python GIL",
+      "title": "GIL の基本的な説明",
+      "question": "GIL（Global Interpreter Lock）の説明として最も正しいものはどれか。",
+      "code": "",
+      "options": [
+        "CPython のすべてのオブジェクトに個別にかけられるロック",
+        "マルチプロセス間でメモリを共有するための仕組み",
+        "Python インタープリター全体にかけられた単一のロックで、同時に実行できるスレッドを1つに制限する",
+        "I/O バウンドな処理を高速化するための非同期処理の仕組み"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "GIL はインタープリター全体にかかる単一のロックで、Python バイトコードを実行するには必ずこのロックを取得する必要がある。そのため複数のスレッドが存在しても同時に実行できるのは常に1つのみとなる。オブジェクトごとのロックではなく、インタープリター全体への単一ロックという点がポイント。",
+      "source": "CPython internals / PEP 703"
+    },
+    {
+      "id": 457,
+      "section": "セクション136: Python GIL",
+      "title": "GIL が導入された理由",
+      "question": "GIL が導入された根本的な理由として最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "マルチコア CPU を効率的に活用するため",
+        "非同期処理を簡単に実装するため",
+        "シングルスレッドのパフォーマンスを下げるため",
+        "参照カウントによるメモリ管理をスレッドセーフにするため"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "CPython はメモリ管理に参照カウントを使用している。複数のスレッドが同時に参照カウントを変更するとメモリの破壊やクラッシュが発生する。オブジェクトごとにロックをかける方法もあるが大幅な性能低下を招くため、インタープリター全体への単一ロック（GIL）という解決策が採用された。",
+      "source": "CPython internals / Python FAQ"
+    },
+    {
+      "id": 458,
+      "section": "セクション137: Python GIL",
+      "title": "GIL の影響を最も受けるワークロード",
+      "question": "GIL の影響を最も強く受けるワークロードはどれか。",
+      "code": "",
+      "options": [
+        "ファイルの読み書きを行う I/O バウンドな処理",
+        "ネットワークリクエストを大量に行う処理",
+        "asyncio を使った非同期処理",
+        "複数スレッドで重い計算を行う CPU バウンドな処理"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "GIL は I/O 待ち中に解放されるため、I/O バウンドな処理や asyncio への影響は小さい。一方 CPU バウンドな処理では GIL が解放されないため、マルチスレッドにしても並列実行ができず性能向上が見込めない。これが GIL の最大の問題点とされている。",
+      "source": "Python threading docs / CPython internals"
+    },
+    {
+      "id": 459,
+      "section": "セクション138: Python GIL",
+      "title": "CPU バウンド処理の真の並列実行",
+      "question": "CPU バウンドな処理を Python で真の並列実行する最も適切な方法はどれか。",
+      "code": "",
+      "options": [
+        "threading モジュールでスレッド数を増やす",
+        "asyncio で非同期処理を使う",
+        "multiprocessing モジュールでプロセスを分割する",
+        "time.sleep() でスレッドを一時停止する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "multiprocessing はプロセスごとに独自の Python インタープリターと GIL を持つため、マルチコア CPU を活かした真の並列実行が可能。threading は GIL の制約を受けるため CPU バウンドな処理では効果がない。asyncio はシングルスレッドで動作するため並列計算には向かない。",
+      "source": "Python multiprocessing docs"
+    },
+    {
+      "id": 460,
+      "section": "セクション139: Python GIL",
+      "title": "NumPy が GIL を回避できる理由",
+      "question": "NumPy や Pandas が GIL の影響を回避できる理由として正しいものはどれか。",
+      "code": "",
+      "options": [
+        "Python ではなく Java で実装されているため",
+        "GIL を完全に削除した独自のインタープリターを使うため",
+        "asyncio と組み合わせて使うことで自動的に GIL が解放されるため",
+        "C や Cython で実装されており、計算中に GIL を手動で解放できるため"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "NumPy や Pandas などの科学計算ライブラリは C や Cython で実装されており、重い計算処理中に GIL を手動で解放できる。これにより他の Python スレッドと並列に処理を実行することが可能となる。これが Python の科学計算エコシステムが GIL の制約を実用上回避できている理由。",
+      "source": "NumPy internals / Cython docs"
+    },
+    {
+      "id": 461,
+      "section": "セクション140: Python GIL",
+      "title": "Python 3.13 以降の GIL の扱い",
+      "question": "Python 3.13 以降の GIL に関する説明として正しいものはどれか。",
+      "code": "",
+      "options": [
+        "GIL が完全に削除されデフォルトでフリースレッドになった",
+        "GIL は Python 3.13 で廃止が決定し 3.14 で完全削除される",
+        "GIL の影響を受けるのは CPU バウンドな処理のみに限定された",
+        "PEP 703 により GIL がオプション化され、フリースレッドビルドが導入されたが標準ビルドは引き続き GIL を使用する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Python 3.13 では PEP 703 により GIL をオプションとするフリースレッドビルドが導入された。しかし標準ビルドは引き続き GIL を使用しており、エコシステム（NumPy・Pandas・TensorFlow など多数の C 拡張）がフリースレッドに対応するまでこの状態が続く。Python 3.14 ではフリースレッドビルドが実験的段階を超えて進化する予定。",
+      "source": "PEP 703 / Python 3.13 release notes"
+    },
+    {
+      "id": 462,
+      "section": "セクション141: CuPy",
+      "title": "CuPy の最大の特徴",
+      "question": "CuPy の最大の特徴として最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "Python コードを C++ に変換して CPU 上で高速実行する",
+        "NumPy のコードを JIT コンパイルして高速化する",
+        "GPU プログラミングのための全く新しい API を提供する",
+        "NumPy/SciPy と同じ API を GPU 上で動かせるようにする"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "CuPy の最大の特徴は `numpy` を `cupy` に置き換えるだけで GPU 上で実行できる点。GPU プログラミングに必要な専門知識（CUDA など）がなくても NumPy と同じ API で使えるため、学習コストが非常に低い。",
+      "source": "CuPy documentation / PyCon"
+    },
+    {
+      "id": 463,
+      "section": "セクション142: CuPy",
+      "title": "import cupy as np の動作",
+      "question": "次のコードについて正しい説明はどれか。",
+      "code": "import cupy as np\nresult = np.array([1, 2, 3]) * 2",
+      "options": [
+        "このコードは CPU 上で実行される",
+        "このコードはエラーになる",
+        "NumPy と CuPy は全く異なる API のため動作しない",
+        "`import cupy as np` とすることで NumPy と同じ書き方のまま GPU 上で実行できる"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "CuPy は NumPy と同じ API を提供しているため `import cupy as np` とエイリアスを設定するだけで既存の NumPy コードをほぼそのまま GPU 上で実行できる。これが CuPy の設計思想の核心。",
+      "source": "CuPy documentation"
+    },
+    {
+      "id": 464,
+      "section": "セクション143: CuPy",
+      "title": "CuPy が GIL の制約を受けにくい理由",
+      "question": "CuPy が GIL の制約を受けにくい理由として最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "CuPy は GIL を独自に削除した特別な Python インタープリターを使うから",
+        "CuPy はマルチプロセスで動作するから",
+        "CuPy は asyncio を使って非同期処理をするから",
+        "計算処理を CPU ではなく GPU 側に逃がすため、GIL の制約を受けずに並列計算できるから"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "GIL は CPython のスレッドによる CPU 並列処理を制限するものだが、CuPy はそもそも計算処理を GPU 上で行うため GIL の制約を実質的に回避できる。これは NumPy などの C 拡張ライブラリが GIL を解放して並列実行できることと同様の考え方。",
+      "source": "CuPy internals / CPython GIL"
+    },
+    {
+      "id": 465,
+      "section": "セクション144: CuPy",
+      "title": "CuPy の開発背景",
+      "question": "CuPy の開発背景として正しいものはどれか。",
+      "code": "",
+      "options": [
+        "Microsoft が Windows ユーザー向けに開発したライブラリ",
+        "Nvidia が CUDA の普及のために開発したライブラリ",
+        "Python コミュニティが公式に開発したライブラリ",
+        "日本の AI スタートアップ Preferred Networks が 2015 年にオープンソース化したライブラリ"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "CuPy は日本の AI スタートアップ企業 Preferred Networks によって開発され、2015 年にオープンソース化された。現在は Nvidia や AMD のエンジニアを含む世界 300 人以上のコントリビューターによるコミュニティで開発されており、ベンダーニュートラルな運営を心がけている。",
+      "source": "CuPy project history / PyCon"
+    },
+    {
+      "id": 466,
+      "section": "セクション145: CuPy",
+      "title": "Guido が示した CuPy の将来への提案",
+      "question": "Guido が CuPy のプレゼンを聞いて述べた将来への提案として最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "CuPy を Python の標準ライブラリに組み込むべきだ",
+        "CuPy の API を NumPy から切り離して独自に発展させるべきだ",
+        "GPU サポートは Python コア側で実装すべきでライブラリには任せるべきでない",
+        "将来的に CuPy の実装を活用して GPU サポートが NumPy 自体に統合される可能性がある"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Guido は Python コアとライブラリの分離を評価しつつも「将来的に CuPy や似たプロジェクトを利用して GPU サポートが NumPy 自体に入る可能性もある」と述べた。これは CuPy の実装を NumPy 本体に取り込むことでより多くのユーザーが GPU の恩恵を受けられるというビジョンを示している。",
+      "source": "PyCon / Guido van Rossum"
+    },
+    {
+      "id": 467,
+      "section": "セクション146: CuPy",
+      "title": "CuPy のサポート内容（誤っているものを選ぶ）",
+      "question": "CuPy がサポートしている内容として誤っているものはどれか。",
+      "code": "",
+      "options": [
+        "線形代数・FFT・画像処理などの幅広いアルゴリズム",
+        "最新の GPU だけでなく 10 年前の GPU にも対応",
+        "scikit-learn・spaCy・Dask など業界標準フレームワークとの連携",
+        "NumPy/SciPy API のカバレッジは同種ライブラリの中で最も低い"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "正しくは「同種のライブラリの中で NumPy と SciPy API のカバレッジが最も高い」。CuPy は幅広い API カバレッジを持つことが強みの一つであり、研究から本番環境まで信頼できる選択肢となっている点が強調されていた。",
+      "source": "CuPy documentation / PyCon"
+    },
+    {
+      "id": 468,
+      "section": "セクション147: Python エコシステム",
+      "title": "Guido が urllib3 に当初違和感を持った理由",
+      "question": "Guido が urllib3 に当初違和感を持った理由として最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "urllib3 が Python 2 にしか対応していなかったから",
+        "urllib3 がオープンソースではなかったから",
+        "urllib3 が GIL の問題を解決できなかったから",
+        "標準ライブラリにすでに urllib と urllib2 が存在しているのに、サードパーティが urllib3 と名乗ったから"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "urllib・urllib2 は Python 標準ライブラリとして存在していた。そこにサードパーティライブラリが「urllib3」と名乗ったことに Guido は違和感を覚えた。しかし後に Web の進化は標準ライブラリより速く、サードパーティが柔軟に対応できることの価値を認め「私が間違っていた」と率直に認めた。",
+      "source": "PyCon / Guido van Rossum"
+    },
+    {
+      "id": 469,
+      "section": "セクション148: Python 実用例",
+      "title": "電子辞書のリバースエンジニアリングで Python が活躍した場面",
+      "question": "電子辞書のリバースエンジニアリングで Python が最も活躍した場面はどれか。",
+      "code": "",
+      "options": [
+        "Linux カーネルのコンパイル",
+        "ブートローダーの設計",
+        "UART によるシリアル通信",
+        "SoC のレジスタ値のビット操作・分解・結合・送信の自動化"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "SoC のレジスタは 32bit の固定幅整数に複数の設定値が詰め込まれており、フィールドごとに分解・変更・再結合・送信という繰り返しの作業が必要だった。これを手動で行うのは非常に困難なため Python で自動化するツールを作成した。これが発表の核心部分。",
+      "source": "PyCon / reverse engineering session"
+    },
+    {
+      "id": 470,
+      "section": "セクション149: Python 型システム",
+      "title": "comtypes への静的型付け導入のメリット（誤りを選ぶ）",
+      "question": "comtypes への静的型付け導入の主なメリットとして誤っているものはどれか。",
+      "code": "",
+      "options": [
+        "エディタでの自動補完が効くようになる",
+        "型の不一致を実行前に検出できる",
+        "mypy などの静的解析ツールが使えるようになる",
+        "実行速度が C 言語と同等になる"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "静的型付けの導入によるメリットはエディタ補完・バグの早期発見・コードの可読性向上・静的解析ツールの利用などであり、実行速度の向上は主な目的ではない。Python の型注釈はあくまでヒントであり、実行時の速度には直接影響しない。",
+      "source": "PyCon / comtypes / mypy"
+    },
+    {
+      "id": 471,
+      "section": "セクション150: Python 設計思想",
+      "title": "Guido が LLM について 18 歳の学生に伝えたメッセージ",
+      "question": "Guido が LLM（大規模言語モデル）について 18 歳の学生に伝えたメッセージとして最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "LLM は確実に世界を変えるので積極的に学ぶべきだ",
+        "LLM は一時的な流行なので別の分野を学ぶべきだ",
+        "LLM は Python の標準ライブラリに組み込まれるべきだ",
+        "LLM が未来かどうか分からないが、その不確実性自体が面白い時代であり好奇心を持って進むべきだ"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Guido は LLM が「未来なのか一時的な流行なのか」「勢いが失われるのか世界を変えるのか」について率直に「分からない」と述べた。その上で「follow your heart, be curious」という姿勢についてのメッセージで締めくくった。Python の生みの親が不確実性を正直に認める知的誠実さが印象的な発言。",
+      "source": "PyCon / Guido van Rossum"
+    },
+    {
+      "id": 472,
+      "section": "セクション151: Python 設計思想",
+      "title": "Guido が一貫して主張している Python の設計思想",
+      "question": "Guido が一貫して主張している Python の設計思想として最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "すべての機能を Python コアに統合すべきだ",
+        "サードパーティライブラリは標準ライブラリに統合すべきだ",
+        "Python コアは GIL を永続的に維持すべきだ",
+        "Python コアは小さく保ち、機能はライブラリで提供するほうが良い"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Guido は urllib3 への評価、CuPy セッションでの「Python コアと NumPy のようなライブラリの間に境界があるのは良いことだ」という発言、そして GIL なしビルドをオプションとして提供する PEP 703 への支持など、一貫して「コアは小さく・機能はライブラリで」という設計思想を示している。",
+      "source": "PyCon / Guido van Rossum"
+    },
+    {
+      "id": 473,
+      "section": "セクション152: Web 標準・HTML 歴史",
+      "title": "DOCTYPE 宣言の PUBLIC の意味",
+      "question": "次の DOCTYPE 宣言の PUBLIC の意味として正しいものはどれか。",
+      "code": "<!DOCTYPE HTML PUBLIC \"-//connolly hal.com//DTD WWW HTML Date 1994/04/19 17:24:06 //EN\">",
+      "options": [
+        "この HTML ファイルが公開 Web サーバーで使われることを示す",
+        "この DTD がパブリックドメインであることを示す",
+        "この HTML が一般公開されていることを示す",
+        "DTD が特定のシステム固有ではなく一般に公開された識別子を持つことを示す"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "SGML の FPI（Formal Public Identifier）フォーマットにおける PUBLIC は、DTD が特定のシステム固有のものではなく公開された識別子を持つことを示す。対義語は SYSTEM で、システム固有のパスを指定する場合に使われる。",
+      "source": "SGML / HTML history / Dan Connolly"
+    },
+    {
+      "id": 474,
+      "section": "セクション153: Web 標準・HTML 歴史",
+      "title": "FPI の先頭の \"-\" の意味",
+      "question": "次の DOCTYPE 宣言の \"-\" が意味することとして正しいものはどれか。",
+      "code": "<!DOCTYPE HTML PUBLIC \"-//connolly hal.com//DTD...\">",
+      "options": [
+        "この DTD が非推奨であることを示す",
+        "この DTD が非公開であることを示す",
+        "この DTD が削除予定であることを示す",
+        "DTD の作成者が ISO などに公式登録されていない組織・個人であることを示す"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "FPI フォーマットでは最初の `-` または `+` が登録状態を示す。`-` は非登録（ISO などの公式機関に登録されていない）、`+` は登録済みを意味する。W3C が正式に標準化した後の DOCTYPE では `+//W3C//` という形式になった。",
+      "source": "SGML FPI / W3C history"
+    },
+    {
+      "id": 475,
+      "section": "セクション154: Web 標準・HTML 歴史",
+      "title": "1994 年に存在した廃止済み HTML タグ",
+      "question": "1994 年の HTML にあって現在の HTML には存在しないタグとして正しいものはどれか。",
+      "code": "",
+      "options": [
+        "<strong>",
+        "<pre>",
+        "<dl>",
+        "<next>"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`<next>` は次のページを示すために使われた現在は廃止されたタグ。`<strong>`・`<pre>`・`<dl>` は 1994 年当時から存在し現在の HTML でも使われている。現在は次ページへのリンクは `<a rel=\"next\" href=\"...\">` や `<link rel=\"next\">` で表現する。",
+      "source": "HTML history / Dan Connolly DTD 1994"
+    },
+    {
+      "id": 476,
+      "section": "セクション155: Web 標準・HTML 歴史",
+      "title": "1994 年の DOCTYPE のタイムスタンプが秒単位な理由",
+      "question": "1994/04/19 17:24:06 というタイムスタンプが秒単位で記録されている理由として最も適切なものはどれか。",
+      "code": "<!DOCTYPE HTML PUBLIC \"-//connolly hal.com//DTD WWW HTML Date 1994/04/19 17:24:06 //EN\">",
+      "options": [
+        "HTML の仕様上、秒単位の記録が義務付けられていたから",
+        "Dan Connolly が手動で秒単位まで記録したから",
+        "SGML の仕様でタイムスタンプの形式が決まっていたから",
+        "当時のバージョン管理システム（CVS）が自動的に付与したタイムスタンプだから"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "当時は CVS（Concurrent Versions System）というバージョン管理システムが使われており、ファイルの変更時刻を秒単位で自動記録していた。これは現在の Git のコミットハッシュに相当するもので、ファイルのバージョンを一意に識別するために使われていた。",
+      "source": "CVS / HTML history / Dan Connolly"
+    },
+    {
+      "id": 477,
+      "section": "セクション156: Web 標準・HTML 歴史",
+      "title": "HTML DOCTYPE 宣言の歴史的な変化の順序",
+      "question": "HTML の DOCTYPE 宣言の歴史的な変化として正しい順序はどれか。",
+      "code": "",
+      "options": [
+        "<!DOCTYPE html> → HTML 4.01 → 1994 年の DTD",
+        "HTML 4.01 → <!DOCTYPE html> → 1994 年の DTD",
+        "<!DOCTYPE html> → 1994 年の DTD → HTML 4.01",
+        "1994 年の DTD → HTML 4.01 → <!DOCTYPE html>"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "1994 年の Dan Connolly の DTD は HTML 2.0 への橋渡しとなり、その後 HTML 4.01（1999 年）、そして現在の HTML5 の `<!DOCTYPE html>`（2014 年）へと進化した。30 年間で DOCTYPE 宣言は劇的にシンプルになっており、この変化は Web 標準化の歴史を象徴している。",
+      "source": "HTML history / W3C / HTML5"
+    },
+    {
+      "id": 478,
+      "section": "セクション157: Web 標準・HTML 歴史",
+      "title": "1994 年と現在の HTML の違い（誤りを選ぶ）",
+      "question": "1994 年当時の HTML と現在の HTML の違いとして誤っているものはどれか。",
+      "code": "",
+      "options": [
+        "1994 年当時はタグが大文字で書かれることが多かった",
+        "1994 年当時はページ内リンクに NAME 属性が使われていた",
+        "1994 年当時は <p> タグに閉じタグが不要だった",
+        "1994 年当時は <a href=\"...\"> という形式は存在しなかった"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`<a href=\"...\">` という形式は 1994 年当時からすでに存在しており、現在も全く同じ形で使われている。これは Web の黎明期に設計されたリンクの基本構造が 30 年後も変わらず生き続けていることを示す。変わった点はタグの大文字小文字・NAME 属性から id 属性への移行・`<p>` の閉じタグの追加などである。",
+      "source": "HTML history / Dan Connolly DTD 1994"
+    },
+    {
+      "id": 479,
+      "section": "セクション158: Web 標準・Quirks Mode",
+      "title": "不完全な DOCTYPE でもブラウザが表示できる理由",
+      "question": "不完全な DOCTYPE 宣言を書いたとき、ブラウザが画面を表示できる理由として最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "不完全な DOCTYPE 宣言は自動的に修正されるから",
+        "DOCTYPE 宣言はブラウザの表示に全く影響しないから",
+        "不完全な DOCTYPE 宣言は標準モードで動作するから",
+        "ブラウザがエラーを推測して補完し、なんとか表示しようとするから"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ブラウザは HTML に文法エラーがあってもエラー画面にせず、推測して表示しようとする。ただしその際に Quirks Mode（互換モード）が発動し、意図しない挙動が起きる可能性がある。表示できることと「正しく動いている」ことは別物。",
+      "source": "HTML specification / browser rendering"
+    },
+    {
+      "id": 480,
+      "section": "セクション159: Web 標準・Quirks Mode",
+      "title": "Quirks Mode が発動する条件",
+      "question": "Quirks Mode（互換モード）が発動する条件として最も適切なものはどれか。",
+      "code": "",
+      "options": [
+        "CSS ファイルが読み込めなかったとき",
+        "JavaScript にエラーがあるとき",
+        "サーバーのレスポンスが遅いとき",
+        "不完全・不明な DOCTYPE 宣言が書かれているとき"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Quirks Mode はブラウザがページを「古いルールで作られたもの」と判断したときに発動する。主なトリガーは DOCTYPE 宣言の省略・不完全な記述・ブラウザが認識できない DTD の指定など。CSS エラーや JavaScript エラーは Quirks Mode とは無関係。",
+      "source": "HTML specification / Quirks Mode"
+    },
+    {
+      "id": 481,
+      "section": "セクション160: Web 標準・Quirks Mode",
+      "title": "Quirks Mode 発動時の問題（誤りを選ぶ）",
+      "question": "Quirks Mode が発動したときに起こりうる問題として誤っているものはどれか。",
+      "code": "",
+      "options": [
+        "CSS のボックスモデルの計算が意図通りにならない",
+        "ブラウザごとに表示が異なる",
+        "一部の機能が正常に動作しなくなる",
+        "ページの読み込み速度が著しく低下する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Quirks Mode はレンダリング（描画）のルールが古いものになる状態であり、読み込み速度への直接的な影響はない。主な問題は CSS のボックスモデルの計算の違い・クロスブラウザ対応の悪化・一部機能の誤動作など、あくまで表示・動作の不具合である。",
+      "source": "HTML specification / Quirks Mode"
+    },
+    {
+      "id": 482,
+      "section": "セクション161: Web 標準・Quirks Mode",
+      "title": "ブラウザの 3 つのレンダリングモード",
+      "question": "ブラウザの 3 つのレンダリングモードとして正しい組み合わせはどれか。",
+      "code": "",
+      "options": [
+        "Quirks Mode・Legacy Mode・Modern Mode",
+        "Safe Mode・Normal Mode・Strict Mode",
+        "Classic Mode・Standard Mode・Enhanced Mode",
+        "Quirks Mode・Almost Standards Mode・Standards Mode"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "ブラウザには 3 つのレンダリングモードが存在する。Standards Mode は正しい DOCTYPE 宣言で動作する現代の標準モード、Almost Standards Mode は一部の古い DOCTYPE で動作するほぼ標準のモード、Quirks Mode は不完全・不明な DOCTYPE で発動する古い挙動のモード。",
+      "source": "HTML specification / browser rendering modes"
+    },
+    {
+      "id": 483,
+      "section": "セクション162: Web 標準・Quirks Mode",
+      "title": "Standards Mode を確実に有効にする DOCTYPE 宣言",
+      "question": "現代の HTML で標準モード（Standards Mode）を確実に有効にする正しい DOCTYPE 宣言はどれか。",
+      "code": "",
+      "options": [
+        "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">",
+        "<!DOCTYPE HTML PUBLIC \"-//connolly hal.com//DTD WWW HTML Date 1994/04/19 17:24:06 //EN\">",
+        "<!DOCTYPE HTML STRICT>",
+        "<!DOCTYPE html>"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "HTML5 で導入された `<!DOCTYPE html>` が現在の正解。大文字小文字を問わず認識されるが慣習的に小文字で書くことが多い。1994 年の DTD や古い HTML 4.01 の DOCTYPE は現代のブラウザに認識されないため Quirks Mode になる場合がある。",
+      "source": "HTML5 specification / DOCTYPE"
+    },
+    {
+      "id": 484,
+      "section": "セクション163: Web 標準・Quirks Mode",
+      "title": "<!DOCTYPE html> がシンプルになった歴史的な理由",
+      "question": "`<!DOCTYPE html>` というシンプルな形式が採用された歴史的な理由として最も適切なものはどれか。",
+      "code": "<!DOCTYPE html>",
+      "options": [
+        "HTML5 で SGML との互換性が完全に廃止されたから",
+        "W3C が著作権上の理由で DTD の記載を禁止したから",
+        "ブラウザが DTD を読み込まなくなったから",
+        "複雑な DOCTYPE 宣言の書き間違いによる表示崩れや Quirks Mode の発動が世界中で多発したから"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "1990 年代から 2000 年代にかけて複雑な DOCTYPE 宣言の誤記による Quirks Mode 発動・表示崩れが世界中で多発した。この教訓から「誰でも間違えないシンプルな形式」として `<!DOCTYPE html>` が採用された。技術的には HTML5 は SGML ベースではなくなったため長い FPI 形式の DTD 指定が不要になったという背景もある。",
+      "source": "HTML5 history / WHATWG / W3C"
+    },
+    {
+      "id": 485,
+      "section": "セクション164: HTML アンカー仕様",
+      "title": "アンカーの定義",
+      "question": "アンカーとは何を示すテキストか。最も正確な説明はどれか。",
+      "code": "",
+      "options": [
+        "リンクのテキストと色を定義するもの",
+        "ハイパーテキストリンクの始点のみを示すもの",
+        "ハイパーテキストリンクの終点のみを示すもの",
+        "ハイパーテキストリンクの始点および/または終点を示すもの"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "アンカーはハイパーテキストリンクの始点および/または終点を示すテキスト。HREF 属性を持つ場合は始点（リンクの出発点）、NAME 属性を持つ場合は終点（リンクの到達点）として機能し、両方を同時に持つことも可能。",
+      "source": "HTML 2.0 specification / RFC 1866"
+    },
+    {
+      "id": 486,
+      "section": "セクション165: HTML アンカー仕様",
+      "title": "HREF 属性の役割",
+      "question": "HREF 属性について正しい説明はどれか。",
+      "code": "<a href=\"https://example.com\">リンク</a>",
+      "options": [
+        "HREF が指定されている場合、そのアンカーはリンクの終点となる",
+        "HREF が指定されていなくても、アンカーは常にリンクの始点として機能する",
+        "HREF の値には文書内の識別子のみ指定できる",
+        "HREF が指定されている場合、そのアンカーはリンクの始点となり、値にはネットワークアドレス（URL）が指定される"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "HREF 属性が指定されている場合、そのアンカーはリンクの始点（出発点）となる。値にはネットワークアドレス（URL）が指定され、ページ内リンクの場合は `#識別子` の形式も使用できる。HREF がない場合は始点としては機能しない。",
+      "source": "HTML specification / HREF attribute"
+    },
+    {
+      "id": 487,
+      "section": "セクション166: HTML アンカー仕様",
+      "title": "ページ内リンクの動作",
+      "question": "次のコードの動作として正しいものはどれか。",
+      "code": "<a href=\"#section1\">第1章へ</a>\n<a name=\"section1\">第1章</a>",
+      "options": [
+        "「第1章へ」をクリックすると別のページの「第1章」へ遷移する",
+        "「第1章へ」をクリックするとページのトップへ戻る",
+        "name 属性は廃止されているためこのコードは動作しない",
+        "「第1章へ」をクリックすると同じページ内の name=\"section1\" の位置へジャンプする"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`href=\"#section1\"` は同一ページ内の `name=\"section1\"` または `id=\"section1\"` を持つ要素へジャンプするページ内リンク。`#` はフラグメント識別子と呼ばれる。現在は `name` 属性より `id` 属性が推奨されるが、動作自体は同じ。",
+      "source": "HTML specification / fragment identifier"
+    },
+    {
+      "id": 488,
+      "section": "セクション167: HTML アンカー仕様",
+      "title": "NAME 属性の説明（誤りを選ぶ）",
+      "question": "NAME 属性に関する説明として誤っているものはどれか。",
+      "code": "<a name=\"section1\">第1章</a>",
+      "options": [
+        "識別子は HTML 文書内で一意でなければならない",
+        "識別子には任意の文字列が使用できる",
+        "NAME 属性はオプションであり必須ではない",
+        "別の文書から参照するにはアドレスの後にスラッシュで区切って識別子を付加する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "誤りは「スラッシュで区切る」という部分。正しくは `https://example.com/page.html#section1` のように **ハッシュ記号（#）** で区切って識別子を付加する。スラッシュはパス区切り文字であり、フラグメント識別子の区切りとしては使用しない。",
+      "source": "HTML specification / NAME attribute"
+    },
+    {
+      "id": 489,
+      "section": "セクション168: HTML アンカー仕様",
+      "title": "相対パスと絶対パスの識別",
+      "question": "次の 2 つの href の値について正しい説明はどれか。",
+      "code": "<a href=\"chapter/section1.html\">section1</a>\n<a href=\"https://example.com/section1.html\">section1</a>",
+      "options": [
+        "両方とも絶対パスである",
+        "両方とも相対パスである",
+        "1 つ目は絶対パス、2 つ目は相対パスである",
+        "1 つ目は相対パス、2 つ目は絶対パスである"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "相対パスはスキーム（`https://`）やホスト名を持たず、現在の文書の位置を基準として解釈される。絶対パスはスキームとホスト名を含む完全な URL。`chapter/section1.html` は相対パス、`https://example.com/section1.html` は絶対パス。",
+      "source": "HTML specification / URL / RFC 3986"
+    },
+    {
+      "id": 490,
+      "section": "セクション169: HTML アンカー仕様",
+      "title": "REL 属性の仕様",
+      "question": "REL 属性について正しい説明はどれか。",
+      "code": "<a href=\"next.html\" rel=\"next\">次のページ</a>",
+      "options": [
+        "REL 属性はリンク先のコンテンツタイプを表す",
+        "HREF 属性がない場合でも REL 属性は自由に指定できる",
+        "REL 属性の値はスペース区切りのリストで指定する",
+        "REL 属性はリンクの関係性を表し、値はカンマ区切りのリストで指定する。HREF 属性がない場合は指定すべきではない"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "REL 属性はリンクの関係性（relationship）を表し、値はカンマ区切りのリストで指定する。HREF 属性が存在しない場合、リンクが存在しないためREL を指定すべきではないとされている。代表的な値として `next`・`prev`・`nofollow`・`stylesheet` などがある。",
+      "source": "HTML specification / REL attribute"
+    },
+    {
+      "id": 491,
+      "section": "セクション170: HTML アンカー仕様",
+      "title": "REV 属性の説明（誤りを選ぶ）",
+      "question": "REV 属性に関する説明として誤っているものはどれか。",
+      "code": "",
+      "options": [
+        "REV は HTML5 で廃止された",
+        "アンカーは REL と REV の両方を持つことができる",
+        "REL=\"X\" を持つ A から B へのリンクは REV=\"X\" を持つ B から A へのリンクと同じ関係性を表す",
+        "REV は REL と同じ方向の関係性を表す"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "誤りは「REV は REL と同じ方向」という部分。REV（reverse）は REL と **逆方向** の関係性を表す。`REL=\"made\"` が「このページを作った人へのリンク」なら、`REV=\"made\"` は「このページを作ったことを示すリンク」を意味する。REV は HTML5 で廃止された。",
+      "source": "HTML specification / REV attribute"
+    },
+    {
+      "id": 492,
+      "section": "セクション171: HTML アンカー仕様",
+      "title": "URN・TITLE・METHODS 属性の目的（誤りを選ぶ）",
+      "question": "次のアンカー属性と説明の組み合わせとして誤っているものはどれか。",
+      "code": "",
+      "options": [
+        "URN：文書の統一資源番号（Uniform Resource Name）を指定する",
+        "TITLE：リンク先文書のタイトルを情報として指定する",
+        "METHODS：オブジェクトがサポートする HTTP メソッドを指定する",
+        "METHODS：リンクの関係性をカンマ区切りのリストで指定する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "誤りは D。METHODS はリンク先がサポートする HTTP メソッド（GET・POST など）を指定する属性であり、リンクの関係性を表すのは REL 属性の役割。URN は URL に依存しない恒久的な文書識別子、TITLE はリンク先のタイトルをツールチップ等で提供するための属性。",
+      "source": "HTML specification / anchor attributes"
+    },
+    {
+      "id": 493,
+      "section": "セクション172: HTML アンカー仕様",
+      "title": "HREF がない場合の REL 属性",
+      "question": "HREF 属性が指定されていない場合、REL 属性はどうすべきか？",
+      "code": "",
+      "options": [
+        "REL 属性は HREF がなくても自由に指定できる",
+        "REL 属性は HREF が存在しない場合、指定すべきではない",
+        "REL 属性は HREF がない場合、自動的に無効になる",
+        "REL 属性のデフォルト値は next になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "仕様書には「REL should not be present unless HREF is present」と明記されている。HREF が存在しない場合はリンク自体が存在しないため、リンクの関係性を示す REL を指定することは意味をなさない。",
+      "source": "HTML 2.0 specification / RFC 1866"
+    },
+    {
+      "id": 494,
+      "section": "セクション173: HTML アンカー仕様",
+      "title": "アンカーが終点として機能するための属性",
+      "question": "アンカーが「終点」として機能するために必要な属性はどれか？",
+      "code": "",
+      "options": [
+        "HREF 属性",
+        "REL 属性",
+        "NAME 属性",
+        "URN 属性"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "NAME 属性が指定されている場合、そのアンカーはリンクの終点（飛び先）となる。HREF 属性は始点（出発点）として機能させるために必要。アンカーは HREF・NAME のどちらか一方、または両方を持つことができる。",
+      "source": "HTML specification / NAME attribute"
+    },
+    {
+      "id": 495,
+      "section": "セクション174: HTML アンカー仕様",
+      "title": "relative name の正しい解釈",
+      "question": "「relative name, relative to the document's address」の正しい解釈はどれか？",
+      "code": "",
+      "options": [
+        "属性値は必ず絶対パスで記述しなければならない",
+        "属性値はその文書のアドレスを基準とした相対名である",
+        "属性値は別の文書の場合のみ相対パスになる",
+        "属性値はベースアドレスが指定された場合のみ有効になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "relative name は「相対名」、relative to は「〜に対して相対的な」という意味で、文書のアドレスを基準とした相対名であることを示している。`<base href=\"...\">` でベースを変更することも可能だが、省略時は現在の文書のアドレスが基準となる。",
+      "source": "HTML specification / URL resolution / RFC 3986"
+    },
+    {
+      "id": 496,
+      "section": "セクション175: HTML アンカー仕様",
+      "title": "REV 属性の正しい説明",
+      "question": "REV 属性について正しい説明はどれか？",
+      "code": "",
+      "options": [
+        "REV=\"X\" を持つ A から B へのリンクは、REL=\"X\" を持つ B から A へのリンクと同じ関係性を表す",
+        "REV は REL と全く同じ動作をする",
+        "REV は HTML4 で廃止され、現在は rel 属性の反対語で表現する",
+        "REV は HREF が存在しない場合のみ使用できる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "REV はリンクの方向が逆になる。`REV=\"X\"` を持つ A から B へのリンクは、`REL=\"X\"` を持つ B から A へのリンクと同じ関係性を表す。廃止されたのは HTML5 であり HTML4 ではない。",
+      "source": "HTML specification / REV attribute"
+    },
+    {
+      "id": 497,
+      "section": "セクション176: HTML アンカー仕様",
+      "title": "NAME 属性の識別子のルール",
+      "question": "NAME 属性の識別子について正しい説明はどれか？",
+      "code": "",
+      "options": [
+        "識別子は数字で始めることができ、HTML 文書内で重複してもよい",
+        "識別子は任意の文字列だが、HTML 文書内で一意でなければならない",
+        "識別子は SGML 名に限定されなければならない",
+        "識別子はハッシュ記号を含まなければならない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "識別子は任意の文字列（arbitrary strings）だが、同一 HTML 文書内で一意（unique）でなければならない。重複すると `#識別子` でジャンプした際にどの要素を参照するか不定になる。ハッシュ記号は URL 側につけるものであり、NAME 属性値自体には含めない。",
+      "source": "HTML specification / NAME attribute"
+    },
+    {
+      "id": 498,
+      "section": "セクション177: HTML アンカー仕様",
+      "title": "URN と URL の違い",
+      "question": "URN と URL の違いとして正しいものはどれか？",
+      "code": "",
+      "options": [
+        "URN はリソースの場所を示し、URL はリソースの名前を示す",
+        "URN はリソースの名前を示し、場所が変わっても変わらない",
+        "URN と URL は全く同じ概念で現在は区別されていない",
+        "URN は HTML でのみ使用でき、URL は汎用的に使用できる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "URN（Uniform Resource Name）はリソースの名前を示す永続的な識別子で、リソースの場所が変わっても変わらない。URL（Uniform Resource Locator）はリソースの場所を示す。サーバーが移転しても URN は変わらないが URL は変わる。",
+      "source": "RFC 2141 / URN specification"
+    },
+    {
+      "id": 499,
+      "section": "セクション178: HTML アンカー仕様",
+      "title": "別の文書の特定アンカーへのリンク",
+      "question": "別の文書の特定のアンカーへリンクする正しい書き方はどれか？",
+      "code": "",
+      "options": [
+        "href=\"chapter.html/section1\"",
+        "href=\"chapter.html&section1\"",
+        "href=\"chapter.html#section1\"",
+        "href=\"chapter.html@section1\""
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "アドレスの後にハッシュ記号（`#`）で区切って識別子を付加するのが仕様で定められた書き方。`/` はパス区切り、`&` はクエリパラメータの区切り、`@` はユーザー情報の区切りであり、いずれもフラグメント識別子の区切りとしては使用しない。",
+      "source": "HTML specification / URI fragment / RFC 3986"
+    },
+    {
+      "id": 500,
+      "section": "セクション179: HTML アンカー仕様",
+      "title": "TITLE 属性の正しい説明",
+      "question": "TITLE 属性について正しい説明はどれか？",
+      "code": "",
+      "options": [
+        "TITLE 属性の値は HREF で指定された文書の TITLE と同じ値でなければならない",
+        "TITLE 属性はアンカーの表示テキストを変更する",
+        "TITLE 属性は SEO 対策のために必須の属性である",
+        "TITLE 属性は REL 属性と組み合わせた場合のみ有効になる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "TITLE 属性は情報提供のみを目的とし、その値は HREF 属性で指定された文書の TITLE の値と同じでなければならないとされている。表示テキストを変更するのは要素のコンテンツ（テキストノード）であり、TITLE 属性ではない。",
+      "source": "HTML specification / TITLE attribute"
+    },
+    {
+      "id": 501,
+      "section": "セクション180: HTML アンカー仕様",
+      "title": "@@NOTE の正しい解釈",
+      "question": "仕様書中の @@NOTE の正しい解釈はどれか？",
+      "code": "",
+      "options": [
+        "仕様が完全に確定した内容を示すマーク",
+        "著者が仕様の不備や曖昧さを自ら認めたメモ書き",
+        "HTML の登録機関による公式な注記",
+        "URI の仕様書から引用した内容を示すマーク"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "@@NOTE は草稿段階の仕様書において、著者が仕様の不備や曖昧さを自ら認めたメモ書き。`@@` はまだ整理されていない課題や TODO を示す非公式なマーカーであり、確定した仕様や公式な注記ではない。",
+      "source": "HTML draft specification / Dan Connolly"
+    },
+    {
+      "id": 502,
+      "section": "セクション181: HTML アンカー仕様",
+      "title": "REL 属性のデフォルト値",
+      "question": "REL 属性のデフォルト値は何か？",
+      "code": "",
+      "options": [
+        "next",
+        "none",
+        "void",
+        "null"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "仕様書には「The default relationship if none other is given is void」と明記されている。`void` はリンクの関係性が未定義であることを示すデフォルト値。`none`・`null` は HTML のリンク仕様では使われない値。",
+      "source": "HTML 2.0 specification / REL attribute"
+    },
+    {
+      "id": 503,
+      "section": "セクション182: Python REPL・pathlib",
+      "title": "REPL で __file__ が定義されていない理由",
+      "question": "Python の REPL で `__file__` が定義されていない理由として正しいものはどれか？",
+      "code": ">>> __file__\nNameError: name '__file__' is not defined",
+      "options": [
+        "REPL はファイルシステムにアクセスできないから",
+        "`__file__` は Python 3 で廃止されたから",
+        "REPL はスクリプトファイルから実行されていないため、ファイルパスという概念が存在しないから",
+        "`__file__` は import されたモジュールにしか存在しないから"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`__file__` はスクリプトとして実行されたときに Python インタープリターが自動でセットする変数で、そのスクリプトのパスを保持する。REPL は特定のファイルから実行されているわけではないため `__file__` が存在しない。手動で文字列として代入することで再現できる。",
+      "source": "Python data model / __file__"
+    },
+    {
+      "id": 504,
+      "section": "セクション183: Python REPL・pathlib",
+      "title": "クォートなしパスが SyntaxError になる理由",
+      "question": "REPL で次のコードが SyntaxError になる理由として正しいものはどれか？",
+      "code": ">>> file = /home/user/script.py\n  File \"<stdin>\", line 1\nSyntaxError: invalid syntax",
+      "options": [
+        "`file` は Python の予約語だから",
+        "パスが長すぎるから",
+        "`=` の後にスペースが必要だから",
+        "`/` が除算演算子として解釈され、数式として評価しようとするから"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Python はクォートで囲まれていない `/home/user/script.py` を文字列ではなく式として解釈しようとする。`/` は除算演算子のため `home ÷ user ÷ script.py` という数式とみなされ、`SyntaxError` が発生する。パスは必ずクォートで囲んで文字列リテラルとして渡す必要がある。",
+      "source": "Python syntax / REPL"
+    },
+    {
+      "id": 505,
+      "section": "セクション184: Python REPL・pathlib",
+      "title": "REPL で ROOT_DIR を求める正しいコード",
+      "question": "REPL でスクリプトの `ROOT_DIR = Path(__file__).resolve().parent.parent` を再現する正しい方法はどれか？",
+      "code": "# スクリプト内での書き方\nROOT_DIR = Path(__file__).resolve().parent.parent",
+      "options": [
+        "`__file__ = /home/user/quiz/scripts/create.py` と入力する",
+        "`__file__ = Path(\"/home/user/quiz/scripts/create.py\")` と入力する",
+        "`file = \"/home/user/quiz/scripts/create.py\"` と代入し `Path(file).resolve().parent.parent` で求める",
+        "`ROOT_DIR = Path().resolve().parent.parent` と入力する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "REPL では `__file__` が存在しないため、任意の変数名（`file` など）にパスを文字列として代入し、それを `Path()` に渡すことで再現できる。`Path()` は引数なしだとカレントディレクトリを返すため D は意図した結果にならない。`__file__` という変数名自体は特別ではなく、任意の文字列変数で代替できる。",
+      "source": "Python pathlib / __file__ / REPL"
+    },
+    {
+      "id": 506,
+      "section": "セクション185: Python パス解決",
+      "title": "__file__ が os.getcwd() より適する理由",
+      "question": "設定ファイルの基準パスを求めるとき、`__file__` が `os.getcwd()` より適している理由として最も正しいものはどれか？",
+      "code": "cd /tmp && python /project/src/config.py",
+      "options": [
+        "`__file__` は常にカレントディレクトリを返し、`os.getcwd()` はスクリプトの場所を返すから",
+        "`__file__` はスクリプト自身のパスを基準にできるが、`os.getcwd()` は実行時の作業ディレクトリに依存してずれることがあるから",
+        "`os.getcwd()` は相対パスしか返せないが、`__file__` は必ず URL を返すから",
+        "`__file__` は import 時にしか使えず、スクリプト実行時には `os.getcwd()` に置き換わるから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`__file__` はそのスクリプト自身のパスを表すため、設定ファイルや同梱リソースの位置をスクリプト基準で安定して求めやすい。一方 `os.getcwd()` はコマンドを実行した作業ディレクトリを返すため、`cd /tmp && python /project/src/config.py` のように別の場所から起動すると `/tmp` になり、期待した基準パスとずれることがある。",
+      "source": "Python docs / __file__ / os.getcwd()"
+    },
+    {
+      "id": 507,
+      "section": "セクション186: Python ファイル操作",
+      "title": "open の 'a' モードの性質",
+      "question": "Python の `open(\"app.log\", \"a\")` の説明として最も正しいものはどれか？",
+      "code": "with open(\"app.log\", \"a\", encoding=\"utf-8\") as f:\n    f.write(\"started\\n\")",
+      "options": [
+        "既存ファイルの先頭に追記し、存在しない場合はエラーになる",
+        "既存ファイルを空にしてから書き込み、存在しない場合は新規作成する",
+        "既存ファイルがあれば末尾に追記し、存在しなければ新規作成するのでログ追記に向いている",
+        "読み取り専用で開くが、`write()` を呼んだときだけ自動で追記モードに切り替わる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`'a'` は append モードで、既存ファイルがあれば内容を消さず末尾に追記し、存在しなければ新しく作成する。`'w'` のように既存内容を上書きしないため、過去の記録を残したいログファイルの書き込みに適している。",
+      "source": "Python built-in open() / file modes"
+    },
+    {
+      "id": 508,
+      "section": "セクション187: Python オブジェクト設計",
+      "title": "docstring が説明するクラスの性質",
+      "question": "次の docstring の説明として最も適切なものはどれか？",
+      "code": "\"\"\"Simple object for storing attributes.\n\nImplements equality by attribute names and values, and provides a simple\nstring representation.\n\"\"\"",
+      "options": [
+        "属性を保存するだけの単純なオブジェクトで、属性名と値が同じなら等しいと判定され、簡潔な文字列表現も持つ",
+        "属性の型を自動推論して、値が違っていても属性名が同じなら等しいと判定する",
+        "属性を暗号化して保存し、比較時にはメモリアドレスだけで等価性を判定する",
+        "文字列表現だけを提供し、等価比較は常に `is` と同じ参照比較になる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "この docstring は、そのオブジェクトが属性を格納するための単純な入れ物であり、比較はオブジェクトの参照ではなく属性名とその値に基づいて行うこと、さらに内容を分かりやすく表示するための簡単な文字列表現も備えていることを説明している。",
+      "source": "Python docstring / equality / string representation"
+    },
+    {
+      "id": 509,
+      "section": "セクション188: Python 上級クイズ",
+      "title": "可変デフォルト引数の再利用",
+      "question": "次のコードを実行した結果として正しいものはどれか？",
+      "code": "def func(lst=[]):\n    lst.append(1)\n    return lst\n\nprint(func())\nprint(func())",
+      "options": [
+        "1回目も2回目も `[1]` が表示される",
+        "1回目は `[1]`、2回目は `[1, 1]` が表示される",
+        "1回目は `[1]`、2回目は `[]` が表示される",
+        "実行時エラーになる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "デフォルト引数の `[]` は関数定義時に1回だけ生成され、その後の呼び出しで同じリストが再利用される。1回目で `[1]` になった同じリストに、2回目でさらに `1` が追加されるため `[1, 1]` になる。",
+      "source": "Python tutorial / default argument values"
+    },
+    {
+      "id": 510,
+      "section": "セクション189: Python 上級クイズ",
+      "title": "getrefcount が 1 多く見える理由",
+      "question": "`sys.getrefcount(x)` が実際の参照カウントより 1 多く返る理由として最も正しいものはどれか？",
+      "code": "import sys\nlst = []\nprint(sys.getrefcount(lst))",
+      "options": [
+        "`sys` モジュールが内部でオブジェクトを複製するから",
+        "`getrefcount` に引数として渡す時点で一時的な参照が 1 つ増えるから",
+        "CPython の既知のバグだから",
+        "`x` がグローバル変数として保持されるから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`getrefcount(x)` を呼ぶとき、`x` は関数引数として一時的に参照される。そのため表示される値には、その呼び出し自身による参照が 1 つ上乗せされる。",
+      "source": "Python sys.getrefcount documentation"
+    },
+    {
+      "id": 511,
+      "section": "セクション190: Python 上級クイズ",
+      "title": "argparse.SUPPRESS の挙動",
+      "question": "`argparse.SUPPRESS` をデフォルト値として使ったときの挙動として最も正しいものはどれか？",
+      "code": "import argparse\nparser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)\nparser.add_argument('--foo')\nargs = parser.parse_args([])",
+      "options": [
+        "未指定の引数には必ず `None` が入り、`args.foo` は `None` になる",
+        "未指定の引数は `Namespace` に属性自体が作られない",
+        "未指定の引数には空文字列が入り、`args.foo == ''` になる",
+        "未指定の引数は自動的に必須引数へ変わる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`SUPPRESS` は「未指定ならその属性を作らない」という特別な挙動を指示する。したがって `args.foo` は `None` ではなく、属性自体が存在しないため直接アクセスすると `AttributeError` になる。",
+      "source": "Python argparse documentation / SUPPRESS"
+    },
+    {
+      "id": 512,
+      "section": "セクション191: Python 上級クイズ",
+      "title": "ROOT_DIR が指す場所",
+      "question": "次のコードで `ROOT_DIR` が指すディレクトリとして正しいものはどれか？",
+      "code": "# ファイルパス: /project/scripts/migrate.py\nROOT_DIR = Path(__file__).resolve().parent.parent",
+      "options": [
+        "`/project/scripts/`",
+        "`/project/`",
+        "`/project/scripts/migrate.py`",
+        "実行時のカレントディレクトリ"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`__file__` は現在のスクリプトファイルを指し、`.parent` で `scripts` ディレクトリ、さらに `.parent` でその親の `/project/` に移動する。したがって `ROOT_DIR` はリポジトリルート相当の `/project/` を指す。",
+      "source": "Python pathlib / __file__"
+    },
+    {
+      "id": 513,
+      "section": "セクション192: Python 上級クイズ",
+      "title": "os.getcwd() がずれる理由",
+      "question": "`os.getcwd()` が設定ファイルの基準パス取得に不向きになることがある理由として最も正しいものはどれか？",
+      "code": "# /tmp で実行\npython /project/src/config.py",
+      "options": [
+        "`__file__` が相対パスしか返さないから",
+        "`getcwd()` はスクリプトの場所ではなく、実行時の作業ディレクトリを返すから",
+        "`pathlib` と互換性がないから",
+        "Python 3 では非推奨だから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`os.getcwd()` はそのプロセスのカレントディレクトリを返す。上の例ではスクリプト本体が `/project/src/config.py` にあっても、`/tmp` から起動すれば `/tmp` が返るため、スクリプト位置を基準にしたい用途ではずれが起きる。",
+      "source": "Python os.getcwd documentation"
+    },
+    {
+      "id": 514,
+      "section": "セクション193: Python 上級クイズ",
+      "title": "参照カウント 0 の基本挙動",
+      "question": "CPython で参照カウントが 0 になったオブジェクトに対する基本挙動として最も正しいものはどれか？",
+      "code": "",
+      "options": [
+        "フラグだけを立て、必ず後で非同期に削除する",
+        "関連する後始末を行い、そのメモリを Python ランタイムが再利用できる状態にする",
+        "必ず OS に即時返却される",
+        "弱参照だけを残して本体は見えなくする"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "CPython では参照カウントが 0 になると、通常はその場で解放処理が進む。ただし『常に OS にメモリが返る』とは限らず、実際には Python のメモリアロケータ管理下で再利用可能になることも多い。なお循環参照は別の GC の対象になる。",
+      "source": "CPython memory management / garbage collector"
+    },
+    {
+      "id": 515,
+      "section": "セクション194: Python 上級クイズ",
+      "title": "missing_ok=True が防ぐ例外",
+      "question": "次のコードで `missing_ok=True` が防いでいる例外はどれか？",
+      "code": "link.unlink(missing_ok=True)",
+      "options": [
+        "`FileExistsError`",
+        "`PermissionError`",
+        "`FileNotFoundError`",
+        "`OSError` 全般"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`missing_ok=True` は、削除対象が存在しない場合に `FileNotFoundError` を送出しないための指定。権限不足やその他の OS エラーまで無視するわけではない。",
+      "source": "Python pathlib.Path.unlink documentation"
+    },
+    {
+      "id": 516,
+      "section": "セクション195: Python 上級クイズ",
+      "title": "__defaults__ に値が入るタイミング",
+      "question": "次の関数において、`func.__defaults__` にデフォルト引数の値が格納されるタイミングとして正しいものはどれか？",
+      "code": "def func(lst=[]):\n    pass",
+      "options": [
+        "`func()` が初めて呼ばれたとき",
+        "`def` 文が実行されて関数オブジェクトが作られたとき",
+        "モジュールが import されるたびに毎回新しく",
+        "Python インタープリタ起動時"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "デフォルト引数は関数呼び出し時ではなく、`def` 文が実行された時点で評価される。その結果が関数オブジェクトの `__defaults__` に保存され、以後の呼び出しで再利用される。",
+      "source": "Python data model / function.__defaults__"
+    },
+    {
+      "id": 517,
+      "section": "セクション196: Python id()・メモリ",
+      "title": "Python 仕様における id() の定義",
+      "question": "Python 仕様における `id()` の説明として正しいものはどれか？",
+      "code": "",
+      "options": [
+        "オブジェクトのメモリアドレスを返す",
+        "オブジェクトを一意に識別する整数を返す",
+        "オブジェクトのハッシュ値を返す",
+        "オブジェクトのポインタそのものを返す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Python 言語仕様が保証しているのは、`id()` がそのオブジェクトを一意に識別する整数を返すことだけであり、メモリアドレスである必要はない。CPython では実装上たまたまアドレス相当の値を使うことが多い。",
+      "source": "Python built-in functions / id()"
+    },
+    {
+      "id": 518,
+      "section": "セクション197: Python id()・メモリ",
+      "title": "CPython で id() がアドレス相当になりやすい理由",
+      "question": "CPython で `id()` がメモリアドレス相当の値を返す主な理由として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "Python 仕様でメモリアドレスを返すよう厳密に定められているから",
+        "オブジェクトの一意性を実装上シンプルに保証しやすいから",
+        "他のすべての Python 実装も同じ方式だから",
+        "GC がオブジェクトのアドレスを永久に固定するから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "CPython では `id()` の一意性を実装しやすくするため、オブジェクトのアドレス相当の値を利用する設計が採られている。これは言語仕様ではなく、CPython 側の実装上の選択である。",
+      "source": "CPython implementation notes / id()"
+    },
+    {
+      "id": 519,
+      "section": "セクション198: Python id()・メモリ",
+      "title": "CPython の getrefcount の値",
+      "question": "CPython で次のコードを実行したとき、`sys.getrefcount(lst)` の戻り値として最も適切なものはどれか。ここで `lst` への参照は他に存在しないものとする。",
+      "code": "lst = []\nimport sys\nprint(sys.getrefcount(lst))",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`lst` を束縛している変数参照が 1 つあり、さらに `getrefcount(lst)` を呼ぶ時点で関数引数として一時参照が 1 つ追加される。そのため表示は 2 になる。`getrefcount()` は実際の参照数より常に 1 多く見える点に注意が必要。",
+      "source": "Python sys.getrefcount documentation / CPython"
+    },
+    {
+      "id": 520,
+      "section": "セクション199: Python id()・メモリ",
+      "title": "生存期間が重ならないオブジェクトの id()",
+      "question": "生存期間が重ならない 2 つのオブジェクトの `id()` について正しい説明はどれか？",
+      "code": "",
+      "options": [
+        "必ず異なる値になる",
+        "同じ値になることがある",
+        "常に連番になる",
+        "比較自体ができない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "あるオブジェクトが解放された後、そのメモリ領域や識別子が別のオブジェクトに再利用されることがある。そのため、生存期間が重ならないなら同じ `id()` の値が再び現れる可能性がある。",
+      "source": "Python id() semantics / object lifetime"
+    },
+    {
+      "id": 521,
+      "section": "セクション200: Python id()・メモリ",
+      "title": "PyPy で id() の実装が異なる理由",
+      "question": "PyPy で `id()` の扱いが CPython と異なりうる主な理由として正しいものはどれか？",
+      "code": "",
+      "options": [
+        "PyPy は Python 仕様に準拠していないから",
+        "移動 GC によりオブジェクトのアドレスが変わりうるから",
+        "PyPy にはメモリアドレスという概念が存在しないから",
+        "`id()` が JVM のオブジェクト ID を返すから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "PyPy では移動 GC によってオブジェクトがメモリ上を移動する可能性がある。そのため、アドレスそのものを `id()` に使う設計は取りにくく、CPython とは異なる内部実装が必要になる。",
+      "source": "PyPy documentation / moving GC / id()"
+    },
+    {
+      "id": 522,
+      "section": "セクション201: Python 関数属性",
+      "title": "__annotations__ に入る内容",
+      "question": "通常の実行条件で、次の関数定義に対する `func.__annotations__` の内容として正しいものはどれか？",
+      "code": "def func(x: int, y: str) -> bool:\n    pass",
+      "options": [
+        "{'x': <class 'int'>, 'y': <class 'str'>, 'return': <class 'bool'>}",
+        "{'x': <class 'int'>, 'y': <class 'str'>}",
+        "{'x': 'int', 'y': 'str', 'return': 'bool'}",
+        "{'x': int, 'y': str}"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`__annotations__` には引数と戻り値の型注釈が辞書として格納される。戻り値は `'return'` キーで保存されるため、`x`、`y`、`return` の3項目が入る。",
+      "source": "Python data model / function.__annotations__"
+    },
+    {
+      "id": 523,
+      "section": "セクション202: Python 関数属性",
+      "title": "型注釈とデフォルト値の保存先",
+      "question": "次の関数定義で、型注釈とデフォルト値はどこに格納されるか？",
+      "code": "def func(lst: list = []):\n    pass",
+      "options": [
+        "両方とも `__annotations__` に格納される",
+        "両方とも `__defaults__` に格納される",
+        "型注釈は `__annotations__`、デフォルト値は `__defaults__` に別々に格納される",
+        "型注釈は `__defaults__`、デフォルト値は `__annotations__` に格納される"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "型注釈とデフォルト値は別の仕組みで管理される。`lst: list` の注釈は `__annotations__` に、`=[]` のデフォルト値は `__defaults__` に保存される。",
+      "source": "Python function object attributes / __annotations__ / __defaults__"
+    },
+    {
+      "id": 524,
+      "section": "セクション203: Python 関数属性",
+      "title": "<class 'list'> が表すもの",
+      "question": "Python で `<class 'list'>` が表しているものとして正しいのはどれか？",
+      "code": "",
+      "options": [
+        "`list` 型のインスタンス",
+        "`list` 型オブジェクトそのもの",
+        "`list` の文字列表現だけを保存した値",
+        "`list` のメタクラス"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Python では型そのものもオブジェクトである。`<class 'list'>` は `list` 型オブジェクトの `repr` 表現であり、リストのインスタンスではない。",
+      "source": "Python data model / classes are objects"
+    },
+    {
+      "id": 525,
+      "section": "セクション204: Python 関数属性",
+      "title": "__closure__ が値を持つ条件",
+      "question": "関数の `__closure__` が `None` ではなく値を持つのはどのような場合か？",
+      "code": "",
+      "options": [
+        "デフォルト引数がある場合",
+        "型注釈がある場合",
+        "外側のスコープの変数を参照するクロージャになっている場合",
+        "グローバル変数を参照する場合"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`__closure__` は、関数が外側のローカルスコープの変数を自由変数としてキャプチャしたときに、そのセルオブジェクト群を保持する。通常の関数では `None` である。",
+      "source": "Python data model / function.__closure__ / closures"
+    },
+    {
+      "id": 526,
+      "section": "セクション205: Python 関数属性",
+      "title": "動的に追加した関数属性の保存先",
+      "question": "次のコードで `my_attr` はどこに格納されるか？",
+      "code": "def func():\n    pass\n\nfunc.my_attr = 'hello'",
+      "options": [
+        "`__annotations__`",
+        "`__dict__`",
+        "`__code__`",
+        "`__globals__`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "関数オブジェクトに後から追加した任意属性は、その関数の `__dict__` に保存される。これは通常の Python オブジェクトへ属性を追加する仕組みと同じである。",
+      "source": "Python data model / function.__dict__"
+    },
+    {
+      "id": 527,
+      "section": "セクション206: Python 関数属性",
+      "title": "関数オブジェクトが参照のコンテナと言える理由",
+      "question": "関数オブジェクトが「参照のコンテナ」と言える理由として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "`__code__` にすべての情報が集約されているから",
+        "`__defaults__` がすべての属性を一元管理しているから",
+        "`__code__` や `__defaults__` などが別オブジェクトとして存在し、関数オブジェクトがそれらへの参照を保持するから",
+        "関数呼び出しのたびに全属性がコピーされるから"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "関数オブジェクトは、コードオブジェクト、デフォルト引数、グローバル名前空間など複数の別オブジェクトへの参照をまとめて保持している。その意味で、値そのものではなく参照を束ねるコンテナとみなせる。",
+      "source": "Python data model / function object attributes"
+    },
+    {
+      "id": 528,
+      "section": "セクション207: Python builtins",
+      "title": "__builtins__ の役割",
+      "question": "`__builtins__` や `builtins` モジュールが関係する役割として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "組み込み関数を毎回 `import` するための予約領域",
+        "Python が名前解決の最後の段階で参照できる、組み込み関数・例外・定数の集合",
+        "ユーザー定義関数だけを登録する専用辞書",
+        "各モジュールのグローバル変数を保存する標準 API"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Python では名前がローカルやグローバルで見つからないと、最終的に組み込み名前空間が参照される。`print` や `len` を明示的な import なしで使えるのは、その組み込み名前空間に存在するからである。",
+      "source": "Python builtins module documentation / name resolution"
+    },
+    {
+      "id": 529,
+      "section": "セクション208: Python builtins",
+      "title": "__builtins__ の値としてありうるもの",
+      "question": "公式説明に照らして、多くのモジュールでグローバルに見える `__builtins__` の値として通常ありうるものはどれか？",
+      "code": "",
+      "options": [
+        "常に `builtins` モジュールだけ",
+        "常に `builtins.__dict__` だけ",
+        "`builtins` モジュールそのもの、またはその `__dict__`",
+        "常に `None`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "公式ドキュメントでは、`__builtins__` の値は通常 `builtins` モジュールそのものか、その `__dict__` 属性の値のどちらかだと説明されている。つまり型は一貫しておらず、文脈依存である。",
+      "source": "Python builtins module documentation"
+    },
+    {
+      "id": 530,
+      "section": "セクション209: Python builtins",
+      "title": "__builtins__['print'] が失敗する条件",
+      "question": "`__builtins__['print']('hello')` が `TypeError: 'module' object is not subscriptable` で失敗する理由として正しいものはどれか？",
+      "code": "__builtins__['print']('hello')",
+      "options": [
+        "`print` という組み込み関数が存在しないから",
+        "`__builtins__` が module であり、module は `[]` で添字アクセスできないから",
+        "`[]` は Python の組み込み関数には使えないから",
+        "`print` は文字列で指定してはいけないから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`__builtins__` が辞書なら `['print']` で取り出せるが、module の場合は添字アクセスできない。そのため、`__builtins__` の型に依存したコードは文脈次第で壊れる。",
+      "source": "Python builtins documentation / module vs dict behavior"
+    },
+    {
+      "id": 531,
+      "section": "セクション210: Python builtins",
+      "title": "__builtins__ の型前提が危険な理由",
+      "question": "`__builtins__` の型に依存したコードを書くべきでない理由として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "`__builtins__` は Python 3 で廃止予定だから",
+        "モジュールか辞書かが文脈や実装で変わりうる実装詳細だから",
+        "`__builtins__` はセキュリティ上アクセス禁止だから",
+        "`__builtins__` は常に空の辞書だから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "公式ドキュメントは `__builtins__` を実装詳細だと明記している。多くのモジュールで利用可能ではあるが、値が module か dict かは一定ではなく、代替実装では同じ前提が成り立たないこともある。",
+      "source": "Python builtins module documentation / implementation detail"
+    },
+    {
+      "id": 532,
+      "section": "セクション211: Python builtins",
+      "title": "builtins.__dict__['print'] が返すもの",
+      "question": "次のコードで `builtins.__dict__['print']` が返すものとして正しいのはどれか？",
+      "code": "import builtins\nprint(builtins.__dict__['print'])",
+      "options": [
+        "文字列 `'print'`",
+        "`<built-in function print>`",
+        "`None`",
+        "必ず `KeyError` になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`builtins.__dict__` は組み込み名前の辞書であり、`'print'` キーには組み込み関数 `print` そのものが入っている。表示するとその `repr` である `<built-in function print>` が見える。",
+      "source": "Python builtins module / module.__dict__"
+    },
+    {
+      "id": 533,
+      "section": "セクション212: Python builtins",
+      "title": "安全な組み込み関数アクセス",
+      "question": "`__builtins__` の型に左右されず安全に組み込みの `print` へアクセスする方法として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "`__builtins__['print']('hello')`",
+        "`__builtins__.print('hello')`",
+        "`import builtins; builtins.print('hello')`",
+        "`globals()['print']('hello')`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`import builtins` を使えば、`__builtins__` が module か dict かに依存せず、一貫した方法で組み込み関数へアクセスできる。公式ドキュメントも、組み込みを明示的に扱う場面では `builtins` モジュールを直接使う例を示している。",
+      "source": "Python builtins module documentation"
+    },
+    {
+      "id": 534,
+      "section": "セクション213: Python __call__",
+      "title": "__call__ を定義するとできること",
+      "question": "クラスで `__call__` を定義すると、インスタンスに対して何ができるようになるか？",
+      "code": "",
+      "options": [
+        "クラスのメソッドを自動で静的メソッドに変えられる",
+        "インスタンス自体を `()` で呼び出せるようになる",
+        "クラスを自動で継承可能にする",
+        "インスタンスを辞書のように添字アクセスできるようになる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`__call__` を定義すると、`obj()` のような呼び出し構文が使えるようになる。実際にはその呼び出しが `obj.__call__(...)` に委譲されるため、インスタンスを関数のように振る舞わせられる。",
+      "source": "Python data model / object.__call__"
+    },
+    {
+      "id": 535,
+      "section": "セクション214: Python __call__",
+      "title": "クラスデコレータ適用後の add の型",
+      "question": "次の `@Logger` デコレータを使った後、`add` の型として正しいものはどれか？",
+      "code": "class Logger:\n    def __init__(self, func):\n        self.func = func\n    def __call__(self, *args):\n        print(f'calling {self.func.__name__}')\n        return self.func(*args)\n\n@Logger\ndef add(a, b):\n    return a + b",
+      "options": [
+        "関数オブジェクト",
+        "`Logger` のインスタンス",
+        "`Logger` クラスそのもの",
+        "`None`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`@Logger` は `add = Logger(add)` と同じ意味なので、元の関数 `add` は `Logger` インスタンスで包まれる。その後の `add(1, 2)` は、そのインスタンスの `__call__` を実行する。",
+      "source": "Python decorators / callable objects"
+    },
+    {
+      "id": 536,
+      "section": "セクション215: Python __call__",
+      "title": "__call__ がないインスタンスを呼ぶとどうなるか",
+      "question": "`@Logger` のように関数をラップしたインスタンスに `__call__` が定義されていない場合、そのインスタンスを `add(1, 2)` のように呼ぶとどうなるか？",
+      "code": "",
+      "options": [
+        "正常に元の関数が実行される",
+        "`TypeError` になる",
+        "ログだけ出力されて `None` が返る",
+        "自動的に `func` 属性が呼ばれる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "インスタンスを `()` で呼ぶには、そのオブジェクトが呼び出し可能である必要がある。`__call__` がなければ呼び出し可能ではないため、`TypeError: '...' object is not callable` になる。",
+      "source": "Python data model / callable objects"
+    },
+    {
+      "id": 537,
+      "section": "セクション216: Python __call__",
+      "title": "__call__ と通常メソッドの違い",
+      "question": "`__call__` を持つインスタンスと通常メソッドの違いとして最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "`__call__` の方が常に高速である",
+        "`__call__` があると、インスタンス自体を関数を期待する API に渡せる",
+        "通常メソッドは戻り値を返せない",
+        "`__call__` はクラスにしか定義できず、インスタンスでは使えない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`__call__` を持つインスタンスは、それ自体が callable になる。したがって関数を受け取る API にインスタンスそのものを渡せるが、通常メソッドを使う場合は `obj.method` のように明示的にメソッドを渡す必要がある。",
+      "source": "Python data model / callable instances"
+    },
+    {
+      "id": 538,
+      "section": "セクション217: Python 名前束縛",
+      "title": "変数名 x が表すもの",
+      "question": "次のコードにおける変数名 `x` の役割として最も適切なものはどれか？",
+      "code": "x = []",
+      "options": [
+        "`x` 自体がリストオブジェクト本体である",
+        "`x` はリストオブジェクトへの名前束縛（参照）である",
+        "`x` はスタック上に確保されたリストデータそのものである",
+        "`x` は `[]` のコピーを毎回保持する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Python の代入は、名前をオブジェクトへ束縛する操作である。`x = []` では新しいリストオブジェクトが作られ、`x` という名前がそのオブジェクトを参照する。`x` 自体がリスト本体になるわけではない。",
+      "source": "Python execution model / naming and binding"
+    },
+    {
+      "id": 539,
+      "section": "セクション218: Python クラス属性",
+      "title": "Logger と Logger.__dict__ の id が違う理由",
+      "question": "次のコードで `id(Logger)` と `id(Logger.__dict__)` が異なる最も本質的な理由はどれか？",
+      "code": "class Logger:\n    pass\n\nprint(hex(id(Logger)))\nprint(hex(id(Logger.__dict__)))",
+      "options": [
+        "`Logger` と `Logger.__dict__` は別プロセスで管理されているから",
+        "クラスオブジェクトと、その属性辞書を見せる `mappingproxy` は別オブジェクトだから",
+        "`Logger` は 64bit 領域、`__dict__` は 32bit 領域に置かれるから",
+        "`Logger.__dict__` だけがスタックに確保されるから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`Logger` はクラスオブジェクトそのものだが、`Logger.__dict__` はその属性を読み取り専用で見せる `mappingproxy` オブジェクトである。別オブジェクトなので `id()` が異なるのは自然であり、アドレスの大小関係に特別な意味はない。",
+      "source": "Python data model / class.__dict__ / mappingproxy"
+    },
+    {
+      "id": 540,
+      "section": "セクション219: Python クロージャ",
+      "title": "__closure__ が返すもの",
+      "question": "関数オブジェクトの `__closure__` が返すものとして正しいのはどれか？",
+      "code": "",
+      "options": [
+        "外側のスコープの変数の値をそのまま返す",
+        "`None` または cell オブジェクトのタプルを返す",
+        "クロージャ関数の名前文字列を返す",
+        "外側の関数オブジェクト自体を返す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`__closure__` はクロージャでない場合は `None`、クロージャである場合は自由変数を保持する cell オブジェクトのタプルを返す。実際の値そのものではなく、その値を包む cell が見える。",
+      "source": "Python data model / function.__closure__"
+    },
+    {
+      "id": 541,
+      "section": "セクション220: Python クロージャ",
+      "title": "cell_contents の意味",
+      "question": "cell オブジェクトの `cell_contents` が表すものとして正しいのはどれか？",
+      "code": "",
+      "options": [
+        "cell オブジェクト自身のメモリアドレス",
+        "cell が保持している実際の値",
+        "cell オブジェクトの型情報",
+        "cell オブジェクトの参照カウント"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "cell オブジェクトは自由変数への参照を保持しており、`cell_contents` を使うとその中に入っている実際の値を取り出せる。クロージャ経由で値が共有されていることを確認するのに使える。",
+      "source": "Python function closure introspection / cell_contents"
+    },
+    {
+      "id": 542,
+      "section": "セクション221: Python クロージャ",
+      "title": "inner が x を覚えていられる理由",
+      "question": "次のコードで `outer()` の実行が終わった後も `inner()` が `x` を参照できる理由として最も適切なものはどれか？",
+      "code": "def outer():\n    x = 10\n    def inner():\n        return x\n    return inner",
+      "options": [
+        "`x` が自動的にグローバル変数へ昇格するから",
+        "`x` がクロージャの cell に保持され、`inner` がその参照を持ち続けるから",
+        "`outer` 関数オブジェクトがずっと実行中のまま残るから",
+        "`x` は整数なので Python が特別に関数外へコピーするから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "クロージャでは、外側のローカル変数が cell オブジェクトに包まれ、その cell への参照を内側の関数が保持する。したがって `outer()` のローカルスコープが終了しても、`inner` はその cell 経由で `x` を読み続けられる。",
+      "source": "Python closures / free variables / cell objects"
+    },
+    {
+      "id": 543,
+      "section": "セクション222: Python クロージャ",
+      "title": "closure という名前の由来",
+      "question": "“closure”（クロージャ）という名前の由来として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "関数を終了させて閉じる操作を表すから",
+        "外側のスコープの変数を関数の振る舞いの中に閉じ込める概念だから",
+        "変数を完全に非公開にする仕組みだから",
+        "スコープをロックして変更不能にする仕組みだから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "クロージャは、外側のスコープにあった変数を内側の関数が抱え込んで持ち続ける仕組みを指す。その『閉じ込めて保持する』イメージが closure という名前の由来である。",
+      "source": "Programming language terminology / closure"
+    },
+    {
+      "id": 544,
+      "section": "セクション223: Python __class__",
+      "title": "obj.__class__ と type(obj) の通常の関係",
+      "question": "通常の型参照として見たとき、`obj.__class__` と `type(obj)` の関係として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "`__class__` はインスタンスに使えず、`type()` だけが型を返す",
+        "`obj.__class__` は常に書き換え可能なので、`type(obj)` とは本質的に別物である",
+        "通常はどちらも同じクラスオブジェクトを参照する",
+        "`type()` はクラスにしか使えず、インスタンスに使うとエラーになる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "通常、`obj.__class__` と `type(obj)` は同じクラスオブジェクトを指す。`__class__` 代入は一部の制約付きで可能な場合があるが、それは通常の型参照としての基本関係とは別の話である。",
+      "source": "Python data model / __class__ / type()"
+    },
+    {
+      "id": 545,
+      "section": "セクション224: Python デコレータ",
+      "title": "@Logger 適用後に元の関数が残る場所",
+      "question": "次の `@Logger` デコレータ適用後、元の関数 `add` はどこに保持されるか？",
+      "code": "class Logger:\n    def __init__(self, func):\n        self.func = func\n    def __call__(self, *args):\n        print(f'calling {self.func.__name__}')\n        return self.func(*args)\n\n@Logger\ndef add(a, b):\n    return a + b",
+      "options": [
+        "`add.__name__` に文字列として保存される",
+        "`Logger.func` というクラス変数に保存される",
+        "`add.func` として、`Logger` インスタンスの属性に保存される",
+        "デコレータ適用時に破棄されるため残らない"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`@Logger` は `add = Logger(add)` と等価であり、`Logger.__init__` の `self.func = func` によって元の関数オブジェクトがインスタンス属性へ保存される。したがってデコレータ適用後の `add` は `Logger` インスタンスであり、元の関数は `add.func` から参照できる。",
+      "source": "Python decorators / callable class wrappers"
+    },
+    {
+      "id": 546,
+      "section": "セクション225: Python オブジェクトモデル",
+      "title": "オブジェクトが必ず持つ3要素",
+      "question": "Python 公式の説明によると、すべてのオブジェクトが必ず持つものは何か？",
+      "code": "",
+      "options": [
+        "名前・型・値",
+        "同一性（identity）・型（type）・値（value）",
+        "アドレス・サイズ・型",
+        "参照カウント・型・値"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Python のデータモデルは「Every object has an identity, a type and a value」と説明する。`identity` はそのオブジェクトがそのオブジェクトであること、`type` は所属する型、`value` は保持している内容を指す。",
+      "source": "Python data model / objects, values and types"
+    },
+    {
+      "id": 547,
+      "section": "セクション226: Python オブジェクトモデル",
+      "title": "is 演算子が比較するもの",
+      "question": "`is` 演算子が比較しているものとして正しいのはどれか？",
+      "code": "",
+      "options": [
+        "オブジェクトの値",
+        "オブジェクトの型",
+        "オブジェクトの同一性（identity）",
+        "オブジェクトのサイズ"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`is` は 2 つの参照先が同じオブジェクトかどうか、つまり同一性を比較する。`==` は値の比較であり、値が等しくても別オブジェクトなら `is` は `False` になりうる。",
+      "source": "Python comparisons / identity tests"
+    },
+    {
+      "id": 548,
+      "section": "セクション227: Python オブジェクトモデル",
+      "title": "== と is の違い",
+      "question": "次のコードの出力として正しいものはどれか？",
+      "code": "a = [1, 2, 3]\nc = [1, 2, 3]\nprint(a == c)\nprint(a is c)",
+      "options": [
+        "`True` の後に `True`",
+        "`False` の後に `False`",
+        "`True` の後に `False`",
+        "`False` の後に `True`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "2 つのリストは内容が同じなので `==` は `True` になる。一方で別々に生成された別オブジェクトなので、同一性を比べる `is` は `False` になる。",
+      "source": "Python comparisons / equality vs identity"
+    },
+    {
+      "id": 549,
+      "section": "セクション228: Python オブジェクトモデル",
+      "title": "type() が返すもの",
+      "question": "`type()` が返すものとして最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "型名の文字列",
+        "型オブジェクトそのもの",
+        "型のメモリアドレス",
+        "型の参照カウント"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`type()` は文字列ではなく型オブジェクトそのものを返す。型自体もオブジェクトなので、`type(type(42))` のように『型の型』をさらに調べることもできる。",
+      "source": "Python built-in functions / type()"
+    },
+    {
+      "id": 550,
+      "section": "セクション229: Python オブジェクトモデル",
+      "title": "__class__ 代入の制約",
+      "question": "`obj.__class__ = NewClass` という代入について、最も正しい説明はどれか？",
+      "code": "",
+      "options": [
+        "どんなオブジェクトでも常に自由に型を変更できる",
+        "一切不可能で、必ず `TypeError` になる",
+        "一部の互換性条件を満たす場合にだけ許され、常に安全とは限らない",
+        "ミュータブルなオブジェクトなら必ず成功する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`__class__` 代入は完全に自由ではなく、内部レイアウトなどの互換性条件を満たす一部ケースでしか許されない。したがって『オブジェクトの型はいつでも書き換えられる』と一般化するのは危険である。",
+      "source": "Python data model / __class__ assignment"
+    },
+    {
+      "id": 551,
+      "section": "セクション230: Python オブジェクトモデル",
+      "title": "可変デフォルト引数が危険な理由",
+      "question": "関数のデフォルト引数に `[]` を使うのが危険な根本理由として正しいのはどれか？",
+      "code": "",
+      "options": [
+        "`[]` はイミュータブルだから",
+        "`list` はミュータブルで、同じオブジェクトが呼び出し間で共有されうるから",
+        "`[]` は参照カウントが 0 になりやすいから",
+        "`[]` はヒープに置かれないから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "デフォルト引数の `[]` は関数定義時に一度だけ生成される。`list` はミュータブルなので、その同じオブジェクトが後続の呼び出しでも再利用され、変更が蓄積してしまう。",
+      "source": "Python tutorial / default argument values / mutable objects"
+    },
+    {
+      "id": 552,
+      "section": "セクション231: Python オブジェクトモデル",
+      "title": "イミュータブルなオブジェクト",
+      "question": "次のうち、イミュータブルなオブジェクトとして正しいのはどれか？",
+      "code": "",
+      "options": [
+        "`list`",
+        "`dict`",
+        "`set`",
+        "`tuple`"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`tuple` は作成後に要素の差し替えができないためイミュータブルである。一方 `list`、`dict`、`set` は内容を変更できるミュータブルなオブジェクトである。",
+      "source": "Python data model / mutable and immutable types"
+    },
+    {
+      "id": 553,
+      "section": "セクション232: Python GC とミュータビリティ",
+      "title": "tuple 内の list を append できる理由",
+      "question": "次のコードで `t[0].append(99)` が成功する理由として正しいのはどれか？",
+      "code": "t = ([1, 2, 3], \"hello\")\nt[0].append(99)",
+      "options": [
+        "`tuple` 自体がミュータブルだから",
+        "`tuple` が保持する参照は固定だが、参照先の `list` はミュータブルだから",
+        "`append()` は `tuple` に一切影響しない特別な命令だから",
+        "Python のバグで本来は失敗すべきだから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "イミュータブルな `tuple` が保証するのは『要素として保持している参照そのものを差し替えられないこと』であり、参照先オブジェクトの中身まで不変にするわけではない。`t[0]` が指している `list` はミュータブルなので `append()` による変更は可能である。",
+      "source": "Python data model / mutable and immutable objects"
+    },
+    {
+      "id": 554,
+      "section": "セクション233: Python GC とミュータビリティ",
+      "title": "x = 11 で起きること",
+      "question": "次の代入で内部的に起きることとして正しいのはどれか？",
+      "code": "x = 10\nx = 11",
+      "options": [
+        "`10` のオブジェクトの値がその場で `11` に書き換えられる",
+        "新しい `11` のオブジェクトが使われ、`x` がそちらを参照し直す",
+        "変数 `x` 自体が削除されて新しい `x` が作り直される",
+        "代入した瞬間に古い `10` のオブジェクトは必ず即時回収される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`int` はイミュータブルなので、既存の `10` オブジェクトの値を書き換えることはしない。代入は名前束縛の変更であり、`x` という名前が今度は `11` を参照するようになるだけである。",
+      "source": "Python execution model / naming and binding / immutable objects"
+    },
+    {
+      "id": 555,
+      "section": "セクション234: Python GC とミュータビリティ",
+      "title": "del a で即回収されない理由",
+      "question": "`del a` を実行してもオブジェクトがすぐ回収されない場合がある理由として正しいのはどれか？",
+      "code": "",
+      "options": [
+        "`del` はオブジェクトそのものではなく、名前からその参照を外すだけだから",
+        "`del` は CPython でしか動かない特殊構文だから",
+        "`del` は非同期で遅延実行される命令だから",
+        "`del` は GC に通知しないから"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`del a` は名前 `a` の束縛を削除する操作であって、オブジェクトを強制破壊する命令ではない。他の変数やコンテナからまだ参照されていれば、そのオブジェクトは生き続ける。",
+      "source": "Python language reference / del statement / object lifetime"
+    },
+    {
+      "id": 556,
+      "section": "セクション235: Python GC とミュータビリティ",
+      "title": "循環参照で参照カウントが 0 にならない理由",
+      "question": "2 つのオブジェクトが互いを参照しているとき、外部の変数名を削除しても参照カウントが 0 にならない理由はどれか？",
+      "code": "",
+      "options": [
+        "`del` が正しく動作しないから",
+        "オブジェクト同士の相互参照が残っているため、互いの参照カウントが下がり切らないから",
+        "GC が自動で無効化されるから",
+        "参照カウント方式には既知のバグがあるから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "外側の変数名を消しても、オブジェクト A が B を参照し、B が A を参照していれば、その内部参照が残る。参照カウント方式だけでは『外部から到達不能だが互いに参照し合っている』状態を解決できない。",
+      "source": "Python garbage collection / reference cycles"
+    },
+    {
+      "id": 557,
+      "section": "セクション236: Python GC とミュータビリティ",
+      "title": "一方的な参照の回収",
+      "question": "次のコードで `del a, b` の後に起きることとして正しいものはどれか？",
+      "code": "a = []\nb = []\na.append(b)  # a → b の一方的な参照\ndel a, b",
+      "options": [
+        "両方とも永久に回収されない",
+        "`a` だけ回収され、`b` は残り続ける",
+        "`a` が消えることで `b` への最後の参照も失われ、結果として両方回収可能になる",
+        "`b` が先に回収されるので `a` は壊れる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`a` だけが `b` を参照している一方向の構造では、外部の名前を消した後、`a` が回収されればその内部からの `b` 参照も消える。すると `b` も到達不能になり、芋づる式に回収可能になる。",
+      "source": "Python garbage collection / reference counting"
+    },
+    {
+      "id": 558,
+      "section": "セクション237: Python GC とミュータビリティ",
+      "title": "循環参照 GC の役割",
+      "question": "CPython の循環参照 GC の役割として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "`del` 文を自動実行して不要な変数名を消すこと",
+        "参照カウントだけでは回収できない、到達不能な循環参照グループを検出して回収可能にすること",
+        "参照カウントが 1 のオブジェクトをすべて強制削除すること",
+        "すべてのオブジェクトを一定時間ごとに OS へ返却すること"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "CPython の基本は参照カウントだが、それだけでは循環参照を回収できない。補助的な GC が、外部から到達不能な循環参照グループを見つけて回収可能にすることで、この弱点を補っている。",
+      "source": "CPython garbage collector documentation"
+    },
+    {
+      "id": 559,
+      "section": "セクション238: Python GC とミュータビリティ",
+      "title": "参照カウント方式だけの限界",
+      "question": "参照カウント方式だけでは回収できない典型例として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "整数オブジェクトが再代入された場合",
+        "外部から参照されていないが、オブジェクト同士が互いを参照し合う循環参照",
+        "関数のローカル変数がスコープを抜けた場合",
+        "文字列オブジェクトがイミュータブルである場合"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "参照カウントは『参照数が 0 になったら回収する』方式なので、互いを参照し合ってカウントが残る循環参照は苦手である。このため CPython には補助的な循環参照 GC がある。",
+      "source": "Python garbage collection / reference counting and cycles"
+    },
+    {
+      "id": 560,
+      "section": "セクション239: Python GC とミュータビリティ",
+      "title": "Guido の見解としての GC と with 文",
+      "question": "Guido van Rossum の説明や Python の流儀に照らして、GC と `with` 文の役割分担として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "開発者は常に手動でメモリ管理すべきで、GC は信用してはいけない",
+        "オブジェクトの寿命は通常 GC に任せてよいが、ファイルなどのリソース解放は `with` 文で明示的に管理するのが望ましい",
+        "GC は将来廃止されるので、すべて `del` に置き換えるべきだ",
+        "`with` 文はメモリ回収専用であり、ファイルやロックには関係ない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Guido は、循環参照のための補助 GC があることを前提に、通常のオブジェクト寿命を過度に心配する必要はないという立場を取っている。一方でファイルやロックのような外部リソースは、GC 任せではなく `with` 文などで解放タイミングを明示するのが Python 的な実践である。",
+      "source": "Python official docs / Guido van Rossum / with statement guidance"
+    },
+    {
+      "id": 561,
+      "section": "セクション240: Python GC 発展",
+      "title": "循環参照オブジェクトの回収保証",
+      "question": "CPython のガベージコレクションにおいて、循環参照を含むオブジェクトはどのように扱われるか？",
+      "code": "",
+      "options": [
+        "参照カウントが 0 になった時点で必ず即座に回収される",
+        "必ず回収されることが常に保証されている",
+        "回収時期は保証されず、`gc` による後続の検出と回収に依存する",
+        "循環参照は自動的に解消されるため問題にならない"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "循環参照は参照カウントだけでは消えないため、補助的な `gc` が後から到達不能な循環を検出して回収する。したがって、単純な参照カウントのような『その場で即座に回収』は保証されない。",
+      "source": "CPython garbage collector documentation / reference cycles"
+    },
+    {
+      "id": 562,
+      "section": "セクション241: Python GC 発展",
+      "title": "except 節で寿命が延びる理由",
+      "question": "`try ... except` で例外を捕捉したとき、オブジェクトが予想より長く生き残ることがある理由として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "`except` 節がスタックフレームをロックするから",
+        "例外オブジェクトが `__traceback__` を通じて、ローカル変数を含むフレームを参照し続けることがあるから",
+        "CPython が `except` 節内では参照カウント更新を止めるから",
+        "`gc` モジュールが `except` 節内の回収を禁止しているから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "例外オブジェクトは traceback を保持し、その traceback はフレームを参照する。フレームはローカル変数への参照を持つため、例外情報が残っている間は本来短命だったオブジェクトも連鎖的に生存しやすくなる。",
+      "source": "Python exceptions / traceback objects / frame references"
+    },
+    {
+      "id": 563,
+      "section": "セクション242: Python GC 発展",
+      "title": "不変コンテナ内の可変要素の変更",
+      "question": "不変コンテナであるタプルが可変オブジェクトへの参照を含む場合、その参照先を変更すると何が起きるか？",
+      "code": "t = ([1, 2, 3], 'hello')\nt[0].append(99)",
+      "options": [
+        "タプルも不変なので変更は反映されず、必ず例外になる",
+        "タプルが表す値は変化しうるが、タプル自体の identity は変わらない",
+        "タプルの identity が変わり、新しいタプルが自動生成される",
+        "循環参照が発生し、`gc` モジュールが介入する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "不変コンテナは『保持する参照の差し替えができない』ことを意味するが、参照先が可変ならその中身は変わりうる。したがってタプル自体は同一オブジェクトのままでも、意味上の内容は変化しうる。",
+      "source": "Python data model / immutable containers with mutable members"
+    },
+    {
+      "id": 564,
+      "section": "セクション243: Python GC 発展",
+      "title": "close() を GC 任せにしてはいけない理由",
+      "question": "ファイルオブジェクトを明示的に `close()` せず使うことが問題になる最も根本的な理由はどれか？",
+      "code": "",
+      "options": [
+        "CPython では参照カウントが即座にゼロになることが保証されないから",
+        "ガベージコレクションの実行時期が保証されないため、リソース解放時期も保証されないから",
+        "`with` 文を使わないと OS のファイルディスクリプタが即座に壊れるから",
+        "PyPy と CPython で `close()` の実装が異なるから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "本質は『ガベージコレクション任せでは、いつ後始末が走るか分からない』点にある。ファイルやソケットのような外部リソースは解放タイミングが重要なので、`close()` や `with` 文で明示的に管理すべきである。",
+      "source": "Python with statement / resource management / file objects"
+    },
+    {
+      "id": 565,
+      "section": "セクション244: Python GC 発展",
+      "title": "デバッガやトレースで寿命が延びる理由",
+      "question": "デバッグ機能やトレース機能を使うと、本来は回収されるはずのオブジェクトが生き続けることがある理由として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "デバッガが `gc` モジュールを完全に無効化するから",
+        "トレースやデバッガが内部でオブジェクトやフレームへの参照を保持し、参照カウントが下がり切らないことがあるから",
+        "デバッグモードでは循環参照の検出が停止されるから",
+        "CPython がデバッグ時だけ参照カウント更新を遅延させるから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "デバッガやトレース機構は、表示や検査のためにフレーム・例外・ローカル変数などへの参照を保持しがちである。その追加参照のせいで、通常なら寿命が尽きるオブジェクトが想定より長く残ることがある。",
+      "source": "Python debugging / tracing / frame references"
+    },
+    {
+      "id": 566,
+      "section": "セクション245: Python オブジェクト基礎",
+      "title": "参照カウント方式で回収されるタイミング",
+      "question": "CPython の参照カウント方式において、オブジェクトが回収されるタイミングとして正しいのはどれか？",
+      "code": "",
+      "options": [
+        "GC が定期実行されたとき",
+        "参照カウントが 0 になった瞬間",
+        "プログラム終了時",
+        "`gc` モジュールが明示的に呼ばれたときだけ"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "CPython の基本は参照カウントであり、通常は参照カウントが 0 になった時点で解放処理が進む。循環参照だけはこの仕組みでは回収できず、補助 GC の対象になる。",
+      "source": "CPython memory management / reference counting"
+    },
+    {
+      "id": 567,
+      "section": "セクション246: Python オブジェクト基礎",
+      "title": "None の真偽値",
+      "question": "`None` の真偽値として正しいのはどれか？",
+      "code": "",
+      "options": [
+        "`True`",
+        "`None` は真偽値を持たない",
+        "`False`",
+        "実装依存"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`None` の truth value は false である。したがって `if None:` は偽として扱われる。",
+      "source": "Python data model / None"
+    },
+    {
+      "id": 568,
+      "section": "セクション247: Python オブジェクト基礎",
+      "title": "1 is 1 の結果は仕様上どうか",
+      "question": "次のコードにおける `a is b` の結果について、仕様上もっとも安全な説明はどれか？",
+      "code": "a = 1\nb = 1",
+      "options": [
+        "必ず `True`",
+        "必ず `False`",
+        "実装依存であり、どちらの可能性もある",
+        "`SyntaxError` が発生する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "小さな整数の共有は CPython でよく見られる最適化だが、`is` の結果として仕様上保証されるものではない。値の等しさを判定したいなら `==` を使うべきである。",
+      "source": "Python data model / identity / CPython implementation detail for small integers"
+    },
+    {
+      "id": 569,
+      "section": "セクション248: Python オブジェクト基礎",
+      "title": "空リストを2回作ったときの is",
+      "question": "次のコードにおける `c is d` の結果はどうなるか？",
+      "code": "c = []\nd = []",
+      "options": [
+        "実装依存",
+        "必ず `True`",
+        "必ず `False`",
+        "`TypeError` が発生する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`[]` を2回評価すると、内容が同じでも別々のリストオブジェクトが新しく作られる。そのため `is` による同一性比較は `False` になる。",
+      "source": "Python list literals / object identity"
+    },
+    {
+      "id": 570,
+      "section": "セクション249: Python オブジェクト基礎",
+      "title": "未対応オペランドで返すべき値",
+      "question": "数値メソッドが対応していない型のオペランドを受け取った場合、返すべきものは何か？",
+      "code": "",
+      "options": [
+        "`None`",
+        "`False`",
+        "`NotImplemented`",
+        "ただちに `TypeError` を送出する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "数値メソッドや rich comparison メソッドは、与えられたオペランドに対してその演算を実装していない場合 `NotImplemented` を返すべきである。するとインタープリタが反転演算や別のフォールバックを試せる。",
+      "source": "Python data model / NotImplemented"
+    },
+    {
+      "id": 571,
+      "section": "セクション250: Python オブジェクト基礎",
+      "title": "Python 3.14 の NotImplemented の真偽値評価",
+      "question": "Python 3.14 以降で `NotImplemented` を真偽値コンテキストで評価するとどうなるか？",
+      "code": "",
+      "options": [
+        "`True` と評価される",
+        "`False` と評価される",
+        "`DeprecationWarning` が発生する",
+        "`TypeError` が発生する"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`NotImplemented` は真偽値コンテキストで評価すべきではない。Python 3.9 では非推奨化され、Python 3.14 以降は実際に `TypeError` を送出するよう変更された。",
+      "source": "Python 3.14 data model / built-in constants / NotImplemented"
+    },
+    {
+      "id": 572,
+      "section": "セクション251: Python オブジェクト基礎",
+      "title": "連鎖代入したリストの同一性",
+      "question": "次のコードの後、`e is f` の結果として正しいのはどれか？",
+      "code": "e = f = []",
+      "options": [
+        "`False`（別々のリストが生成される）",
+        "`True`（同じオブジェクトが両方の名前に束縛される）",
+        "実装依存",
+        "`TypeError` が発生する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "連鎖代入では 1 つの右辺オブジェクトが作られ、それが複数の名前へ束縛される。したがって `e` と `f` は同じリストオブジェクトを参照し、`e is f` は `True` になる。",
+      "source": "Python assignment semantics / object identity"
+    },
+    {
+      "id": 573,
+      "section": "セクション252: Python オブジェクトと数値",
+      "title": "None の真偽値",
+      "question": "`None` の真偽値として正しいのはどれか？",
+      "code": "",
+      "options": [
+        "`True`",
+        "`False`",
+        "実装依存",
+        "真偽値を持たない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`None` の truth value は false である。したがって `if None:` は偽として扱われる。",
+      "source": "Python data model / truth value testing / None"
+    },
+    {
+      "id": 574,
+      "section": "セクション253: Python オブジェクトと数値",
+      "title": "Ellipsis の真偽値",
+      "question": "`Ellipsis`（`...`）の真偽値として正しいのはどれか？",
+      "code": "",
+      "options": [
+        "`True`",
+        "`False`",
+        "実装依存",
+        "真偽値を持たない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`Ellipsis` は組み込み定数の 1 つであり、truth value testing では真として扱われる。`None` や `False` のような特別な偽値ではない。",
+      "source": "Python built-in constants / truth value testing"
+    },
+    {
+      "id": 575,
+      "section": "セクション254: Python オブジェクトと数値",
+      "title": "数値オブジェクトの不変性",
+      "question": "Python の数値オブジェクトの不変性について正しい説明はどれか？",
+      "code": "",
+      "options": [
+        "一度生成された数値オブジェクトの値は変更できない",
+        "変数への再代入によって元の数値オブジェクトの値を書き換えられる",
+        "算術演算によって元のオブジェクトの値が更新される",
+        "整数だけが不変で、浮動小数点数は可変である"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "数値型オブジェクトはイミュータブルであり、一度生成されたオブジェクトの値は変更できない。再代入や算術演算で起きるのは、名前束縛の変更や新しい値オブジェクトの利用である。",
+      "source": "Python data model / immutable numeric types"
+    },
+    {
+      "id": 576,
+      "section": "セクション255: Python オブジェクトと数値",
+      "title": "numbers.Number ではないもの",
+      "question": "次のうち、`numbers.Number` 系のオブジェクトが生成される場面として誤っているものはどれか？",
+      "code": "",
+      "options": [
+        "`42` と書いた（数値リテラル）",
+        "`3 + 4` を評価した（算術演算）",
+        "`abs(-5)` を呼んだ（組み込み関数）",
+        "`[1, 2, 3]` と書いた（リストリテラル）"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "数値リテラル、数値演算、数値向け組み込み関数は数値オブジェクトを扱う。一方 `[1, 2, 3]` は `list` オブジェクトを生成するので、`numbers.Number` 系ではない。",
+      "source": "Python numbers ABC / built-in numeric types"
+    },
+    {
+      "id": 577,
+      "section": "セクション256: Python オブジェクトと数値",
+      "title": "数値の __repr__ の目的",
+      "question": "数値オブジェクトの `__repr__()` が目指す性質として最も適切なものはどれか？",
+      "code": "",
+      "options": [
+        "先頭のゼロが付くことを優先する",
+        "正の数にも必ず `+` を表示する",
+        "可能なら同じ値を再現できる文字列表現を返す",
+        "常に 2 進数文字列で返す"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`repr(x)` は、可能であればその表現を評価したときに同じ値を再現できるような、曖昧さの少ない文字列表現を目指す。『同じオブジェクト』ではなく『同じ値』を再現するのがポイントである。",
+      "source": "Python built-in function repr / numeric object representation"
+    },
+    {
+      "id": 578,
+      "section": "セクション257: Python オブジェクトと数値",
+      "title": "__add__ が NotImplemented を返した後",
+      "question": "`a.__add__(b)` が `NotImplemented` を返した場合、次に何が試みられるか？",
+      "code": "",
+      "options": [
+        "即座に `TypeError` が発生する",
+        "`a.__radd__(b)` が試みられる",
+        "`b.__radd__(a)` が試みられる",
+        "`b.__add__(a)` が試みられる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "通常の二項演算で左オペランド側の実装が `NotImplemented` を返すと、インタープリタは右オペランド側の反射演算メソッド、ここでは `b.__radd__(a)` を試す。",
+      "source": "Python data model / emulating numeric types / reflected operations"
+    },
+    {
+      "id": 579,
+      "section": "セクション258: Python オブジェクトと数値",
+      "title": "空リスト同士の is 比較",
+      "question": "次のコードの `c is d` の結果はどうなるか？",
+      "code": "c = []\nd = []\nc is d",
+      "options": [
+        "`True`",
+        "`False`",
+        "実装依存",
+        "`TypeError` が発生する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`[]` を 2 回評価すると、それぞれ別個のリストオブジェクトが生成される。そのため内容が同じでも同一オブジェクトではなく、`is` の結果は `False` になる。",
+      "source": "Python list literals / identity comparison"
+    },
+    {
+      "id": 580,
+      "section": "セクション259: ターミナル制御と termios",
+      "title": "stty -a の有効フラグ表記",
+      "question": "`stty -a` の出力でフラグが有効であることを示す表記はどれか？",
+      "code": "",
+      "options": [
+        "フラグ名の前に `+` が付く",
+        "フラグ名の前に `-` が付く",
+        "フラグ名だけが表示される（`-` なし）",
+        "フラグ名の後に `=1` が付く"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`stty -a` では、通常フラグが有効なら `echo` のようにそのまま表示され、無効なら `-echo` のように先頭に `-` が付く。",
+      "source": "stty(1) manual / terminal mode flags"
+    },
+    {
+      "id": 581,
+      "section": "セクション260: ターミナル制御と termios",
+      "title": "stty -a の端末サイズ",
+      "question": "`stty -a` でターミナルの幅と高さを確認するフィールドはどれか？",
+      "code": "",
+      "options": [
+        "`speed` と `baud`",
+        "`rows` と `columns`",
+        "`min` と `time`",
+        "`intr` と `susp`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`stty -a` では端末サイズは `rows` と `columns` で表示される。`speed` は回線速度、`min` と `time` は非 canonical モードでの入力条件、`intr` と `susp` は制御文字設定である。",
+      "source": "stty(1) manual / rows / columns"
+    },
+    {
+      "id": 582,
+      "section": "セクション261: ターミナル制御と termios",
+      "title": "ICANON と ECHO のクリア",
+      "question": "以下のコードは何をしているか？",
+      "code": "newt.c_lflag &= ~(ICANON | ECHO);",
+      "options": [
+        "`ICANON` と `ECHO` のビットを 1 にする",
+        "`ICANON` と `ECHO` のビットを 0 にする",
+        "`c_lflag` の全ビットを 0 にする",
+        "`c_lflag` を `ICANON | ECHO` の値に置き換える"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`ICANON | ECHO` で対象ビット群を作り、`~` でそれ以外を 1 にしたマスクを `&=` で適用している。結果として `c_lflag` のうち `ICANON` と `ECHO` に対応するビットだけがクリアされる。",
+      "source": "termios(3) / c_lflag / ICANON / ECHO / bit masking"
+    },
+    {
+      "id": 583,
+      "section": "セクション262: C++ enum class",
+      "title": "unsigned char 基底型の enum class の要素数上限",
+      "question": "`enum class` で基底型を `unsigned char` にした場合、定義できる要素数の上限はいくつか？",
+      "code": "",
+      "options": [
+        "128",
+        "255",
+        "256",
+        "512"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`unsigned char` が表せる値は通常 0 から 255 までの 256 通りである。列挙子に重複しない値を割り当てる前提なら、取りうる値の個数の上限は 256 である。",
+      "source": "C++ scoped enumeration / underlying type / unsigned char range"
+    },
+    {
+      "id": 584,
+      "section": "セクション263: C++ enum class",
+      "title": "scoped enum の暗黙変換",
+      "question": "以下のコードでエラーになるのはどれか？",
+      "code": "enum class MonsterType : int { SLIME, GOBLIN, MONSTER_MAX };",
+      "options": [
+        "`int x = static_cast<int>(MonsterType::MONSTER_MAX);`",
+        "`int x = MonsterType::MONSTER_MAX;`",
+        "`size_t x = static_cast<size_t>(MonsterType::MONSTER_MAX);`",
+        "`unsigned char x = static_cast<unsigned char>(MonsterType::MONSTER_MAX);`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`enum class` は scoped enumeration であり、基底整数型への暗黙変換を行わない。そのため `MonsterType::MONSTER_MAX` を `int` に代入するには `static_cast` が必要である。",
+      "source": "C++ scoped enumeration / explicit conversion / static_cast"
+    },
+    {
+      "id": 585,
+      "section": "セクション264: C++ enum class",
+      "title": "MONSTER_MAX を末尾に置く理由",
+      "question": "`MONSTER_MAX` を `enum class` の最後に定義する主な目的はどれか？",
+      "code": "",
+      "options": [
+        "コンパイルエラーを防ぐため",
+        "モンスターの種類数を自動的に管理するため",
+        "配列のインデックスとして直接使用するため",
+        "`static_cast` を不要にするため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "末尾に番兵的な列挙子を置くと、有効な要素数を定数として一緒に管理しやすい。新しいモンスターを途中に追加しても、最後の `MONSTER_MAX` が総数の目安として追従する。",
+      "source": "C++ enum count sentinel idiom / scoped enumeration"
+    },
+    {
+      "id": 586,
+      "section": "セクション265: ターミナル制御と termios",
+      "title": "echoctl 有効時の Ctrl+C 表示",
+      "question": "`echoctl` フラグが有効な場合、`Ctrl+C` を入力するとターミナルにどう表示されるか？",
+      "code": "",
+      "options": [
+        "何も表示されない",
+        "`^C` と表示される",
+        "`\\\\003` と表示される",
+        "`SIGINT` と表示される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`echoctl` は制御文字をハット記法で表示する挙動を有効にするフラグである。そのため `Ctrl+C` は `^C` のように可視化される。",
+      "source": "termios(3) / ECHOCTL / control character echoing"
+    },
+    {
+      "id": 587,
+      "section": "セクション266: 型安全性と技術選定",
+      "title": "型安全性のメリットではないもの",
+      "question": "型安全性の主なメリットとして当てはまらないものはどれ？",
+      "code": "",
+      "options": [
+        "コンパイル時にバグを発見できる",
+        "コードの可読性が上がる",
+        "実行速度が必ず2倍になる",
+        "IDEの補完機能が強化される"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "型安全性はコンパイル時の検証、意図の明確化、IDE 補助の改善などに寄与する。一方、実行速度の向上は言語処理系や最適化、ワークロード次第であり、「必ず2倍になる」とは言えない。",
+      "source": "https://www.typescriptlang.org/docs/handbook/intro.html"
+    },
+    {
+      "id": 588,
+      "section": "セクション267: 型安全性と技術選定",
+      "title": "小規模開発で型安全性の恩恵が薄れる理由",
+      "question": "小規模開発で型安全性の恩恵が薄れる主な理由は？",
+      "code": "",
+      "options": [
+        "型安全性の技術が未熟だから",
+        "コードベース全体を把握できるので混乱しにくいから",
+        "小規模ではバグが発生しないから",
+        "コンパイラが対応していないから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "小規模なコードベースでは、開発者が全体像や依存関係を頭に入れやすく、変更影響も手作業で追跡しやすい。このため、大規模開発ほど型安全性の恩恵が前面に出にくい。",
+      "source": "https://www.epicweb.dev/bonuses/interviews-with-experts/the-magic-of-typescript-with-matt-pocock"
+    },
+    {
+      "id": 589,
+      "section": "セクション268: 型安全性と技術選定",
+      "title": "変更の影響範囲を自動検出するとは",
+      "question": "「変更の影響範囲を自動検出」とはどういう意味？",
+      "code": "",
+      "options": [
+        "実行ログから影響を後から分析する",
+        "型チェッカーがコンパイル時に型の不一致箇所を全て列挙してくれる",
+        "バグ発生後にテストが失敗することで検出する",
+        "IDEがコードをリアルタイムで実行して確認する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "型を変更したとき、静的型チェッカーはその型に依存している箇所を実行前に洗い出せる。これは実行後の観測やテスト失敗に頼るのではなく、コンパイル時に網羅的な不整合を報告するという意味での『自動検出』である。",
+      "source": "https://www.typescriptlang.org/docs/handbook/2/basic-types.html"
+    },
+    {
+      "id": 590,
+      "section": "セクション269: ストレージ技術選定",
+      "title": "SharedPreferences・DataStore・Hive の選定分類",
+      "question": "SharedPreferences・DataStore・Hive の技術選定は何の選定に分類される？",
+      "code": "",
+      "options": [
+        "型の技術選定",
+        "フレームワークの技術選定",
+        "ストレージ技術の選定",
+        "通信プロトコルの選定"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "これらはアプリ内でデータを保存・読み出しするための技術であり、永続化層やローカルストレージの選定に属する。型システムや通信プロトコルの話ではない。",
+      "source": "https://developer.android.com/topic/libraries/architecture/datastore, https://pub.dev/packages/hive"
+    },
+    {
+      "id": 591,
+      "section": "セクション270: ストレージ技術選定",
+      "title": "SharedPreferences・DataStore・Hive の共通点",
+      "question": "SharedPreferences・DataStore・Hive の共通点として最も適切なのはどれ？",
+      "code": "",
+      "options": [
+        "データの永続化に使う技術である",
+        "すべてOS標準APIである",
+        "すべてフレームワークである",
+        "すべて通信プロトコルである"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "SharedPreferences は Android 標準 API 寄り、DataStore は Jetpack ライブラリ、Hive は Dart のライブラリであり分類は同一ではない。ただし、いずれもアプリ内データの永続化に使う技術という点が共通している。",
+      "source": "https://developer.android.com/reference/android/content/SharedPreferences, https://developer.android.com/topic/libraries/architecture/datastore, https://pub.dev/packages/hive"
+    },
+    {
+      "id": 592,
+      "section": "セクション271: フレームワークとライブラリ",
+      "title": "フレームワークとライブラリの違い",
+      "question": "フレームワークとライブラリの違いとして正しいのはどれ？",
+      "code": "",
+      "options": [
+        "フレームワークは小さく、ライブラリは大きい",
+        "フレームワークがアプリ全体の骨格を提供し、開発者がその上に乗る",
+        "ライブラリはOSSで、フレームワークは有料",
+        "違いはほぼない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "フレームワークは制御フローやアプリの骨格を提供し、開発者はその枠組みに沿ってコードを書く。ライブラリは必要なときに開発者側から呼び出す部品であり、ここに制御の逆転という違いがある。",
+      "source": "https://en.wikipedia.org/wiki/Inversion_of_control"
+    },
+    {
+      "id": 593,
+      "section": "セクション272: C++ enum class と剰余演算",
+      "title": "ラップアラウンド計算の目的",
+      "question": "以下のコードの主な目的は何ですか？",
+      "code": "(static_cast<int>(cmd) + N) % N",
+      "options": [
+        "`cmd` を `N` 以下にクランプする",
+        "`cmd` の値をランダムに変換する",
+        "`cmd` を `0` 〜 `N-1` の範囲で循環（ラップアラウンド）させる",
+        "`cmd` を常に `0` に戻す"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "この式は値を `0` から `N-1` の範囲で循環させるための典型的な形である。インデックスや列挙値を『最後の次は最初に戻す』ような挙動にしたいときに使う。",
+      "source": "https://en.cppreference.com/w/cpp/language/operator_arithmetic"
+    },
+    {
+      "id": 594,
+      "section": "セクション273: C++ enum class と剰余演算",
+      "title": "(x + N) % N が不十分な条件",
+      "question": "`(x + N) % N` が正しく動作しない条件はどれですか？",
+      "code": "",
+      "options": [
+        "`x` が正の値のとき",
+        "`x` が `0` のとき",
+        "`x < -N` のとき",
+        "`N` が奇数のとき"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "C++ の剰余演算では余りの符号は左オペランド側に従う。したがって `x` が `-N` よりさらに小さいと、`x + N` もまだ負であり、1回だけ `+N` しても `0` から `N-1` の範囲に入らないことがある。",
+      "source": "https://en.cppreference.com/w/cpp/language/operator_arithmetic"
+    },
+    {
+      "id": 595,
+      "section": "セクション274: C++ enum class と剰余演算",
+      "title": "enum class で static_cast が必要な理由",
+      "question": "`enum class` を導入したことで `static_cast` が必要になった理由は？",
+      "code": "",
+      "options": [
+        "`enum class` はメモリ使用量を増やすから",
+        "`enum class` は `int` への暗黙の型変換を禁止しているから",
+        "`enum class` はコンパイル速度を落とすから",
+        "`enum class` はグローバルスコープを汚染するから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`enum class` は scoped enumeration であり、従来の `enum` と違って整数型への暗黙変換を行わない。整数演算に使うには明示的な `static_cast` が必要になる。",
+      "source": "https://en.cppreference.com/w/cpp/language/enum"
+    },
+    {
+      "id": 596,
+      "section": "セクション275: C++ enum class と剰余演算",
+      "title": "Core Guidelines Enum.7 の推奨",
+      "question": "C++ Core Guidelines の `Enum.7` が推奨していることは？",
+      "code": "",
+      "options": [
+        "常に underlying type を明示的に指定する",
+        "必要な場合のみ underlying type を指定する",
+        "`enum class` より plain `enum` を優先する",
+        "underlying type は必ず `size_t` にする"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "C++ Core Guidelines の `Enum.7` は、underlying type は本当に必要な場合だけ指定すべきだという立場である。可読性や保守性の観点から、不要な明示指定は避けるのが基本になる。",
+      "source": "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Renum-underlying"
+    },
+    {
+      "id": 597,
+      "section": "セクション276: C++ enum class と剰余演算",
+      "title": "std::to_underlying の導入時期",
+      "question": "`std::to_underlying` が導入された C++ バージョンはどれですか？",
+      "code": "",
+      "options": [
+        "C++17",
+        "C++20",
+        "C++23",
+        "C++26"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`std::to_underlying` は scoped enum を基底整数型へ安全に変換するためのユーティリティで、標準ライブラリに C++23 で追加された。",
+      "source": "https://en.cppreference.com/w/cpp/utility/to_underlying"
+    },
+    {
+      "id": 598,
+      "section": "セクション277: C++ enum class と剰余演算",
+      "title": "GCC 12 で std::to_underlying が使えない理由",
+      "question": "GCC 12 で `std::to_underlying` が使えない理由は？",
+      "code": "",
+      "options": [
+        "GCC 12 は C++ に対応していないから",
+        "GCC 12 の C++23 サポートは部分的・実験的で `std::to_underlying` は未実装だから",
+        "`-std=c++23` オプションが存在しないから",
+        "`std::to_underlying` は Linux では使えないから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "コンパイラが `-std=c++23` を受け付けても、標準ライブラリ機能がすべて実装済みとは限らない。GCC 12 系では C++23 サポートが部分的で、`std::to_underlying` が未提供の構成がありうる。",
+      "source": "https://gcc.gnu.org/projects/cxx-status.html"
+    },
+    {
+      "id": 599,
+      "section": "セクション278: シェルとビルド実行",
+      "title": "&& の意味",
+      "question": "`g++-12 -std=c++23 -o RPG RPG.cpp && ./RPG` の `&&` の意味は？",
+      "code": "",
+      "options": [
+        "常に両方のコマンドを実行する",
+        "左のコマンドが失敗した場合のみ右を実行する",
+        "左のコマンドが成功した場合のみ右を実行する",
+        "バックグラウンドで並列実行する"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "シェルの `&&` は論理 AND の短絡評価に似た挙動をし、左側の終了ステータスが成功のときだけ右側を実行する。コンパイル成功時のみ実行したい場合の定番の書き方である。",
+      "source": "https://www.gnu.org/software/bash/manual/bash.html#Lists"
+    },
+    {
+      "id": 600,
+      "section": "セクション279: GCC と Ubuntu",
+      "title": "Ubuntu 22.04 の GCC 12 の既定規格",
+      "question": "Ubuntu 22.04 の GCC 12 のデフォルト C++ 規格はどれですか？",
+      "code": "",
+      "options": [
+        "C++14",
+        "C++17",
+        "C++20",
+        "C++23"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "GCC 12 系の `g++` は、明示的な `-std=` 指定がない場合、通常は `gnu++17` を既定として扱う。設問の選択肢では GNU 拡張込みの `gnu++17` を便宜上 `C++17` としている。",
+      "source": "https://gcc.gnu.org/onlinedocs/gcc-12.1.0/gcc/Standards.html"
+    },
+    {
+      "id": 601,
+      "section": "セクション280: Ubuntu パッケージ管理",
+      "title": "PPA とは何か",
+      "question": "PPA とは何ですか？",
+      "code": "",
+      "options": [
+        "Ubuntu の公式パッケージリポジトリ",
+        "GCC のビルドシステム",
+        "Ubuntu 向けの非公式パッケージリポジトリ",
+        "C++ の標準化団体"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "PPA は Personal Package Archive の略で、主に Launchpad を通じて配布される Ubuntu 向けの追加パッケージリポジトリを指す。公式リポジトリではない追加配布元として使われる。",
+      "source": "https://help.launchpad.net/Packaging/PPA"
+    },
+    {
+      "id": 602,
+      "section": "セクション281: C++ enum class と剰余演算",
+      "title": "underlying type に size_t が不向きな理由",
+      "question": "今回のコードで underlying type に `size_t` が適さない理由は？",
+      "code": "",
+      "options": [
+        "`size_t` は `enum class` で使えないから",
+        "`size_t` は符号なし整数のため `-1` を格納できず、負値補正ロジックが破綻するから",
+        "`size_t` は C++23 以降でしか使えないから",
+        "`size_t` は Windows でしか使えないから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`size_t` は符号なし整数型なので、負の方向へ一時的にずらすようなロジックと相性が悪い。今回のように `-1` 相当の値や負値補正を扱う場面では、符号付き整数ベースのほうが意味を保ちやすい。",
+      "source": "https://en.cppreference.com/w/cpp/types/size_t"
+    },
+    {
+      "id": 603,
+      "section": "セクション282: enum class と配列インデックス設計",
+      "title": "enum class を配列インデックスに使う目的",
+      "question": "`enum class` を配列インデックスに使う主な目的はどれ？",
+      "code": "",
+      "options": [
+        "処理速度の向上",
+        "マジックナンバーの防止",
+        "メモリ使用量の削減",
+        "コンパイル時間の短縮"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "配列の添字を生の数値ではなく意味を持つ列挙子で表現すると、`0` や `1` が何を指すのかをコメントなしで読めるようになる。主目的は性能ではなく、意図の明確化と保守性の向上である。",
+      "source": "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines"
+    },
+    {
+      "id": 604,
+      "section": "セクション283: enum class と配列インデックス設計",
+      "title": "マジックナンバーはどれか",
+      "question": "以下のうちマジックナンバーはどれ？",
+      "code": "",
+      "options": [
+        "`character[static_cast<int>(CharacterType::PLAYER)].hp`",
+        "`monsters[static_cast<int>(MonsterType::MONSTER_SLIME)]`",
+        "`character[0].hp`",
+        "`CharacterType::PLAYER`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`character[0].hp` の `0` は、それだけでは何を意味する添字か読み手に伝わらない。意味を持つ名前に置き換えられていない裸の定数値は、典型的なマジックナンバーである。",
+      "source": "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines"
+    },
+    {
+      "id": 605,
+      "section": "セクション284: enum class と配列インデックス設計",
+      "title": "_MAX を末尾に置く目的",
+      "question": "`_MAX` を `enum` の末尾に定義する目的はどれ？",
+      "code": "",
+      "options": [
+        "最大値を表す定数として演算に使う",
+        "配列サイズとして使い、配列と `enum` を1対1で対応させる",
+        "`enum` の範囲チェックに使う",
+        "デバッグ時の表示用"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "末尾の `_MAX` は『有効要素数』を表す番兵として使うと便利で、配列サイズやループ終端と自然に対応づけられる。これにより、列挙子の追加と配列側の管理を同期しやすくなる。",
+      "source": "https://en.cppreference.com/w/cpp/language/enum"
+    },
+    {
+      "id": 606,
+      "section": "セクション285: enum class と配列インデックス設計",
+      "title": "配列インデックス enum class と size_t",
+      "question": "配列インデックス用の `enum class` に `size_t` を underlying type にすることについて、適切な説明はどれ？",
+      "code": "",
+      "options": [
+        "必ずそうすべきで、`int` は誤り",
+        "意味的には自然だが、設計判断の問題であり `int` でも問題ない",
+        "`size_t` は `enum class` で使えないため不可",
+        "Core Guidelines が `size_t` を明示的に推奨している"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "添字という意味だけを見れば `size_t` は自然だが、列挙値をどの演算に使うかまで含めると設計判断になる。今回のように周回計算や負値補正との関係があるなら `int` ベースでも十分合理的である。",
+      "source": "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Renum-underlying"
+    },
+    {
+      "id": 607,
+      "section": "セクション286: enum class と配列インデックス設計",
+      "title": "enum class 導入のトレードオフ",
+      "question": "今回の設計で `enum class` を導入したトレードオフはどれ？",
+      "code": "",
+      "options": [
+        "型安全性が失われる",
+        "配列との対応が曖昧になる",
+        "`static_cast` が毎回必要になる冗長さ",
+        "コンパイラが `enum` を認識できなくなる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`enum class` によって名前空間汚染や暗黙変換を防げる一方、整数として使いたい場面では明示的な `static_cast` が必要になる。これは安全性と記述量のトレードオフである。",
+      "source": "https://en.cppreference.com/w/cpp/language/enum"
+    },
+    {
+      "id": 608,
+      "section": "セクション287: enum class と配列インデックス設計",
+      "title": "command の underlying type に size_t が向かない理由",
+      "question": "`command` の `enum` の underlying type を `size_t` にできない理由はどれ？",
+      "code": "",
+      "options": [
+        "`size_t` は C++23 以降でしか使えないから",
+        "`size_t` は符号なしのため負値補正ロジックが破綻するから",
+        "`size_t` は `enum class` で使えないから",
+        "Core Guidelines が禁止しているから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`size_t` は符号なし整数なので、`-1` のような一時的な負方向の値を前提とするロジックと噛み合わない。今回のように前後移動や剰余での補正を行う設計では、符号付き型のほうが自然である。",
+      "source": "https://en.cppreference.com/w/cpp/types/size_t"
+    },
+    {
+      "id": 609,
+      "section": "セクション288: enum class と配列インデックス設計",
+      "title": "scoped enum class の既定 underlying type",
+      "question": "`enum class` で underlying type を明示しない場合の既定はどれ？",
+      "code": "",
+      "options": [
+        "`size_t`",
+        "`unsigned int`",
+        "`int`",
+        "`long long`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "scoped enumeration である `enum class` は、基底型を省略した場合は既定で `int` を underlying type とする。これは『常に `int` を明示指定すべき』という意味ではなく、言語仕様上の既定値である。",
+      "source": "https://en.cppreference.com/w/cpp/language/enum"
+    },
+    {
+      "id": 610,
+      "section": "セクション289: enum class と配列インデックス設計",
+      "title": "character[0].hp の問題点",
+      "question": "`character[0].hp` の問題点はどれ？",
+      "code": "",
+      "options": [
+        "配列の範囲外アクセスが起きる",
+        "`0` が何を指すか不明でコードの意図が読み取りにくい",
+        "コンパイルエラーになる",
+        "`hp` の値が正しく取得できない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`0` という添字自体は合法でも、それがプレイヤーなのか先頭モンスターなのか、読み手には文脈なしで分からない。名前付きの列挙子を使うと、コードの意図を値ではなく意味で表現できる。",
+      "source": "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines"
+    },
+    {
+      "id": 611,
+      "section": "セクション290: C++ 乱数生成",
+      "title": "std::random_device{} の {} の役割",
+      "question": "`std::random_device{}()` の `{}` の役割は？",
+      "code": "",
+      "options": [
+        "乱数の範囲を指定する",
+        "`std::random_device` のインスタンスを生成する",
+        "シードの初期値を `0` に設定する",
+        "ハードウェア乱数を無効化する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`std::random_device{}` は一時オブジェクトを直接初期化して生成している。つまり `{}` の部分は乱数を取る前段として `std::random_device` のインスタンスをその場で作る役割を持つ。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/random_device"
+    },
+    {
+      "id": 612,
+      "section": "セクション291: C++ 乱数生成",
+      "title": "std::random_device{}() の末尾の ()",
+      "question": "`std::random_device{}()` の末尾の `()` の役割は？",
+      "code": "",
+      "options": [
+        "デストラクタを呼び出す",
+        "インスタンスを初期化する",
+        "乱数値を1つ取得する",
+        "シードをリセットする"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`std::random_device` は関数呼び出し演算子 `operator()` を持つ乱数生成器である。末尾の `()` はその一時オブジェクトから乱数値を 1 回取得している。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/random_device/operator()"
+    },
+    {
+      "id": 613,
+      "section": "セクション292: C++ 乱数生成",
+      "title": "rng.seed() の目的",
+      "question": "`rng.seed()` の目的は？",
+      "code": "",
+      "options": [
+        "乱数生成器を破棄する",
+        "乱数生成器の初期状態を設定する",
+        "乱数の最大値を設定する",
+        "乱数生成器の速度を最適化する"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`seed()` は擬似乱数生成器の内部状態を初期化または再初期化するための関数である。ここで与えた値によって、その後に出力される乱数列が決まる。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine/seed"
+    },
+    {
+      "id": 614,
+      "section": "セクション293: C++ 乱数生成",
+      "title": "シード固定時の挙動",
+      "question": "シードを固定した場合の挙動は？",
+      "code": "",
+      "options": [
+        "毎回異なる乱数列が生成される",
+        "乱数が生成されなくなる",
+        "毎回同じ乱数列が生成される",
+        "実行環境によって変わる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "同じ擬似乱数生成器に同じシードを与えると、通常は同じ内部状態から開始するため、毎回同じ乱数列が再現される。これはテストやデバッグで有用である。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine"
+    },
+    {
+      "id": 615,
+      "section": "セクション294: C++ 乱数生成",
+      "title": "std::random_device の乱数源",
+      "question": "`std::random_device` の乱数源は？",
+      "code": "",
+      "options": [
+        "現在時刻",
+        "プロセス ID",
+        "ハードウェアの乱数源（OS の乱数生成機能など）",
+        "固定値"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`std::random_device` は非決定的乱数源を提供するためのインターフェースで、実装は OS の乱数 API やハードウェア由来のエントロピー源を利用しうる。単なる時刻や固定値を前提とするものではない。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/random_device"
+    },
+    {
+      "id": 616,
+      "section": "セクション295: C++ 乱数生成",
+      "title": "std::random_device の注意点",
+      "question": "`std::random_device` の注意点は？",
+      "code": "",
+      "options": [
+        "C++23 以降でしか使えない",
+        "環境によっては擬似乱数にフォールバックする実装がある",
+        "Windows でしか動作しない",
+        "シードに使うことができない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "標準は `std::random_device` を非決定的乱数源のインターフェースとして定義しているが、実装によっては真の非決定的ソースを持たず、擬似乱数生成器で代替する場合がある。そのため『常に高品質なハードウェア乱数』とは限らない。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/random_device"
+    },
+    {
+      "id": 617,
+      "section": "セクション296: C++ 乱数生成",
+      "title": "std::mt19937 とは何か",
+      "question": "`std::mt19937` とは何ですか？",
+      "code": "",
+      "options": [
+        "ハードウェア乱数生成器",
+        "擬似乱数生成器",
+        "暗号学的乱数生成器",
+        "固定値生成器"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`std::mt19937` は Mersenne Twister アルゴリズムに基づく擬似乱数生成器である。再現性が高く高速だが、暗号用途を前提とした乱数源ではない。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine"
+    },
+    {
+      "id": 618,
+      "section": "セクション297: C++ 乱数生成",
+      "title": "std::random_device で seed する目的",
+      "question": "`rng.seed(std::random_device{}())` を使う目的は？",
+      "code": "",
+      "options": [
+        "実行するたびに異なる乱数列を生成するため",
+        "乱数の範囲を制限するため",
+        "乱数生成を高速化するため",
+        "乱数の再現性を保証するため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`std::random_device` から得た値で擬似乱数生成器を seed すると、実行ごとに異なる初期状態になりやすい。その結果、毎回同じ列ではなく変化する乱数列を得やすくなる。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/random_device"
+    },
+    {
+      "id": 619,
+      "section": "セクション298: C/C++ 標準入出力とターミナル制御",
+      "title": "#include <iostream> の標準エラー出力",
+      "question": "`#include <iostream>` に含まれる標準エラー出力はどれですか？",
+      "code": "",
+      "options": [
+        "`std::err`",
+        "`std::cerr`",
+        "`std::error`",
+        "`std::stderr`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "C++ の標準エラー出力ストリームは `std::cerr` である。`std::cout` が標準出力、`std::cin` が標準入力、`std::clog` はログ向けのエラーストリームとして使われる。",
+      "source": "https://en.cppreference.com/w/cpp/io/cerr"
+    },
+    {
+      "id": 620,
+      "section": "セクション299: C/C++ 標準入出力とターミナル制御",
+      "title": "std::endl と \\n の違い",
+      "question": "`std::endl` と `\"\\n\"` の違いは？",
+      "code": "",
+      "options": [
+        "`std::endl` は改行のみ、`\"\\n\"` は改行＋フラッシュ",
+        "`std::endl` は改行＋バッファフラッシュ、`\"\\n\"` は改行のみ",
+        "機能は全く同じ",
+        "`\"\\n\"` は C++ では使えない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`std::endl` は改行文字を出力したうえでストリームを flush するマニピュレータである。一方 `\"\\n\"` は単に改行文字を出力するだけで、通常は明示的な flush を伴わない。",
+      "source": "https://en.cppreference.com/w/cpp/io/manip/endl"
+    },
+    {
+      "id": 621,
+      "section": "セクション300: C/C++ 標準入出力とターミナル制御",
+      "title": "<stdlib.h> の C++ での推奨代替",
+      "question": "`<stdlib.h>` の C++ での推奨代替ヘッダは？",
+      "code": "",
+      "options": [
+        "`<cstdio>`",
+        "`<cstring>`",
+        "`<cstdlib>`",
+        "`<utility>`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "C++ では C 由来の標準ライブラリヘッダに対応して `<cstdlib>`、`<cstdio>` などの名前が用意されている。`<stdlib.h>` に対応するのは `<cstdlib>` である。",
+      "source": "https://en.cppreference.com/w/cpp/header/cstdlib"
+    },
+    {
+      "id": 622,
+      "section": "セクション301: C/C++ 標準入出力とターミナル制御",
+      "title": "rand() % 3 の偏り",
+      "question": "`rand() % 3` で偏りが生じる理由は？",
+      "code": "",
+      "options": [
+        "`rand()` が負の値を返すから",
+        "`RAND_MAX` が `3` の倍数とは限らないから",
+        "`%` 演算子が C++ で非推奨だから",
+        "`rand()` は常に同じ値を返すから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`rand()` が返す値の個数は `RAND_MAX + 1` 通りだが、それが `3` で割り切れるとは限らない。このとき `% 3` を取ると、一部の余りが他より1回多く出現し、分布に偏りが生じうる。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/rand"
+    },
+    {
+      "id": 623,
+      "section": "セクション302: C/C++ 標準入出力とターミナル制御",
+      "title": "std::mt19937 の正体",
+      "question": "`std::mt19937` とは何ですか？",
+      "code": "",
+      "options": [
+        "ハードウェア乱数生成器",
+        "正規分布クラス",
+        "メルセンヌツイスタ法による擬似乱数生成器",
+        "乱数のシード値"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`std::mt19937` は Mersenne Twister アルゴリズムを実装した擬似乱数生成器である。分布クラスではなく、乱数列を作るエンジン本体にあたる。",
+      "source": "https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine"
+    },
+    {
+      "id": 624,
+      "section": "セクション303: C/C++ 標準入出力とターミナル制御",
+      "title": "std::to_underlying の導入時期",
+      "question": "`<utility>` の `std::to_underlying` が導入された C++ バージョンは？",
+      "code": "",
+      "options": [
+        "C++11",
+        "C++17",
+        "C++20",
+        "C++23"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "`std::to_underlying` は列挙型を underlying type に安全に変換するためのユーティリティで、標準ライブラリに C++23 で追加された。",
+      "source": "https://en.cppreference.com/w/cpp/utility/to_underlying"
+    },
+    {
+      "id": 625,
+      "section": "セクション304: C/C++ 標準入出力とターミナル制御",
+      "title": "一般的な家庭回線でグローバル IP を変更できない理由",
+      "question": "一般的な家庭回線でグローバル IP アドレスをコマンドで変更できない理由は？",
+      "code": "",
+      "options": [
+        "Linux がグローバル IP の変更をサポートしていないから",
+        "グローバル IP は ISP が管理しており、ユーザーが直接指定できないから",
+        "`sudo` 権限があれば変更できる",
+        "ルーターを再起動すれば必ず変更できる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "一般的な家庭向けインターネット接続では、公開側の IP アドレスは ISP が割り当てる。ローカル PC やルーター上でコマンドを打っても、ISP 管理下の公開アドレスを好きな値に直接変更できるわけではない。",
+      "source": "https://www.cloudflare.com/learning/dns/glossary/what-is-my-ip-address/"
+    },
+    {
+      "id": 626,
+      "section": "セクション305: C/C++ 標準入出力とターミナル制御",
+      "title": "getchar() の戻り値が int の理由",
+      "question": "`getchar()` の戻り値が `int` である理由は？",
+      "code": "",
+      "options": [
+        "`char` より処理が速いから",
+        "`EOF(-1)` を表現するために `char` の範囲を超える値が必要だから",
+        "C++ では `char` の使用が非推奨だから",
+        "矢印キーを検出するため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`getchar()` は通常の文字値に加えて `EOF` も返す必要がある。すべての `unsigned char` 値と特別値 `EOF` を区別できるよう、戻り値型は `int` になっている。",
+      "source": "https://en.cppreference.com/w/c/io/getchar"
+    },
+    {
+      "id": 627,
+      "section": "セクション306: C/C++ 標準入出力とターミナル制御",
+      "title": "KEY_UP = 1000 を選ぶ理由",
+      "question": "`KEY_UP = 1000` に `1000` が選ばれた理由として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "ASCII の規格で `1000` が矢印キーに予約されているから",
+        "`256` 以上であれば文字コードと衝突せず、キリが良く拡張しやすいから",
+        "`int` 型の最小値が `1000` だから",
+        "Linux のターミナル仕様で決まっているから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "通常の文字入力は 0 から 255 付近の値に収まるため、それより十分大きい値を独自キーコードに割り当てると衝突を避けやすい。`1000` は仕様で決まっている値ではなく、実装上わかりやすい番地として選ばれている。",
+      "source": "https://en.cppreference.com/w/c/io/getchar, https://invisible-island.net/xterm/ctlseqs/ctlseqs.html"
+    },
+    {
+      "id": 628,
+      "section": "セクション307: C/C++ 標準入出力とターミナル制御",
+      "title": "getch_portable() で整数値に統一する利点",
+      "question": "`getch_portable()` で矢印キーを整数値に置き換える利点は？",
+      "code": "",
+      "options": [
+        "処理速度が上がるから",
+        "通常文字・矢印キー・EOF をすべて `int` の整数値として統一的に判別できるから",
+        "`char` 型では矢印キーを格納できないから",
+        "`switch` 文が `char` に対応していないから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "通常文字・特殊キー・`EOF` をすべて `int` で統一すると、分岐処理を 1 つの型で扱えるようになる。文字コードと衝突しない範囲に独自キー値を置けば、キー種別の判定も整理しやすい。",
+      "source": "https://en.cppreference.com/w/c/io/getchar, https://invisible-island.net/xterm/ctlseqs/ctlseqs.html"
+    },
+    {
+      "id": 629,
+      "section": "セクション: C++ 基礎",
+      "title": "グローバル変数とローカル変数の初期化",
+      "question": "以下のコードで、不定値（ゴミ値）が入る可能性があるのはどれですか？",
+      "code": "int globalArr[4];        // (A)\n\nvoid func() {\n    int localArr[4];     // (B)\n    int zeroArr[4] = {}; // (C)\n}",
+      "options": [
+        "(A) のみ",
+        "(B) のみ",
+        "(A) と (B) の両方",
+        "すべてゼロ初期化される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "C++ ではグローバル変数はプログラム起動時に自動的にゼロ初期化されます。(A) はグローバルなのですべて 0 です。(B) はローカル変数で初期化子がないため不定値（ゴミ値）が入ります。(C) は `= {}` によりゼロ初期化されます。",
+      "source": "https://en.cppreference.com/w/cpp/language/zero_initialization"
+    },
+    {
+      "id": 630,
+      "section": "セクション: C++ 基礎",
+      "title": "#define と constexpr の違い",
+      "question": "以下の2つの定数定義の違いとして、正しい説明はどれですか？",
+      "code": "#define BOARD_SIZE 8\nconstexpr int BOARD_SIZE = 8;",
+      "options": [
+        "#define はコンパイル時に型チェックされる",
+        "constexpr は実行時に値が決まる",
+        "#define はプリプロセッサによる文字置換でスコープも型もない",
+        "どちらも全く同じで使い分ける意味はない"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`#define` はコンパイル前にプリプロセッサが単純な文字置換を行うため、スコープも型も持ちません。一方 `constexpr int` はコンパイル時定数として型安全に扱われ、スコープルールも適用されます。C++ では `constexpr` の使用が推奨されます。",
+      "source": "https://en.cppreference.com/w/cpp/language/constexpr"
+    },
+    {
+      "id": 631,
+      "section": "セクション: C++ 基礎",
+      "title": "リスト初期化と narrowing conversion",
+      "question": "以下のコードで、コンパイルエラーになるのはどれですか？",
+      "code": "double d = 3.14;\nint a = d;  // (A)\nint b{d};   // (B)",
+      "options": [
+        "(A) のみエラー",
+        "(B) のみエラー",
+        "(A) と (B) の両方エラー",
+        "どちらもエラーにならない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`= d` によるコピー初期化は暗黙の narrowing conversion（精度落ち変換）を許容し、3 になります。`{d}` によるリスト初期化は narrowing conversion をコンパイルエラーとして検出します。これはリスト初期化の利点の一つで、意図しない精度落ちをコンパイル時に防げます。",
+      "source": "https://en.cppreference.com/w/cpp/language/list_initialization"
+    },
+    {
+      "id": 632,
+      "section": "セクション: C++ 基礎",
+      "title": "= delete によるコピー禁止",
+      "question": "以下のコードをコンパイルしたとき、何が起きますか？",
+      "code": "class Socket {\npublic:\n    Socket() = default;\n    Socket(const Socket&) = delete;\n};\n\nSocket s1;\nSocket s2(s1);",
+      "options": [
+        "正常にコンパイルされ s1 のコピーが s2 に作られる",
+        "コンパイルエラーになる",
+        "実行時エラーになる",
+        "s2 はデフォルトコンストラクタで初期化される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`= delete` はその関数の呼び出しをコンパイルエラーにします。`Socket(const Socket&) = delete` によりコピーコンストラクタが禁止されているため、`Socket s2(s1)` はコンパイルエラーになります。ソケットや排他リソースのように「コピーしたら困るもの」に対してよく使われます。",
+      "source": "https://en.cppreference.com/w/cpp/language/function#Deleted_functions"
+    },
+    {
+      "id": 633,
+      "section": "セクション: C++ 基礎",
+      "title": "コピーコンストラクタの引数 const T&",
+      "question": "コピーコンストラクタの引数が `const Robot&` である理由として、最も正しい説明はどれですか？",
+      "code": "class Robot {\npublic:\n    Robot(const Robot& other) {\n        // other を元に新しい Robot を作る\n    }\n};",
+      "options": [
+        "`&` はポインタを意味し、`const` はアドレスを固定する",
+        "`&` でコピー元を参照（コピーなし）で受け取り、`const` でコピー元を変更しないことを保証する",
+        "`const` がないとコンパイルエラーになるため慣例で付ける",
+        "`&` はコピー元を削除するための記号である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`&`（参照）を使うことでコピー元オブジェクトをコピーせず直接参照します。もし `&` がなければコピーのためにコピーコンストラクタを呼ぶ無限再帰が発生します。`const` はコピー元を誤って変更しないことをコンパイラが保証するためのものです。",
+      "source": "https://en.cppreference.com/w/cpp/language/copy_constructor"
+    },
+    {
+      "id": 634,
+      "section": "セクション: C++ 基礎",
+      "title": "#define による定数定義の問題点",
+      "question": "`#define KEY_UP 1000` の問題点として正しいものはどれですか？",
+      "code": "#define KEY_UP 1000",
+      "options": [
+        "コンパイル時に値が確定しないため、定数畳み込みが行われない",
+        "型がなく・スコープもないため、意図しない置換やデバッグの困難が生じる",
+        "整数値しか定義できないため、文字列定数には使えない",
+        "C++では #define 自体がコンパイルエラーになる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`#define` はプリプロセッサによる単純なテキスト置換であり、型情報もスコープも持ちません。そのためデバッガで名前が見えず、意図しない場所で置換が起きるリスクがあります。C++ では `constexpr` または `enum class` を使うのが推奨です。",
+      "source": "C++ Core Guidelines: ES.31"
+    },
+    {
+      "id": 635,
+      "section": "セクション: C++ 基礎",
+      "title": "const int と constexpr int の違い",
+      "question": "`const int` と `constexpr int` の違いとして最も正しい説明はどれですか？",
+      "code": "const int A = 10;\nconstexpr int B = 10;",
+      "options": [
+        "`const int` はコンパイル時定数であることを保証するが、`constexpr int` は実行時定数である",
+        "`const int` と `constexpr int` は完全に等価で違いはない",
+        "`const int` はコンパイル時定数であることを保証しない（コンパイラ依存）が、`constexpr int` はコンパイル時定数であることを明示的に保証する",
+        "`constexpr int` は関数内では使用できない"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`const int` は値の変更を禁止しますが、コンパイル時に確定するかどうかはコンパイラ依存です。`constexpr int` はコンパイル時定数であることをコンパイラに保証させるため、定数畳み込みが確実に行われます。定数を定義する際は `constexpr` を使うのが推奨です。",
+      "source": "C++ Core Guidelines: Con.5"
+    },
+    {
+      "id": 636,
+      "section": "セクション: C++ 基礎",
+      "title": "enum class による関連定数のグループ化",
+      "question": "複数の関連定数をまとめる際に `constexpr` より `enum class` が好ましい理由として最も正しいのはどれですか？",
+      "code": "enum class Key {\n    UP   = 1000,\n    DOWN = 1001,\n};",
+      "options": [
+        "enum class はコンパイル時定数になるが、constexpr はならないため",
+        "型安全かつスコープが隔離されるため、無関係な値を誤って渡すことをコンパイル時に防げる",
+        "enum class は int への暗黙変換が可能で扱いやすいため",
+        "enum class を使うと定数畳み込みが行われないため実行時コストがゼロになる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`enum class` はスコープが隔離されており `Key::UP` のようにアクセスします。また `int` への暗黙変換が禁止されているため、型違いの値を誤って渡すとコンパイルエラーになります。複数の関連する定数を型安全にグループ化したい場合に適しています。",
+      "source": "C++ Core Guidelines: Enum.1, Enum.3"
+    },
+    {
+      "id": 637,
+      "section": "セクション: C++ 基礎",
+      "title": "enum class の値を int として取り出す方法",
+      "question": "`enum class Key { UP = 1000 };` の値を `int` として取り出す正しい方法はどれですか？",
+      "code": "enum class Key {\n    UP = 1000,\n};",
+      "options": [
+        "`int x = Key::UP;`（暗黙変換）",
+        "`int x = static_cast<int>(Key::UP);`",
+        "`int x = Key::UP.value();`",
+        "`int x = (int)Key::UP;`（Cスタイルキャスト）が唯一の方法"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`enum class` は `int` への暗黙変換が禁止されています。`static_cast<int>` を使うか、C++23 以降では `std::to_underlying(Key::UP)` が使えます。Cスタイルキャストでも動作しますが、C++ では `static_cast` が推奨されます。",
+      "source": "https://en.cppreference.com/w/cpp/language/enum"
+    },
+    {
+      "id": 638,
+      "section": "セクション: C++ 基礎",
+      "title": "enum class のデフォルト基底型",
+      "question": "`enum class` のデフォルト基底型はどれですか？",
+      "code": "enum class Color {\n    RED,\n    GREEN,\n    BLUE,\n};",
+      "options": [
+        "`unsigned int`",
+        "`short`",
+        "`int`",
+        "`long long`"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`enum class` のデフォルト基底型は `int` です。C++ Core Guidelines（Enum.6）では、特別な理由がない限りデフォルトの `int` を使うことを推奨しています。基底型を変える場合は `enum class Color : uint8_t` のように明示します。",
+      "source": "C++ Core Guidelines: Enum.6"
+    },
+    {
+      "id": 639,
+      "section": "セクション: C++ 基礎",
+      "title": "定数畳み込み（constant folding）",
+      "question": "以下のコードで `C` の値が `30` になるのはいつですか？",
+      "code": "constexpr int A = 10;\nconstexpr int B = 20;\nconstexpr int C = A + B;",
+      "options": [
+        "プログラム起動時（main 関数の実行前）",
+        "変数 C が最初にアクセスされた時",
+        "コンパイル時。実行時には加算命令は生成されず 30 が埋め込まれる",
+        "最適化オプションを有効にしたビルド時のみ"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`constexpr` で定義された定数同士の演算はコンパイル時に完結します。これを定数畳み込み（constant folding）といい、実行時コストがゼロになります。条件は「定義と同時に初期化」かつ「初期化子がコンパイル時に確定していること」です。",
+      "source": "C++ Core Guidelines: Con.5"
+    },
+    {
+      "id": 640,
+      "section": "セクション: C++ 基礎",
+      "title": "スコープとリンケージの違い",
+      "question": "スコープとリンケージの説明として最も正しいのはどれですか？",
+      "code": "// fileA.cpp\nint x = 42;         // 外部リンケージ\nstatic int y = 42;  // 内部リンケージ",
+      "options": [
+        "スコープはファイル間の可視性、リンケージはブロック内の可視性を制御する",
+        "スコープとリンケージは同じ概念で、どちらも変数の生存期間を表す",
+        "スコープはブロック内の可視性、リンケージはファイル間の可視性を制御する",
+        "リンケージはコンパイル時のみ意味を持ち、実行時には関係しない"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "スコープはブロック（`{}`）内での可視性を制御します。リンケージは翻訳単位（.cpp ファイル）をまたいだ可視性を制御します。外部リンケージは他ファイルから `extern` で参照可能、内部リンケージは同一ファイル内のみアクセス可能です。",
+      "source": "https://en.cppreference.com/w/cpp/language/storage_duration"
+    },
+    {
+      "id": 641,
+      "section": "セクション: C++ 基礎",
+      "title": "内部リンケージの実現方法",
+      "question": "グローバル変数を他のファイルから参照不可（内部リンケージ）にする方法として正しいものをすべて含む選択肢はどれですか？",
+      "code": "// fileA.cpp\nconstexpr int X = 42;",
+      "options": [
+        "`extern` キーワードを付ける",
+        "`static` を付ける、または無名名前空間に入れる",
+        "`const` を付けるだけで内部リンケージになる",
+        "`inline` キーワードを付ける"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "内部リンケージにする方法は `static` を付けるか、無名名前空間（`namespace { ... }`）に入れるかのどちらかです。モダン C++ では `static` より無名名前空間が推奨されます。無名名前空間は変数だけでなく関数や型にも適用できます。",
+      "source": "https://en.cppreference.com/w/cpp/language/namespace"
+    },
+    {
+      "id": 642,
+      "section": "セクション: C++ 基礎",
+      "title": "C++ Core Guidelines Enum.3",
+      "question": "C++ Core Guidelines の Enum.3 が推奨する内容として正しいのはどれですか？",
+      "code": "// どちらが推奨されるか？\nenum Color { RED, GREEN, BLUE };\nenum class Color { RED, GREEN, BLUE };",
+      "options": [
+        "単純な `enum` を使う。`enum class` は冗長なため",
+        "`enum class` を使う。スコープ隔離と型安全のため",
+        "`enum` も `enum class` も等価なのでどちらでもよい",
+        "`enum` の代わりに `constexpr int` を使う"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Enum.3 は「単純な `enum` より `enum class` を使う」ことを推奨しています。`enum class` はスコープが隔離されるため名前衝突を防ぎ、`int` への暗黙変換が禁止されるため型安全です。",
+      "source": "C++ Core Guidelines: Enum.3"
+    },
+    {
+      "id": 643,
+      "section": "セクション: C++ 基礎",
+      "title": "enum class の基底型を変更するタイミング",
+      "question": "C++ Core Guidelines（Enum.6）に従うと、`enum class` の基底型を変更するのが適切なのはどれですか？",
+      "code": "enum class Flag : uint8_t {\n    A = 0x01,\n    B = 0x02,\n};\nenum class Status {\n    OK,\n    ERROR,\n};",
+      "options": [
+        "常に `uint8_t` にしてメモリを節約すべき",
+        "デフォルトの `int` では範囲が足りない場合や、外部仕様（プロトコル・ハードウェア）に合わせる必要がある場合など、明確な理由がある場合のみ",
+        "パフォーマンス向上のために常に最小の型を指定すべき",
+        "基底型の変更は C++ 標準では認められていない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Enum.6 では「基底型はデフォルト（`int`）を使い、変える理由がある場合のみ変更する」としています。理由の例としては、ハードウェアレジスタやネットワークプロトコルの仕様に合わせる場合、`int` の範囲を超える値が必要な場合などがあります。",
+      "source": "C++ Core Guidelines: Enum.6"
+    },
+    {
+      "id": 644,
+      "section": "セクション: C++ 基礎",
+      "title": "enum class の名前付きインデックスとしての使い方",
+      "question": "以下のコードで `CharacterTemplateType` が果たしている役割として最も正しいのはどれですか？",
+      "code": "constexpr auto characterTemplates = std::to_array<Character>({\n    Character{ /* PLAYER */ },\n    Character{ /* SLIME  */ },\n    Character{ /* BOSS   */ },\n});\n\ncharacterTemplates[std::to_underlying(CharacterTemplateType::BOSS)];",
+      "options": [
+        "コマンド選択肢を型安全に列挙するための enum",
+        "配列のインデックスに意味のある名前を与える名前付きインデックス",
+        "キャラクターの状態遷移を管理するための状態機械",
+        "配列のサイズをコンパイル時に計算するためのセンチネル"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`CharacterTemplateType` は `characterTemplates` 配列の各要素に `PLAYER` / `SLIME` / `BOSS` という名前を与え、`[0]` / `[1]` / `[2]` の代わりに意図の伝わるアクセスを可能にする名前付きインデックスです。`COUNT` を持たない点でサイズ計算用の `BattleSlot` とは役割が異なります。",
+      "source": "C++ Core Guidelines: Enum.1"
+    },
+    {
+      "id": 645,
+      "section": "セクション: C++ 基礎",
+      "title": "データテーブルとしての constexpr 配列",
+      "question": "以下の `characterTemplates` のような `constexpr` 配列はゲーム開発で何と呼ばれますか？",
+      "code": "constexpr auto characterTemplates = std::to_array<Character>({\n    Character{ 1060, 1060, 60, 60, \"ゆうしゃ\", \"\", 20, ... },\n    Character{    3,    3,  0,  0, \"スライム\", \"...\", 2, ... },\n    Character{  255,  255,  0,  0, \"まおう\",   \"...\",50, ... },\n});",
+      "options": [
+        "ルックアップテーブル（またはマスターデータ）",
+        "シングルトン",
+        "ファクトリ関数",
+        "コマンドパターン"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "キャラクターのステータスや設定値を一箇所にまとめた定数配列はデータテーブル・ルックアップテーブルと呼ばれ、ゲーム開発ではマスターデータとも呼びます。`constexpr` でソースコードに直書きしたものは簡易版で、本格的なマスターデータ管理では JSON や CSV に外出しして読み込みます。",
+      "source": "C++ Core Guidelines"
+    },
+    {
+      "id": 646,
+      "section": "セクション: C++ 基礎",
+      "title": "BattleSlot の COUNT センチネル",
+      "question": "`BattleSlot::COUNT` の用途として正しいのはどれですか？",
+      "code": "enum class BattleSlot\n{\n    PLAYER,\n    MONSTER,\n    COUNT,\n};\n\nstd::array<Character, std::to_underlying(BattleSlot::COUNT)> characters;",
+      "options": [
+        "ループの終了条件には使えないが、配列サイズにのみ使える",
+        "配列サイズやループ上限として使えるセンチネル値で、要素数と配列定義を常に同期させられる",
+        "COUNT は enum の慣例的な最後の要素で、実際には値を持たない",
+        "switch 文で全列挙子を処理したかを確認するためだけに使う"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`COUNT` は enum class の最後に置くセンチネル値で、`std::array` のサイズ指定やループの上限として使います。列挙子を追加すると `COUNT` の値も自動的に増えるため、配列サイズと要素数が常に同期するのが利点です。",
+      "source": "C++ Core Guidelines: Enum.1"
+    },
+    {
+      "id": 647,
+      "section": "セクション: C++ 基礎",
+      "title": "CommandType と CharacterTemplateType の使い分け",
+      "question": "`CommandType` と `CharacterTemplateType` の本質的な違いはどれですか？",
+      "code": "enum class CommandType  { FIGHT, SPELL, FULL_HEAL, RUN };\nenum class CharacterTemplateType { PLAYER, SLIME, BOSS };",
+      "options": [
+        "要素数の違いだけで、使い方は同じ",
+        "`CommandType` は switch 文で有限の選択肢を型安全に扱うために使い、`CharacterTemplateType` は配列の名前付きインデックスとして使う",
+        "`CharacterTemplateType` は switch 文と組み合わせ、`CommandType` は配列インデックスとして使う",
+        "両方とも配列インデックスとしてのみ使われる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`CommandType` は switch 文と組み合わせて「有限の状態・選択肢を型安全に表す」enum class 本来の使い方をしています。`CharacterTemplateType` は配列インデックスに名前を付けるという C 言語由来のイディオムです。同じ `enum class` でも目的が異なります。",
+      "source": "C++ Core Guidelines: Enum.1, Enum.3"
+    },
+    {
+      "id": 648,
+      "section": "セクション: C++ 基礎",
+      "title": "配列＋名前付きインデックス vs 構造体フィールド",
+      "question": "バトルの参加者を管理する際、配列＋`BattleSlot` より構造体フィールドが適している条件はどれですか？",
+      "code": "// 案A: 配列 + 名前付きインデックス\nstd::array<Character, to_underlying(BattleSlot::COUNT)> characters;\ncharacters[to_underlying(BattleSlot::PLAYER)].hp;\n\n// 案B: 構造体フィールド\nstruct BattleState { Character player; Character monster; };\nbattleState.player.hp;",
+      "options": [
+        "全員にダメージを与えるなど for ループで一括処理したい場合",
+        "個々の参加者が異なる意味を持ち、for ループで一括処理する必要がない場合",
+        "参加者数が実行時に変わる可能性がある場合",
+        "配列インデックスで直接アクセスしたい場合"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "構造体フィールドは `to_underlying` が不要で `battleState.player.hp` と直接アクセスでき可読性が高いです。一方、全員に同じ処理を for ループで適用したい場合は配列の方が自然です。RPG.cpp では「全員のターン処理をループで回す」要件があるため配列を選んでいます。",
+      "source": "C++ Core Guidelines"
+    },
+    {
+      "id": 649,
+      "section": "セクション: C++ 基礎",
+      "title": "無名名前空間とは何か",
+      "question": "無名名前空間（`namespace { ... }`）の説明として正しいのはどれですか？",
+      "code": "// fileA.cpp\nnamespace {\n    constexpr int X = 42;\n    void helper() { /* ... */ }\n}\n\n// fileB.cpp\n// X も helper も見えない",
+      "options": [
+        "どのファイルからもアクセスできるグローバル名前空間の別名",
+        "同じ翻訳単位（.cpp ファイル）内からしかアクセスできない名前空間で、変数・関数・型すべてに内部リンケージを与えられる",
+        "クラス内部でのみ使用できる名前空間",
+        "`static` キーワードと完全に等価で、変数にのみ適用できる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "無名名前空間は同じ翻訳単位（.cpp ファイル）内からしかアクセスできません。`static` と同じく内部リンケージを実現しますが、変数だけでなく関数・struct・enum class にも適用できる点が優れています。モダン C++ では `static` より無名名前空間が推奨されます。",
+      "source": "https://en.cppreference.com/w/cpp/language/namespace"
+    },
+    {
+      "id": 650,
+      "section": "セクション: C++ 基礎",
+      "title": "C++ Core Guidelines SF.22",
+      "question": "C++ Core Guidelines SF.22 の内容として正しいのはどれですか？",
+      "code": "// 実装ファイル（.cpp）での推奨構造\nnamespace {\n    // 外部に公開しない定数・型・関数\n    constexpr int X = 42;\n    enum class State { ... };\n    void helper() { ... }\n}\n\n// 外部に公開するエンティティ\nvoid PublicFunction() { ... }",
+      "options": [
+        "ヘッダファイルでは無名名前空間を使わない",
+        "実装ソースファイルで外部に公開しないすべての定義は無名名前空間に入れる",
+        "無名名前空間はパフォーマンス最適化のために使う",
+        "public メンバ関数は無名名前空間に入れてはならない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "SF.22 は「実装ソースファイルで外部エンティティでない定義にはすべて無名名前空間を使う」というルールです。これにより意図しない外部リンケージを防ぎ、ODR（One Definition Rule）違反のリスクを下げます。定数だけでなく関数・enum class・struct も対象です。",
+      "source": "C++ Core Guidelines: SF.22"
+    },
+    {
+      "id": 651,
+      "section": "セクション: C++ 基礎",
+      "title": "char配列 vs std::string_view",
+      "question": "`char name[13]` の問題点として最も正しいのはどれですか？",
+      "code": "struct Character {\n    char name[13]; // 12バイト + 終端文字\n};",
+      "options": [
+        "文字列をコピーできないため、代入が一切できない",
+        "バッファサイズを手動で管理する必要があり、超えた場合にコンパイルエラーにならず隣のメモリを壊すバグになる",
+        "char配列は constexpr コンテキストで使用できない",
+        "UTF-8 文字列を格納できない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`char[]` は固定サイズの箱で、サイズを超えた書き込みはコンパイルエラーにならず未定義動作（隣のメモリ破壊）になります。`std::string_view` はサイズ管理が不要で安全に文字列を参照できます。",
+      "source": "https://en.cppreference.com/w/cpp/string/basic_string_view"
+    },
+    {
+      "id": 652,
+      "section": "セクション: C++ 基礎",
+      "title": "std::string_view の所有と寿命",
+      "question": "`std::string_view` の説明として最も正しいのはどれですか？",
+      "code": "struct Character {\n    std::string_view name;\n};\n\nconstexpr auto characterTemplates = std::to_array<Character>({\n    Character{ .name = \"ゆうしゃ\" },\n});",
+      "options": [
+        "文字列データを所有するため、元の文字列が消えても安全",
+        "文字列を指差しているだけで所有しない。元の文字列が消えると無効になるが、文字列リテラルはプログラム終了まで存在するので安全",
+        "std::string と完全に等価で、メモリ管理も自動",
+        "constexpr コンテキストでは使用できない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`std::string_view` は文字列を所有せず参照するだけです。参照先が消えると無効になりますが、文字列リテラル（`\"ゆうしゃ\"` 等）はプログラムが動いている間ずっと存在するため、リテラルを指す `string_view` は安全です。",
+      "source": "https://en.cppreference.com/w/cpp/string/basic_string_view"
+    },
+    {
+      "id": 653,
+      "section": "セクション: C++ 基礎",
+      "title": "集成体初期化の順序依存問題",
+      "question": "以下の初期化の問題点として最も正しいのはどれですか？",
+      "code": "struct Character {\n    int hp;\n    int maxhp;\n    int attack;\n};\n\nCharacter c{ 100, 100, 20 };",
+      "options": [
+        "値をカンマ区切りで渡せないためコンパイルエラーになる",
+        "フィールドを追加・並び替えすると初期化値が無言でずれ、コンパイルエラーにならないままバグになる",
+        "constexpr には使用できない",
+        "整数値のみ使用可能で、enum class は渡せない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "位置ベースの集成体初期化はフィールドの順序に依存します。構造体のフィールドを追加・削除・並び替えすると、すべての初期化値が無言でずれてもコンパイルエラーにならず、発見困難なバグになります。C++20 の指示付き初期化で解決できます。",
+      "source": "https://en.cppreference.com/w/cpp/language/aggregate_initialization"
+    },
+    {
+      "id": 654,
+      "section": "セクション: C++ 基礎",
+      "title": "C++20 指示付き初期化（designated initializers）",
+      "question": "C++20 の指示付き初期化の利点として最も正しいのはどれですか？",
+      "code": "Character c{\n    .hp     = 100,\n    .maxhp  = 100,\n    .attack = 20,\n};",
+      "options": [
+        "初期化の実行速度が向上する",
+        "フィールド名を明示するため、フィールドの追加・並び替えをしても初期化値がずれず、可読性も上がる",
+        "すべてのフィールドを省略できるようになる",
+        "constexpr 構造体にのみ使用できる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "指示付き初期化（`.field = value`）はフィールド名を明示するため、構造体が変更されても初期化値が意図せずずれることを防ぎます。また何の値を設定しているか一目でわかり可読性も向上します。",
+      "source": "https://en.cppreference.com/w/cpp/language/aggregate_initialization"
+    },
+    {
+      "id": 655,
+      "section": "セクション: C++ 基礎",
+      "title": "CommandEntry 構造体の役割",
+      "question": "以下の `CommandEntry` 構造体の役割として最も正しいのはどれですか？",
+      "code": "struct CommandEntry {\n    CommandType type;\n    const char *name;\n};\n\nconstexpr auto commands = std::to_array<CommandEntry>({\n    CommandEntry{CommandType::FIGHT, \"たたかう\"},\n    CommandEntry{CommandType::RUN,   \"にげる\"},\n});",
+      "options": [
+        "コマンドの実行処理を関数ポインタとして保持する",
+        "コマンド種別（内部識別子）と画面表示用の名前をペアで持つ",
+        "コマンドの入力キーと処理を対応付ける",
+        "コマンドの実行順序を管理するキュー"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`CommandType` は内部識別子（`FIGHT` 等）であり画面表示には使えません。`CommandEntry` が `type` と表示名（`\"たたかう\"` 等）をペアで持つことで、コマンド選択UIの描画とロジックの両方に対応できます。",
+      "source": "C++ Core Guidelines"
+    },
+    {
+      "id": 656,
+      "section": "セクション: C++ 基礎",
+      "title": "雛形テーブルと実インスタンスの分離",
+      "question": "`characterTemplates` と `GameState::characters` の役割の違いとして最も正しいのはどれですか？",
+      "code": "constexpr auto characterTemplates = std::to_array<Character>({ /* 初期値 */ });\n\nstruct GameState {\n    std::array<Character, std::to_underlying(BattleSlot::COUNT)> characters;\n};",
+      "options": [
+        "両者は同じデータを指しており、どちらを使っても同じ",
+        "`characterTemplates` はコンパイル時定数の雛形、`GameState::characters` はバトル中に状態が変化する実インスタンス",
+        "`characterTemplates` は実行時に変更可能で、`GameState::characters` は変更不可",
+        "`GameState::characters` はテンプレートで、バトルごとに `characterTemplates` へコピーされる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`characterTemplates` は `constexpr` のコンパイル時定数で、キャラクターの初期値の雛形です。`GameState::characters` はそこからコピーして作られる実インスタンスで、バトル中の HP 減少などの状態変化を保持します。雛形と実体を分けることで初期値が保護されます。",
+      "source": "C++ Core Guidelines"
+    },
+    {
+      "id": 657,
+      "section": "セクション: C++ 基礎",
+      "title": "FIELD_WIDTH の役割と Core Guidelines",
+      "question": "次の定義について、C++ Core Guidelines の考え方に最も近い説明はどれですか？",
+      "code": "constexpr int FIELD_WIDTH = 520;",
+      "options": [
+        "`520` のような数値は意味が明白なので、名前を付けずに直接書く方が望ましい",
+        "意味のある定数名でマジックナンバーを避けている点はよい。C++ では `#define` より `constexpr` を使うのが自然",
+        "`FIELD_WIDTH` はマクロ風の大文字なので、必ず `#define` で書かなければならない",
+        "`constexpr int` は配列サイズには使えないので不適切"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`520` を直接各所に書くより、`FIELD_WIDTH` のような名前付き定数にした方が意図が伝わります。C++ Core Guidelines ではマジックナンバーを避け、定数や擬似関数に `#define` ではなく `constexpr` や `const` を使う方針です。",
+      "source": "C++ Core Guidelines ES.31 / ES.45"
+    },
+    {
+      "id": 658,
+      "section": "セクション: C++ 基礎",
+      "title": "中央寄せ開始座標の計算",
+      "question": "次の式 `FIELD_WIDTH / 2 - patternWidth / 2` が求めているものとして最も正しいのはどれですか？",
+      "code": "PatternTransfer(\n    FIELD_WIDTH / 2 - patternWidth / 2,\n    FIELD_HEIGHT / 2 - patternHeight / 2,\n    patternWidth,\n    patternHeight,\n    (bool*)pattern);",
+      "options": [
+        "`field` の左端そのものの位置",
+        "`pattern` を `field` の中央付近に置くための左上開始座標",
+        "`field` と `pattern` の面積差",
+        "`pattern` の中心座標そのもの"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`field` の中心位置から `pattern` の中心位置を引いて、`pattern` の左上をどこに置けば中央寄せになるかを求めています。`FIELD_WIDTH = 520`、`patternWidth = 513` なら開始位置は `4` になり、左に 4 セル、右に 3 セルの余白ができます。",
+      "source": "game/life.cpp"
+    },
+    {
+      "id": 659,
+      "section": "セクション: C++ 基礎",
+      "title": "field と pattern の役割の違い",
+      "question": "`field` と `pattern` の違いとして最も正しいのはどれですか？",
+      "code": "bool field[FIELD_HEIGHT][FIELD_WIDTH];\nconstexpr int patternWidth = 513;\nconstexpr int patternHeight = 513;\nbool pattern[patternHeight][patternWidth] = {};",
+      "options": [
+        "`field` は初期配置用の部品、`pattern` はシミュレーション本体の盤面",
+        "`field` は実際に更新・描画される盤面、`pattern` は最初に `field` へコピーする初期配置データ",
+        "`field` も `pattern` も完全に同じ役割で、名前だけが違う",
+        "`pattern` は描画専用、`field` は入力専用"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`field` はライフゲームの現在状態を保持し、描画や次世代計算の対象になります。`pattern` は最初の形を作るためのテンプレートで、`PatternTransfer()` によって `field` の中央に貼り付けられます。",
+      "source": "game/life.cpp"
+    },
+    {
+      "id": 660,
+      "section": "セクション: C++ 基礎",
+      "title": "bool 配列を足し算できる理由",
+      "question": "次のコードで `count += field[roopedY][roopedX];` が成立する理由として最も正しいのはどれですか？",
+      "code": "int count = 0;\ncount += field[roopedY][roopedX];",
+      "options": [
+        "`bool` は足し算できないが、配列要素だけ特別に許可されている",
+        "`bool` は加算時に自動的に `int` へ変換され、`true` は `1`、`false` は `0` になる",
+        "`field` の型は実際には `int` 配列なので `bool` ではない",
+        "`+=` が内部で文字列連結に変換される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "C++ では `bool` を算術演算に使うと整数型へ暗黙変換されます。そのため `true` は `1`、`false` は `0` として扱われ、生きているセルだけを数える処理として成立します。",
+      "source": "https://en.cppreference.com/w/cpp/language/implicit_conversion"
+    },
+    {
+      "id": 661,
+      "section": "セクション: C++ 基礎",
+      "title": "memcpy の引数順と効果",
+      "question": "次の `memcpy` 呼び出しの意味として最も正しいのはどれですか？",
+      "code": "memcpy(field, nextField, sizeof field);",
+      "options": [
+        "`field` から `nextField` へ `sizeof nextField` バイトコピーする",
+        "`nextField` の内容を `field` に `field` 全体のサイズ分コピーする",
+        "`field` と `nextField` の差分だけを自動で検出して更新する",
+        "`field` 配列を初期化して全要素を `false` にする"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`memcpy` の引数順は `コピー先, コピー元, バイト数` です。ここでは `nextField` に作った次世代盤面を `field` へ丸ごと上書きしています。`sizeof field` は 2 次元配列全体のバイト数を表します。",
+      "source": "https://en.cppreference.com/w/c/string/byte/memcpy"
+    },
+    {
+      "id": 662,
+      "section": "セクション: C++ 基礎",
+      "title": "std::clock の値とフレーム時間の違い",
+      "question": "次のコードで `clocks` に記録される値として最も正しいのはどれですか？",
+      "code": "clock_t lastClock = std::clock();\n...\nlastClock = newClock;\nclocks.push_back(lastClock);",
+      "options": [
+        "毎フレームの経過秒数そのもの",
+        "前回フレームから今回フレームまでの差分 tick 数",
+        "`std::clock()` の現在値、つまり開始からの累積クロック値",
+        "常に `CLOCKS_PER_SEC` と同じ定数値"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`lastClock = newClock;` の直後に `push_back(lastClock)` しているため、保存しているのは差分ではなくその時点の `std::clock()` の値です。1 フレーム当たりの時間を記録したいなら `newClock - lastClock` を秒に変換して保存する必要があります。",
+      "source": "https://en.cppreference.com/w/cpp/chrono/c/clock"
+    },
+    {
+      "id": 663,
+      "section": "セクション: C++ 基礎",
+      "title": "PatternTransfer の引数名の意味",
+      "question": "次の `PatternTransfer` の引数名の説明として最も正しいのはどれですか？",
+      "code": "void PatternTransfer(\n    int _destX, int _destY,\n    int _srcWidth, int _srcHeight,\n    bool *_pPattern)",
+      "options": [
+        "`dest` はコピー元、`src` はコピー先、`p` は public の略",
+        "`_destX` と `_destY` は貼り付け先座標、`_srcWidth` と `_srcHeight` はコピー元の大きさ、`_pPattern` はパターン先頭へのポインタ",
+        "`_destX` と `_destY` はパターンの中心座標、`_srcWidth` と `_srcHeight` はフィールド全体の大きさ、`_pPattern` は配列の要素数",
+        "すべての引数はデバッグ用で、実際のコピー処理には使われない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`dest` は destination でコピー先、`src` は source でコピー元、`p` は pointer の略です。したがって `_destX` / `_destY` は `field` のどこに貼り付けるか、`_srcWidth` / `_srcHeight` はコピー元パターンの幅と高さ、`_pPattern` はコピー元データの先頭アドレスを表します。",
+      "source": "game/life.cpp"
     }
   ]
 }

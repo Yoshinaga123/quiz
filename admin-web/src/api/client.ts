@@ -3,7 +3,21 @@ import { z } from 'zod'
 import { getAuthToken } from '../auth/session'
 import { ApiError } from './errors'
 
-const API_BASE_URL = 'http://localhost:8082'
+const trimSlash = (value: string): string => value.replace(/\/+$/u, '')
+
+const getApiBaseUrl = (): string => {
+  const raw = import.meta.env.VITE_API_BASE_URL
+  if (typeof raw !== 'string' || raw.trim() === '') {
+    return ''
+  }
+
+  return trimSlash(raw.trim())
+}
+
+export const buildApiUrl = (path: string): string => {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return `${getApiBaseUrl()}${normalizedPath}`
+}
 
 const apiErrorSchema = z.object({
   error: z.string(),
@@ -65,7 +79,7 @@ export async function requestJson<T>({
   requiresAuth = true,
   signal,
 }: RequestOptions<T>): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(buildApiUrl(path), {
     method,
     headers: buildHeaders(body, requiresAuth),
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -92,7 +106,7 @@ export async function requestVoid({
   requiresAuth = true,
   signal,
 }: VoidRequestOptions): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(buildApiUrl(path), {
     method,
     headers: buildHeaders(body, requiresAuth),
     body: body === undefined ? undefined : JSON.stringify(body),

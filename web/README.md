@@ -12,14 +12,15 @@
 
 ## 現状（バックエンド未統合）
 
-`backend/main.go` は現時点で公開クイズ取得 API (`GET /api/quizzes`) を提供していない。
-このため `web/` は `src/data/quizzes.ts` に同梱した **starter pack（インライン定義）** を使って単独で動作する。
+`backend/main.go` は `GET /v1/quizzes` を提供しているが、`web/` はまだ統合していない。
+現在は `src/data/quizzes.ts` に同梱した **starter pack（インライン定義）** を使って単独で動作する。
 
-公開 API を生やした際は、
+API 統合の際は以下が必要になる。
 
-1. `src/data/quizzes.ts` の `STARTER_QUIZZES` をフォールバック扱いに変更
-2. `src/api/quiz.ts` を追加して `/api/quizzes` を fetch
-3. `src/hooks/useQuizCatalog.ts` の `loadQuizzes()` を API 呼び出しに差し替える
+1. `src/hooks/useQuizCatalog.ts` を非同期対応に書き換える（現状は同期 `Quiz[]` 返し。`fetchQuizzes()` は `Promise<Quiz[]>` のため、`useEffect + state` か SWR 等への変更が必要）
+2. `src/api/quiz.ts`（実装済み）の `fetchQuizzes()` を hook から呼び出す
+3. ローディング・エラー状態を呼び出し元の画面に伝播させる
+4. `STARTER_QUIZZES` をフォールバックとして残すか削除するかを決める
 
 の順で移行できるよう、データ取得は単一エントリ `loadQuizzes()` に閉じてある。
 
