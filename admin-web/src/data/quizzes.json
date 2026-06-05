@@ -10551,6 +10551,22 @@
       "correctAnswerIndex": 1,
       "explanation": "`dest` は destination でコピー先、`src` は source でコピー元、`p` は pointer の略です。したがって `_destX` / `_destY` は `field` のどこに貼り付けるか、`_srcWidth` / `_srcHeight` はコピー元パターンの幅と高さ、`_pPattern` はコピー元データの先頭アドレスを表します。",
       "source": "game/life.cpp"
+    },
+    {
+      "id": 664,
+      "section": "セクション: C++ 基礎",
+      "title": "this declaration has no storage class or type specifier",
+      "question": "次のコードで Visual C++ 系の診断 `this declaration has no storage class or type specifier` が出る原因として最も正しいのはどれですか？",
+      "code": "CastleData castles[static_cast<int>(Castle::Count)] = {\n    CastleData yonezawaCastle = {\n        \"米沢城\", Lord::Date, kihonHeisu, {Castle::Kasugayama, Castle::Odawara}\n    }\n};",
+      "options": [
+        "配列の初期化子には要素の値を書く場所なのに、そこで新しい変数宣言を書いてしまっている",
+        "配列の要素数が `Castle::Count` より多すぎて、自動的に切り捨てられない",
+        "`CastleData` は class なので配列に入れられない",
+        "`static_cast<int>` は配列サイズには使えない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "このエラーは「宣言らしい記述が現れたが、その場所では有効な宣言として解釈できない」ときに出やすい診断です。例では配列初期化子の中に `CastleData yonezawaCastle = ...` という変数宣言を書いてしまっていますが、ここに必要なのは変数宣言ではなく要素の値です。正しくは `{\"米沢城\", Lord::Date, kihonHeisu, {Castle::Kasugayama, Castle::Odawara}}` のように値だけを書きます。",
+      "source": "C++ language grammar / Visual C++ diagnostic"
     }
   ]
 }
