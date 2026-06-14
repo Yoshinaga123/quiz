@@ -10554,19 +10554,1731 @@
     },
     {
       "id": 664,
-      "section": "セクション: C++ 基礎",
-      "title": "this declaration has no storage class or type specifier",
-      "question": "次のコードで Visual C++ 系の診断 `this declaration has no storage class or type specifier` が出る原因として最も正しいのはどれですか？",
-      "code": "CastleData castles[static_cast<int>(Castle::Count)] = {\n    CastleData yonezawaCastle = {\n        \"米沢城\", Lord::Date, kihonHeisu, {Castle::Kasugayama, Castle::Odawara}\n    }\n};",
+      "section": "セクション: セキュリティツール比較",
+      "title": "CI/CD に載せやすい理由",
+      "question": "OWASP ZAP が 3 ツールの中で CI/CD に組み込みやすい理由として最も適切なのはどれですか？",
+      "code": "",
       "options": [
-        "配列の初期化子には要素の値を書く場所なのに、そこで新しい変数宣言を書いてしまっている",
-        "配列の要素数が `Castle::Count` より多すぎて、自動的に切り捨てられない",
-        "`CastleData` は class なので配列に入れられない",
-        "`static_cast<int>` は配列サイズには使えない"
+        "公式 Docker イメージと GitHub Actions が用意されているから",
+        "Community 版でも Burp Scanner が使えるから",
+        "w3af のプラグインをそのまま流用できるから",
+        "ブラウザを起動しなくても Firestore を直接読めるから"
       ],
       "correctAnswerIndex": 0,
-      "explanation": "このエラーは「宣言らしい記述が現れたが、その場所では有効な宣言として解釈できない」ときに出やすい診断です。例では配列初期化子の中に `CastleData yonezawaCastle = ...` という変数宣言を書いてしまっていますが、ここに必要なのは変数宣言ではなく要素の値です。正しくは `{\"米沢城\", Lord::Date, kihonHeisu, {Castle::Kasugayama, Castle::Odawara}}` のように値だけを書きます。",
-      "source": "C++ language grammar / Visual C++ diagnostic"
+      "explanation": "OWASP ZAP は公式 Docker イメージ、`zap-baseline.py` などのスキャンスクリプト、GitHub Actions を備えているため、パイプラインに組み込みやすいです。",
+      "source": "docs/security-tools/owasp-zap-commands.md"
+    },
+    {
+      "id": 665,
+      "section": "セクション: セキュリティツール比較",
+      "title": "Burp Community の制約",
+      "question": "Burp Suite Community 版の制約として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "REST API が一切使えない",
+        "自動脆弱性スキャン機能が使えない",
+        "プロキシ機能が存在しない",
+        "Repeater が完全に無効化されている"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Burp Suite Community 版では Proxy や Repeater などの手動テスト機能は使えますが、Professional 版のような自動 Scanner は使えません。",
+      "source": "docs/security-tools/burp-suite-vulnerabilities.md"
+    },
+    {
+      "id": 666,
+      "section": "セクション: セキュリティツール比較",
+      "title": "w3af の最大の注意点",
+      "question": "今回の比較で、w3af の最大の注意点として繰り返し挙げられていたものはどれですか？",
+      "code": "",
+      "options": [
+        "GUI が新しすぎて不安定なこと",
+        "メンテナンスが低調で更新が少ないこと",
+        "Go API を一切スキャンできないこと",
+        "Linux では絶対に動かないこと"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "w3af はオープンソースですが更新頻度が低く、依存関係の古さや最新脆弱性への追従の遅れが注意点として挙げられました。",
+      "source": "docs/security-tools/w3af-setup.md"
+    },
+    {
+      "id": 667,
+      "section": "セクション: セキュリティツール比較",
+      "title": "Blind SSRF に強い機能",
+      "question": "Blind SSRF の検出に最も有利な Burp Suite の機能はどれですか？",
+      "code": "",
+      "options": [
+        "Sequencer",
+        "Comparer",
+        "Burp Collaborator",
+        "Decoder"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Burp Collaborator は DNS/HTTP コールバックを受け取れるため、レスポンスに何も返らない Blind SSRF でも検出しやすくなります。",
+      "source": "docs/security-tools/burp-suite-vulnerabilities.md"
+    },
+    {
+      "id": 668,
+      "section": "セクション: セキュリティツール比較",
+      "title": "ZAP が苦手な領域",
+      "question": "OWASP ZAP が特に苦手な領域として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "HTTP ヘッダの確認",
+        "ビジネスロジックの欠陥の自動判定",
+        "OpenAPI ベースの API スキャン",
+        "XSS の検出"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ZAP は通信をもとに脆弱性を探すツールなので、仕様理解が必要なビジネスロジック欠陥や安全でない設計の自動判定は苦手です。",
+      "source": "docs/security-tools/owasp-zap-top10-limitations.md"
+    },
+    {
+      "id": 669,
+      "section": "セクション: セキュリティツール比較",
+      "title": "SPA に弱い理由",
+      "question": "w3af が React のような SPA に弱い理由として最も正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "JavaScript を実行した動的クロールが弱いから",
+        "HTTP を送れないから",
+        "CSS を解析できないから",
+        "PostgreSQL を使うアプリだけを対象にしているから"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "w3af は静的なリンクをたどる前提が強く、React Router などで生成される SPA の画面遷移を十分に追えないことがあります。",
+      "source": "docs/security-tools/w3af-go-react-flutter-notes.md"
+    },
+    {
+      "id": 670,
+      "section": "セクション: Docker セキュリティ",
+      "title": "イメージ CVE を見るべきツール",
+      "question": "Docker イメージ自体の CVE を調べる用途に最も適したツールはどれですか？",
+      "code": "",
+      "options": [
+        "Burp Repeater",
+        "Trivy",
+        "Ajax Spider",
+        "Burp Sequencer"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Trivy は Docker イメージの脆弱性、秘密情報、設定不備を見る専用ツールであり、Web 脆弱性診断ツールとは役割が異なります。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 671,
+      "section": "セクション: Docker セキュリティ",
+      "title": "Hadolint の役割",
+      "question": "Hadolint の主な役割として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "Dockerfile のベストプラクティス違反を検出する",
+        "実行中コンテナのメモリリークを検出する",
+        "Flutter の証明書ピンニングを解除する",
+        "Firestore のルートコレクションを列挙する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Hadolint は Dockerfile の静的チェックに使われ、危険な書き方やベストプラクティス違反を早期に見つけるのに向いています。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 672,
+      "section": "セクション: Docker セキュリティ",
+      "title": "Dockle の用途",
+      "question": "Dockle の説明として最も正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "CIS Benchmark に基づいてコンテナ設定を点検する",
+        "SQL インジェクションだけに特化したツール",
+        "React Router のルートを列挙するツール",
+        "JWT のランダム性を測るツール"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Dockle はコンテナ設定やイメージの構成を CIS Benchmark などの観点から点検するためのツールです。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 673,
+      "section": "セクション: OWASP ZAP",
+      "title": "Baseline と Full Scan の違い",
+      "question": "`zap-baseline.py` と `zap-full-scan.py` の違いとして最も正しいものはどれですか？",
+      "code": "docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://example.com\ndocker run --rm ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t https://example.com",
+      "options": [
+        "どちらも完全に同じで名前だけが違う",
+        "Baseline は主に安全な確認、Full Scan はアクティブスキャンを含む",
+        "Baseline は Burp 専用、Full Scan は ZAP 専用",
+        "Full Scan は HTML を返せず JSON のみ返す"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Baseline は主に受動的・安全寄りの確認、Full Scan はアクティブスキャンを含むため、対象への影響も大きくなります。",
+      "source": "docs/security-tools/owasp-zap-commands.md"
+    },
+    {
+      "id": 674,
+      "section": "セクション: OWASP ZAP",
+      "title": "OpenAPI 向けスクリプト",
+      "question": "OpenAPI 定義から API をスキャンしたいときに使う ZAP のスクリプトはどれですか？",
+      "code": "",
+      "options": [
+        "zap-api-scan.py",
+        "zap-repeater.py",
+        "zap-sequencer.py",
+        "zap-scope.py"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "OpenAPI や GraphQL 定義を入力にして API を確認したい場合は `zap-api-scan.py` を使います。",
+      "source": "docs/security-tools/owasp-zap-commands.md"
+    },
+    {
+      "id": 675,
+      "section": "セクション: Burp Suite",
+      "title": "IDOR の補助に使う拡張",
+      "question": "IDOR や認可不備の検証を半自動化するために Burp Suite でよく使う拡張はどれですか？",
+      "code": "",
+      "options": [
+        "Logger++",
+        "Autorize",
+        "Retire.js",
+        "Turbo Intruder"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Autorize は複数ユーザのトークンで同じリクエストを再送し、認可の崩れを見つける補助に使われます。",
+      "source": "docs/security-tools/burp-suite-vulnerabilities.md"
+    },
+    {
+      "id": 676,
+      "section": "セクション: Burp Suite",
+      "title": "JWT Editor の用途",
+      "question": "Burp Suite の `JWT Editor` 拡張の主な用途として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "JWT の解析や改変、脆弱性検証を補助する",
+        "TLS ハンドシェイクだけを高速化する",
+        "Docker イメージをスキャンする",
+        "ZAP のアラートを Burp に移す"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "JWT Editor はトークンの中身確認、改変、署名関連の検証など JWT 周りのテストを補助する拡張です。",
+      "source": "docs/security-tools/burp-suite-vulnerabilities.md"
+    },
+    {
+      "id": 677,
+      "section": "セクション: Burp Suite",
+      "title": "Sequencer の役割",
+      "question": "Burp Suite の Sequencer が得意なことはどれですか？",
+      "code": "",
+      "options": [
+        "セッショントークンのランダム性を統計的に分析する",
+        "Dockerfile を lint する",
+        "OpenAPI 定義を生成する",
+        "Flutter の proxy 設定を自動変更する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Sequencer はセッション ID やトークンのランダム性を分析し、予測しやすい値になっていないかを見るための機能です。",
+      "source": "docs/security-tools/burp-suite-vulnerabilities.md"
+    },
+    {
+      "id": 678,
+      "section": "セクション: OWASP ZAP",
+      "title": "React SPA で必要な機能",
+      "question": "React のような SPA を ZAP でたどるとき、特に重要な機能はどれですか？",
+      "code": "",
+      "options": [
+        "Ajax Spider",
+        "Comparer",
+        "Decoder",
+        "Burp Collaborator"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "SPA は JavaScript 実行後に画面が構成されるため、通常の Spider だけでなく Ajax Spider の利用が重要になります。",
+      "source": "docs/security-tools/owasp-zap-go-react-flutter-notes.md"
+    },
+    {
+      "id": 679,
+      "section": "セクション: スタック別診断",
+      "title": "w3af の現実的な使いどころ",
+      "question": "Go + React + Flutter + Docker の構成で、w3af の現実的な使いどころとして最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "React SPA の動的画面遷移だけに使う",
+        "Flutter の証明書ピンニング解除だけに使う",
+        "Go バックエンド API を直接スキャンする用途に絞る",
+        "Docker イメージの CVE を調べる用途に使う"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "w3af は SPA やモバイルプロキシ連携が弱いため、この構成では Go API の直接スキャンに絞るのが現実的と整理されました。",
+      "source": "docs/security-tools/w3af-go-react-flutter-notes.md"
+    },
+    {
+      "id": 680,
+      "section": "セクション: モバイル診断",
+      "title": "Flutter 通信を傍受する前提",
+      "question": "Flutter アプリの通信を ZAP や Burp で傍受するときにまず必要なことはどれですか？",
+      "code": "",
+      "options": [
+        "プロキシ設定と CA 証明書のインストール",
+        "Dockerfile の EXPOSE を削除すること",
+        "PostgreSQL を SQLite に変えること",
+        "Go のポインタを unsafe にすること"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "モバイルアプリの HTTPS 通信を傍受するには、端末やエミュレータがプロキシを通るよう設定し、プロキシ CA 証明書を信頼させる必要があります。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 681,
+      "section": "セクション: モバイル診断",
+      "title": "Android 7+ の証明書制約",
+      "question": "Android 7 以降でユーザー証明書をアプリが信頼しない問題への対策として適切なのはどれですか？",
+      "code": "<network-security-config>\n  <debug-overrides>\n    <trust-anchors>\n      <certificates src=\"user\" />\n    </trust-anchors>\n  </debug-overrides>\n</network-security-config>",
+      "options": [
+        "`network_security_config` で debug 用の信頼設定を追加する",
+        "必ず本番証明書を埋め込む",
+        "Burp のポートを 80 に変える",
+        "React Router を HashRouter に変える"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Android 7+ ではユーザー証明書が自動で信頼されないため、デバッグ用に `network_security_config` を設定する対応がよく使われます。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 682,
+      "section": "セクション: モバイル診断",
+      "title": "証明書ピンニングの影響",
+      "question": "Flutter アプリが証明書ピンニングを実装している場合、プロキシ診断で起こりやすいことはどれですか？",
+      "code": "",
+      "options": [
+        "プロキシ経由でも常に平文 HTTP に変換される",
+        "プロキシ CA を信頼せず通信が失敗する",
+        "JWT が自動更新される",
+        "DOM XSS の検出率が上がる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "証明書ピンニングが有効だと、端末に追加した CA 証明書ではなくアプリ側の固定証明書検証が優先され、MITM 型のプロキシ傍受が失敗しやすくなります。",
+      "source": "docs/security-tools/owasp-zap-go-react-flutter-notes.md"
+    },
+    {
+      "id": 683,
+      "section": "セクション: モバイル診断",
+      "title": "Flutter 連携で最も現実的なツール",
+      "question": "Flutter アプリの通信傍受と手順の充実度という観点で最も現実的なツールはどれですか？",
+      "code": "",
+      "options": [
+        "w3af",
+        "Burp Suite",
+        "Hadolint",
+        "grep_search"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Flutter のプロキシ設定、証明書導入、ピンニング確認、gRPC 拡張などまで含めると、Burp Suite が最も現実的な選択肢として整理されました。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 684,
+      "section": "セクション: Go API 診断",
+      "title": "バックエンド言語と HTTP 診断",
+      "question": "Go 製バックエンドに対して ZAP や Burp が診断できる理由として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "Go の AST を内部で直接読むから",
+        "HTTP レベルの通信を解析するため言語に依存しないから",
+        "Go 専用プラグインが必須だから",
+        "Go でしか JWT を発行できないから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "これらのツールは HTTP/HTTPS の通信内容を解析するので、Go・Node・Java などバックエンド言語そのものには依存しません。",
+      "source": "会話履歴: Go + React + Flutter + Docker 診断整理"
+    },
+    {
+      "id": 685,
+      "section": "セクション: Go API 診断",
+      "title": "ZAP と JSON ボディ",
+      "question": "ZAP で JSON リクエストのパラメータを積極的に検査したいときに確認すべきことはどれですか？",
+      "code": "",
+      "options": [
+        "Active Scan Input Vectors で JSON を有効にする",
+        "必ず gRPC 拡張を入れる",
+        "Docker の volume を外す",
+        "Node.js を 14 系に固定する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Go API では JSON ボディが多いため、ZAP の Input Vectors で JSON を有効にしておかないと検査の見落としが起きやすくなります。",
+      "source": "docs/security-tools/owasp-zap-go-react-flutter-notes.md"
+    },
+    {
+      "id": 686,
+      "section": "セクション: Go API 診断",
+      "title": "JWT 期限切れの影響",
+      "question": "スキャン中に JWT が期限切れになると起きやすい問題はどれですか？",
+      "code": "",
+      "options": [
+        "すべての API が自動で公開される",
+        "後続リクエストが 401 になりスキャンが不完全になる",
+        "Firestore の projectId が変わる",
+        "HTML の `<br>` が自動削除される"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "認証付き API をスキャン中にトークンが切れると、その後のリクエストが未認証扱いになり、正しい画面や API を十分に調べられなくなります。",
+      "source": "docs/security-tools/owasp-zap-go-react-flutter-notes.md"
+    },
+    {
+      "id": 687,
+      "section": "セクション: Go API 診断",
+      "title": "危険な CORS の組み合わせ",
+      "question": "CORS の設定として特に危険な組み合わせはどれですか？",
+      "code": "",
+      "options": [
+        "`Access-Control-Allow-Origin: *` と認証情報の併用",
+        "`Content-Type: application/json` を返すこと",
+        "`Strict-Transport-Security` を返すこと",
+        "`X-Content-Type-Options: nosniff` を返すこと"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ワイルドカード許可と認証情報の扱いが不適切に組み合わさると、意図しないオリジンからの認証付きアクセスを許すリスクがあります。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 688,
+      "section": "セクション: w3af",
+      "title": "Bearer トークンを固定で送る方法",
+      "question": "w3af で長寿命の Bearer トークンを毎回送る実装として適切なのはどれですか？",
+      "code": "w3af>>> http-settings\nw3af/config:http-settings>>> set headers_file /tmp/headers.txt",
+      "options": [
+        "`headers_file` に Authorization ヘッダを書いて読み込む",
+        "`bool` を `int` に暗黙変換する",
+        "`runQuery` で Firestore を直接読む",
+        "`zap-api-scan.py` を同時に実行する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "w3af は JWT 自動更新が弱いため、固定トークンを `headers_file` で読み込んで API に送る回避策が現実的です。",
+      "source": "docs/security-tools/w3af-go-react-flutter-notes.md"
+    },
+    {
+      "id": 689,
+      "section": "セクション: Burp Suite",
+      "title": "JWT 再取得の自動化",
+      "question": "Burp Suite で JWT の期限切れ対策を自動化する機能として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "Session Handling Rules",
+        "Decoder",
+        "Comparer",
+        "Comment Pins"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Burp の Session Handling Rules とログインマクロを使うと、スキャン中に必要な認証トークン再取得を自動化できます。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 690,
+      "section": "セクション: Go API 診断",
+      "title": "OpenAPI 定義の価値",
+      "question": "Go API の診断で OpenAPI 定義が特に有効な理由はどれですか？",
+      "code": "",
+      "options": [
+        "画面の CSS を最適化できるから",
+        "クローラが見つけにくい API エンドポイントも網羅しやすいから",
+        "Flutter の証明書を自動で信頼するから",
+        "Docker イメージの CVE を消せるから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "API は HTML のリンクのようにたどれないことが多いため、OpenAPI 定義があるとスキャナが対象エンドポイントを網羅しやすくなります。",
+      "source": "docs/security-tools/owasp-zap-go-react-flutter-notes.md"
+    },
+    {
+      "id": 691,
+      "section": "セクション: Docker セキュリティ",
+      "title": "スキャナコンテナの疎通",
+      "question": "Docker 内で動くアプリをスキャナコンテナから叩くときに重要なのはどれですか？",
+      "code": "docker run --rm --network your-app-network ghcr.io/zaproxy/zaproxy:stable ...",
+      "options": [
+        "同じネットワークに参加させて疎通を確保する",
+        "全コンテナを `--privileged` にする",
+        "必ず `localhost` しか使わない",
+        "`EXPOSE` を削除する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "スキャン対象コンテナへ名前解決・通信できることが前提なので、同じ Docker ネットワークへ参加させる設計が重要です。",
+      "source": "docs/security-tools/owasp-zap-go-react-flutter-notes.md"
+    },
+    {
+      "id": 692,
+      "section": "セクション: Docker セキュリティ",
+      "title": "Burp の Docker 利用事情",
+      "question": "Burp Suite を Docker ネットワーク内でヘッドレス運用したい場合の説明として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "Community 版に公式 Docker イメージがある",
+        "Enterprise 版の方が現実的で、通常の Burp は手動運用が中心になる",
+        "w3af の Docker イメージをそのまま使える",
+        "Docker では Burp の Proxy は動かない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Burp は通常 GUI 前提の利用が多く、ヘッドレスな自動運用は Enterprise 版の方が現実的です。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 693,
+      "section": "セクション: Docker セキュリティ",
+      "title": "3 ツールで見えないもの",
+      "question": "OWASP ZAP・w3af・Burp Suite の 3 ツールで共通して見えにくいものはどれですか？",
+      "code": "",
+      "options": [
+        "実行中 Web アプリのレスポンスヘッダ",
+        "Docker イメージ内 OS パッケージの CVE",
+        "XSS の反射結果",
+        "CORS ヘッダ"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "これらは Web 脆弱性診断ツールなので、HTTP 通信の外側にある Docker イメージ内部のパッケージ脆弱性は専用ツールが必要です。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 694,
+      "section": "セクション: Docker セキュリティ",
+      "title": "Trivy の secret スキャン",
+      "question": "Trivy で秘密情報の混入を重点的に見たいときのオプションとして適切なのはどれですか？",
+      "code": "trivy image --scanners secret myapp:latest",
+      "options": [
+        "`--scanners secret`",
+        "`--proxy burp`",
+        "`--ajax-spider`",
+        "`--cluster-bomb`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Trivy は `--scanners secret` で秘密情報スキャンを有効にでき、イメージ内の鍵やトークン混入を探せます。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 695,
+      "section": "セクション: Docker セキュリティ",
+      "title": "IaC の設定チェック",
+      "question": "Dockerfile や docker-compose の IaC セキュリティチェックに向くツールはどれですか？",
+      "code": "",
+      "options": [
+        "Checkov",
+        "Sequencer",
+        "Ajax Spider",
+        "JWT Editor"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Checkov は IaC 向けの静的検査ツールで、Dockerfile や compose の危険な設定を点検する用途に向いています。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 696,
+      "section": "セクション: Firebase / Firestore",
+      "title": "失敗したログイン経路",
+      "question": "今回の調査で失敗した Firebase CLI ログイン経路はどれですか？",
+      "code": "firebase login --no-localhost",
+      "options": [
+        "`invalid_request / Unable to verify client` で失敗した",
+        "ローカルに `firebase` コマンドが無いので失敗したままだった",
+        "SQL の構文エラーで失敗した",
+        "PostgreSQL に接続できず失敗した"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "通常の `firebase login --no-localhost` は `Unable to verify client` で失敗し、この環境では別経路が必要でした。",
+      "source": "会話履歴: Firebase CLI 認証調査"
+    },
+    {
+      "id": 697,
+      "section": "セクション: Firebase / Firestore",
+      "title": "成功した代替認証",
+      "question": "通常の Firebase CLI ログインが失敗した後、代替として成功したコマンドはどれですか？",
+      "code": "",
+      "options": [
+        "`firebase login:ci`",
+        "`firebase login:graphql`",
+        "`firebase login:firestore`",
+        "`firebase login:zap`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`firebase login:ci` は成功し、CLI で利用できるトークンを取得できました。",
+      "source": "会話履歴: Firebase CLI 認証調査"
+    },
+    {
+      "id": 698,
+      "section": "セクション: Firebase / Firestore",
+      "title": "プレビュー token エンドポイントのメソッド",
+      "question": "Studio preview の token エンドポイント `https://api.studiodesignapp.com/api/v2/previews/rROnBByYOA/token` について正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "GET 専用エンドポイントである",
+        "POST で token を取得した",
+        "DELETE で token を更新する",
+        "WebSocket でしかアクセスできない"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "この token エンドポイントは POST で叩く必要があり、そこから preview 用の custom token を取得しました。",
+      "source": "会話履歴: Studio preview token 調査"
+    },
+    {
+      "id": 699,
+      "section": "セクション: Firebase / Firestore",
+      "title": "custom token の交換先",
+      "question": "preview token から Firebase の `idToken` を得るために使ったエンドポイントはどれですか？",
+      "code": "",
+      "options": [
+        "`/JSON/ascan/action/scan/`",
+        "`identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken`",
+        "`firestore.googleapis.com/v1/projects:listCollectionIds`",
+        "`api.studiodesignapp.com/api/v2/previews/runQuery`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "preview から得た custom token は Identity Toolkit の `signInWithCustomToken` に渡し、`idToken` を取得しました。",
+      "source": "会話履歴: Firebase custom token 交換"
+    },
+    {
+      "id": 700,
+      "section": "セクション: Firebase / Firestore",
+      "title": "空表示の原因の切り分け",
+      "question": "`information/AiduBduv` が空に見える問題について、調査の結論として最も正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "Firestore の該当ドキュメントは空だった",
+        "該当レコードは埋まっており、表示側の問題と判断した",
+        "Docker ネットワークが原因で全文が削除された",
+        "quiz データの seed が上書きした"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Firestore 上の該当ドキュメントにはタイトル・本文が入っており、データ欠損ではなくクライアント側の取得・描画問題と切り分けられました。",
+      "source": "会話履歴: Firestore article 追跡"
+    },
+    {
+      "id": 701,
+      "section": "セクション: Firebase / Firestore",
+      "title": "`net::ERR_ABORTED` が示すもの",
+      "question": "ページ再読み込み時の Firestore listen チャンネルで `net::ERR_ABORTED` が見えたことから、最も自然な推測はどれですか？",
+      "code": "",
+      "options": [
+        "Go のコンパイラが壊れている",
+        "クライアント側の購読や実行時処理に問題がある",
+        "Burp Suite が自動で本文を削除した",
+        "`quiz.md` が読み込まれた"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "データは存在したため、listen チャンネルの abort はデータ欠損よりもクライアントの購読・実行時処理の問題を示唆します。",
+      "source": "会話履歴: Firestore listen 調査"
+    },
+    {
+      "id": 702,
+      "section": "セクション: Studio DOM",
+      "title": "`information` ページの ID",
+      "question": "`information/AiduBduv` の DOM 調査結果として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "`#cms-body` が存在した",
+        "本文相当コンテナはあったが `#cms-body` は無かった",
+        "`body` 要素しか存在しなかった",
+        "`#__nuxt` が存在しなかった"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`information/AiduBduv` では `#cms-body` 自体はありませんでしたが、`div.richText.sd.appear` という本文相当コンテナは存在していました。",
+      "source": "会話履歴: Studio DOM 調査"
+    },
+    {
+      "id": 703,
+      "section": "セクション: Studio DOM",
+      "title": "`case` ページの本文コンテナ",
+      "question": "`case/casestudy/detail/-HMbXDXq` の DOM 調査結果として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "`div#cms-body.richText.sd.appear` が存在した",
+        "本文コンテナは `canvas` のみだった",
+        "`#__nuxt` が無かった",
+        "`script#__NUXT_DATA__` が本文だった"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`case` の詳細ページでは、実際に `div#cms-body.richText.sd.appear` が確認でき、提示されたカスタムコードの前提が成立していました。",
+      "source": "会話履歴: Studio DOM 調査"
+    },
+    {
+      "id": 704,
+      "section": "セクション: Studio DOM",
+      "title": "ID なし本文コンテナの役割",
+      "question": "`div.richText.sd.appear` が `#cms-body` 相当と判断された理由として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "常に Firestore の projectId を持っているから",
+        "本文の `p`, `a`, `strong`, `br` などがまとまって入っていたから",
+        "`canvas` より後ろにあるから",
+        "Burp Collaborator が使えたから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ID は無くても、本文に相当するリッチテキスト要素群がそこにまとまっていたため、役割として `#cms-body` に相当すると判断されました。",
+      "source": "会話履歴: Studio DOM 調査"
+    },
+    {
+      "id": 705,
+      "section": "セクション: Studio DOM",
+      "title": "`#cms-body` 依存コードの挙動",
+      "question": "`document.querySelector('#cms-body')` を前提にした後処理コードが、`information/AiduBduv` で何もしない理由はどれですか？",
+      "code": "const root = document.querySelector('#cms-body');\nif (!root) return;",
+      "options": [
+        "`MutationObserver` が古いから",
+        "対象 ID が存在せず早期 return するから",
+        "`TreeWalker` が `div` を読めないから",
+        "`inline style` が自動で消されるから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "コードは `#cms-body` を見つけられなければそのまま終了するため、本文相当コンテナが別の selector でしか存在しないページでは何も起きません。",
+      "source": "会話履歴: カスタムコード前提の整理"
+    },
+    {
+      "id": 706,
+      "section": "セクション: Studio DOM",
+      "title": "今回の学びの本質",
+      "question": "Studio ページ差分の調査から得られた学びとして最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "本文の有無より、安定した識別子が付いているかが重要だった",
+        "Firebase CLI は DOM を自動修正する",
+        "Burp Suite が `id` 属性を生成する",
+        "`#__nuxt` があれば必ず `#cms-body` がある"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "今回の差分は本文が存在するかではなく、JavaScript が狙うための安定した `id` が CMS 領域に付いているかどうかでした。",
+      "source": "会話履歴: Studio id 属性の学び"
+    },
+    {
+      "id": 707,
+      "section": "セクション: Studio DOM",
+      "title": "`body` 末尾の要素",
+      "question": "`case/casestudy/detail/-HMbXDXq` のページで `body` 直下の末尾側に来ていたものとして正しいのはどれですか？",
+      "code": "",
+      "options": [
+        "`div#cms-body` が `body` の末尾に直接置かれていた",
+        "末尾は `script` と `script#__NUXT_DATA__` だった",
+        "末尾は `canvas.comment-canvas` だった",
+        "末尾は `head` だった"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`#cms-body` は深い子孫であり、`body` 直下の末尾ではありませんでした。`body` の末尾側には script 群がありました。",
+      "source": "会話履歴: `#cms-body` の位置確認"
+    },
+    {
+      "id": 708,
+      "section": "セクション: Studio DOM",
+      "title": "親要素内での `#cms-body` の位置",
+      "question": "`case` ページにおける `#cms-body` の位置づけとして正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "`body` 直下の 1 個目だった",
+        "親コンテナ内では最後の子要素だった",
+        "`head` 配下にあった",
+        "SVG の中にあった"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`#cms-body` は `body` 直下ではありませんが、その親コンテナの子要素としては末尾に位置していました。",
+      "source": "会話履歴: `#cms-body` の位置確認"
+    },
+    {
+      "id": 709,
+      "section": "セクション: Studio DOM",
+      "title": "ページ全体の抽象構造",
+      "question": "`case` ページを抽象的に見たときの構造として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "アプリ殻 → 導入レイアウト → `#cms-body` 本文 → 下部導線",
+        "`#cms-body` だけでページ全体が構成される",
+        "すべてが `<canvas>` で描画される",
+        "`head` に本文、`body` に画像だけがある"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ページ全体は Studio のレイアウトシステムの中に、本文ブロックとして `#cms-body` が差し込まれている構成と整理されました。",
+      "source": "会話履歴: ページ全体の抽象化"
+    },
+    {
+      "id": 710,
+      "section": "セクション: カスタムコード",
+      "title": "監視している変化",
+      "question": "提示された擬似タグ変換コードの `MutationObserver` が主に監視しているものはどれですか？",
+      "code": "mo.observe(root, { childList: true, subtree: true });",
+      "options": [
+        "`childList` の変化",
+        "`attributes` の変化のみ",
+        "`characterData` の変化のみ",
+        "CSS の computed style 変化"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "コードでは `childList: true, subtree: true` を指定しており、要素の追加・削除のような変化を監視しています。",
+      "source": "会話履歴: 擬似タグ変換コードの前提整理"
+    },
+    {
+      "id": 711,
+      "section": "セクション: カスタムコード",
+      "title": "inline style 前提のリスク",
+      "question": "この擬似タグ変換コードが崩れやすい条件として正しいものはどれですか？",
+      "code": "s.setAttribute('style', TAG_STYLE[tag] || '');",
+      "options": [
+        "CSP で inline style が禁止されている場合",
+        "Go で書かれた API を使っている場合",
+        "`#__nuxt` がある場合",
+        "`<p>` が 10 個以上ある場合"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "スタイルを `style` 属性へ直接埋め込む実装なので、CSP などで inline style が禁止されると表示が崩れる可能性があります。",
+      "source": "会話履歴: 擬似タグ変換コードの前提整理"
+    },
+    {
+      "id": 712,
+      "section": "セクション: カスタムコード",
+      "title": "擬似タグが解釈できないケース",
+      "question": "この実装で擬似タグが解釈できなくなるケースとして最も正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "`[title1]` が別テキストノードに分断される場合",
+        "本文が `<p>` に入っている場合",
+        "`MutationObserver` が存在する場合",
+        "`document.readyState` が `loading` の場合"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "実装はテキストノード内の文字列として擬似タグを解釈するため、タグ文字列自体が複数テキストノードに分断されると認識できません。",
+      "source": "会話履歴: 擬似タグ変換コードの前提整理"
+    },
+    {
+      "id": 713,
+      "section": "セクション: カスタムコード",
+      "title": "ブロックまたぎで閉じないタグ",
+      "question": "提示コードの説明として正しいものはどれですか？",
+      "code": "const CLOSE_ON_BLOCK = new Set(['title1','title2','rightCaption','photoCaption']);",
+      "options": [
+        "`color` はブロックをまたいでも明示的に閉じるまで継続する",
+        "すべてのタグはブロックをまたいだ瞬間に閉じる",
+        "`note` だけは DOM 全体で永続する",
+        "`annotation` は span ではなく table に変換される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`CLOSE_ON_BLOCK` に含まれないタグは自動クローズされないため、`color` などは明示的な閉じタグまで継続する前提です。",
+      "source": "会話履歴: 擬似タグ変換コードの前提整理"
+    },
+    {
+      "id": 714,
+      "section": "セクション: カスタムコード",
+      "title": "`<br>` 整理の副作用",
+      "question": "`collapseConsecutiveBRs` や `trimBRsAtBlockEdges` の副作用として考えるべきことはどれですか？",
+      "code": "",
+      "options": [
+        "元の改行意図が変わる可能性がある",
+        "Go API の JWT が失効する",
+        "Firestore の rules が緩くなる",
+        "`#__NUXT_DATA__` が削除される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "連続 `<br>` やブロック端の `<br>` を削除するため、著者が意図した改行表現が変わる可能性があります。",
+      "source": "会話履歴: 擬似タグ変換コードの前提整理"
+    },
+    {
+      "id": 715,
+      "section": "セクション: カスタムコード",
+      "title": "見落としうる更新",
+      "question": "このコードが自動再変換を見落としやすい更新として正しいものはどれですか？",
+      "code": "mo.observe(root, { childList: true, subtree: true });",
+      "options": [
+        "`characterData` だけの差し替え",
+        "子要素の追加",
+        "子要素の削除",
+        "DOM 全体の再描画"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "監視対象は `childList` であり、テキストノードの中身だけが書き換わる `characterData` の変化は自動再変換の対象外です。",
+      "source": "会話履歴: 擬似タグ変換コードの前提整理"
+    },
+    {
+      "id": 716,
+      "section": "セクション: C++ Othello",
+      "title": "flip の開始位置のバグ",
+      "question": "Othello の `flip(Cursor position)` で修正すべきだった主なバグはどれですか？",
+      "code": "",
+      "options": [
+        "盤面外チェックを完全に削除していた",
+        "隣接マスではなく不適切な位置から反転を始めていた",
+        "白石しか置けなかった",
+        "`enum class cell` が存在しなかった"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "反転は置いた位置の隣接セルから始めるべきですが、元の処理では開始位置がずれており、正しく石がひっくり返らない原因になっていました。",
+      "source": "game/othello.cpp"
+    },
+    {
+      "id": 717,
+      "section": "セクション: C++ Othello",
+      "title": "canFlipInDirection の余計な前進",
+      "question": "`canFlipInDirection()` のバグとして修正された内容はどれですか？",
+      "code": "",
+      "options": [
+        "方向の配列を 8 方向から 4 方向へ減らした",
+        "余計に 1 マス進めてしまう処理を取り除いた",
+        "盤面サイズを 8x8 から 10x10 へ変えた",
+        "黒番と白番を逆にした"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "余計な前進があると `O -> O -> X` のような並びを正しく判定できず、合法手が見落とされる原因になっていました。",
+      "source": "game/othello.cpp"
+    },
+    {
+      "id": 718,
+      "section": "セクション: C++ Othello",
+      "title": "turn 切り替えの正しい位置",
+      "question": "Othello の `turn = 1 - turn` を置く位置として正しいのはどれですか？",
+      "code": "",
+      "options": [
+        "入力を受け取る前に毎回切り替える",
+        "石を正しく置いて反転が成功した後に切り替える",
+        "盤面表示の直前で切り替える",
+        "ゲーム開始時に 1 回だけ切り替える"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "合法手が成立した後にだけ手番を切り替えないと、無効な操作でもターンが進んでしまいます。",
+      "source": "game/othello.cpp"
+    },
+    {
+      "id": 719,
+      "section": "セクション: C++ Othello",
+      "title": "未実装の pass 判定",
+      "question": "Othello の pass 処理を実装するために必要とされた補助関数の方向性として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "`canPlaceAnywhere(int color)` のように盤面全体の合法手有無を調べる",
+        "`memcpy` を 3 回呼ぶ",
+        "`std::clock` を無効化する",
+        "`__file__` を使う"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "pass の判定には、現在の色で盤面のどこかに合法手があるかを広く確認する関数が必要という話になっていました。",
+      "source": "会話履歴: Othello pass 実装の相談"
+    },
+    {
+      "id": 720,
+      "section": "セクション: C++ 基礎",
+      "title": "`bool` を足せる理由の確認",
+      "question": "`count += field[y][x];` が成立する理由として正しいものはどれですか？",
+      "code": "int count = 0;\ncount += field[y][x];",
+      "options": [
+        "`bool` が演算時に 0/1 の整数へ暗黙変換されるから",
+        "配列要素だけ特別に文字列化されるから",
+        "`field` は本当は `double` 配列だから",
+        "C++ では `+=` が比較演算だから"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "C++ では `bool` を算術演算に使うと `true` は 1、`false` は 0 として扱われるため、生存セル数の加算に使えます。",
+      "source": "https://en.cppreference.com/w/cpp/language/implicit_conversion"
+    },
+    {
+      "id": 721,
+      "section": "セクション: C++ 基礎",
+      "title": "`memcpy` の引数順の再確認",
+      "question": "`memcpy(field, nextField, sizeof field);` の意味として正しいものはどれですか？",
+      "code": "memcpy(field, nextField, sizeof field);",
+      "options": [
+        "`nextField` を `field` に配列全体サイズ分コピーする",
+        "`field` を `nextField` にコピーする",
+        "差分だけ自動更新する",
+        "両方を `false` に初期化する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`memcpy` は `コピー先, コピー元, サイズ` の順なので、次世代盤面 `nextField` を現在盤面 `field` に上書きしています。",
+      "source": "https://en.cppreference.com/w/c/string/byte/memcpy"
+    },
+    {
+      "id": 722,
+      "section": "セクション: Python REPL",
+      "title": "REPL に `__file__` がない理由",
+      "question": "Python の REPL で `__file__` が無い理由として正しいものはどれですか？",
+      "code": ">>> __file__\nNameError: name '__file__' is not defined",
+      "options": [
+        "REPL は特定のスクリプトファイルとして実行されていないから",
+        "Python 3 で `__file__` が削除されたから",
+        "REPL は文字列を使えないから",
+        "`Path` を import していないから"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`__file__` はスクリプト実行時にセットされる変数であり、REPL は特定ファイルに紐づかないため未定義です。",
+      "source": "Python data model / __file__"
+    },
+    {
+      "id": 723,
+      "section": "セクション: Python REPL",
+      "title": "クォート無しパスの解釈",
+      "question": "REPL で `/home/user/script.py` をクォート無しで代入すると構文エラーになりやすい理由はどれですか？",
+      "code": ">>> file = /home/user/script.py",
+      "options": [
+        "`/` が除算演算子として解釈されるから",
+        "パス長が 255 文字を超えるから",
+        "`file` が予約語だから",
+        "REPL では代入が禁止だから"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "クォートが無いと Python はそれを文字列ではなく式として読もうとし、`/` を除算演算子として扱います。",
+      "source": "Python syntax / REPL"
+    },
+    {
+      "id": 724,
+      "section": "セクション: Python ファイル操作",
+      "title": "append モードの意味",
+      "question": "`open('app.log', 'a')` の説明として正しいものはどれですか？",
+      "code": "with open('app.log', 'a', encoding='utf-8') as f:\n    f.write('started\\n')",
+      "options": [
+        "先頭に追記するだけで新規作成はしない",
+        "末尾に追記し、無ければ新規作成する",
+        "必ず内容を空にしてから書く",
+        "読み取り専用で開く"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`a` は append モードで、既存ファイルの内容を残したまま末尾へ追記し、ファイルが無ければ作成します。",
+      "source": "Python built-in open() / file modes"
+    },
+    {
+      "id": 725,
+      "section": "セクション: Python 上級",
+      "title": "`getrefcount` が 1 多い理由",
+      "question": "`sys.getrefcount(x)` が実際の参照数より 1 多く見える理由はどれですか？",
+      "code": "import sys\nlst = []\nprint(sys.getrefcount(lst))",
+      "options": [
+        "関数に渡す時点で一時参照が 1 つ増えるから",
+        "GC が必ず 1 を足すから",
+        "グローバル変数は常に 2 倍表示されるから",
+        "Windows だけの仕様だから"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`getrefcount` に渡す引数そのものが一時的に参照されるため、表示値にはその分が 1 つ上乗せされます。",
+      "source": "Python sys.getrefcount documentation"
+    },
+    {
+      "id": 726,
+      "section": "セクション: Python 上級",
+      "title": "`argparse.SUPPRESS` の挙動",
+      "question": "`argparse.SUPPRESS` を既定値にした未指定引数はどうなりますか？",
+      "code": "parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)",
+      "options": [
+        "必ず空文字列になる",
+        "属性自体が Namespace に作られない",
+        "必ず `None` になる",
+        "自動で必須引数になる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`SUPPRESS` を指定すると、未指定の引数は `Namespace` 上に属性そのものが作られません。",
+      "source": "Python argparse documentation"
+    },
+    {
+      "id": 727,
+      "section": "セクション: クイズ運用",
+      "title": "候補プールの役割",
+      "question": "`admin-web/src/data/quizzes.json` の役割として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "本番 DB の唯一の正データ",
+        "レビュー前の問題ストックを含む候補プール",
+        "Docker イメージの脆弱性レポート",
+        "Flutter の mock API"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`admin-web/src/data/quizzes.json` は候補プールであり、下書きやレビュー中の問題を含むストックとして扱われます。",
+      "source": "docs/quiz-data-workflow.md"
+    },
+    {
+      "id": 728,
+      "section": "セクション: クイズ運用",
+      "title": "新規問題の最初の追加先",
+      "question": "新しい問題を思いついたとき、最初に追加すべき場所として文書化されているのはどれですか？",
+      "code": "",
+      "options": [
+        "`backend/seeds/quizzes.production.json`",
+        "`admin-web/src/data/quizzes.json`",
+        "PostgreSQL の `quizzes` テーブルへ直接 INSERT",
+        "`web/src/data/quizzes.ts`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ワークフローでは、新しい問題はまず候補プールである `admin-web/src/data/quizzes.json` に追加すると明記されています。",
+      "source": "docs/quiz-data-workflow.md"
+    },
+    {
+      "id": 729,
+      "section": "セクション: クイズ運用",
+      "title": "replace-mode sync の注意",
+      "question": "本番 seed の同期が replace-mode に近い運用であることの注意点はどれですか？",
+      "code": "",
+      "options": [
+        "seed に無い問題が DB から消える可能性がある",
+        "常に 9000 番台の ID に変換される",
+        "画像ファイルしか同期できない",
+        "Burp Scanner が自動起動する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "本番用 JSON を元に差し替え同期する運用では、seed から外した問題が DB から消える可能性があり、取り扱いに注意が必要です。",
+      "source": "docs/quiz-data-workflow.md"
+    },
+    {
+      "id": 730,
+      "section": "セクション: クイズ運用",
+      "title": "production seed の意味",
+      "question": "`backend/seeds/quizzes.production.json` の位置づけとして正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "候補プールと同義で全問題を入れる",
+        "本番採用が決まった問題だけを持つテンプレート",
+        "フロントの CSS 変数ファイル",
+        "Studio preview の route 一覧"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`quizzes.production.json` は本番採用済みの問題だけを保持し、DB シード生成の入力として使われます。",
+      "source": "docs/quiz-data-workflow.md"
+    },
+    {
+      "id": 731,
+      "section": "セクション: クイズ運用",
+      "title": "最終的な正データ",
+      "question": "ユーザー配信に関する最終的な Single Source of Truth として説明されているものはどれですか？",
+      "code": "",
+      "options": [
+        "`admin-web/src/data/quizzes.json`",
+        "PostgreSQL の `quizzes` テーブル",
+        "`quiz.md`",
+        "`README.md`"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "文書では、最終的な正データは PostgreSQL の `quizzes` テーブルであり、管理画面からの CRUD もそこに対して行うと整理されています。",
+      "source": "docs/quiz-data-workflow.md"
+    },
+    {
+      "id": 732,
+      "section": "セクション: クイズ運用",
+      "title": "CI で lint される対象",
+      "question": "リポジトリ検索から確認できた、CI で lint 対象になっている JSON として正しい組み合わせはどれですか？",
+      "code": "",
+      "options": [
+        "候補プールと production seed の両方",
+        "候補プールだけ",
+        "production seed だけ",
+        "どちらも lint されない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`.github/workflows/quiz-data.yml` では `admin-web/src/data/quizzes.json` と `backend/seeds/quizzes.production.json` の両方が lint 対象でした。",
+      "source": "会話履歴: quiz ファイル参照検索"
+    },
+    {
+      "id": 733,
+      "section": "セクション: クイズ運用",
+      "title": "9000 番台 ID の意図",
+      "question": "`web/src/data/quizzes.ts` 側で 9000 番台 ID が使われていた意図として最も自然なものはどれですか？",
+      "code": "",
+      "options": [
+        "admin 側候補プールとの衝突回避",
+        "Firebase の projectId を表すため",
+        "Burp の拡張番号を表すため",
+        "HTML 仕様で 9000 番台が推奨されるため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "別管理のクイズセットと ID が衝突しないよう、高いレンジを使っていると読むのが自然です。",
+      "source": "会話履歴: quiz 関連リポジトリ検索"
+    },
+    {
+      "id": 734,
+      "section": "セクション: セキュリティドキュメント",
+      "title": "Burp Docker ガイドの方針",
+      "question": "`burp-suite-docker.md` の調整方針として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "Docker 利用を最優先に強く推奨した",
+        "ホストへの通常インストールを推奨し、VNC/X11 例は隠した",
+        "Burp を w3af に置き換えた",
+        "すべての説明を削除した"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Burp は GUI 前提の利用が多いため、Docker 内 GUI 実行よりもホストへの通常インストールを優先し、VNC/X11 例はコメントアウトする方針にしました。",
+      "source": "会話履歴: security-tools docs 編集"
+    },
+    {
+      "id": 735,
+      "section": "セクション: セキュリティドキュメント",
+      "title": "w3af の記述で強調すべきこと",
+      "question": "w3af のセットアップや脆弱性資料で繰り返し強調すべき注意として適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "メンテナンス低調で依存関係問題が起きやすいこと",
+        "Windows 専用ツールであること",
+        "必ず Firestore を読むこと",
+        "React SPA に最適であること"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "w3af はメンテナンス低調で依存関係の古さが課題なので、その注意点は資料でも明示しておく必要があります。",
+      "source": "docs/security-tools/w3af-setup.md"
+    },
+    {
+      "id": 736,
+      "section": "セクション: セキュリティドキュメント",
+      "title": "多層防御の考え方",
+      "question": "Docker を使うアプリのセキュリティを考えるとき、文書で推奨された多層防御の組み合わせとして最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "Hadolint / Trivy / Dockle と、ZAP / Burp を役割分担して使う",
+        "Burp Suite だけで Dockerfile から本番 API まで全部見る",
+        "w3af だけでイメージ CVE と SPA を同時に見る",
+        "`grep_search` だけで脆弱性を断定する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "イメージ層・設定層は Trivy や Dockle、Web アプリ層は ZAP や Burp というように、階層ごとに専用ツールを分担させるのが推奨でした。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 737,
+      "section": "セクション: セキュリティドキュメント",
+      "title": "デプロイ後の自動スキャン担当",
+      "question": "多層防御の説明で、デプロイ後の Web アプリ自動スキャン担当として位置づけられていたツールはどれですか？",
+      "code": "",
+      "options": [
+        "OWASP ZAP",
+        "Hadolint",
+        "Dockle",
+        "Checkov"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ZAP はデプロイ後の Web アプリ層を自動スキャンする役割として位置づけられ、Burp は手動ペネトレーションテスト側に置かれました。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 738,
+      "section": "セクション: セキュリティドキュメント",
+      "title": "Blind 脆弱性に最も強い選択",
+      "question": "3 ツール比較で Blind 脆弱性の検出に最も強いと整理されたものはどれですか？",
+      "code": "",
+      "options": [
+        "w3af",
+        "OWASP ZAP",
+        "Burp Suite Professional",
+        "Hadolint"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Burp Suite Professional は Collaborator により Blind SQLi・Blind SSRF・Blind XXE など OOB 系の検出が最も強いと整理されました。",
+      "source": "docs/security-tools/burp-suite-vulnerabilities.md"
+    },
+    {
+      "id": 739,
+      "section": "セクション: Burp Suite",
+      "title": "Community 版 Intruder の注意",
+      "question": "Burp Suite Community 版の Intruder に関する注意として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "速度制限がある",
+        "完全に削除されている",
+        "SQL しか送れない",
+        "TLS を扱えない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Community 版でも Intruder はありますが、速度制限があるため大規模ファジングには向きません。",
+      "source": "docs/security-tools/burp-suite-commands.md"
+    },
+    {
+      "id": 740,
+      "section": "セクション: Burp Suite",
+      "title": "Collaborator が必要な理由",
+      "question": "Burp Collaborator が Professional 版で重要になる理由として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "CSS を minify するため",
+        "OOB コールバックで Blind 系脆弱性を確認できるため",
+        "Dockerfile を lint するため",
+        "Node.js の型エラーを直すため"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Collaborator は外部コールバックを受けられるため、レスポンス差分が出ない Blind 系の脆弱性でも検出の証拠を取りやすくなります。",
+      "source": "docs/security-tools/burp-suite-vulnerabilities.md"
+    },
+    {
+      "id": 741,
+      "section": "セクション: OWASP ZAP",
+      "title": "パッシブとアクティブの違い",
+      "question": "ZAP のパッシブスキャンとアクティブスキャンの違いとして正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "パッシブは通信観察中心、アクティブは攻撃リクエストを送る",
+        "パッシブは Burp でしか使えない",
+        "アクティブは HTML を読めない",
+        "違いは出力形式だけ"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "パッシブは既存通信を観察して危険設定などを見つけ、アクティブは実際に payload を送り込んで脆弱性を確かめます。",
+      "source": "docs/security-tools/owasp-zap-vulnerabilities.md"
+    },
+    {
+      "id": 742,
+      "section": "セクション: w3af",
+      "title": "プラグインカテゴリ",
+      "question": "w3af のプラグインカテゴリの組み合わせとして正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "crawl / audit / grep / infrastructure",
+        "repeater / intruder / decoder / comparer",
+        "lint / build / deploy / seed",
+        "nuxt / pinia / vue / router"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "w3af は `crawl`, `audit`, `grep`, `infrastructure`, `auth`, `output` などのカテゴリでプラグインを構成します。",
+      "source": "docs/security-tools/w3af-vulnerabilities.md"
+    },
+    {
+      "id": 743,
+      "section": "セクション: Burp Suite",
+      "title": "Repeater の役割",
+      "question": "Burp Repeater の説明として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "単一リクエストを編集しながら繰り返し送る手動検証用ツール",
+        "Docker イメージをスキャンするツール",
+        "JWT を自動更新する cron",
+        "React の router を生成する機能"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Repeater は 1 件のリクエストを細かく編集し、レスポンス差分を見ながら手動で脆弱性を検証するための機能です。",
+      "source": "docs/security-tools/burp-suite-commands.md"
+    },
+    {
+      "id": 744,
+      "section": "セクション: Burp Suite",
+      "title": "Cluster bomb の意味",
+      "question": "Intruder の `Cluster bomb` アタックタイプの説明として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "1 パラメータだけに順番に payload を送る",
+        "複数パラメータの payload 組み合わせを網羅する",
+        "同じ payload を全パラメータへ同時適用する",
+        "常に空 payload を送る"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Cluster bomb は複数パラメータに対する payload の組み合わせを広く試すアタックタイプです。",
+      "source": "docs/security-tools/burp-suite-commands.md"
+    },
+    {
+      "id": 745,
+      "section": "セクション: OWASP ZAP",
+      "title": "Spider の進捗確認 API",
+      "question": "ZAP REST API で Spider の進捗を確認するエンドポイントとして適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "`/JSON/spider/view/status/`",
+        "`/JSON/repeater/view/status/`",
+        "`/JSON/docker/view/status/`",
+        "`/JSON/flutter/view/status/`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Spider の進捗確認は `/JSON/spider/view/status/` で行い、scanId に対する 0〜100 の進捗を取得できます。",
+      "source": "docs/security-tools/owasp-zap-commands.md"
+    },
+    {
+      "id": 746,
+      "section": "セクション: Firebase / Firestore",
+      "title": "root collection 列挙が失敗した理由",
+      "question": "Firestore の root collection 列挙がうまくいかなかった直接の理由として最も近いものはどれですか？",
+      "code": "",
+      "options": [
+        "rules により root listing がブロックされたため",
+        "Go コンパイラが古いため",
+        "`#cms-body` が無いため",
+        "Burp Collaborator が停止していたため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "認証後でも root collection の列挙は rules によってブロックされ、そこから直接スキーマを一覧化することはできませんでした。",
+      "source": "会話履歴: Firestore root listing 調査"
+    },
+    {
+      "id": 747,
+      "section": "セクション: Firebase / Firestore",
+      "title": "preview project doc の経路",
+      "question": "Studio preview `rROnBByYOA` の調査で到達した preview project document のパスとして正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "`projects/vHoFQ8fsGUnc3wY7aIef`",
+        "`schemas/H360oksrGI5kZArZjdeb` だけ",
+        "`contents/JQLBbWHMlfj2458RCq9e` だけ",
+        "`web/src/data/quizzes.ts`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "調査では preview に対応する project document が `projects/vHoFQ8fsGUnc3wY7aIef` と特定されました。",
+      "source": "会話履歴: Firestore project path 調査"
+    },
+    {
+      "id": 748,
+      "section": "セクション: Firebase / Firestore",
+      "title": "route から content doc への対応",
+      "question": "`information/AiduBduv` の route が最終的に対応付けられた Firestore content document として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "`projects/vHoFQ8fsGUnc3wY7aIef/schemas/H360oksrGI5kZArZjdeb/contents/JQLBbWHMlfj2458RCq9e`",
+        "`projects/vHoFQ8fsGUnc3wY7aIef/schemas/000/contents/000`",
+        "`projects/studio-7e371/contents/AiduBduv`",
+        "`backend/seeds/quizzes.production.json`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "最終的に route は特定の content document にマップされ、そのパスまで確認できました。",
+      "source": "会話履歴: Firestore article mapping"
+    },
+    {
+      "id": 749,
+      "section": "セクション: Studio DOM",
+      "title": "`case` ページの本文コンテナの完全な形",
+      "question": "`case` ページで見つかった本文コンテナの selector として最も正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "`div#cms-body.richText.sd.appear`",
+        "`main#cms-body.root`",
+        "`article#cms-body.markdown`",
+        "`p#cms-body.text`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "実際に確認できた本文コンテナは `div#cms-body.richText.sd.appear` でした。",
+      "source": "会話履歴: DOM 全要素の抽出"
+    },
+    {
+      "id": 750,
+      "section": "セクション: Studio DOM",
+      "title": "`information` ページの本文相当コンテナ",
+      "question": "`information` ページで `#cms-body` の代わりに本文相当コンテナとして見つかったものはどれですか？",
+      "code": "",
+      "options": [
+        "`div.richText.sd.appear`",
+        "`canvas.comment-canvas`",
+        "`script#__NUXT_DATA__`",
+        "`meta[property=og:title]`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ID は無くても、本文領域として機能していたのは `div.richText.sd.appear` でした。",
+      "source": "会話履歴: DOM 差分の整理"
+    },
+    {
+      "id": 751,
+      "section": "セクション: Studio DOM",
+      "title": "確認できたものとできないもの",
+      "question": "今回のブラウザ調査で確認できたものとして正しいのはどれですか？",
+      "code": "",
+      "options": [
+        "表示中ページの DOM 構造や script/state の内容",
+        "Studio 側の元 HTML ソースファイルそのもの",
+        "ローカルファイルシステム上の Studio プロジェクト一式",
+        "Burp Suite の未保存セッション"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ブラウザ上で確認できたのは、表示中ページの DOM や埋め込みスクリプト、state の内容であり、Studio 側の元ソースファイルそのものではありません。",
+      "source": "会話履歴: HTML ファイル確認の質疑"
+    },
+    {
+      "id": 752,
+      "section": "セクション: Studio DOM",
+      "title": "`#cms-body` 前後の役割差",
+      "question": "`case` ページにおける `#cms-body` 前後の役割差として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "前は導入レイアウト、後は本文や下部導線への切り替え点になっている",
+        "前後とも完全に同一の `<p>` 群だけで構成される",
+        "前は Firestore、後は PostgreSQL を表す",
+        "前後とも script タグだけで構成される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`#cms-body` の前はヘッダーや導入ブロックなどレイアウト中心、`#cms-body` 以降は本文、さらにその後は共通導線へ戻るという役割差が見えました。",
+      "source": "会話履歴: ページ全体の抽象化"
+    },
+    {
+      "id": 753,
+      "section": "セクション: Studio DOM",
+      "title": "本文だけを狙う selector の意味",
+      "question": "擬似タグ変換コードで `#cms-body` のような selector に対象を限定する主な利点はどれですか？",
+      "code": "",
+      "options": [
+        "ヘッダーやフッターなど本文以外を触らずに済む",
+        "自動で Firestore rules を変更できる",
+        "必ず Docker image CVE を取れる",
+        "Burp Intruder の速度制限が消える"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "本文専用コンテナを起点にすれば、共通ナビや下部導線ではなく CMS 本文だけへ後処理を限定できます。",
+      "source": "会話履歴: Studio DOM 差分の整理"
+    },
+    {
+      "id": 754,
+      "section": "セクション: Docker セキュリティ",
+      "title": "3 ツールで直接できないこと",
+      "question": "OWASP ZAP・w3af・Burp Suite に共通して、直接は担当外と整理されたものはどれですか？",
+      "code": "",
+      "options": [
+        "コンテナ上の Web アプリの HTTP 診断",
+        "Docker イメージ自体の CVE スキャン",
+        "セキュリティヘッダの確認",
+        "React SPA の画面確認"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "3 ツールは Web アプリ層の診断には使えますが、Docker イメージ自体の CVE スキャンは Trivy など別ツールの役割です。",
+      "source": "docs/security-tools/docker-image-security-evaluation.md"
+    },
+    {
+      "id": 755,
+      "section": "セクション: セキュリティツール比較",
+      "title": "Blind 脆弱性に強い理由",
+      "question": "Burp Suite Pro が Blind 脆弱性に強い理由として最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "すべての HTML を Markdown に変換するから",
+        "Collaborator による OOB コールバック確認ができるから",
+        "常に React Router を理解するから",
+        "`__file__` を自動定義するから"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Blind 系はレスポンス差分が乏しいため、OOB コールバックを拾える Collaborator の存在が大きな差になります。",
+      "source": "docs/security-tools/burp-suite-vulnerabilities.md"
+    },
+    {
+      "id": 756,
+      "section": "セクション: セキュリティツール比較",
+      "title": "CI/CD 自動化の向き不向き",
+      "question": "Community 版 Burp と比べたとき、ZAP が CI/CD に向く主因はどれですか？",
+      "code": "",
+      "options": [
+        "公式の自動化スクリプト群と Action が整っているから",
+        "JWT Editor が標準搭載だから",
+        "必ず gRPC を解読できるから",
+        "SQLMap を内蔵しているから"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ZAP はコマンドライン・Docker・GitHub Actions の流れが整っており、Community 版 Burp より自動化に乗せやすいです。",
+      "source": "docs/security-tools/owasp-zap-commands.md"
+    },
+    {
+      "id": 757,
+      "section": "セクション: セキュリティツール比較",
+      "title": "この構成での w3af の位置づけ",
+      "question": "Go + React + Flutter + Docker の構成での w3af の位置づけとして最も適切なのはどれですか？",
+      "code": "",
+      "options": [
+        "主役として全レイヤーを任せるべき",
+        "Go API の直接スキャンに限定するのが現実的",
+        "Flutter の CA 証明書導入専用に使う",
+        "Docker イメージの SBOM 生成専用に使う"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "w3af はこの構成すべてをカバーする主役ではなく、Go API の直接スキャンに用途を限定するのが現実的と整理されました。",
+      "source": "docs/security-tools/w3af-go-react-flutter-notes.md"
+    },
+    {
+      "id": 758,
+      "section": "セクション: モバイル診断",
+      "title": "ピンニング回避の代表例",
+      "question": "Flutter アプリの証明書ピンニングをテスト環境で一時的に回避する代表例として挙がっていたものはどれですか？",
+      "code": "frida -U -f com.example.myapp -l ssl_pinning_bypass.js --no-pause",
+      "options": [
+        "Frida を使ったバイパス",
+        "Hadolint の実行",
+        "`memcpy` の書き換え",
+        "`argparse.SUPPRESS` の指定"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "モバイル診断では Frida を使ってテスト環境で一時的にピンニングを回避する方法が代表例として挙がっていました。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 759,
+      "section": "セクション: モバイル診断",
+      "title": "gRPC を扱うときの Burp 拡張",
+      "question": "Flutter が gRPC を使う場合、Burp で protobuf を扱いやすくするために検討すべきものはどれですか？",
+      "code": "",
+      "options": [
+        "gRPC 拡張",
+        "Sequencer",
+        "Comparer",
+        "Retire.js"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Burp は標準でもある程度扱えますが、gRPC の protobuf を見やすくするには gRPC 拡張の導入が有効です。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 760,
+      "section": "セクション: Go API 診断",
+      "title": "CORS を手動検証する方法",
+      "question": "Burp Repeater で Go API の CORS 設定を手動検証するときの基本操作として正しいものはどれですか？",
+      "code": "Origin: https://evil.example.com",
+      "options": [
+        "`Origin` ヘッダを変えてレスポンスの許可内容を確認する",
+        "`Content-Length` を常に 0 にする",
+        "`Host` を削除する",
+        "`Transfer-Encoding: chunked` を必ず追加する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "CORS の過剰許可は、想定外 Origin を付けてレスポンスの `Access-Control-Allow-Origin` などを見ることで確認しやすくなります。",
+      "source": "docs/security-tools/burp-suite-go-react-flutter-notes.md"
+    },
+    {
+      "id": 761,
+      "section": "セクション: Firebase / Firestore",
+      "title": "データ欠損ではない根拠",
+      "question": "`information/AiduBduv` の空表示がデータ欠損でないと判断できた根拠として最も直接的なのはどれですか？",
+      "code": "",
+      "options": [
+        "該当 Firestore ドキュメントの title/body が取得できた",
+        "Docker Compose が起動した",
+        "Burp Repeater が使えた",
+        "`grep 'id'` で 663 まで見えた"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "最終的に対象 content document を特定し、その中に title/body が入っていることを確認できたため、データ欠損説は否定されました。",
+      "source": "会話履歴: Firestore target doc 確認"
+    },
+    {
+      "id": 762,
+      "section": "セクション: Studio DOM",
+      "title": "custom code 痕跡の評価",
+      "question": "カスタムコードの痕跡についての回答として最も正確だったものはどれですか？",
+      "code": "",
+      "options": [
+        "提示コードそのものを完全一致で発見した",
+        "custom-code 統合の痕跡は見えたが、提示コード断片をそのまま特定したわけではない",
+        "カスタムコードは一切入っていなかった",
+        "Burp 拡張としてのみ存在した"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "公開ページには custom-code が組み込まれている痕跡がありましたが、提示された IIFE をそのままソース上で完全一致確認したわけではありません。",
+      "source": "会話履歴: custom code 痕跡の確認"
+    },
+    {
+      "id": 763,
+      "section": "セクション: Studio DOM",
+      "title": "今回の最終的な設計理解",
+      "question": "今回の調査から推測された、Studio 上のカスタム JavaScript 運用として最も自然なものはどれですか？",
+      "code": "",
+      "options": [
+        "CMS 本文ブロックに id を付け、その要素を起点に後処理 JavaScript を当てる運用",
+        "すべてのページで `body` 全体を毎回書き換える運用",
+        "Firestore の rules をページごとに変える運用",
+        "quiz データを Studio 本文に直接埋め込む運用"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "今回の差分を見ると、Studio 側で CMS 本文ブロックに安定した id を付け、その selector を起点に JavaScript の後処理を行う運用だったと考えるのが自然です。",
+      "source": "会話履歴: Studio id 属性の学び"
+    },
+    {
+      "id": 764,
+      "section": "セクション: ANSIエスケープシーケンス",
+      "title": "ANSIエスケープシーケンスとは",
+      "question": "ANSIエスケープシーケンスの説明として最も正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "Windowsのみで動作するターミナル制御コードの規格である",
+        "端末エミュレータに対してカーソル移動・色変更などの制御命令を埋め込む文字列で、`ESC`（0x1B）から始まる",
+        "バイナリデータをテキスト形式にエンコードするための規格である",
+        "C言語の標準ライブラリに定義された文字列操作関数の総称である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ANSIエスケープシーケンスは、ANSI X3.64規格に基づく端末制御コードです。`\\033`（ESCコード、0x1B）から始まり、カーソル移動・画面消去・文字色・背景色などを制御できます。Linux/macOSのターミナルでは広くサポートされており、`system(\"clear\")` のように外部コマンドを呼ぶ必要がなく、移植性・安全性の面でも優れています。",
+      "source": "ANSI X3.64 / VT100 Terminal Specification"
+    },
+    {
+      "id": 765,
+      "section": "セクション: ANSIエスケープシーケンス",
+      "title": "画面クリアのエスケープシーケンス",
+      "question": "ターミナルの画面全体を消去し、カーソルを左上（0,0）へ移動させる正しいエスケープシーケンスはどれですか？",
+      "code": "std::cout << \"???\";",
+      "options": [
+        "\\033[0m",
+        "\\033[2J\\033[H",
+        "\\033[1A\\033[2K",
+        "\\033[31m"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`\\033[2J` が画面全体の消去（Erase in Display）、`\\033[H` がカーソルを先頭行・先頭列へ移動（Cursor Position）するシーケンスです。組み合わせることで `system(\"clear\")` と同等の動作をシェルを介さずに実現できます。`\\033[0m` は属性リセット、`\\033[1A` は1行上移動、`\\033[31m` は赤色テキストです。",
+      "source": "VT100 Escape Codes Reference"
+    },
+    {
+      "id": 766,
+      "section": "セクション: ANSIエスケープシーケンス",
+      "title": "system(\"clear\") との違い",
+      "question": "`system(\"clear\")` の代わりにANSIエスケープシーケンスを使う利点として誤っているものはどれですか？",
+      "code": "// Before\nsystem(\"clear\");\n\n// After\nstd::cout << \"\\033[2J\\033[H\";",
+      "options": [
+        "シェルプロセスを起動しないためオーバーヘッドが小さい",
+        "POSIX環境であればシェルや外部コマンドに依存せず動作する",
+        "Windowsのコマンドプロンプト（cmd.exe）でも追加設定なしに完全に動作する",
+        "インジェクション攻撃の余地をなくせる"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "ANSIエスケープシーケンスはLinux/macOSの端末エミュレータで広くサポートされています。しかしWindowsの古いコマンドプロンプトではデフォルトで無効であり、Windows 10以降のコンソールホストでは `SetConsoleMode` でVT処理を有効化するか、Windows Terminal等を使う必要があります。一方 `system(\"clear\")` はシェルを介して `clear` コマンドを呼ぶためオーバーヘッドや、環境によっては外部コマンドの上書きによるインジェクションリスクがあります。",
+      "source": "MSDN: Console Virtual Terminal Sequences"
+    },
+    {
+      "id": 767,
+      "section": "セクション: ANSIエスケープシーケンス",
+      "title": "CSIシーケンスの構造",
+      "question": "以下のシーケンス `\\033[31;1m` を正しく解釈しているものはどれですか？",
+      "code": "std::cout << \"\\033[31;1m\" << \"Error!\" << \"\\033[0m\";",
+      "options": [
+        "カーソルを31行1列に移動する",
+        "前景色を赤（31）かつ太字（1）に設定する",
+        "31文字分右にカーソルを移動し、1行下げる",
+        "31番のカラーパレットで背景色を塗りつぶす"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`\\033[` はCSI（Control Sequence Introducer）と呼ばれる接頭辞で、続くパラメータをセミコロンで区切ります。SGR（Select Graphic Rendition）コード `m` の場合、`31` は前景色を赤に、`1` は太字を意味します。`\\033[0m` ですべての属性をリセットします。カーソル移動には `H`（Cursor Position）や `A/B/C/D` などの終端文字を使います。",
+      "source": "ANSI escape code - Wikipedia / VT100 SGR parameters"
+    },
+    {
+      "id": 768,
+      "section": "セクション: ANSIエスケープシーケンス",
+      "title": "カーソル操作シーケンス",
+      "question": "現在のカーソル位置から1行上に移動し、その行全体を消去するシーケンスの正しい組み合わせはどれですか？",
+      "code": "",
+      "options": [
+        "\\033[1B\\033[2K",
+        "\\033[1A\\033[2K",
+        "\\033[2J\\033[H",
+        "\\033[1A\\033[0m"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`\\033[1A` はカーソルを1行上（Cursor Up）へ移動、`\\033[2K` はカーソルのある行全体を消去（Erase in Line）します。`\\033[1B` は1行下移動、`\\033[2J` は画面全体の消去、`\\033[0m` は属性リセットであり、行消去ではありません。プログレスバーやスピナーの上書き表示でよく使われるテクニックです。",
+      "source": "VT100 Escape Codes Reference"
+    },
+    {
+      "id": 769,
+      "section": "セクション: コマンドライン & grep",
+      "title": "grep/ripgrep の単語境界検索",
+      "question": "コマンド `rg -n \"\\ball\\b\" file.cpp` の実行結果として正しいものはどれですか？",
+      "code": "// file.cpp の内容:\n// 70: int ball = 10;\n// 71: void callback() {}\n// 72: const char* all =\n// 73: int small = 5;",
+      "options": [
+        "70, 71, 72, 73 行目すべてがマッチする",
+        "72 行目のみがマッチする",
+        "70, 72, 73 行目がマッチする",
+        "71, 72 行目がマッチする"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`\\b` は単語境界（word boundary）を意味する正規表現のメタ文字です。`\\ball\\b` は「all」という単語全体にのみマッチし、「ball」「callback」「small」のように他の文字と結合している場合はマッチしません。したがって 72 行目の `const char* all =` のみが該当します。ripgrep（rg）は grep の高速代替ツールで、`-n` オプションで行番号を表示します。",
+      "source": "ripgrep documentation / Regular Expression word boundaries"
+    },
+    {
+      "id": 770,
+      "section": "セクション: Java XML DOM",
+      "title": "setXmlStandalone(true) の意味",
+      "question": "`document.setXmlStandalone(true);` の説明として最も正しいものはどれですか？",
+      "code": "Document document = builder.newDocument();\ndocument.setXmlVersion(\"1.0\");\ndocument.setXmlStandalone(true);",
+      "options": [
+        "XML文書が外部の定義ファイルに頼らず、単体で使えることを示す設定",
+        "XML文書を自動的にファイルへ保存する設定",
+        "XML文書の文字コードを UTF-8 に固定する設定",
+        "XML文書のルート要素を自動的に作成する設定"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`setXmlStandalone(true)` は、XML宣言の standalone を true として扱う設定です。ざっくり言うと、このXML文書は外部DTDなどの外部定義に頼らず、単体で意味を持つことを示します。ファイル保存、文字コード指定、ルート要素作成を行う設定ではありません。",
+      "source": "Java DOM Document#setXmlStandalone"
+    },
+    {
+      "id": 771,
+      "section": "セクション: Java XML DOM",
+      "title": "DOMのルート要素 rootNode",
+      "question": "`Element rootNode = doc.createElement(\"data\");` に相当する処理の説明として最も正しいものはどれですか？",
+      "code": "Element rootNode = doc.createElement(\"data\");\ndoc.appendChild(rootNode);",
+      "options": [
+        "`data` という名前の要素を作り、XML文書の一番上の要素として追加する",
+        "`data` という名前のXMLファイルを読み込む",
+        "`rootNode` という名前のタグを自動的に出力する",
+        "XML文書を `data` というファイル名で保存する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`createElement(\"data\")` は `<data>` 要素を作る処理です。その要素を `doc.appendChild(rootNode)` で `Document` に追加すると、XML文書のルート要素になります。変数名の `rootNode` はタグ名ではなく、Java側でその要素を指すための名前です。",
+      "source": "Java DOM Document#createElement / Node#appendChild"
     }
   ]
 }
