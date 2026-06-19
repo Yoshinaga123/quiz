@@ -22,6 +22,7 @@
 | [`./local-https-setup.md`](./local-https-setup.md) | ローカル開発環境の HTTPS 設定（自己署名証明書 + Vite） |
 | [`./counter-api.md`](./counter-api.md) | PV カウンター API（`/counter`、永続化は `views` テーブル） |
 | [`./push-notification-mock.md`](./push-notification-mock.md) | Push 通知 Phase A モック（手動送信 + feed + ローカル通知） |
+| [`./penetration-testing.md`](./penetration-testing.md) | OWASP ZAP によるベースライン・ペネトレーションテスト導入手順 |
 | [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |
 | [`./script-learning-tasks.md`](./script-learning-tasks.md) | 追加すると便利な開発スクリプトの学習課題 |
 | [`./backlog.md`](./backlog.md) | 未着手の改善タスク（出典品質・テスト基盤など） |
@@ -69,9 +70,11 @@
 | [`../.github/workflows/backend.yml`](../.github/workflows/backend.yml) | Go の vet / build / test |
 | [`../.github/workflows/quiz-data.yml`](../.github/workflows/quiz-data.yml) | クイズ JSON の lint と本番シード drift 検出 |
 | [`../.github/workflows/openapi.yml`](../.github/workflows/openapi.yml) | OpenAPI 仕様の Redocly Lint |
+| [`../.github/workflows/security-pentest.yml`](../.github/workflows/security-pentest.yml) | OWASP ZAP ベースライン・ペネトレーションテスト |
 | [`../scripts/lint_quizzes.py`](../scripts/lint_quizzes.py) | クイズ JSON の構造 lint |
 | [`../scripts/diff_quiz_data.py`](../scripts/diff_quiz_data.py) | 候補プールと本番シードの差分要約 |
 | [`../scripts/check_quiz_drift.py`](../scripts/check_quiz_drift.py) | 本番シードと最新マイグレーションの drift 検出 |
 | [`../scripts/generate_migration.py`](../scripts/generate_migration.py) | シード JSON から SQL を生成 |
 | [`../scripts/create_seed_migration.py`](../scripts/create_seed_migration.py) | `golang-migrate create` ラッパ |
 | [`../scripts/create_backend_env.py`](../scripts/create_backend_env.py) | `backend/.env` のセットアップ補助 |
+| [`../scripts/run_zap_baseline.sh`](../scripts/run_zap_baseline.sh) | ローカル向け OWASP ZAP ベースライン実行 |

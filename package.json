@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "security:pentest": "bash scripts/run_zap_baseline.sh"
+  },
   "dependencies": {
     "zod": "^4.3.6"
   },

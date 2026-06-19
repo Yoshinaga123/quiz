@@ -12279,6 +12279,230 @@
       "correctAnswerIndex": 0,
       "explanation": "`createElement(\"data\")` は `<data>` 要素を作る処理です。その要素を `doc.appendChild(rootNode)` で `Document` に追加すると、XML文書のルート要素になります。変数名の `rootNode` はタグ名ではなく、Java側でその要素を指すための名前です。",
       "source": "Java DOM Document#createElement / Node#appendChild"
+    },
+    {
+      "id": 772,
+      "section": "セクション: Java XML DOM",
+      "title": "String.valueOf と XML の表示",
+      "question": "`String.valueOf(div.getId())` で文字列に変換しているのに、出力結果が `<id>1</id>` となり `\"1\"` のように表示されない理由として正しいものはどれですか？",
+      "code": "Element idNode = createElement(document, \"id\", String.valueOf(div.getId()));\n\n// 出力例\n<id>1</id>",
+      "options": [
+        "XMLの要素内容では文字列でも引用符を付けて表示しないため",
+        "`String.valueOf` が失敗して、数値のまま出力されているため",
+        "`setTextContent` は数値だけを受け取るメソッドのため",
+        "`<id>` タグの中では Java の String 型を使えないため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`String.valueOf(div.getId())` によって Java 側では `1` が文字列の `\"1\"` になります。ただし XMLに出力されるとき、要素の本文は `<id>1</id>` のように表示され、Java の文字列リテラルを表す引用符は出ません。引用符が見えるのは Java コード上で文字列を書くときの表記であり、XMLのテキスト内容そのものではありません。",
+      "source": "Java String#valueOf / DOM Node#setTextContent"
+    },
+    {
+      "id": 773,
+      "section": "セクション: Python ファイル操作",
+      "title": "os.makedirs(path, exist_ok=True) の意味",
+      "question": "`os.makedirs(path, exist_ok=True)` の説明として最も適切なのはどれですか？",
+      "code": "import os\npath = 'data/submit/'\nos.makedirs(path, exist_ok=True)",
+      "options": [
+        "指定パスのディレクトリを作成し、途中のディレクトリも必要に応じて作る。既に存在していてもエラーにしない",
+        "指定パス内の既存ファイルをすべて削除してから新規作成する",
+        "ディレクトリではなく空ファイルを作成する",
+        "Windows でしか動作しない専用APIである"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`os.makedirs()` はネストしたディレクトリをまとめて作成できます。`exist_ok=True` を付けると、対象ディレクトリが既に存在していても `FileExistsError` を出さずに処理を続行できます。",
+      "source": "Python os.makedirs"
+    },
+    {
+      "id": 774,
+      "section": "セクション: Jupyter とシェルコマンド",
+      "title": "! dir \"data/submit/\" の意味",
+      "question": "Jupyter Notebook で `! dir \"data/submit/\"` を実行したときの説明として正しいものはどれですか？",
+      "code": "! dir \"data/submit/\"",
+      "options": [
+        "Notebook からシェルコマンドを実行し、`data/submit/` 配下のファイル・フォルダ一覧を表示する",
+        "Python の `dir()` 関数を呼び出して、変数 `data` の属性を表示する",
+        "ディレクトリ `data/submit/` を新規作成する",
+        "`data/submit/` 内の全ファイルを削除する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Jupyter では行頭の `!` でシェルコマンドを実行できます。`dir` は Windows系でディレクトリ一覧を表示するコマンドのため、この記述は `data/submit/` の中身確認に使います。",
+      "source": "Jupyter shell escape / Windows dir command"
+    },
+    {
+      "id": 775,
+      "section": "セクション: Python ループ制御",
+      "title": "continue の意味",
+      "question": "for文の中で、現在の1回分の処理だけを飛ばして次の反復へ進みたい場合に使う文はどれですか？",
+      "code": "for string in \"Hello World!!\":\n    if string == \"o\":\n        ____\n    print(string)",
+      "options": [
+        "`continue`",
+        "`break`",
+        "`return`",
+        "`pass`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`continue` は現在の反復の残り処理をスキップし、最も内側のループの次の周期へ進みます。`break` はループ全体を終了するため、この場面では不適切です。",
+      "source": "Python continue statement / AT20 Task3 review"
+    },
+    {
+      "id": 776,
+      "section": "セクション: Python ループ制御",
+      "title": "break の動作",
+      "question": "次のコードで `i == 2` になったときの `break` の動作として正しいものはどれですか？",
+      "code": "for i in range(5):\n    if i == 2:\n        break\n    print(i)",
+      "options": [
+        "for文全体をその時点で終了する",
+        "現在の1回分だけを飛ばして `i == 3` の処理へ進む",
+        "`print(i)` だけを一時停止して後で再開する",
+        "`i` を自動的に0へ戻す"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`break` は最も内側のループを終了させます。この例では `i == 2` になった時点でfor文を抜けるため、`3` や `4` の反復には進みません。",
+      "source": "Python break statement / AT20 Task3 review"
+    },
+    {
+      "id": 777,
+      "section": "セクション: Python イテレーション",
+      "title": "for文とイテレーター",
+      "question": "Pythonのfor文とイテレーターの関係として最も正しいものはどれですか？",
+      "code": "for x in [10, 20, 30]:\n    print(x)",
+      "options": [
+        "for文は反復可能オブジェクトからイテレーターを取得し、次の値を順に取り出して処理する",
+        "for文そのものが常に整数カウンターであり、必ず1ずつ加算される",
+        "for文はリスト専用で、文字列や辞書には使えない",
+        "for文では `next()` 相当の処理は行われない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Pythonのfor文は、反復可能オブジェクトに対して内部的にイテレーターを使い、次の値を順に取り出して処理します。数値カウンターだけに限定されません。",
+      "source": "Python tutorial for statements / glossary iterator"
+    },
+    {
+      "id": 778,
+      "section": "セクション: Python 文字列フォーマット",
+      "title": "{:0>5} の意味",
+      "question": "`'{:0>5}'.format('521')` の結果として正しいものはどれですか？",
+      "code": "code = '{:0>5}'.format('521')\nprint(code)",
+      "options": [
+        "`00521`",
+        "`52100`",
+        "`00000521`",
+        "`521`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`{:0>5}` は、幅5になるように左側を `0` で埋めて右寄せする指定です。`'521'` は5桁に足りないため、左に0が2つ付いて `00521` になります。",
+      "source": "Python format string syntax / AT20 Task4 review"
+    },
+    {
+      "id": 779,
+      "section": "セクション: Python 文字列フォーマット",
+      "title": ".format() と変数の上書き",
+      "question": "次のコードの説明として正しいものはどれですか？",
+      "code": "shinaCd = ['521', '522', '523']\nshinaCd = ['{:0>5}'.format(c) for c in shinaCd]",
+      "options": [
+        "`.format()` が新しい文字列を返し、その結果のリストを同じ変数 `shinaCd` に再代入している",
+        "`.format()` が元の文字列オブジェクトを直接変更している",
+        "`shinaCd` は一度作ると再代入できない",
+        "`format()` は数値にしか使えないため、このコードは必ず失敗する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "文字列はイミュータブルなので `.format()` が元の文字列を直接変更するわけではありません。新しい文字列を返し、その結果で作ったリストを `shinaCd` に再代入しています。",
+      "source": "Python str.format / list comprehension"
+    },
+    {
+      "id": 780,
+      "section": "セクション: Python ネストしたループ",
+      "title": "全組み合わせを作る二重ループ",
+      "question": "`daily_list` 3件と `shinaCd` 3件の全組み合わせを作る処理として正しいものはどれですか？",
+      "code": "daily_list = ['20191111', '20191112', '20191113']\nshinaCd = ['521', '522', '523']\npath = '/daily/{daily}/{shinaCd}'",
+      "options": [
+        "`for daily in daily_list:` の中で `for cd in shinaCd:` を回し、9件作成する",
+        "`enumerate(daily_list)` で同じインデックスの `shinaCd` だけを使い、3件作成する",
+        "`daily_list[0]` と `shinaCd[0]` だけを使い、1件作成する",
+        "`zip(daily_list, shinaCd)` で3件だけ作れば必ず全組み合わせになる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "全組み合わせが必要な場合は二重ループを使います。3日分と3コード分なら `3 * 3 = 9` 件になります。`enumerate` や `zip` で1対1に対応させると3件しか作れません。",
+      "source": "AT20 Task4 nested loop review"
+    },
+    {
+      "id": 781,
+      "section": "セクション: Python ファイル操作",
+      "title": "os.rename のリネーム先",
+      "question": "`test_b.txt` を `text_B.txt` にリネームする処理として正しいものはどれですか？",
+      "code": "import os",
+      "options": [
+        "`os.rename('data/submit/test_b.txt', 'data/submit/text_B.txt')`",
+        "`os.rename('data/submit/test_b.txt', 'data/submit/test_B.txt')`",
+        "`os.remove('data/submit/test_b.txt', 'data/submit/text_B.txt')`",
+        "`os.makedirs('data/submit/text_B.txt')`"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "問題文のリネーム先は `text_B.txt` です。`test_B.txt` ではファイル名が異なります。`os.rename(src, dst)` は第1引数に変更前、第2引数に変更後のパスを指定します。",
+      "source": "Python os.rename / AT20 Task4 review"
+    },
+    {
+      "id": 782,
+      "section": "セクション: Python while文",
+      "title": "while True と break",
+      "question": "`input()` を繰り返し、`Finish` が入力されたら終了する処理として正しいものはどれですか？",
+      "code": "",
+      "options": [
+        "`while True:` の中で `input()` を実行し、`name == 'Finish'` のとき `break` する",
+        "`if name == 'Finish': break` だけを単独で書く",
+        "`While` とだけ書く",
+        "`continue` を使えば必ず入力処理が終了する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "繰り返し入力には `while True:` で無限ループを作り、終了条件に一致したとき `break` でループを終了する構造が必要です。`break` はループの外に単独では書けません。",
+      "source": "Python while statement / AT20 Task3 review"
+    },
+    {
+      "id": 783,
+      "section": "セクション: Python 関数と真偽値",
+      "title": "素数判定の戻り値",
+      "question": "素数判定関数の戻り値として最も適切なのはどれですか？",
+      "code": "def prime_number(num):\n    # 素数なら ? を返す",
+      "options": [
+        "真偽値の `True` / `False`",
+        "文字列の `'true'` / `'false'`",
+        "必ず整数の `1` / `0`",
+        "戻り値は不要"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "問題文が「素数であればtrue、そうでなければfalseを戻り値として返す」としている場合、Pythonでは真偽値の `True` / `False` を返すのが自然です。文字列の `'true'` / `'false'` は真偽値ではありません。",
+      "source": "Python bool / AT20 Task4 review"
+    },
+    {
+      "id": 784,
+      "section": "セクション: Python 素数判定",
+      "title": "平方根まで調べる理由",
+      "question": "素数判定で `while i * i <= num:` としている理由として正しいものはどれですか？",
+      "code": "i = 2\nwhile i * i <= num:\n    if num % i == 0:\n        return False\n    i += 1",
+      "options": [
+        "約数があるなら、その片方は必ず `num` の平方根以下にあるため",
+        "`i * i <= num` と書かないとPythonではwhile文が使えないため",
+        "すべての数を `num` まで調べるより常に結果が変わるため",
+        "`i` を2ずつ増やすため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "合成数は `a * b = num` と表せます。両方が平方根より大きいと積が `num` を超えるため、約数がある場合は少なくとも片方が平方根以下にあります。そのため平方根まで調べれば十分です。",
+      "source": "Prime number trial division / AT20 Task4 review"
+    },
+    {
+      "id": 785,
+      "section": "セクション: Python エラー理解",
+      "title": "UnboundLocalError の原因",
+      "question": "次のエラー文の意味として最も正しいものはどれですか？\n\nUnboundLocalError: cannot access local variable 'result' where it is not associated with a value",
+      "code": "def calc(x):\n    if x > 0:\n        result = x * 2\n    return result\n\nprint(calc(0))",
+      "options": [
+        "ローカル変数 `result` が値を持つ前に参照されたためエラーになっている",
+        "`result` はグローバル変数でなければ使えないためエラーになっている",
+        "`return` は if 文の外で使えないためエラーになっている",
+        "`x` が整数なので `result` が自動的に未定義になるためエラーになっている"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "このエラーは『ローカル変数 result に値が代入される前に参照した』ことを示します。例では `x <= 0` の場合に `result` が代入されないまま `return result` に到達するため発生します。",
+      "source": "Python UnboundLocalError / user request"
     }
   ]
 }
