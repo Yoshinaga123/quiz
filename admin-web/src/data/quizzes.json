@@ -12503,6 +12503,344 @@
       "correctAnswerIndex": 0,
       "explanation": "このエラーは『ローカル変数 result に値が代入される前に参照した』ことを示します。例では `x <= 0` の場合に `result` が代入されないまま `return result` に到達するため発生します。",
       "source": "Python UnboundLocalError / user request"
+    },
+    {
+      "id": 786,
+      "section": "セクション: Java 共通処理とユーティリティクラス",
+      "title": "java.lang.Math と lang の意味",
+      "question": "`java.lang.Math` の説明として最も適切なのはどれですか？",
+      "code": "double x = Math.sqrt(16);\nint y = Math.max(3, 7);",
+      "options": [
+        "`lang` は language の略で、`java.lang` はJavaの基本クラスを集めたパッケージである。`Math` は状態を持たない計算用のstaticメソッドを提供する",
+        "`lang` は long の略で、`Math` はlong型専用の計算クラスである",
+        "`Math` を使うには必ず `new Math()` でインスタンスを作る必要がある",
+        "`java.lang` は通常のJavaコードでは必ず明示的にimportしなければ使えない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`java.lang` の `lang` は language の略です。`java.lang` には `String`、`Object`、`System`、`Math` などJavaの基本的なクラスが含まれ、通常は明示的にimportしなくても使えます。`Math.sqrt` や `Math.max` のような処理はオブジェクトの状態に依存しないため、staticメソッドとして提供されています。",
+      "source": "Java java.lang package / Math class / user request"
+    },
+    {
+      "id": 787,
+      "section": "セクション: Java 共通処理とユーティリティクラス",
+      "title": "ユーティリティクラスをインスタンス化させない工夫",
+      "question": "次の `ValidationUtils` の設計意図として最も適切なのはどれですか？",
+      "code": "public final class ValidationUtils {\n    private ValidationUtils() {\n    }\n\n    public static boolean isEmpty(String value) {\n        return value == null || value.length() == 0;\n    }\n}",
+      "options": [
+        "`static` メソッドで使う共通処理クラスなので、`private` コンストラクタでインスタンス化を防ぎ、`final` で継承も防いでいる",
+        "`private` コンストラクタを書くと `isEmpty` が自動的に高速化される",
+        "`final` を付けると `isEmpty` の戻り値が常に同じ値に固定される",
+        "`static` メソッドを使うには必ずクラスを `final` にしなければコンパイルできない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ユーティリティクラスは `ValidationUtils.isEmpty(value)` のようにクラス名経由で `static` メソッドを呼び出して使うため、通常はインスタンスを作る必要がありません。そのため `private` コンストラクタで `new ValidationUtils()` を防ぎ、必要に応じて `final` を付けて継承も防ぐ設計がよく使われます。",
+      "source": "Java utility class design / user request"
+    },
+    {
+      "id": 788,
+      "section": "セクション: Java 共通処理とユーティリティクラス",
+      "title": "privateコンストラクタで例外を投げる理由",
+      "question": "ユーティリティクラスの private コンストラクタで `throw new IllegalStateException(\"Utility class\");` と書く目的として最も適切なのはどれですか？",
+      "code": "public final class ValidationUtils {\n    private ValidationUtils() {\n        throw new IllegalStateException(\"Utility class\");\n    }\n\n    public static boolean isEmpty(String value) {\n        return value == null || value.length() == 0;\n    }\n}",
+      "options": [
+        "クラス内部やリフレクションなどで万一コンストラクタが呼ばれた場合にも、インスタンス化を明確に失敗させるため",
+        "`static` メソッドの戻り値を例外に変換するため",
+        "`IllegalStateException` を書かないと `private` コンストラクタはコンパイルできないため",
+        "`new ValidationUtils()` を外部から自由に呼べるようにするため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`private` コンストラクタだけでも通常の外部コードからの `new ValidationUtils()` は防げます。ただしクラス内部からコンストラクタを呼ぶコードを書いた場合や、リフレクションで呼び出された場合には到達し得ます。そこで `throw new IllegalStateException(\"Utility class\")` を入れておくと、このクラスはインスタンス化するものではないという意図を明確にし、呼ばれた場合にも失敗させられます。",
+      "source": "Java utility class constructor guard / user request"
+    },
+    {
+      "id": 789,
+      "section": "セクション: Java 共通処理とユーティリティクラス",
+      "title": "ユーティリティクラス設計の基本セット",
+      "question": "ユーティリティクラスを作るときの基本的な設計として、最も適切なのはどれですか？",
+      "code": "public final class ValidationUtils {\n    private ValidationUtils() {\n        throw new IllegalStateException(\"Utility class\");\n    }\n\n    public static boolean isEmpty(String value) {\n        return value == null || value.length() == 0;\n    }\n}",
+      "options": [
+        "`final class` で継承を防ぎ、`private` コンストラクタでインスタンス化を防ぎ、`public static` メソッドでクラス名から直接使えるようにする",
+        "`abstract class` にして、すべての利用側クラスに必ず継承させる",
+        "すべてのメソッドをインスタンスメソッドにして、毎回 `new` してから使う",
+        "コンストラクタを `public` にして、どこからでも自由にインスタンス化できるようにする"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ユーティリティクラスはオブジェクトを作って状態を持たせるためのクラスではなく、関連する共通処理をまとめる置き場所として使います。そのため、`final class` で継承を防ぎ、`private` コンストラクタで `new` を防ぎ、`public static` メソッドで `ValidationUtils.isEmpty(value)` のように直接呼び出せる形にするのが基本です。",
+      "source": "Java utility class design basics / user request"
+    },
+    {
+      "id": 790,
+      "section": "セクション: Java import static",
+      "title": "static import の使いどころ",
+      "question": "Java の `import static` の説明として最も適切なのはどれですか？",
+      "code": "import static java.lang.Math.sqrt;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\ndouble x = sqrt(4);\nassertEquals(2, actual);",
+      "options": [
+        "別クラスのstaticメソッドやstatic定数をクラス名なしで呼び出せる。JUnitのassert系やMathのような定番用途では便利だが、多用すると出所が分かりにくくなる",
+        "通常のインスタンスメソッドをすべてstaticメソッドに変換するための機能である",
+        "`import static` を使うと、対象クラスを継承したことになる",
+        "`import static` は `java.lang.Math` 専用で、JUnitのメソッドには使えない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`import static` を使うと、`Math.sqrt(4)` を `sqrt(4)` のようにクラス名を省略して呼び出せます。JUnitの `assertEquals` など、1ファイル内で何度も使う定番メソッドではコードが読みやすくなることがあります。一方で業務ロジック系のstaticメソッドを多用すると、どのクラスのメソッドか分かりにくくなるため、使いどころを絞るのが一般的です。",
+      "source": "Java static import / user request"
+    },
+    {
+      "id": 791,
+      "section": "セクション: DBアクセスとパフォーマンス",
+      "title": "N+1問題の意味",
+      "question": "N+1問題の説明として最も適切なのはどれですか？",
+      "code": "List<User> users = userRepository.findAll(); // 1回\n\nfor (User user : users) {\n    List<Order> orders = orderRepository.findByUserId(user.getId()); // N回\n}",
+      "options": [
+        "一覧を1回取得したあと、一覧の件数N回ぶん追加問い合わせが発生し、合計N+1回のDBアクセスになってしまう問題",
+        "ループが1回しか実行されないため、N件中1件だけ処理される問題",
+        "必ずメモリ使用量がN+1バイトになる問題",
+        "SQLを1回にまとめると必ず遅くなる問題"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "N+1問題では、最初に一覧取得で1回、その後に各要素ごとの関連データ取得でN回の問い合わせが発生します。例えばユーザー100人に対して注文を1人ずつ取得すると、1 + 100 = 101回のDBアクセスになります。改善するには、ID一覧を使って関連データをまとめて取得するなど、問い合わせ回数を減らす設計にします。",
+      "source": "N+1 query problem / user request"
+    },
+    {
+      "id": 792,
+      "section": "セクション: DSL 基礎",
+      "title": "DSLと汎用プログラミング言語の違い",
+      "question": "DSLの説明として最も適切なのはどれですか？",
+      "code": "SELECT name FROM users WHERE age >= 20;",
+      "options": [
+        "特定のドメインに表現を寄せた言語やAPIで、扱える範囲を狭める代わりにその領域を簡潔に書ける",
+        "JavaやC++のように、あらゆる処理を目的とする汎用プログラミング言語だけを指す",
+        "コンパイルできない設定ファイルの総称である",
+        "必ず独自の構文解析器を自作しなければDSLとは呼べない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "DSLはDomain-Specific Languageの略で、特定領域の問題を、その領域の語彙や構造で表現しやすくした言語やAPIです。SQLはデータ問い合わせという領域に特化しているため、代表的なDSLと見なせます。",
+      "source": "DSL basics / user request"
+    },
+    {
+      "id": 793,
+      "section": "セクション: DSL 基礎",
+      "title": "内部DSLの意味",
+      "question": "内部DSLの説明として最も適切なのはどれですか？",
+      "code": "describe(\"User\", () => {\n  it(\"has a name\", () => {\n    expect(user.name).toBe(\"Taro\");\n  });\n});",
+      "options": [
+        "ホスト言語の文法の中で、特定ドメインを読みやすく書けるように設計されたAPIや記法",
+        "ホスト言語とは完全に別の構文を持ち、必ず別ファイルで書く言語",
+        "コンパイラ内部だけで使われ、利用者が直接書けない言語",
+        "HTMLだけを生成するための専用言語"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "内部DSLは、JavaScriptやRubyなどのホスト言語の構文を使いながら、API名や構造を特定ドメイン向けに設計したものです。例の `describe`、`it`、`expect` はJavaScriptとして実行されますが、テスト仕様を自然に書ける内部DSLとして機能しています。",
+      "source": "Internal DSL / user request"
+    },
+    {
+      "id": 794,
+      "section": "セクション: DSL 基礎",
+      "title": "外部DSLの意味",
+      "question": "外部DSLの説明として最も適切なのはどれですか？",
+      "code": "<component class=\"helper.printer\" />",
+      "options": [
+        "ホスト言語とは別の構文や別ファイルで書かれ、処理系に読み取られて特定ドメインの意味を持つもの",
+        "Javaのメソッドチェーンだけで作るDSL",
+        "プログラムの外部ネットワークに接続するためのDSL",
+        "必ず実行時に機械語へ直接変換されるDSL"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "外部DSLは、ホスト言語の文法から独立した構文で書かれるDSLです。XML設定ファイルはXMLという汎用構文を使いつつ、タグ名や属性にアプリケーション固有の意味を与えることで外部DSLとして利用されます。",
+      "source": "External DSL / XML configuration / user request"
+    },
+    {
+      "id": 795,
+      "section": "セクション: JSP と DSL",
+      "title": "JSPは何を生成する技術か",
+      "question": "JSPの説明として最も適切なのはどれですか？",
+      "code": "<h1>Hello, <%= name %></h1>",
+      "options": [
+        "サーバー側で実行され、最終的にHTMLレスポンスを生成するサーバーサイドビュー技術",
+        "ブラウザ上でJavaバイトコードを直接実行する技術",
+        "Javaのクラスファイルを手書きするための構文",
+        "SQLをHTMLへ変換するためだけのデータベース言語"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "JSPはJavaサーバー側で処理され、HTMLなどのレスポンスを生成するビュー技術です。HTMLの中にJSP式やタグを埋め込み、実行時には値が展開されたHTMLがブラウザに返されます。",
+      "source": "JSP server-side view / user request"
+    },
+    {
+      "id": 796,
+      "section": "セクション: JSP と DSL",
+      "title": "JSPとServletの関係",
+      "question": "JSPとServletの関係として最も適切なのはどれですか？",
+      "code": "JSP -> Servlet -> HTML response",
+      "options": [
+        "JSPはサーバー上でServletのJavaコードへ変換・コンパイルされ、実行結果としてHTMLなどを返す",
+        "ServletはJSPをブラウザで表示するためのCSSファイルである",
+        "JSPはServletとは無関係で、常にブラウザだけで実行される",
+        "JSPはJavaScriptへ変換され、Node.js上でのみ実行される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "JSPはそのまま単独で実行されるのではなく、JSPコンテナによってServletのJavaコードに変換され、コンパイル・実行されます。その結果としてHTMLなどのレスポンスが生成されます。",
+      "source": "JSP translation to Servlet / user request"
+    },
+    {
+      "id": 797,
+      "section": "セクション: JSP と DSL",
+      "title": "JSPを外部DSLとみなせる理由",
+      "question": "JSPを外部DSLとみなせる理由として最も適切なのはどれですか？",
+      "code": "<p><%= user.getName() %></p>",
+      "options": [
+        "Javaそのものの文法ではないJSP独自の構文でHTML生成を記述し、処理系がServletへ変換するため",
+        "JSPはJavaのメソッドチェーンだけで実装されているため",
+        "JSPはHTMLを一切扱わず、数値計算だけを行うため",
+        "JSPはJavaとは無関係なOSコマンドだけで動くため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`<%= ... %>` のようなJSP構文は通常の `.java` ファイルとしては成立しません。Javaとは別のテンプレート構文でHTML生成を記述し、処理系がServletへ変換するため、JSPは外部DSL的なテンプレート言語と見なせます。",
+      "source": "JSP as external DSL / user request"
+    },
+    {
+      "id": 798,
+      "section": "セクション: DSL 基礎",
+      "title": "ホスト言語と内部DSL",
+      "question": "内部DSLにおけるホスト言語の説明として最も適切なのはどれですか？",
+      "code": "app.get(\"/users\", listUsers);\napp.post(\"/users\", createUser);",
+      "options": [
+        "内部DSLが乗っている汎用言語のことで、例ではJavaScriptの文法内でルーティング定義を書いている",
+        "外部DSLをHTMLへ変換するためだけの言語である",
+        "DSLの利用者が絶対に触れられない非公開の言語である",
+        "データベースサーバーだけで使われる言語である"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "内部DSLはホスト言語の構文の中に作られます。例の `app.get` や `app.post` はJavaScriptとして実行されるAPIですが、Webルーティングというドメインを読みやすく記述する内部DSL的な形になっています。",
+      "source": "Host language and internal DSL / user request"
+    },
+    {
+      "id": 799,
+      "section": "セクション: DSL 基礎",
+      "title": "内部DSLはその言語そのものではないのか",
+      "question": "内部DSLについての説明として最も適切なのはどれですか？",
+      "code": "query.select(\"name\").from(\"users\").where(\"age > 20\");",
+      "options": [
+        "文法としてはホスト言語そのものだが、APIの語彙や構造が特定ドメイン向けに設計されているためDSLと呼べる",
+        "ホスト言語の構文を使っている時点で、絶対にDSLとは呼べない",
+        "内部DSLは必ずホスト言語より低水準の機械語で書く",
+        "内部DSLはコメントとして書かれるため実行されない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "内部DSLは構文上はホスト言語の通常コードです。ただし、メソッド名やチェーン構造を特定ドメインの語彙に寄せることで、利用者には小さな専用言語のように見えるインターフェースになります。",
+      "source": "Internal DSL design / user request"
+    },
+    {
+      "id": 800,
+      "section": "セクション: XML と外部DSL",
+      "title": "XML設定ファイルがDSLになる条件",
+      "question": "XML設定ファイルを外部DSLと見なせる理由として最も適切なのはどれですか？",
+      "code": "<bean id=\"printer\" class=\"helper.Printer\" />",
+      "options": [
+        "XML構文を使いながら、`bean` や `class` などのタグ・属性にフレームワーク固有の意味を持たせているため",
+        "XMLはJavaの予約語だけで構成されているため",
+        "XMLファイルは必ずHTMLとしてブラウザに表示されるため",
+        "XMLは数値計算専用の内部DSLであるため"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "XML自体は汎用のマークアップ構文ですが、特定フレームワークが `bean`、`component`、`class` などのタグや属性に意味を与えると、その設定ファイルは外部DSLとして機能します。",
+      "source": "XML configuration as external DSL / user request"
+    },
+    {
+      "id": 801,
+      "section": "セクション: DSL 基礎",
+      "title": "外部DSLと内部DSLの見分け方",
+      "question": "内部DSLと外部DSLの見分け方として最も適切なのはどれですか？",
+      "code": "// 内部DSL風\nrouter.get(\"/users\", handler);\n\n// 外部DSL風\n<route method=\"GET\" path=\"/users\" handler=\"handler\" />",
+      "options": [
+        "ホスト言語の文法内で書くなら内部DSL、独立した構文や別ファイルとして処理系に読ませるなら外部DSLと考えられる",
+        "短いコードは内部DSL、長いコードは外部DSLである",
+        "Webで使うものはすべて外部DSL、CLIで使うものはすべて内部DSLである",
+        "コンパイルエラーが出るものだけが内部DSLである"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "内部DSLはホスト言語の文法を使って特定ドメインのAPIとして設計されます。一方、外部DSLはホスト言語の構文とは別の形式で書かれ、専用の処理系やパーサーに読み取られて意味を持ちます。",
+      "source": "Internal vs external DSL / user request"
+    },
+    {
+      "id": 802,
+      "section": "セクション: Rails ルーティング",
+      "title": "match '/todo/:id' の意味",
+      "question": "Railsのルーティング `match '/todo/:id', :to => 'todo#show'` の説明として最も適切なのはどれですか？",
+      "code": "match '/todo/:id', :to => 'todo#show'",
+      "options": [
+        "`/todo/123` のようなURLを `TodoController` の `show` アクションへ対応付ける",
+        "`/todo/:id` という文字列だけに完全一致したとき、HTMLファイルを直接返す",
+        "`todo#show` という名前のデータベーステーブルを作成する",
+        "`id` というControllerクラスを `todo` アクションへ対応付ける"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`/todo/:id` の `:id` は可変部分です。例えば `/todo/123` にアクセスすると `params[:id]` に `\"123\"` が入り、`todo#show`、つまり `TodoController` の `show` アクションへ処理が渡されます。",
+      "source": "Rails routing / user request"
+    },
+    {
+      "id": 803,
+      "section": "セクション: Rails ルーティング",
+      "title": "todo#show と Controller 名",
+      "question": "Railsの `to: 'todo#show'` の `todo#show` が表すものとして最も適切なのはどれですか？",
+      "code": "get '/todo/:id', to: 'todo#show'",
+      "options": [
+        "`TodoController` クラスの `show` アクション",
+        "`Todo` モデルの `show` カラム",
+        "`show` コントローラの `todo` アクション",
+        "`todo#show` というURLパスそのもの"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Railsのルーティングでは `#` の前がコントローラ名、後ろがアクション名です。`todo#show` は規約により `TodoController#show` を指します。Railsではコントローラ指定時に末尾の `Controller` は書きません。",
+      "source": "Rails controller action routing / user request"
+    },
+    {
+      "id": 804,
+      "section": "セクション: Rails ルーティング",
+      "title": ":id と params の関係",
+      "question": "Railsのルーティング `/todo/:id` に対して `/todo/123` へアクセスした場合、`123` を取得する方法として最も適切なのはどれですか？",
+      "code": "get '/todo/:id', to: 'todo#show'\n\nclass TodoController < ApplicationController\n  def show\n    # ここでURLのidを使う\n  end\nend",
+      "options": [
+        "`params[:id]` で取得する",
+        "`request[:todo]` で取得する",
+        "`TodoController.id` で取得する",
+        "`show.params` で取得する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ルーティングの `:id` はパスパラメータです。`/todo/123` の `123` は `params[:id]` としてコントローラのアクション内から参照できます。値は通常文字列として渡されます。",
+      "source": "Rails path parameters / user request"
+    },
+    {
+      "id": 805,
+      "section": "セクション: 表計算",
+      "title": "会員販売通番による最終販売日の検索",
+      "question": "会員管理シートのD4に最終販売日を求める式を入力します。列Hの会員販売通番は、上位4桁が会員番号、下位3桁が会員ごとの販売通番です。最も適切な式はどれですか？",
+      "code": "IF(論理和(A4＝null,C4＝0),null, ここに入る式)\n\n会員管理シート:\nA列: 会員番号\nC列: 販売回数\nD列: 最終販売日\n\n販売データシート:\nA列: レシート番号\nB列: 販売日\nC列: 会員番号\nH列: 会員販売通番",
+      "options": [
+        "照合検索(A4,販売データ!C$2:C$9999,販売データ!A$2:A$9999)",
+        "照合検索(A4,販売データ!C$2:C$9999,販売データ!B$2:B$9999)",
+        "照合検索(A4*1000+1,販売データ!H$2:H$9999,販売データ!A$2:A$9999)",
+        "照合検索(A4*1000+1,販売データ!H$2:H$9999,販売データ!B$2:B$9999)",
+        "照合検索(A4*1000+C4,販売データ!H$2:H$9999,販売データ!A$2:A$9999)",
+        "照合検索(A4*1000+C4,販売データ!H$2:H$9999,販売データ!B$2:B$9999)"
+      ],
+      "correctAnswerIndex": 5,
+      "explanation": "A4は式を入力している会員管理シートの会員番号、C4はその会員の販売回数です。`A4*1000+C4` によって、会員番号を上位4桁、販売回数を下位3桁にした会員販売通番を作ります。その値を販売データシートのH列から探し、一致した行のB列、つまり販売日を返すので、最終販売日を求められます。`販売データ!A$2:A$9999` を返す選択肢はレシート番号を返してしまうため不適切です。",
+      "source": "表計算 照合検索 / user request"
+    },
+    {
+      "id": 806,
+      "section": "セクション: 表計算",
+      "title": "表引きと照合一致による会員クラス判定",
+      "question": "会員管理シートのD4に会員クラスを求める式を入力します。次の式の b に入る組合せとして最も適切なものはどれですか？",
+      "code": "IF(A4＝null,null,表引き(分類表!D$4:F$6, b))\n\n会員管理シート:\nA列: 会員番号\nB列: 販売額合計\nC列: 販売回数\nD列: 会員クラス\n\n分類表:\nC4:C6: 販売回数の下限 0, 6, 12\nD3:F3: 販売額合計の下限 0, 40000, 80000\nD4:F6: 会員クラス表",
+      "options": [
+        "照合一致(B4,分類表!C$4:C$6,1), 照合一致(C4,分類表!D$3:F$3,1)",
+        "照合一致(B4,分類表!D$3:F$3,1), 照合一致(C4,分類表!C$4:C$6,1)",
+        "照合一致(C4,分類表!C$4:C$6,1), 照合一致(B4,分類表!D$3:F$3,1)",
+        "照合一致(C4,分類表!D$3:F$3,1), 照合一致(B4,分類表!C$4:C$6,1)"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "`表引き(範囲, 行番号, 列番号)` では、先に行番号、次に列番号を指定します。`D$4:F$6` は会員クラスを取り出す表本体です。行方向は販売回数で決まるため、会員管理シートのC4を分類表の`C$4:C$6`に照合します。列方向は販売額合計で決まるため、会員管理シートのB4を分類表の`D$3:F$3`に照合します。第三引数`1`は近似一致で、検索値以下の最大値の位置を返すため、販売回数や販売額を下限値の表でランク分けできます。",
+      "source": "FE 表計算 表引き / user request"
     }
   ]
 }
