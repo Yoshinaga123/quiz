@@ -1,0 +1,175 @@
+タイトル: OWASP Juice Shop Expired Coupon 調査メモ（本番強度版）
+作成日: 2026-06-30
+
+目的
+本番の強度でアウトプットすること。
+
+方針
+アウトプットを自分ナイズドする。結果は誰が見ても似通いやすいため、結果そのものよりも、
+1) どう仮説を置いたか
+2) どこを見て何を根拠に判断したか
+3) 何を実装差分として捉えたか
+を主軸に記録する。
+
+実施した手順の目次
+1. juice shopの課題を選択
+2. 公式ヒントを見る
+3. 調査前に実装を予測する
+4. 実装を特定し、検証条件を分解する
+5. 予測した検証項目と実装を突き合わせる
+6. 脆弱性の本質と再発防止の観点でまとめる
+
+手順1詳細
+ChatGPTで「PayBack Timeという入力値検証の課題を挑戦しました。この入力値検証というジャンルでowasp juice shopの関連課題はありますか？」というプロンプトを実施した。
+Improper Input Validationというジャンルがあり、その中に複数課題があることを確認。
+
+最も適切だと思う課題を「Expired Coupon」に選択。
+
+所感:
+ググるの延長線上としての情報収集として使う分には優秀で、ハルシネーションも起きにくい使い方だと感じた。
+
+手順2詳細
+公式ヒントを確認。
+https://pwning.owasp-juice.shop/companion-guide/latest/part2/improper-input-validation.html#_successfully_redeem_an_expired_campaign_coupon_code
+
+ヒント要旨:
+・Twitterで見つかる月ごとのクーポン以外に、過去の特別キャンペーンがある
+・過去のイベント/ホリデー施策の手がかりをアプリ内から探す
+・実際のタイムトラベルは不要
+
+手順3詳細
+課題名とヒントから「クーポン適用における意味的検証の欠落」が主戦場だと判断。
+調査前に「本来あるべき検証」を先に定義し、実装との差分で脆弱性を特定する方針を採用。
+
+この時点での仮説:
+・難易度4なので、単純なフォーマットチェック突破より、業務ルール整合性の不備（意味的検証不足）が濃厚。
+
+手順4詳細（実装を特定し、検証条件を分解）
+主要実装を以下に特定。
+
+1) クーポン適用API
+https://github.com/juice-shop/juice-shop/blob/master/routes/coupon.ts#L10-L31
+
+2) 通常クーポン文字列の検証ロジック
+https://github.com/juice-shop/juice-shop/blob/master/lib/insecurity.ts#L102-L118
+( discountFromCoupon )
+
+3) 注文時のキャンペーンクーポン検証ロジック（Expired Couponの本体）
+https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+( calculateApplicableDiscount 内の couponData 処理と campaigns 定義 )
+
+4) チャレンジ定義
+https://github.com/juice-shop/juice-shop/blob/master/data/static/challenges.yml#L369-L378
+( key: manipulateClockChallenge, name: Expired Coupon )
+
+観察結果（要点）:
+・coupon.ts は basket に coupon を設定する入口で、妥当性の大半は insecurity.ts / order.ts 側に依存。
+・insecurity.ts の discountFromCoupon は「現在月(MMMYY)一致」中心で、月次クーポン向け。
+・order.ts は couponData(Base64)経由で campaigns を参照し、couponDate == campaign.validOn を満たすと割引適用。
+・Expired Coupon の solve 条件は campaign.validOn < 現在時刻。
+  つまり「過去日キャンペーンでも couponDate を一致させれば通る」という構造。
+
+手順5詳細（予測した検証項目と実装の突き合わせ）
+
+A. クーポンの意味的検証
+
+A-1. このクーポンは有効期限内か(現在日時が利用可能期間内か)
+判定: 部分的に実装あり（ただし安全性不足）
+根拠:
+・月次クーポン: discountFromCoupon が現在月一致を要求
+  https://github.com/juice-shop/juice-shop/blob/master/lib/insecurity.ts#L102-L118
+・キャンペーン系: couponDate == validOn の一致のみで成立し、現在日時との大小で拒否しない
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+理由:
+「有効期限内であること」を必須条件にしておらず、過去キャンペーンも成立可能。
+
+A-2. このクーポンは未使用か
+判定: 実装なし
+根拠:
+・クーポン単位の使用履歴/一意消費の永続化照合がない
+・basket.coupon の更新はあるが、クーポン自体の消費状態は管理していない
+  https://github.com/juice-shop/juice-shop/blob/master/routes/coupon.ts#L10-L31
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+
+A-3. このクーポンコードは存在するか
+判定: 部分的に実装あり（台帳照合としては不十分）
+根拠:
+・月次クーポン: 形式 + 当月判定
+・キャンペーン系: campaigns オブジェクトのキー照合はある
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+理由:
+存在確認は「静的マップにキーがあるか」までで、失効/取消/配布対象などの業務状態を持たない。
+
+A-4. このクーポンは現在有効なキャンペーンに紐づいているか
+判定: 実装なし
+根拠:
+・campaign.validOn と現在時刻の関係で reject していない
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+
+A-5. 対象ユーザーか
+判定: 実装なし
+根拠:
+・ユーザー属性/セグメント/配布先との照合がない
+・basket単位で適用できる構造
+  https://github.com/juice-shop/juice-shop/blob/master/routes/coupon.ts#L10-L31
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+
+A-6. 割引率や割引額は正しいか
+判定: 部分的に実装あり（境界検証不足）
+根拠:
+・割引値は campaigns 定義値または coupon文字列由来で計算
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+  https://github.com/juice-shop/juice-shop/blob/master/lib/insecurity.ts#L102-L118
+理由:
+値域制約(0-100など)や業務上限の強制が限定的。
+
+B. キャンペーンの意味的検証
+
+B-1. 現在有効なキャンペーンに紐づいているか
+判定: 実装なし
+根拠:
+・campaign.validOn は一致判定にしか使われず「現在有効か」は見ていない
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+
+B-2. このキャンペーンは有効期限内か(現在日時が参加可能期間内か)
+判定: 実装なし
+根拠:
+・期限内条件を満たさない場合の reject がない
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+
+B-3. 対象ユーザーか
+判定: 実装なし
+根拠:
+・キャンペーン適用対象のユーザー制御がない
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+
+B-4. 有効なクーポンと紐づいているか
+判定: 部分的に実装あり（静的キー一致レベル）
+根拠:
+・couponCode -> campaigns キー参照はある
+・ただし、状態管理された「有効クーポン集合」との照合ではない
+  https://github.com/juice-shop/juice-shop/blob/master/routes/order.ts#L190-L216
+
+手順6詳細（脆弱性の本質と再発防止）
+
+脆弱性の本質:
+・形式的検証(文字列形式やキー一致)はあるが、意味的検証(期限、対象、利用状態、業務ルール)が欠落。
+・「一致しているか」しか見ず、「今使ってよいか」を見ていない。
+
+設計上の学び:
+・入力値検証は型/形式だけでは不十分で、業務文脈の検証が不可欠。
+・検証は endpoint 単位で分散させず、クーポン適用ポリシーとして集約した方が漏れにくい。
+
+再発防止の実装観点（提案）:
+1. coupon/campaign をDBで状態管理し、静的定数から脱却する
+2. 有効期間(開始/終了)をサーバ時刻で厳密判定する
+3. 利用上限(ユーザー単位・クーポン単位・全体上限)をトランザクションで検証する
+4. 対象ユーザー/セグメントを必須判定にする
+5. 割引値の上限・下限をサーバ側で強制し、監査ログを残す
+
+最終所感
+今回の課題は「期限切れクーポンを使えた」という結果そのものより、
+「なぜ期限切れが通る設計になっているか」を実装差分で説明できることに価値がある。
+
+事前に検証項目を立ててからコードを読む流れは、
+脆弱性調査だけでなく通常のコードレビューでも有効だった。
