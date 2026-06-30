@@ -24,12 +24,12 @@
       "code": "const [state, setState] = useState({ count: 0, name: \"test\" });\nsetState(prev => ({ ...prev, count: 1 }));",
       "options": [
         "前のstate とマージしないと、name プロパティが失われる",
-        "setState(() => prev) という書き方では前の値を参照できない",
+        "setState に更新関数を渡す形式では、直前の state を参照できない",
         "setState は非同期で実行されるため、即座に state は更新されない",
         "setState 後、即座に console.log(state) を実行すると古い値が出力される"
       ],
       "correctAnswerIndex": 1,
-      "explanation": "setState(() => prev) は、setState に関数を渡す形式で、前の値を参照できる正しい書き方です。",
+      "explanation": "誤っているのは「更新関数を渡す形式では直前の state を参照できない」という記述です。実際には `setState(prev => ({ ...prev, count: prev.count + 1 }))` のように更新関数の引数 `prev` を通じて直前の state を安全に参照できます（`() => prev` のように引数を取らない書き方では参照できないため、引数を受け取ることが必須です）。残りの選択肢（マージしないと name が失われる／setState は非同期で即時反映されない／直後の console.log は古い値を出力する）はいずれも正しい記述です。",
       "source": "https://react.dev/reference/react/useState#updating-state-based-on-the-previous-state"
     },
     {
@@ -37,7 +37,7 @@
       "section": "セクション1: React & TypeScript ",
       "title": "TypeScript の Generic について",
       "question": "React コンポーネントで Generic を使う際、以下の記述で型推論が正しく機能するのはどれですか？",
-      "code": "interface Props<T> {\n  items: T[];\n  onSelect: (item: T) => void;\n}",
+      "code": "interface Props<T extends { id: number }> {\n  items: T[];\n  onSelect: (item: T) => void;\n}",
       "options": [
         "T の型は自動推論される",
         "T extends { id: number } により、id プロパティを持つ型のみが使用可能",
@@ -45,7 +45,7 @@
         "すべてが正しい"
       ],
       "correctAnswerIndex": 3,
-      "explanation": "Generic を使うことで、型安全かつ柔軟なコンポーネント設計が可能になります。",
+      "explanation": "型引数に `T extends { id: number }` の制約を付けると、`id` を持つ型だけを受け付けつつ、`items` の要素型や `onSelect` の引数型を呼び出し側で渡した具体的な型から推論できます。したがって、T は使用時に推論され、id を持つ型のみが許可され、props の型も正確に定まります。よって選択肢はいずれも正しく、答えは『すべて正しい』です。",
       "source": "https://www.typescriptlang.org/docs/handbook/2/generics.html"
     },
     {
@@ -94,7 +94,7 @@
       ],
       "correctAnswerIndex": 3,
       "explanation": "import はビルド時に解析され、fetch は実行時に取得します。バンドルサイズと最適化方法が異なります。",
-      "source": "https://vite.dev/guide/assets#the-public-directory"
+      "source": "https://vite.dev/guide/features#json"
     },
     {
       "id": 7,
@@ -238,7 +238,7 @@
       ],
       "correctAnswerIndex": 1,
       "explanation": "instanceof はエラーの実際の型をチェックできます。",
-      "source": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch"
+      "source": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof"
     },
     {
       "id": 16,
@@ -541,7 +541,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "fetch API の重要な特性：『ネットワークエラーのみで Promise を reject する』。HTTP エラーステータスでも fetch は成功値を返すため、res.ok チェックが必須です。",
-      "source": "https://react.dev/reference/react/useEffect"
+      "source": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#checking_response_status"
     },
     {
       "id": 35,
@@ -557,7 +557,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "res.json() は Promise<any> を返します。型アサーション (as ViewData) は『このデータは ViewData 型である』と TypeScript コンパイラに通知し、型チェックを可能にします。ただし実行時のデータ検証は行われません。",
-      "source": "https://react.dev/reference/react/useEffect"
+      "source": "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions"
     },
     {
       "id": 36,
@@ -573,7 +573,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "JavaScript では `throw new Error(...)` の他に、`throw \"string\"` や `throw 123` など任意の値を throw できます。そのため catch 時に `err instanceof Error` で検証し、堅牢な実装をします。",
-      "source": "https://react.dev/reference/react/useEffect"
+      "source": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch"
     },
     {
       "id": 37,
@@ -701,7 +701,7 @@
       ],
       "correctAnswerIndex": 1,
       "explanation": "このエラーは Docker がビルド時に Dockerfile を見つけられないときに発生します。`build: ./backend` は compose ファイルの配置位置を基準に解決されるため、意図と異なるディレクトリを参照することがあります。対策は (1) Dockerfile をビルドコンテキストに置く、(2) `build.context` と `build.dockerfile` を実ディレクトリ構成に合わせて明示する、の2点です。",
-      "source": "https://docs.docker.com/reference/cli/docker/compose/up/"
+      "source": "https://docs.docker.com/reference/compose-file/build/"
     },
     {
       "id": 45,
@@ -1094,7 +1094,7 @@
       "question": "次の起動ログから読み取れる状態として最も適切なのはどれですか？",
       "code": "Number of CPUs: 12\nGOMAXPROCS: 12",
       "options": [
-        "CPU制限が設定されていて、Goプロセスはすべての論理CPUを使用可能",
+        "CPU制限が設定されておらず、Goプロセスはすべての論理CPUを使用可能",
         "Go プロセス用に意図的に 6 つの CPU が割り当てられている",
         "マシンに物理 CPU ソケットが 6 個ある",
         "このプロセスは単一スレッドで動く"
@@ -1373,7 +1373,7 @@
       ],
       "correctAnswerIndex": 1,
       "explanation": "結論の中心は、「Go runtime の監視は本番で重要であり、まずは標準の runtime 指標から始める」という点です。そのうえで、Prometheus や OpenTelemetry を使って可視化を広げ、必要になったところだけ custom metrics を追加していくのが推奨されています。また、goroutine 数、メモリ使用量、GC pause などの警告しきい値は全サービス共通の固定値ではなく、アプリの特性によって調整すべきだと述べています。つまり、通常運転時のベースラインを先に観測し、そこから意味のある逸脱に対して alert を張る、という運用方針が正解です。",
-      "source": "https://pkg.go.dev/runtime"
+      "source": "https://pkg.go.dev/runtime/metrics"
     },
     {
       "id": 87,
@@ -1421,7 +1421,7 @@
       ],
       "correctAnswerIndex": 1,
       "explanation": "`recommended` は「推奨されている」という意味です。Cambridge Dictionary では、`recommended` は「ある目的や仕事にとって良い・適切だと提案されている、または実行すべき行動として提案されている」と説明されています。したがってこの文は、「この設定を変更したあと、サーバーを再起動するのが強く勧められる」という意味です。`must` のような絶対必須までは言っていませんが、従うべき実務上の推奨として読むのが自然です。",
-      "source": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects"
+      "source": "https://dictionary.cambridge.org/dictionary/english/recommended"
     },
     {
       "id": 90,
@@ -1437,7 +1437,7 @@
       ],
       "correctAnswerIndex": 1,
       "explanation": "このコメントは、「問題は `container` が null かもしれないことだ」と述べています。`createRoot(null)` は実行時に例外になるため、TypeScript がそのコードを拒否するのは正しい、という意味です。そのうえで、呼び出し側が `container` は null ではないと本当に保証できるなら、non-null assertion の `!` を使って `createRoot(container!)` と書ける、という説明です。つまり、型エラーを黙らせるために無条件で `!` を付けるのではなく、null にならない根拠がある場合だけ使うべき、という文脈です。",
-      "source": "https://docs.python.org/3/tutorial/"
+      "source": "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#non-null-assertion-operator-postfix-"
     },
     {
       "id": 91,
@@ -1501,7 +1501,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "`package.json` は要求仕様、`node_modules` は実体です。要求があっても install されていなければ解決できません。",
-      "source": "https://developer.mozilla.org/en-US/docs/Web"
+      "source": "https://docs.npmjs.com/cli/v10/commands/npm-ls"
     },
     {
       "id": 95,
@@ -1517,7 +1517,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "今回の欠損は設定ではなく依存実体です。`npm install` により Vite 本体と型定義ファイルが利用可能になります。",
-      "source": "https://developer.mozilla.org/en-US/docs/Web"
+      "source": "https://docs.npmjs.com/cli/v10/commands/npm-install"
     },
     {
       "id": 96,
@@ -1549,7 +1549,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "最終判定は実行結果です。設定確認と依存導入の後、ビルド成功で再現性のある完了確認になります。",
-      "source": "https://developer.mozilla.org/en-US/docs/Web"
+      "source": "https://vite.dev/guide/build"
     },
     {
       "id": 98,
@@ -1565,7 +1565,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "このエラーは、`docker` コマンド自体ではなく、裏で動く Docker デーモンに接続できない状態を示します。代表例は Docker Desktop が未起動、デーモン停止、またはソケット権限の問題です。",
-      "source": "https://docs.docker.com/reference/dockerfile/"
+      "source": "https://docs.docker.com/engine/daemon/troubleshoot/"
     },
     {
       "id": 99,
@@ -1581,7 +1581,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "`255` は一般的に異常終了を示しますが、理由はアプリごとに異なります。まずは `docker logs` と `docker inspect` で実際のエラーメッセージを確認し、設定不足・接続先未起動・コマンド実行失敗などを切り分けるのが正攻法です。",
-      "source": "https://docs.docker.com/reference/dockerfile/"
+      "source": "https://docs.docker.com/reference/cli/docker/container/logs/"
     },
     {
       "id": 100,
@@ -1757,7 +1757,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "eslint-plugin-react-hooks では、カスタム Effect Hook を正規表現で指定して依存配列チェック対象に含められます。共有 settings と rule-level option の両方が用意されています。",
-      "source": "https://react.dev/reference/react/useEffect"
+      "source": "https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks"
     },
     {
       "id": 111,
@@ -1997,7 +1997,7 @@
       ],
       "correctAnswerIndex": 1,
       "explanation": "`isNew` は `_currentPage == 1` かつ `isDateInNewRange` のAND条件です。`isDateInNewRange` は `displayDate` が `newCutoff` 以上 `now` 以下のとき true になります。",
-      "source": "https://docs.flutter.dev/"
+      "source": "https://api.dart.dev/stable/dart-core/DateTime-class.html"
     },
     {
       "id": 126,
@@ -2045,7 +2045,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "`組み込みオブジェクト` は英語で一般に `built-in object` と表現します。JavaScript では `Array` や `Date` など、言語や実行環境にあらかじめ備わっているオブジェクトを指す文脈で使われます。",
-      "source": "https://docs.oracle.com/en/java/javase/21/docs/api/index.html"
+      "source": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects"
     },
     {
       "id": 129,
@@ -2477,7 +2477,7 @@
       ],
       "correctAnswerIndex": 0,
       "explanation": "`s.handleListQuizzes` は `func(http.ResponseWriter, *http.Request)` 型のメソッド値です。`mux.Handle` は `http.Handler` インターフェース（`ServeHTTP` メソッドを持つ型）を要求します。`http.HandlerFunc` は関数を `http.Handler` に変換する型エイリアスで、`ServeHTTP` が定義されています。",
-      "source": "https://pkg.go.dev/github.com/golang-jwt/jwt/v5"
+      "source": "https://pkg.go.dev/net/http#HandlerFunc"
     },
     {
       "id": 156,
@@ -2493,7 +2493,7 @@
       ],
       "correctAnswerIndex": 1,
       "explanation": "認証情報が不正（ユーザー名・パスワードの不一致）は `401 Unauthorized` です。`403 Forbidden` は認証済みだがアクセス権限がない場合、`400 Bad Request` はリクエスト形式が不正な場合に使います。RFC 7235に基づき、認証失敗は401が正しい選択です。",
-      "source": "https://pkg.go.dev/github.com/golang-jwt/jwt/v5"
+      "source": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401"
     },
     {
       "id": 157,
@@ -2653,7 +2653,7 @@
       ],
       "correctAnswerIndex": 2,
       "explanation": "`ON CONFLICT (id) DO NOTHING` は競合（主キー重複など）が発生した場合にエラーを発生させずスキップします。冪等なシード処理に適しています。上書きしたい場合は `ON CONFLICT DO UPDATE SET ...`（UPSERT）を使います。",
-      "source": "https://pkg.go.dev/database/sql"
+      "source": "https://www.postgresql.org/docs/current/sql-insert.html#SQL-ON-CONFLICT"
     },
     {
       "id": 167,
@@ -2669,7 +2669,7 @@
       ],
       "correctAnswerIndex": 1,
       "explanation": "`RETURNING` はINSERT/UPDATE/DELETEで変更された行のカラム値を返すPostgreSQL拡張です。`INSERT ... RETURNING id, created_at` とすることで、DB側で生成された `BIGSERIAL` のIDやデフォルト値 `NOW()` の `created_at` を別途SELECTなしで取得できます。",
-      "source": "https://pkg.go.dev/database/sql"
+      "source": "https://www.postgresql.org/docs/current/sql-insert.html#SQL-INSERT-RETURNING"
     },
     {
       "id": 168,
@@ -12873,6 +12873,54 @@
       "correctAnswerIndex": 1,
       "explanation": "非機能要件は、システムが提供する個別機能そのものではなく、性能、信頼性、保守性、運用性、セキュリティ、開発標準などに関する要件です。開発で利用する言語に合わせた開発基準や標準の作成は、保守性や品質を支える非機能面の定義に該当します。情報の流れ、実現する機能範囲、他システムとのインターフェイスは、主に機能要件の定義に関係します。",
       "source": "システム開発工程 / 非機能要件定義"
+    },
+    {
+      "id": 809,
+      "section": "セクション: システム開発",
+      "title": "外部設計で顧客承認を受けるもの",
+      "question": "システムの外部設計を完了させるとき、顧客から承認を受けるものはどれですか？",
+      "code": null,
+      "options": [
+        "画面レイアウト",
+        "システム開発計画",
+        "物理データベース仕様",
+        "プログラム流れ図"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "外部設計では、利用者から見える画面、帳票、入出力項目、外部インターフェイスなどを設計します。そのため、顧客が確認して承認する対象として適切なのは画面レイアウトです。システム開発計画は計画工程、物理データベース仕様やプログラム流れ図は内部設計や詳細設計に近い内容です。",
+      "source": "システム開発工程 / 外部設計"
+    },
+    {
+      "id": 810,
+      "section": "セクション: システム開発",
+      "title": "外部設計と内部設計の説明",
+      "question": "内部設計および外部設計の説明のうち、正しいものはどれですか？",
+      "code": null,
+      "options": [
+        "外部設計では、システムをいくつかのプログラムに分割し、内部設計ではプログラムごとのDFDを作成する",
+        "外部設計ではデータ項目を洗い出して論理データ構造を決定し、内部設計では物理データ構造、データの処理方式やチェック方式などを決定する",
+        "外部設計と内部設計の遂行順序は、基本計画における利用者の要求に基づいて決定される",
+        "外部設計はコンピュータ側から見たシステム設計であり、内部設計は利用者側から見たシステム設計である"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "外部設計は、画面、帳票、フォームの入力項目、論理データ構造など、利用者から見える仕様を決める工程です。内部設計は、物理データ構造、バリデーションなどのチェック方式、データの処理方式、モジュール分割など、システム内部でどう実現するかを決める工程です。したがって、外部設計で論理的なデータ項目を整理し、内部設計で物理データ構造や処理方式、チェック方式を決める説明が正しいです。",
+      "source": "システム開発工程 / 外部設計・内部設計"
+    },
+    {
+      "id": 811,
+      "section": "セクション: システム開発",
+      "title": "ソフトウェア詳細設計書の役割",
+      "question": "ソフトウェア詳細設計書に関する記述として、適切なものはどれですか？",
+      "code": null,
+      "options": [
+        "システム結合テストのテスト仕様が含まれる",
+        "設計書に基づいてプログラミングが実施される",
+        "システム要件定義の終了を契機として作成が開始される",
+        "将来のメンテナンス用として、単体テストが完了した後で完成させる"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "ソフトウェア詳細設計書は、各プログラムやモジュールの処理内容、入出力、データ構造、ロジックなどを具体的に記述し、プログラミングのもとになる設計書です。システム結合テストの仕様はテスト仕様書の内容であり、詳細設計は通常、要件定義直後ではなく外部設計や内部設計の後に行います。また、単体テスト後ではなくプログラミング前に作成します。",
+      "source": "システム開発工程 / ソフトウェア詳細設計"
     }
   ]
 }
