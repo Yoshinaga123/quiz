@@ -9,7 +9,7 @@ PV カウンター API（`GET /counter`, `POST /counter`）の実装詳細。
 | --- | --- |
 | エンドポイント | `GET /counter`, `POST /counter` |
 | 永続化 | PostgreSQL `views` テーブル（singleton 行 `id = 1`） |
-| ハンドラ | `backend/main.go` の `handleGetCounter`, `handleIncrementCounter` |
+| ハンドラ | `backend/counter.go` の `handleGetCounter`, `handleIncrementCounter` |
 | 用途 | ページビュー数（PV）の取得・加算 |
 
 API パスは `/counter` だが、永続テーブル名は `views` である。初期 ADR では `counters` テーブルを想定していたが、

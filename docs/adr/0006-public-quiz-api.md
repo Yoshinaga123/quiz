@@ -43,7 +43,7 @@ ADR 0005 で `web/` と `mobile/` のユーザー向けクライアントが正�
 
 ### Negative
 
-- 当面は OpenAPI と Go ハンドラ実装の二重管理になる。差分は CI で監視する（D 系ワークフローで `openapi-lint` を実装）。
+- 当面は OpenAPI と Go ハンドラ実装の二重管理になる。差分は `docs/api/fixtures/` と `.github/workflows/public-contract.yml` で監視する。
 - 既存の管理 API と URL 設計が分かれるため、Go 側で muxer / middleware の整理が必要になる。
 
 ## Migration Plan

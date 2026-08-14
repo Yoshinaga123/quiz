@@ -1,11 +1,7 @@
 {
+  "private": true,
   "scripts": {
-    "security:pentest": "bash scripts/run_zap_baseline.sh"
-  },
-  "dependencies": {
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "typescript": "^6.0.2"
+    "security:pentest": "bash scripts/run_zap_baseline.sh",
+    "test:contract": "python3 scripts/check_public_contract.py && npm --prefix web test && go test -C backend ./... -count=1"
   }
 }

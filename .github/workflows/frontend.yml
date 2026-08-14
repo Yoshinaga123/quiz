@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   admin-web:
-    name: admin-web build & lint
+    name: admin-web build, lint & test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,11 +39,13 @@ jobs:
           fi
       - name: Lint
         run: npm run lint
+      - name: Test
+        run: npm run test
       - name: Type check & build
         run: npm run build
 
   web:
-    name: web build & lint
+    name: web build, lint & test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -64,5 +66,7 @@ jobs:
           fi
       - name: Lint
         run: npm run lint
+      - name: Test
+        run: npm run test
       - name: Type check & build
         run: npm run build

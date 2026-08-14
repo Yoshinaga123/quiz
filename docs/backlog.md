@@ -222,7 +222,7 @@ CREATE INDEX idx_push_deliveries_quiz_id ON push_deliveries (quiz_id);
 
 - [x] **TODO-003-26** backend: クイズ選定ロジックのユニットテスト（DB モック or テスト DB）
 - [x] **TODO-003-27** backend: `POST /api/admin/push/dispatch` の httptest（JWT + 201 / 422）
-- [ ] **TODO-003-28** admin-web: API レスポンス zod スキーマのテスト（Vitest 導入後でも可）
+- [x] **TODO-003-28** admin-web: API レスポンス zod スキーマのテスト（Vitest 導入後でも可）
 - [ ] **TODO-003-29** mobile: `LocalNotificationService` の初期化テスト（可能な範囲）
 - [x] **TODO-003-30** [`docs/counter-api.md`](./counter-api.md) ではなく push 用に [`docs/push-notification-mock.md`](./push-notification-mock.md) を新規作成する
   - 手動確認手順（admin 送信 → mobile 表示）

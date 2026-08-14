@@ -1,7 +1,7 @@
 # Quiz Backend API
 
 Go + PostgreSQL 製のクイズアプリ API サーバー。
-`main.go` 単一ファイル構成で、Public API・管理 API・認証・Seed 同期を提供する。
+`package main` を責務別ファイルに分割し、Public API・管理 API・認証・Seed 同期を提供する。
 
 ## 役割
 
@@ -22,6 +22,8 @@ docker compose up --build
 | --- | --- |
 | API | `http://localhost:8082` |
 | PostgreSQL | `localhost:5433`（DB 名 `counter`） |
+
+本番の公開 URL は **`https://socrates-quiz.jp`（HTTPS 443）**（コンテナ内は引き続き 8080）。
 
 起動時に golang-migrate で `migrations/` を自動適用する。
 
@@ -119,7 +121,18 @@ go run .
 
 ```
 backend/
-  main.go              # エントリポイント（ルーティング・ハンドラ・DB）
+  main.go              # 起動・CORS・ルーティング
+  types.go             # DTO / server
+  db.go                # PostgreSQL・migrate
+  httpx.go             # JSON / parseID / 公開エラー
+  auth.go              # JWT・ログイン検証コード
+  counter.go           # / /counter
+  admin_quizzes.go     # /api/admin/quizzes*
+  public.go            # /v1/*（公開）
+  push.go              # mock Push
+  seed.go              # 本番シード同期
+  quiz_scan.go         # Scan ヘルパー
+  debug.go             # 起動時メモリ診断
   migrations/          # golang-migrate SQL（embed も可）
   seeds/
     quizzes.production.json   # 本番 Seed テンプレート

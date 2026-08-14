@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { STARTER_QUIZZES } from '../../src/data/quizzes';
 import { quizSchema, quizzesSchema } from '../../src/schemas/quiz';
 
 const baseQuiz = {
@@ -44,6 +45,10 @@ describe('quizSchema', () => {
 });
 
 describe('quizzesSchema', () => {
+  it('accepts STARTER_QUIZZES', () => {
+    expect(quizzesSchema.safeParse(STARTER_QUIZZES).success).toBe(true);
+  });
+
   it('accepts an empty list', () => {
     expect(quizzesSchema.safeParse([]).success).toBe(true);
   });

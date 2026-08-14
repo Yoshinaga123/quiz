@@ -149,7 +149,7 @@
 
 補足:
 
-- 現在の `backend/main.go` では DB と migration の初期化順が重要なので、依存順を崩さない
+- 現在の `backend`（`main.go` + `db.go`）では DB と migration の初期化順が重要なので、依存順を崩さない
 - 初期化エラーは利用者向けではなく運用ログ向けに明確に出す
 
 ### `mobile`

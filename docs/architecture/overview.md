@@ -8,7 +8,7 @@
 graph TB
     subgraph Clients["クライアント"]
         Mobile["Flutter モバイルアプリ<br/>(Riverpod + Clean Architecture)"]
-        WebApp["ユーザー向け Web<br/>(React + Vite)<br/>※現在はインラインデータで動作"]
+        WebApp["ユーザー向け Web<br/>(React + Vite)<br/>Public API + starter fallback"]
         AdminWeb["React 管理画面<br/>(Vite + TypeScript)"]
     end
 
@@ -30,7 +30,7 @@ graph TB
     end
 
     Mobile -->|GET /v1/quizzes| PublicAPI
-    WebApp -.->|統合予定 GET /v1/quizzes| PublicAPI
+    WebApp -->|GET /v1/quizzes| PublicAPI
     AdminWeb -->|Bearer JWT| AdminAPI
     AdminWeb -->|ログイン| AuthFlow
 
@@ -65,15 +65,24 @@ Clean Architecture 3層構成。
 
 React 19 + Vite + TypeScript の SPA。クイズの解答 UI と正答率・履歴のローカル保存が責務。
 
-現状は `src/data/quizzes.ts` のインライン定義で動作しており、バックエンドとは未統合。Public API 統合後は `GET /v1/quizzes` をプライマリに、インラインデータをフォールバックとして切り替える予定（`web/README.md` 参照）。
+`VITE_API_BASE_URL` があるときは `GET /v1/quizzes` を使い、未設定・失敗時は `src/data/quizzes.ts` の starter pack にフォールバックする（`web/README.md` 参照）。
 
 ### React 管理画面 (`admin-web/`)
 
 Vite + TypeScript の SPA。`/api/admin/` エンドポイントのみ使用。JWT は localStorage 管理。
 
-### Go バックエンド (`backend/main.go`)
+### Go バックエンド (`backend/`)
 
-単一ファイル構成。ルート定義は `routes()` を参照。
+`package main` を責務別ファイルに分割（`main.go` は起動とルーティング）。ルート定義は `routes()` を参照。
+
+公開ポート（ne_app と同様、本番は HTTPS 443）:
+
+| 環境 | クライアントが叩く先 | コンテナ内 |
+|---|---|---|
+| 開発（docker-compose） | `http://localhost:8082` | `8080` |
+| 本番 | `https://socrates-quiz.jp`（**443**） | `8080` |
+
+本番は ALB / CloudFront 等で TLS 終端し、公開面は 443 のみとする。ホスト名は `socrates-quiz.jp`。管理画面は ADR 0005 どおり別ホストで配信する（ホスト名は未定）。
 
 **Public API（認証なし）**
 
@@ -139,9 +148,11 @@ sequenceDiagram
 | 変更内容 | 更新箇所 |
 |---------|---------|
 | API エンドポイント追加・削除 | Admin/Public API テーブル |
+| 公開ポート・本番 URL の変更 | 公開ポート表、`docs/api/public-quiz-api.yaml` の `servers` |
 | 新しい Flutter レイヤー・DataSource | コンポーネント図・Flutter 説明 |
 | DB テーブル追加 | データベーステーブル一覧 |
 | Seed 同期ロジック変更 | Seed 同期フローのシーケンス図 |
+| ハンドラ・SQL・画面内状態などの内部設計 | `docs/detailed-design/`（`meta.json` も更新） |
 
 更新プロンプト例（Claude Code 用）:
 

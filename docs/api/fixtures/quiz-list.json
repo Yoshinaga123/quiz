@@ -1,0 +1,17 @@
+{
+  "quizzes": [
+    {
+      "id": 1,
+      "section": "React",
+      "title": "useState",
+      "question": "What does useState return?",
+      "code": "const [value, setValue] = useState(0);",
+      "options": ["array", "object"],
+      "correctAnswerIndex": 0,
+      "explanation": "It returns a tuple [state, setState].",
+      "source": "https://react.dev/reference/react/useState"
+    }
+  ],
+  "totalCount": 1,
+  "generatedAt": "2026-01-15T10:30:00.000Z"
+}

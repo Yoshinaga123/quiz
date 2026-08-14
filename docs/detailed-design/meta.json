@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "title": "Detailed design",
+  "pages": [
+    "---Documentation---",
+    "README",
+    "---Packages---",
+    "backend/README",
+    "backend/package-layout",
+    "web/README",
+    "web/quiz-schema",
+    "web/public-contract",
+    "admin-web/README",
+    "mobile/README"
+  ]
+}

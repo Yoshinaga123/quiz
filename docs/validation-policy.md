@@ -3,7 +3,7 @@
 ## 目的
 
 本ドキュメントは、クイズアプリにおける入力検証とエラーハンドリングの基準を定める。
-対象は `admin-web`、`backend`、`mobile` である。
+対象は `admin-web`、`web`、`backend`、`mobile` である。
 
 このポリシーの狙いは次の3点。
 
@@ -69,7 +69,7 @@
 
 補足:
 
-- 現在の `backend` は `main.go` 中心の構成だが、将来ハンドラや DTO に分割しても責務分担は維持する
+- `backend` は `package main` を責務別ファイルに分割している。検証はハンドラ／DTO 側に置く
 - 書き込み系エンドポイントでは、可能な限り `json.Decoder.DisallowUnknownFields()` 相当の厳格さを目指す
 
 ### `mobile`
@@ -89,6 +89,7 @@
 ### 1. API レスポンス
 
 - `admin-web` は `fetch` 後に Zod または TypeScript ベースのランタイム検証で shape を検証する
+- `web` は公開 API レスポンスを `web/src/schemas/quiz.ts` で検証する。成功・失敗は `web/tests/schemas/quiz.test.ts` で固定する
 - `mobile` でも将来的に API DTO の shape を検証する
 - `as SomeType` だけで通過させない
 

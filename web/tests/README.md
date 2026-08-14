@@ -1,33 +1,14 @@
 # web/tests
 
-`web/` 用のテスト雛形を集めるディレクトリ。**現状はテスト実行環境（Vitest）の依存追加が未実施**のため、
-ファイルだけ用意してある。実行するには次の追加作業が必要（既存ファイル変更を伴うため別タスク）。
+`web/` のユニットテスト。Vitest で実行する（Zod リポジトリと同様、成功・失敗の両方を固定する）。
 
-## 有効化手順
+```bash
+cd web
+npm test
+npm run test:watch
+```
 
-1. `web/package.json` に dev 依存を追加する。
-
-   ```jsonc
-   {
-     "scripts": {
-       "test": "vitest run",
-       "test:watch": "vitest"
-     },
-     "devDependencies": {
-       "vitest": "^2.1.0",
-       "@vitest/coverage-v8": "^2.1.0",
-       "@testing-library/react": "^16.0.0",
-       "@testing-library/dom": "^10.4.0",
-       "@testing-library/jest-dom": "^6.5.0",
-       "jsdom": "^25.0.0"
-     }
-   }
-   ```
-
-2. `web/vite.config.ts` の `test` セクションを有効化する（雛形は `vitest.config.ts` を参照）。
-3. `npm install && npm run test` で実行。
-
-## 雛形が含むもの
+設定は [`vitest.config.ts`](./vitest.config.ts)。スキーマの試し書きは [`../scripts/README.md`](../scripts/README.md)。
 
 | ファイル | 対象 | 種別 |
 | --- | --- | --- |
@@ -35,6 +16,6 @@
 | `lib/historyStorage.test.ts` | `src/lib/historyStorage.ts` | ユニット（DOM・localStorage） |
 | `api/client.test.ts` | `src/api/client.ts` | ユニット（fetch / Zod 境界） |
 | `schemas/quiz.test.ts` | `src/schemas/quiz.ts` | ユニット（Zod スキーマ） |
+| `contract/public-api.test.ts` | `docs/api/fixtures/` | 公開契約（OpenAPI 例を Zod で検証） |
 
-これらはすべて **副作用に閉じない・依存注入が容易な箇所** にスコープしてある。
-React コンポーネントの統合テストは Vitest 導入後の次フェーズで追加する。
+React コンポーネントの統合テストは次フェーズ。

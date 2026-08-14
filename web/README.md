@@ -12,7 +12,7 @@
 
 ## 現状（Public API 接続）
 
-`backend/main.go` は `GET /v1/quizzes` を提供している（[ADR 0006](../docs/adr/0006-public-quiz-api.md)）。
+`backend` は `GET /v1/quizzes` を提供している（[ADR 0006](../docs/adr/0006-public-quiz-api.md)）。
 `VITE_API_BASE_URL`（[`web/.env.example`](.env.example) 参照）が設定されている場合、`useQuizCatalog` は `fetchQuizzes()` 経由で `/v1/quizzes` を取得する。
 
 未設定時、または API 取得に失敗した場合は `src/data/quizzes.ts` の **starter pack（インライン定義）** にフォールバックする。
@@ -25,7 +25,10 @@ npm install
 npm run dev      # http://localhost:5174
 npm run build
 npm run lint
+npm run test     # Vitest（tests/ + Zod スキーマ）
 ```
+
+スキーマの試し書きは [`scripts/`](scripts/README.md)（Zod の `play.ts` 相当）。本番スキーマには残さない。
 
 ## ディレクトリ構造
 

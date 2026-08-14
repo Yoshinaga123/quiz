@@ -1,12 +1,13 @@
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-/**
- * tests/ 配下に独立した Vitest 設定を置く。
- * `web/package.json` に `vitest` を追加した後に
- * `npx vitest --config tests/vitest.config.ts` で実行できる。
- */
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vitest/config'
+
+const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+
 export default defineConfig({
+  root: webRoot,
   plugins: [react()],
   test: {
     environment: 'jsdom',
@@ -20,4 +21,4 @@ export default defineConfig({
       exclude: ['src/main.tsx', 'src/**/*.d.ts'],
     },
   },
-});
+})

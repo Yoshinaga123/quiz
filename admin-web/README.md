@@ -9,6 +9,7 @@ npm install
 npm run dev
 npm run build
 npm run lint
+npm test
 ```
 
 ## Responsibility

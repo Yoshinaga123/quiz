@@ -54,9 +54,10 @@ flutter run \
 | iOS シミュレータ → ホスト Mac | `http://localhost:8082` |
 | Android エミュレータ → ホスト | `http://10.0.2.2:8082` |
 | 実機 → 同一 LAN の dev マシン | `http://<host-ip>:8082` |
+| 本番 | `https://socrates-quiz.jp`（公開ポート **443**） |
 
 未指定時の既定値は `http://localhost:8082`（`backend/docker-compose.yml` の
-ポートマッピング `8082:8080` に合わせている）。
+ポートマッピング `8082:8080` に合わせている）。本番は `https://socrates-quiz.jp` の HTTPS 443 で公開する。
 
 ## 切り替え方（既存画面に影響なし）
 

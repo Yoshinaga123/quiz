@@ -1,0 +1,74 @@
+name: Public contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/api/**"
+      - "docs/detailed-design/web/**"
+      - "docs/detailed-design/meta.json"
+      - "web/src/schemas/**"
+      - "web/src/api/quiz.ts"
+      - "web/tests/contract/**"
+      - "web/tests/schemas/**"
+      - "backend/types.go"
+      - "backend/public.go"
+      - "backend/quiz_scan.go"
+      - "backend/public_contract_test.go"
+      - "mobile/lib/layers/data/dto/public_quiz_dto.dart"
+      - "mobile/test/data/dto/**"
+      - "scripts/check_public_contract.py"
+      - ".github/workflows/public-contract.yml"
+      - ".github/workflows/openapi.yml"
+  pull_request:
+    paths:
+      - "docs/api/**"
+      - "docs/detailed-design/web/**"
+      - "docs/detailed-design/meta.json"
+      - "web/src/schemas/**"
+      - "web/src/api/quiz.ts"
+      - "web/tests/contract/**"
+      - "web/tests/schemas/**"
+      - "backend/types.go"
+      - "backend/public.go"
+      - "backend/quiz_scan.go"
+      - "backend/public_contract_test.go"
+      - "mobile/lib/layers/data/dto/public_quiz_dto.dart"
+      - "mobile/test/data/dto/**"
+      - "scripts/check_public_contract.py"
+      - ".github/workflows/public-contract.yml"
+      - ".github/workflows/openapi.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: OpenAPI + Zod + Go fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache-dependency-path: backend/go.sum
+      - name: Check field sync
+        run: python3 scripts/check_public_contract.py
+      - name: Lint OpenAPI
+        run: npx --yes @redocly/cli@^1 lint docs/api/public-quiz-api.yaml
+      - name: Web contract tests
+        working-directory: web
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm test
+      - name: Go contract tests
+        working-directory: backend
+        run: go test ./... -count=1

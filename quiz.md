@@ -1,88 +1,62 @@
-### クイズアプリ開発要件定義
-    実行コマンドは以下の通りです。
-    前提条件としてはNode.jsがインストールされている必要があります。
-    ```bash
-    npm create vite@latest vite-app-quiz
-    ```
-    プロジェクトのテンプレートはreactを選択してください。
-    本プロジェクトは、ユーザー向けのクイズアプリをモバイル版（Flutter）とWeb版（React/Vite）の2つで提供し、別途クイズ管理用のWeb画面（React/Vite）とバックエンドAPI（Go）で構成されます。
+# クイズアプリ要件定義
 
-### 要件定義
-- クイズアプリは高難易度のクイズアプリです。
-- コードの意味を問うクイズを作成してください。
-- 公式ドキュメントの英文から、正しい日本語訳を選択する問題も作成してください。
-- クイズは複数選択式で、正解は1つだけです。
-- ITに関する範囲であればなんでも構いません。
-- 出題形式も自由です。
-- 答えは高品質なドキュメントから引用してください。
-- 下記のクイズは簡単すぎますが、単なる一例です。実際のクイズはもっと難易度が高いものを作成してください。
-- push通知でログイン状態に応じて、ログインを促す通知を送る機能も追加してください。
-- モバイルはandroidとiOS両方に対応してください。
-- クイズはモバイルアプリ版とWeb版の両方を提供してください。
-- クイズの管理は管理画面で行います。管理画面ではクイズの追加、編集、削除ができるようにしてください。
-- 管理画面はWebで実装してください。
-- quzzesにログインしようとしたユーザーには「quzzesアカウントの安全性を確保するために、IDを確認する必要があります。確認コードを送信してください。」というメッセージを表示し、確認コード送信フローを提供してください。
+高難度の IT クイズを、**ユーザー向け Web**・**Flutter**・**管理 Web**・**Go API** で提供する。
 
-### クイズ例
-1. 以下のコードは何を意味していますか？
-```const [count, setCount] = useState(0);
-```
+## 目的
 
-2. 以下の英文の意味は何ですか？
-```The useState hook is a function that allows you to add state to functional components in React.```
+- コードの意味を問う問題と、公式ドキュメント英文の日本語訳問題を出す。
+- 選択肢は複数、正解は 1 つ。出典は高品質な公式ドキュメント。
+- ユーザーは登録なしで解ける。管理者だけが問題を CRUD する。
 
+## 機能要件
 
-###　画面設計
+### ユーザー（web / mobile）
 
-- クイズの問題と選択肢を表示する画面
- - IT系の英文読解
- - コードの意味を問うクイズ
-- クイズの結果を表示する画面
- - さらに詳細な英文例
- - さらに丁寧なコード解説
-- クイズの履歴を表示する画面
- - 過去に解いたクイズの一覧
- - 正解率や傾向を分析する機能
+- 問題と選択肢の表示、解答、結果（解説・出典）
+- 履歴・正答率は端末ローカル（`localStorage` / `shared_preferences`）
+- ログインは不要（公開 API は匿名）
 
-### 開発規約
-- コードはESLintのルールに従って書いてください。
-- コードはPrettierでフォーマットしてください。
-- コンポーネントは機能ごとに分割してください。
-- AIによるコード生成は許可しますが、開発者が必ず理解することが前提です。
-- クイズの内容は必ず高品質なドキュメントから引用してください。
-- クイズの内容は必ず正確であることを確認してください。
-- クイズの内容は必ず最新の情報を反映してください。
+### 管理者（admin-web）
 
-### 追加要件
-- 現時点ではなし。
+- クイズの追加・編集・削除、公開状態、Push フラグ
+- ログインは検証コードフロー（メッセージ: 「quzzesアカウントの安全性を確保するために、IDを確認する必要があります。確認コードを送信してください。」）
+- mock Push 送信（Phase A。本物の FCM / APNs は未実装）
 
+### バックエンド
 
-### 全体構成
-- モバイル向けクイズアプリ + Web向けクイズアプリ + 管理web + Go製API + PostgreSQL + Docker
-・モバイル向けクイズアプリ: Flutter / Dart
-・Web向けクイズアプリ: React / TypeScript / Vite
-・管理web: React / TypeScript / Vite
+- 公開: `GET /v1/quizzes`, `/v1/quizzes/{id}`, `/v1/sections`, `/v1/push/feed`, `GET /healthz`
+- 管理: `/api/admin/*`（JWT Bearer）
+- データ正本: PostgreSQL `quizzes`
+- 候補プール → 本番シード → DB の 3 層（`docs/quiz-data-workflow.md`）
 
+## 画面
 
-### 詳細な技術スタック
-- Web向けクイズアプリ: React 18 + TypeScript 5
-- 管理画面: React 18 + TypeScript 5
-- モバイルアプリ: Flutter / Dart / shared_preferences / intl / firebase_messaging / flutter_local_notifications / http / barcode_widget / app_links
-- 状態管理: ReactのuseStateフック
-- スタイリング: Tailwind CSS
-- ビルドツール: Vite
-- コード品質: ESLint, Prettier
-- バージョン管理: Git
-- ルーティング: react-router-dom
-- バックエンド: Go Echo
-- データベース: PostgreSQL
-- API通信: EchoのHTTPクライアント
-- push通知: Firebase Cloud Messaging (FCM), Apple Push Notification service (APNs)
-- 認証: JWT (JSON Web Tokens)
-- コンテナ化: Docker
-- バリデーション: zod
-- 品質・開発補助: ESLint, Prettier, Vitest, Testing Library, jsdom, Storybook, lint-staged, Husky
-- schema/Docs OpenAPI, Redocly
+- 出題（英文読解 / コード）
+- 結果（解説）
+- 履歴（正答率）
+- 管理: 一覧・作成・編集
 
-### まとめ
-このクイズアプリは、ITに関する高難易度のクイズを提供することを目的としています。ユーザーはコードの意味や公式ドキュメントの英文の意味を問うクイズに挑戦することができます。クイズの内容は高品質なドキュメントから引用され、正確で最新の情報を反映しています。開発者はESLintとPrettierを使用してコードの品質を保ち、機能ごとにコンポーネントを分割して開発を進めてください。
+## 技術スタック（実装準拠）
+
+| 領域 | 実装 |
+| --- | --- |
+| ユーザー Web | React 19 + TypeScript 5.9 + Vite 7 + Tailwind CSS v4 + Zod |
+| 管理 Web | 同上 + SWR |
+| モバイル | Flutter / Dart 3.3+ / Riverpod / shared_preferences / flutter_local_notifications |
+| 状態（Web） | `useState` / Context |
+| ルーティング（Web） | react-router-dom v7（History API） |
+| API | Go 1.26 **`net/http`**（Echo ではない）+ PostgreSQL 16 |
+| 認証 | JWT（管理者のみ）+ 検証コード |
+| コンテナ | Docker Compose（API ホスト 8082 → コンテナ 8080） |
+| バリデーション | Zod（web / admin-web）。公開契約は OpenAPI 3.1 |
+| 品質 | ESLint、Vitest（web / admin-web）、go test、Redocly |
+| Push | Phase A: mock feed + ローカル通知。FCM / APNs は ADR 0007（Proposed） |
+
+本番公開 URL: `https://socrates-quiz.jp`（HTTPS 443）。詳細は [`README.md`](README.md) と [`docs/INDEX.md`](docs/INDEX.md)。
+
+## 開発規約
+
+- ESLint に従う。コンポーネントは機能ごとに分割する。
+- AI 生成コードは開発者が理解してから入れる。
+- クイズ本文は公式ドキュメント由来で、正確・最新であること。
+- 公開 API の shape を変えたら OpenAPI・Zod・テストを同じ PR で直す（[`CONTRIBUTING.md`](CONTRIBUTING.md)）。

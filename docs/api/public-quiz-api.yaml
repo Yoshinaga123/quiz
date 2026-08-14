@@ -9,13 +9,19 @@ info:
     - 個人特定情報は持たず、回答ログはアプリ内 ID で集計する（ADR 0008 参照）。
     - レスポンス境界は `web/src/schemas/quiz.ts` の Zod スキーマと一対一で一致させる
       （docs/implement-policy.md「外部入力の検証」原則）。
+    - 実行時の突き合わせ例は `docs/api/fixtures/`。shape を変えたら OpenAPI・Zod・Go・
+      fixtures・詳細設計・テストを同じ PR で直す。
 
     本ファイルは仕様の合意を取るためのドラフトであり、サーバー実装は段階的に追加する。
 servers:
   - url: http://localhost:8082
-    description: Local development (backend/docker-compose.yml)
-  - url: https://api.example.com
-    description: Production (placeholder)
+    description: Local development (backend/docker-compose.yml). Host 8082 → container 8080.
+  - url: https://socrates-quiz.jp
+    description: |
+      Production public URL (HTTPS port 443).
+      Hostname: socrates-quiz.jp.
+      TLS is terminated at the edge (ALB / CloudFront). The Go container still listens on 8080.
+
 
 tags:
   - name: quizzes
@@ -208,6 +214,18 @@ components:
         source:
           type: string
           minLength: 1
+      example:
+        id: 1
+        section: React
+        title: useState
+        question: What does useState return?
+        code: "const [value, setValue] = useState(0);"
+        options:
+          - array
+          - object
+        correctAnswerIndex: 0
+        explanation: It returns a tuple [state, setState].
+        source: https://react.dev/reference/react/useState
 
     QuizListResponse:
       type: object
@@ -223,6 +241,21 @@ components:
         generatedAt:
           type: string
           format: date-time
+      example:
+        quizzes:
+          - id: 1
+            section: React
+            title: useState
+            question: What does useState return?
+            code: "const [value, setValue] = useState(0);"
+            options:
+              - array
+              - object
+            correctAnswerIndex: 0
+            explanation: It returns a tuple [state, setState].
+            source: https://react.dev/reference/react/useState
+        totalCount: 1
+        generatedAt: "2026-01-15T10:30:00.000Z"
 
     SectionSummary:
       type: object
@@ -313,6 +346,9 @@ components:
         details:
           type: object
           additionalProperties: true
+      example:
+        code: not_found
+        message: quiz not found
 
   responses:
     BadRequest:
