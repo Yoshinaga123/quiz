@@ -1,0 +1,22 @@
+name: Stale
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-stale: 180
+          days-before-close: 30
+          stale-issue-message: "180 days without activity. Comment to keep this open, or it will close in 30 days."
+          stale-pr-message: "180 days without activity. Comment to keep this open, or it will close in 30 days."
+          exempt-issue-labels: "contract"

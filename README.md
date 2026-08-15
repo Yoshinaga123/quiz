@@ -40,13 +40,26 @@ docker compose up --build
 
 ## テスト
 
+ルート（Node 22、[`.nvmrc`](.nvmrc)）:
+
+```bash
+npm install
+npm test
+npm run lint
+```
+
+個別:
+
 ```bash
 python3 scripts/check_public_contract.py
+python3 scripts/check_repo_hygiene.py
 cd web && npm test
 cd backend && go test ./...
 cd admin-web && npm test
 cd mobile && flutter test
 ```
+
+試し書きは `npm run play`（`src/` には残さない）。エージェント向け手順は [`AGENTS.md`](AGENTS.md)。
 
 ## リポジトリの分け方
 
@@ -55,4 +68,4 @@ cd mobile && flutter test
 | `web/` `admin-web/` `mobile/` `backend/` `docs/architecture/` `docs/api/` `docs/adr/` `docs/detailed-design/` | **プロダクト** |
 | [`samples/`](samples/) [`archive/`](archive/README.md) `docs/security-tools/` など | **学習・診断アーカイブ**（実行時に不要） |
 
-貢献手順は [`CONTRIBUTING.md`](CONTRIBUTING.md)。脆弱性報告は [`SECURITY.md`](SECURITY.md)。ライセンスは MIT（[`LICENSE`](LICENSE)）。
+貢献手順は [`CONTRIBUTING.md`](CONTRIBUTING.md)。行動規範は [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)。脆弱性報告は [`SECURITY.md`](SECURITY.md)。ライセンスは MIT（[`LICENSE`](LICENSE)）。

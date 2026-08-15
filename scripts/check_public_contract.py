@@ -16,6 +16,8 @@ ZOD_LIST = ROOT / "web" / "src" / "api" / "quiz.ts"
 GO_TYPES = ROOT / "backend" / "types.go"
 DETAIL = ROOT / "docs" / "detailed-design" / "web" / "quiz-schema.md"
 CONTRACT_DOC = ROOT / "docs" / "detailed-design" / "web" / "public-contract.md"
+MOBILE_DTO = ROOT / "mobile" / "lib" / "layers" / "data" / "dto" / "public_quiz_dto.dart"
+AGENTS = ROOT / "AGENTS.md"
 
 QUIZ_REQUIRED = [
     "id",
@@ -72,6 +74,23 @@ def assert_keys_contain(payload: dict, required: list[str], label: str) -> None:
     missing = [key for key in required if key not in payload]
     if missing:
         fail(f"{label} missing keys: {missing}")
+
+
+def schema_block(yaml_text: str, schema_name: str) -> str:
+    match = re.search(rf"\n    {re.escape(schema_name)}:\n", yaml_text)
+    if not match:
+        fail(f"OpenAPI schema {schema_name} not found")
+    rest = yaml_text[match.end() :]
+    next_schema = re.search(r"\n    [A-Z][A-Za-z0-9]+:\n", rest)
+    return rest[: next_schema.start()] if next_schema else rest
+
+
+def schema_example_keys(yaml_text: str, schema_name: str) -> set[str]:
+    block = schema_block(yaml_text, schema_name)
+    example = re.search(r"\n      example:\n((?:        .+\n)+)", block)
+    if not example:
+        fail(f"OpenAPI schema {schema_name} has no example")
+    return set(re.findall(r"^        ([A-Za-z][A-Za-z0-9]*):", example.group(1), re.M))
 
 
 def go_struct_json_tags(source: str, struct_name: str) -> set[str]:
@@ -161,6 +180,29 @@ def main() -> None:
 
     if not CONTRACT_DOC.exists():
         fail("docs/detailed-design/web/public-contract.md is required")
+
+    quiz_example_keys = schema_example_keys(openapi, "Quiz")
+    missing_example = [key for key in quiz if key not in quiz_example_keys]
+    if missing_example:
+        fail(f"OpenAPI Quiz example missing keys from quiz.json: {missing_example}")
+
+    error_example_keys = schema_example_keys(openapi, "Error")
+    missing_error_example = [key for key in ERROR_REQUIRED if key not in error_example_keys]
+    if missing_error_example:
+        fail(f"OpenAPI Error example missing {missing_error_example}")
+
+    if not MOBILE_DTO.is_file():
+        fail("mobile public_quiz_dto.dart is required")
+    mobile_dto = MOBILE_DTO.read_text(encoding="utf-8")
+    for field in QUIZ_REQUIRED + ["code"]:
+        if f"'{field}'" not in mobile_dto and f'"{field}"' not in mobile_dto:
+            fail(f"public_quiz_dto.dart missing field {field}")
+
+    if not AGENTS.is_file():
+        fail("AGENTS.md is required")
+    agents = AGENTS.read_text(encoding="utf-8")
+    if "docs/api/fixtures/" not in agents or "publicQuiz" not in agents:
+        fail("AGENTS.md must document the public-contract same-PR rule")
 
     print("public contract check ok")
 

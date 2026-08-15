@@ -1,3 +1,8 @@
+---
+title: public API contract sync
+description: Same-PR checklist for OpenAPI, fixtures, Zod, Go publicQuiz, detailed design, and tests
+---
+
 # public API contract sync
 
 基本設計: [`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)、[`../../adr/0006-public-quiz-api.md`](../../adr/0006-public-quiz-api.md)
@@ -17,9 +22,9 @@
 ## コマンド
 
 ```bash
-python3 scripts/check_public_contract.py
-cd web && npm test
-cd backend && go test ./... -count=1
+npm run test:contract
 ```
 
-CI: `.github/workflows/public-contract.yml`（OpenAPI・Zod・Go・fixtures・詳細設計のいずれを変えても走る）。
+個別: `python3 scripts/check_public_contract.py`、`cd web && npm test`、`cd backend && go test ./... -count=1`。
+
+CI: `.github/workflows/public-contract.yml` と `.github/workflows/quality.yml`。

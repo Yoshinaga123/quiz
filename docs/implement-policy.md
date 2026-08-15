@@ -13,9 +13,9 @@
 - 失敗時はUIにフォールバック表示を行い、ログを残す
 - 外部APIのレスポンス型は Zod の `z.infer<typeof Schema>` または TypeScript の `type` / `interface` と型ガードから導出する
 - `as SomeType` のみで通過させない
-- 試行コードは `web/scripts/` に置く（[Zod の `play.ts`](https://github.com/colinhacks/zod/blob/main/play.ts) 相当）。`src/schemas/` に残さない
+- 試行コードはルート `play.ts`、`web/scripts/`、`admin-web/scripts/`、`backend/play.go` に置く（[Zod の `play.ts`](https://github.com/colinhacks/zod/blob/main/play.ts) 相当）。`src/schemas/` に残さない
 - Zod スキーマ変更は成功・失敗の両方のテストを更新する（`web/tests/schemas/`、`admin-web/tests/schemas/`）。テストのない検証は未完成とする
-- 公開 API の shape を変えたら [`docs/api/public-quiz-api.yaml`](./api/public-quiz-api.yaml)、[`docs/api/fixtures/`](./api/fixtures/README.md)、Zod、Go、詳細設計、テストを同じ差分で直す（[`detailed-design/web/public-contract.md`](./detailed-design/web/public-contract.md)）。OpenAPI に書けない `.refine` は [`docs/detailed-design/`](./detailed-design/README.md) に書く
+- 公開 API の shape を変えたら [`docs/api/public-quiz-api.yaml`](./api/public-quiz-api.yaml)、[`docs/api/fixtures/`](./api/fixtures/README.md)、Zod、Go、詳細設計、テストを同じ差分で直す（[`detailed-design/web/public-contract.md`](./detailed-design/web/public-contract.md)）。OpenAPI に書けない `.refine` は [`docs/detailed-design/`](./detailed-design/README.md) に書く。使い方は [`detailed-design/web/basics.md`](./detailed-design/web/basics.md)
 
 ## 最小実装例
 ```ts

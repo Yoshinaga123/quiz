@@ -1,7 +1,36 @@
 {
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "security:pentest": "bash scripts/run_zap_baseline.sh",
-    "test:contract": "python3 scripts/check_public_contract.py && npm --prefix web test && go test -C backend ./... -count=1"
+    "prepare": "husky",
+    "test": "npm run test:contract && npm --prefix admin-web test",
+    "test:contract": "python3 scripts/check_public_contract.py && python3 scripts/check_repo_hygiene.py && python3 scripts/check_docs.py && npm --prefix web test && go test -C backend ./... -count=1",
+    "test:coverage": "npm --prefix web run test:coverage && npm --prefix admin-web run test:coverage",
+    "lint": "npm --prefix web run lint && npm --prefix admin-web run lint && npm run lint:go",
+    "lint:go": "test -z \"$(gofmt -l backend)\"",
+    "fix": "npm --prefix web exec -- eslint --fix . && npm --prefix admin-web exec -- eslint --fix . && gofmt -w backend",
+    "check:circular": "npx --yes madge --circular --extensions ts,tsx web/src && npx --yes madge --circular --extensions ts,tsx admin-web/src",
+    "check:contract": "python3 scripts/check_public_contract.py",
+    "check:hygiene": "python3 scripts/check_repo_hygiene.py",
+    "check:docs": "python3 scripts/check_docs.py",
+    "docs:llms": "python3 scripts/generate_llms_txt.py",
+    "play": "npx --yes tsx play.ts",
+    "scratch:measure": "node scratch/measure.mjs",
+    "security:pentest": "bash scripts/run_zap_baseline.sh"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^29.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "rollup": "^4.60.2",
+    "rollup-plugin-filesize": "^10.0.0",
+    "tslib": "^2.8.1",
+    "typescript": "~5.9.3",
+    "zod": "^4.3.6"
   }
 }

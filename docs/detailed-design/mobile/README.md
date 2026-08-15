@@ -1,3 +1,8 @@
+---
+title: mobile
+description: Detailed design for the Flutter public-API client
+---
+
 # mobile
 
 Flutter アプリ（`mobile/`）の詳細設計を置く。

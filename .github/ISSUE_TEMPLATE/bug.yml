@@ -1,0 +1,38 @@
+name: Bug
+description: プロダクトの不具合
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: 学習用の `samples/` や診断教材の話は、プロダクトバグとして出さないでください。
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待した動き
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動き
+    validations:
+      required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: パッケージ
+      options:
+        - web
+        - admin-web
+        - backend
+        - mobile
+        - docs / contract
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 再現手順
+    validations:
+      required: true

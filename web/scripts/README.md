@@ -1,7 +1,8 @@
 # web/scripts
 
 Zod リポジトリの [`play.ts`](https://github.com/colinhacks/zod/blob/main/play.ts) 相当。  
-スキーマや fetch の試し書きはここに置く。`src/` には残さない（vite build の include は `src` のみ）。
+スキーマや fetch の試し書きはここに置く。`src/` には残さない（vite build の include は `src` のみ）。  
+リポジトリ全体の試し書きはルートの `play.ts`（`npm run play`）。
 
 | ファイル | 用途 |
 | --- | --- |

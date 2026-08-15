@@ -1,3 +1,8 @@
+---
+title: backend package layout
+description: package main file split — not internal/ packages — and what each file owns
+---
+
 # backend package layout
 
 基本設計: [`../../architecture/backend-flow.md`](../../architecture/backend-flow.md)

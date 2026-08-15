@@ -1,0 +1,25 @@
+name: Feature
+description: プロダクトの機能追加・改善
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 解きたいこと
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 提案
+    validations:
+      required: true
+  - type: dropdown
+    id: contract
+    attributes:
+      label: 公開 JSON を変えるか
+      options:
+        - 変えない
+        - 変える（OpenAPI / fixtures / Zod / Go を同じ PR にする）
+    validations:
+      required: true

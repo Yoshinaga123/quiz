@@ -153,6 +153,8 @@ go build ./...
 go test ./... -count=1
 ```
 
+試し書きは `play.go`（`//go:build ignore`。`go build` には入らない）。`go run play.go`。
+
 ## 関連ドキュメント
 
 - 要件定義: [`../quiz.md`](../quiz.md)

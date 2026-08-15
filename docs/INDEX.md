@@ -18,12 +18,17 @@
 | ドキュメント | 概要 |
 | --- | --- |
 | [`./detailed-design/README.md`](./detailed-design/README.md) | 置き場・書き方・他ドキュメントとの境界 |
+| [`./detailed-design/writing.md`](./detailed-design/writing.md) | frontmatter / 例のテスト / llms.txt |
 | [`./detailed-design/backend/`](./detailed-design/backend/) | Go API・DB アクセス |
 | [`./detailed-design/backend/package-layout.md`](./detailed-design/backend/package-layout.md) | `package main` のファイル分割 |
 | [`./detailed-design/web/`](./detailed-design/web/) | ユーザー向け Web |
+| [`./detailed-design/web/basics.md`](./detailed-design/web/basics.md) | Zod Basics 相当（safeParse / infer） |
 | [`./detailed-design/web/quiz-schema.md`](./detailed-design/web/quiz-schema.md) | 公開クイズ Zod（`.refine` 含む） |
+| [`./detailed-design/web/error-formatting.md`](./detailed-design/web/error-formatting.md) | Zod issues → ApiError |
 | [`./detailed-design/web/public-contract.md`](./detailed-design/web/public-contract.md) | 公開契約の同一 PR 同期 |
+| [`./detailed-design/repo-ops.md`](./detailed-design/repo-ops.md) | husky / play / docs 例テスト |
 | [`./detailed-design/admin-web/`](./detailed-design/admin-web/) | 管理画面 |
+| [`./detailed-design/admin-web/quiz-schema.md`](./detailed-design/admin-web/quiz-schema.md) | 管理画面 Zod（公開 schema との差） |
 | [`./detailed-design/mobile/`](./detailed-design/mobile/) | Flutter |
 
 ## プロジェクト全体
@@ -31,6 +36,11 @@
 | ドキュメント | 概要 |
 | --- | --- |
 | [`../quiz.md`](../quiz.md) | アプリの要件定義（実装準拠のスタック） |
+| [`../AGENTS.md`](../AGENTS.md) | コーディングエージェント向け手順 |
+| [`../CLAUDE.md`](../CLAUDE.md) | AGENTS.md への入口 |
+| [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | Contributor Covenant |
+| [`./llms.txt`](./llms.txt) | 詳細設計の目録（zod.dev/llms.txt 相当） |
+| [`./llms-full.txt`](./llms-full.txt) | 詳細設計の連結（zod.dev/llms-full.txt 相当） |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | 貢献手順（OpenAPI / Zod / テスト同期） |
 | [`../SECURITY.md`](../SECURITY.md) | 脆弱性報告 |
 | [`./implement-policy.md`](./implement-policy.md) | 実装ポリシー（Zod 検証、SPA 採用、Google Search Central 対応など） |
@@ -41,7 +51,7 @@
 | [`./counter-api.md`](./counter-api.md) | PV カウンター API（`/counter`、永続化は `views` テーブル） |
 | [`./push-notification-mock.md`](./push-notification-mock.md) | Push 通知 Phase A モック（手動送信 + feed + ローカル通知） |
 | [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |
-| [`./backlog.md`](./backlog.md) | 未着手の改善タスク（出典品質・テスト基盤など） |
+| [`./backlog.md`](./backlog.md) | 未着手の改善タスク（出典品質・テスト基盤・Zod Mini 先送りなど） |
 | [`./initializer.md`](./initializer.md) | 初期化責務の所在 |
 | [`./late.md`](./late.md) | 遅延読み込みの方針 |
 | [`../backend/.env.example`](../backend/.env.example) | backend 環境変数テンプレート |
@@ -60,6 +70,7 @@
 | [0007](./adr/0007-push-notification-delivery.md) | Proposed | プッシュ通知の配信方式 |
 | [0008](./adr/0008-user-attempt-history.md) | Proposed | ユーザー回答履歴の保存方式 |
 | [0009](./adr/0009-mobile-state-management.md) | Accepted | モバイル版の状態管理と層構造 |
+| [0010](./adr/0010-scratch-input-bundle-size.md) | Accepted | バンドルサイズ実験の入口は `scratch/input.ts` |
 
 ## API 仕様
 
@@ -78,6 +89,9 @@
 | [`../web/README.md`](../web/README.md) | ユーザー向け Web アプリ（React + Vite） |
 | [`../web/tests/README.md`](../web/tests/README.md) | `web/` の Vitest（Zod スキーマ含む） |
 | [`../web/scripts/README.md`](../web/scripts/README.md) | Zod `play.ts` 相当の試し書き |
+| [`../admin-web/scripts/README.md`](../admin-web/scripts/README.md) | 管理画面スキーマの試し書き |
+| [`../play.ts`](../play.ts) | ルートの試し書き（`npm run play`） |
+| [`../scratch/README.md`](../scratch/README.md) | バンドルサイズ計測（`scratch/input.ts` / `npm run scratch:measure`） |
 | [`../mobile/README.md`](../mobile/README.md) | モバイル版（Flutter + Riverpod） |
 | [`../backend/README.md`](../backend/README.md) | Go API（Public / Admin / 認証 / Seed 同期） |
 
@@ -90,7 +104,11 @@
 | [`../.github/workflows/quiz-data.yml`](../.github/workflows/quiz-data.yml) | クイズ JSON の lint と本番シード drift 検出 |
 | [`../.github/workflows/openapi.yml`](../.github/workflows/openapi.yml) | OpenAPI 仕様の Redocly Lint |
 | [`../.github/workflows/public-contract.yml`](../.github/workflows/public-contract.yml) | 公開契約（OpenAPI + fixtures + Zod + Go） |
+| [`../.github/workflows/quality.yml`](../.github/workflows/quality.yml) | リポジトリ衛生 + 循環 import |
 | [`../scripts/check_public_contract.py`](../scripts/check_public_contract.py) | OpenAPI / fixtures / Zod / Go のフィールド同期 |
+| [`../scripts/check_repo_hygiene.py`](../scripts/check_repo_hygiene.py) | AGENTS / nvmrc / detailed-design 目次 |
+| [`../scripts/check_docs.py`](../scripts/check_docs.py) | frontmatter・孤児ページ・相対リンク・llms drift |
+| [`../scripts/generate_llms_txt.py`](../scripts/generate_llms_txt.py) | `docs/llms.txt` と `docs/llms-full.txt` を生成 |
 | [`../.github/workflows/security-pentest.yml`](../.github/workflows/security-pentest.yml) | OWASP ZAP ベースライン・ペネトレーションテスト |
 | [`../scripts/lint_quizzes.py`](../scripts/lint_quizzes.py) | クイズ JSON の構造 lint |
 | [`../scripts/diff_quiz_data.py`](../scripts/diff_quiz_data.py) | 候補プールと本番シードの差分要約 |

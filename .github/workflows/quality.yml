@@ -1,0 +1,30 @@
+name: Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  hygiene:
+    name: hygiene + circular
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - name: Repo hygiene
+        run: python3 scripts/check_repo_hygiene.py
+      - name: Docs frontmatter and links
+        run: python3 scripts/check_docs.py
+      - name: Public contract fields
+        run: python3 scripts/check_public_contract.py
+      - name: Circular imports
+        run: npm run check:circular

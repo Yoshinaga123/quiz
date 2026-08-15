@@ -1,0 +1,33 @@
+name: Public contract change
+description: 公開 API の JSON shape を変える提案
+labels: ["contract"]
+body:
+  - type: textarea
+    id: why
+    attributes:
+      label: なぜ変えるか
+    validations:
+      required: true
+  - type: textarea
+    id: shape
+    attributes:
+      label: 新しい shape（フィールド名・型・必須/任意）
+    validations:
+      required: true
+  - type: checkboxes
+    id: sync
+    attributes:
+      label: 同じ PR で直すもの
+      options:
+        - label: docs/api/public-quiz-api.yaml
+          required: true
+        - label: docs/api/fixtures/
+          required: true
+        - label: web Zod（quiz.ts / api/quiz.ts）
+          required: true
+        - label: backend publicQuiz
+          required: true
+        - label: docs/detailed-design（.refine 含む）
+          required: true
+        - label: web/Go/mobile テストと check_public_contract.py
+          required: true

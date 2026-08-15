@@ -8,3 +8,11 @@ backend/view-counter
 __pycache__/
 *.pyc
 certs/
+coverage/
+play.local.ts
+*.local.ts
+backend/play.local.go
+.husky/_
+scratch/out_*.js
+scratch/.input-namespace.ts
+

@@ -257,6 +257,46 @@ Phase 0（合意済み: 案 A） → Phase 1（DB） → Phase 2–3（backend A
 
 ---
 
+### TASK-004: Zod Mini への移行（任意・先送り）
+
+- **由来**: Zod 公式が Mini を「バンドル制約が異常に厳しいとき」向けと位置づけていること。低速回線向けの超軽量化の検討。
+- **優先度**: P3（マストではない。公式も多数派には classic `zod` を推奨）
+- **状態**: 先送り。いまは対応しない。
+- **参照**: [zod.dev/packages/mini](https://zod.dev/packages/mini)、[ADR 0002](./adr/0002-frontend-architecture-spa.md)（先に測る）、[ADR 0010](./adr/0010-scratch-input-bundle-size.md)（測る入口は `scratch/input.ts`）
+
+**背景**
+
+`web/` と `admin-web/` は classic `zod`（メソッド API）。Mini は関数 API で tree-shake しやすく、既定 locale も載せない。低速モバイル回線では魅力がある。
+
+ただし本番バンドルは Vite 7 + Rollup であり、esbuild の locale 残留問題は本番に当てはまらない。React / react-router / Tailwind のほうが Zod より重い。メンテナは大多数のアプリに classic を推奨している。
+
+**やること（着手するとき）**
+
+1. `scratch/input.ts` で classic と Mini の kB を測る（ADR 0010）
+2. 差がユーザー体感に効くと分かってから `web/` / `admin-web/` の schema を Mini API に書き換える
+3. 公開 JSON の shape は変えない（OpenAPI / fixtures / `publicQuiz` はそのまま）
+
+**完了条件**
+
+- 計測結果が残っている
+- Mini にした場合は成功・失敗の schema テストが両方通る
+- 公開契約チェックが green
+
+---
+
+### REJECTED: `import { z } from "zod"` を `import * as z from "zod"` に揃える
+
+- **状態**: 却下（2026-08-15）
+- **由来**: Zod 公式の esbuild 向け注意、および [zod#5561](https://github.com/colinhacks/zod/issues/5561) の「`import {z} from "zod"` can exacerbate the issue in some cases」
+- **却下理由**: 名指しは esbuild でバンドルする一部のケース。本番は Vite 7 + Rollup。該当しない。メンテナ自身も「一部のケース」と慎重に書いている。
+
+`web/` / `admin-web/` の `import { z } from "zod"` はそのままにする。エージェントはこの書き換えを再提案しない。
+
+事後計測: [`../scratch/RESULTS.md`](../scratch/RESULTS.md)（`npm run scratch:measure`）。判断は変えない。
+
+---
+
 ## 参考
 
 - TASK-003 Phase B（本番 FCM）: ADR 0007 の cron + `device_tokens` + FCM SDK。TASK-003 完了後に別タスク化する。
+- TASK-004 はバンドル計測（ADR 0010）より先に Mini へ書き換えない。

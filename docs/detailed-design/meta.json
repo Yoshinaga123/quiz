@@ -4,13 +4,18 @@
   "pages": [
     "---Documentation---",
     "README",
+    "writing",
+    "repo-ops",
     "---Packages---",
     "backend/README",
     "backend/package-layout",
     "web/README",
+    "web/basics",
     "web/quiz-schema",
+    "web/error-formatting",
     "web/public-contract",
     "admin-web/README",
+    "admin-web/quiz-schema",
     "mobile/README"
   ]
 }

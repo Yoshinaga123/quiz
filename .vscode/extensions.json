@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "golang.go",
+    "redhat.vscode-yaml"
+  ]
+}

@@ -1,3 +1,8 @@
+---
+title: web quiz Zod schema
+description: Public quiz Zod fields plus the correctAnswerIndex .refine that OpenAPI cannot express
+---
+
 # web quiz Zod schema
 
 基本設計: [`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)（`Quiz`）、[`../../adr/0006-public-quiz-api.md`](../../adr/0006-public-quiz-api.md)、[`../../implement-policy.md`](../../implement-policy.md)
@@ -26,3 +31,5 @@
 ```
 
 yaml 側は description のみ。shape を変えたら OpenAPI・[`fixtures`](../../api/fixtures/README.md)・このファイル・テストを同じ差分で直す。手順は [`public-contract.md`](./public-contract.md)。
+
+> **Note** — 使い方（safeParse / infer / issues）は [`basics.md`](./basics.md)。UI への載せ方は [`error-formatting.md`](./error-formatting.md)。

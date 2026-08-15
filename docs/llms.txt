@@ -1,0 +1,88 @@
+# Socrates Quiz
+
+> High-difficulty IT quiz app. Monorepo, not a published library. Public JSON is OpenAPI + fixtures + handwritten Zod. Learning trees (samples/, archive/, docs/security-tools/) are not product.
+
+## Detailed design
+
+- [Detailed design](docs/detailed-design/README.md): Internal assembly docs — handlers, SQL, Zod refine, in-page state. Not the public OpenAPI contract.
+
+- [他ドキュメントとの境界](docs/detailed-design/README.md#他ドキュメントとの境界)
+- [ディレクトリ](docs/detailed-design/README.md#ディレクトリ)
+- [書き方](docs/detailed-design/README.md#書き方)
+- [含めるもの / 含めないもの](docs/detailed-design/README.md#含めるもの-含めないもの)
+
+## Writing detailed design
+
+- [Writing detailed design](docs/detailed-design/writing.md): Page conventions borrowed from Zod docs — frontmatter, kebab-case, executable examples
+
+- [新しいページ](docs/detailed-design/writing.md#新しいページ)
+- [含めるもの / 含めないもの](docs/detailed-design/writing.md#含めるもの-含めないもの)
+- [書き方](docs/detailed-design/writing.md#書き方)
+
+## Repo ops
+
+- [Repo ops](docs/detailed-design/repo-ops.md): Husky, play pads, and docs-example tests borrowed from Zod's repository operations
+
+- [エージェント向け正本](docs/detailed-design/repo-ops.md#エージェント向け正本)
+- [試し書き](docs/detailed-design/repo-ops.md#試し書き)
+- [ドキュメント例のテスト](docs/detailed-design/repo-ops.md#ドキュメント例のテスト)
+- [フック](docs/detailed-design/repo-ops.md#フック)
+
+## backend
+
+- [backend](docs/detailed-design/backend/README.md): Detailed design for the Go net/http API and PostgreSQL access
+
+## backend package layout
+
+- [backend package layout](docs/detailed-design/backend/package-layout.md): package main file split — not internal/ packages — and what each file owns
+
+## web
+
+- [web](docs/detailed-design/web/README.md): Detailed design for the user-facing React quiz UI
+
+## Basic usage (web Zod)
+
+- [Basic usage (web Zod)](docs/detailed-design/web/basics.md): Define a schema, safeParse untrusted JSON, handle issues, and infer types — as this app actually does
+
+- [Defining a schema](docs/detailed-design/web/basics.md#defining-a-schema)
+- [Parsing data](docs/detailed-design/web/basics.md#parsing-data)
+- [Handling errors](docs/detailed-design/web/basics.md#handling-errors)
+- [Inferring types](docs/detailed-design/web/basics.md#inferring-types)
+
+## web quiz Zod schema
+
+- [web quiz Zod schema](docs/detailed-design/web/quiz-schema.md): Public quiz Zod fields plus the correctAnswerIndex .refine that OpenAPI cannot express
+
+- [OpenAPI と 1:1 にできるもの](docs/detailed-design/web/quiz-schema.md#openapi-と-11-にできるもの)
+- [OpenAPI に書けない業務ルール](docs/detailed-design/web/quiz-schema.md#openapi-に書けない業務ルール)
+
+## Error formatting (web)
+
+- [Error formatting (web)](docs/detailed-design/web/error-formatting.md): How Zod issues become ApiError and a UI fallback, instead of raw ZodError
+
+- [境界で止める](docs/detailed-design/web/error-formatting.md#境界で止める)
+- [UI](docs/detailed-design/web/error-formatting.md#ui)
+
+## public API contract sync
+
+- [public API contract sync](docs/detailed-design/web/public-contract.md): Same-PR checklist for OpenAPI, fixtures, Zod, Go publicQuiz, detailed design, and tests
+
+- [コマンド](docs/detailed-design/web/public-contract.md#コマンド)
+
+## admin-web
+
+- [admin-web](docs/detailed-design/admin-web/README.md): Detailed design for the admin CRUD UI and JWT login
+
+## admin-web quiz Zod schema
+
+- [admin-web quiz Zod schema](docs/detailed-design/admin-web/quiz-schema.md): Admin quiz Zod including status and pushEnabled, which must not appear on publicQuiz
+
+- [OpenAPI に書けない業務ルール](docs/detailed-design/admin-web/quiz-schema.md#openapi-に書けない業務ルール)
+
+## mobile
+
+- [mobile](docs/detailed-design/mobile/README.md): Detailed design for the Flutter public-API client
+
+---
+
+Use AGENTS.md for agent rules and docs/INDEX.md for the human map. docs/llms-full.txt concatenates these detailed-design pages in meta.json order.

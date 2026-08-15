@@ -1,3 +1,8 @@
+---
+title: Detailed design
+description: Internal assembly docs — handlers, SQL, Zod refine, in-page state. Not the public OpenAPI contract.
+---
+
 # 詳細設計（Detailed design）
 
 内部の作り方（関数分割、SQL、シーケンス、画面内状態）を置く場所。
@@ -23,6 +28,8 @@ Zod の `content/packages/*` と同様、実装パッケージごとに分ける
 docs/detailed-design/
 ├── README.md          ← このファイル（入口）
 ├── meta.json          ← 目次（追加したら必ず更新）
+├── writing.md         ← frontmatter / 例のテスト / llms.txt
+├── repo-ops.md        ← husky / play / docs 例テスト
 ├── backend/           ← Go API・DB アクセス
 ├── web/               ← ユーザー向け Web
 ├── admin-web/         ← 管理画面

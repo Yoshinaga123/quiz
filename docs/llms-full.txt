@@ -1,0 +1,431 @@
+# Socrates Quiz
+
+Concatenated detailed-design pages in `docs/detailed-design/meta.json` order.
+Regenerate with `python3 scripts/generate_llms_txt.py`.
+
+# Detailed design
+
+Source: docs/detailed-design/README.md
+
+# 詳細設計（Detailed design）
+
+内部の作り方（関数分割、SQL、シーケンス、画面内状態）を置く場所。
+
+[Zod](https://github.com/colinhacks/zod) の `packages/docs/content` に合わせ、このフォルダだけを詳細設計の正本にする。目次は [`meta.json`](./meta.json)。ページ名は kebab-case。
+
+## 他ドキュメントとの境界
+
+| 層 | 場所 | 書くこと |
+|---|---|---|
+| 要件 | [`../../quiz.md`](../../quiz.md) | 何をしたいか |
+| 基本設計（外の契約） | [`../architecture/`](../architecture/)、[`../api/`](../api/)、[`../adr/`](../adr/) | 構成、OpenAPI、なぜそう決めたか |
+| **詳細設計（中の組み立て）** | **このフォルダ** | ハンドラ、SQL、Zod refine、画面内フロー |
+| 実装 | `backend/`、`web/`、`admin-web/`、`mobile/` | コード |
+
+OpenAPI（[`../api/public-quiz-api.yaml`](../api/public-quiz-api.yaml)）は基本設計。ここには書かない。
+
+## ディレクトリ
+
+Zod の `content/packages/*` と同様、実装パッケージごとに分ける。
+
+```text
+docs/detailed-design/
+├── README.md          ← このファイル（入口）
+├── meta.json          ← 目次（追加したら必ず更新）
+├── writing.md         ← frontmatter / 例のテスト / llms.txt
+├── repo-ops.md        ← husky / play / docs 例テスト
+├── backend/           ← Go API・DB アクセス
+├── web/               ← ユーザー向け Web
+├── admin-web/         ← 管理画面
+└── mobile/            ← Flutter
+```
+
+## 書き方
+
+- ファイル名は **kebab-case 英語**（例: `public-quiz-handlers.md`）。Zod の `error-customization.mdx` と同じ。
+- 1 ファイル 1 関心事。巨大な「詳細設計書.docx 相当」を 1 本にまとめない。
+- 先頭に、参照する基本設計（ADR / OpenAPI / architecture）へのリンクを置く。
+- 実装と食い違ったら **コードかこのフォルダを直す**。公開 JSON なら OpenAPI・fixtures・Zod・Go・テストも同じ PR（[`web/public-contract.md`](./web/public-contract.md)）。
+- 未着手のページは作らない。書くときに追加し、`meta.json` の `pages` に載せる。
+
+## 含めるもの / 含めないもの
+
+含める:
+
+- 処理シーケンス、擬似コード、関数・モジュールの責務
+- SQL / トランザクション境界
+- Zod の `.refine` など、OpenAPI に書けない業務ルール
+- 画面内の状態遷移（どの hook が何を持つか）
+
+含めない:
+
+- URL 契約そのもの → `docs/api/`
+- システム全体図 → `docs/architecture/`
+- 意思決定の経緯 → `docs/adr/`
+- 診断手順・学習メモ → `docs/security-tools/` など
+
+
+# Writing detailed design
+
+Source: docs/detailed-design/writing.md
+
+# Writing detailed design
+
+Zod の `packages/docs/content` と同じ約束を、このフォルダに適用する。Fumadocs / MDX サイトは置かない。GitHub 上の Markdown が正本である。
+
+## 新しいページ
+
+1. kebab-case 英語のファイル名（例: `error-formatting.md`）。
+2. YAML frontmatter に `title` と `description` を書く（[zod.dev の各 MDX](https://github.com/colinhacks/zod/blob/main/packages/docs/content/basics.mdx) と同じ）。
+3. 本文の先頭は `#` 見出し。続けて参照する基本設計（ADR / OpenAPI / architecture）へのリンクを置く。
+4. ルート [`meta.json`](./meta.json) と、パッケージフォルダの `meta.json` の両方に載せる。
+5. TypeScript の fence を書いたら、`web/tests/contract/docs-examples.test.ts`（または admin 側）で実装と突き合わせる。
+
+```bash
+python3 scripts/check_docs.py
+python3 scripts/generate_llms_txt.py
+```
+
+`check_docs.py` は frontmatter・孤児ページ・相対リンク切れを落とす。`generate_llms_txt.py` は [`../llms.txt`](../llms.txt) と [`../llms-full.txt`](../llms-full.txt) を作り直す。
+
+## 含めるもの / 含めないもの
+
+含める: シーケンス、SQL、`.refine`、画面内状態、実行できるコード例。
+
+含めない: URL 契約そのもの（`docs/api/`）、全体図（`docs/architecture/`）、経緯（`docs/adr/`）、学習メモ（`docs/security-tools/`）。
+
+## 書き方
+
+- 1 ファイル 1 関心事。巨大な「詳細設計書」にまとめない。
+- 補足は Zod と同じ callout にする。
+
+> **Note** — OpenAPI に書けない業務ルールは `quiz-schema.md` に残す。yaml の description だけでは契約テストが落ちない。
+
+- 公開 JSON の shape を変えたら [`web/public-contract.md`](./web/public-contract.md) の層を同じ PR で直す。
+- 未着手のページは作らない。
+
+
+# Repo ops
+
+Source: docs/detailed-design/repo-ops.md
+
+# repo ops (Zod-inspired)
+
+基本設計: [`../INDEX.md`](../INDEX.md)、[`../../AGENTS.md`](../../AGENTS.md)、[`../../CONTRIBUTING.md`](../../CONTRIBUTING.md)
+
+Zod 本体のライブラリ実装は流用しない。流用するのは **同じ PR で docs とテストを直す**、試し書きを `src/` に残さない、エージェント向け手順を文書化する、という運用である。
+
+## エージェント向け正本
+
+| ファイル | 役割 |
+| --- | --- |
+| [`../../AGENTS.md`](../../AGENTS.md) | 公開契約・置き場・禁止事項 |
+| [`../../CLAUDE.md`](../../CLAUDE.md) | AGENTS.md への入口 |
+| [`../llms.txt`](../llms.txt) | ページ目録（zod.dev/llms.txt 相当） |
+| [`../llms-full.txt`](../llms-full.txt) | 詳細設計の連結（zod.dev/llms-full.txt 相当） |
+
+## 試し書き
+
+| パス | 実行 |
+| --- | --- |
+| `play.ts`（ルート） | `npm run play`（振る舞い） |
+| `scratch/input.ts` | バンドルサイズ（kB）実験の入口。[ADR 0010](../adr/0010-scratch-input-bundle-size.md)。`npm run scratch:measure` |
+| `web/scripts/try-quiz-parse.ts` | `cd web && npx --yes tsx scripts/try-quiz-parse.ts` |
+| `admin-web/scripts/try-auth-parse.ts` | `cd admin-web && npx --yes tsx scripts/try-auth-parse.ts` |
+| `backend/play.go`（`//go:build ignore`） | `cd backend && go run play.go` |
+
+恒久ケースは `tests/` または `*_test.go` へ。`play.local.ts` は gitignore。
+
+## ドキュメント例のテスト
+
+`docs/detailed-design/web/` の fenced TypeScript は `web/tests/contract/docs-examples.test.ts` が実装と fixtures で実行する。例を変えたら実装かテストも同じ差分で直す。ページ追加時は [`writing.md`](./writing.md) に従い `python3 scripts/generate_llms_txt.py` を走らせる。
+
+## フック
+
+- pre-commit: `lint-staged`（ESLint / gofmt / 契約チェック）
+- pre-push: `npm run test:contract`
+
+Node は `.nvmrc` の 22。Dependabot が `web/`、`admin-web/`、ルート、`backend/`、GitHub Actions を週次で見る。
+
+
+# backend
+
+Source: docs/detailed-design/backend/README.md
+
+# backend
+
+Go API と DB アクセスの詳細設計を置く。
+
+基本設計: [`../../architecture/backend-flow.md`](../../architecture/backend-flow.md)、[`../../architecture/data-model.md`](../../architecture/data-model.md)、[`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)、[`../../adr/0006-public-quiz-api.md`](../../adr/0006-public-quiz-api.md)
+
+実装: `backend/*.go`（`package main` を責務別に分割）、`backend/migrations/`
+
+| ページ | 概要 |
+| --- | --- |
+| [`package-layout.md`](./package-layout.md) | `package main` のファイル分割 |
+
+
+# backend package layout
+
+Source: docs/detailed-design/backend/package-layout.md
+
+# backend package layout
+
+基本設計: [`../../architecture/backend-flow.md`](../../architecture/backend-flow.md)
+
+`internal/` パッケージには分けず、同じ `package main` のままファイル分割する（`push_mock_test.go` が `server` と `routes()` を直接使うため）。
+
+| ファイル | 責務 |
+| --- | --- |
+| `main.go` | `withCORS`、`routes()`、`main()` |
+| `types.go` | DTO、`server`、定数 |
+| `db.go` | env、接続、`//go:embed` migrate |
+| `httpx.go` | `writeJSON` / `decodeJSON` / `parseID` / `writePublicError` |
+| `auth.go` | JWT、検証コード、ログイン |
+| `counter.go` | `/` と `/counter` |
+| `admin_quizzes.go` | `/api/admin/quizzes*` |
+| `public.go` | `/healthz` と `/v1/*` |
+| `push.go` | mock Push |
+| `seed.go` | 本番シード同期と payload 正規化 |
+| `quiz_scan.go` | `scanQuiz` / `scanPublicQuiz` |
+| `debug.go` | 起動時メモリ診断 |
+
+
+# web
+
+Source: docs/detailed-design/web/README.md
+
+# web
+
+ユーザー向け Web（`web/`）の詳細設計を置く。
+
+基本設計: [`../../adr/0005-user-facing-web-quiz-app.md`](../../adr/0005-user-facing-web-quiz-app.md)、[`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)、[`../../implement-policy.md`](../../implement-policy.md)
+
+実装: `web/src/`
+
+| ページ | 概要 |
+| --- | --- |
+| [`basics.md`](./basics.md) | Zod 公式 Basics 相当（safeParse / infer / issues） |
+| [`quiz-schema.md`](./quiz-schema.md) | 公開クイズ Zod（OpenAPI に書けない `.refine`） |
+| [`error-formatting.md`](./error-formatting.md) | Zod issues → `ApiError` → UI フォールバック |
+| [`public-contract.md`](./public-contract.md) | OpenAPI / fixtures / Zod / Go を同じ PR で直す |
+
+
+# Basic usage (web Zod)
+
+Source: docs/detailed-design/web/basics.md
+
+# Basic usage (web Zod)
+
+Zod 公式の [Basic usage](https://zod.dev/basics) と同じ順で、このリポジトリの公開クイズ schema を説明する。完全なフィールド一覧と `.refine` は [`quiz-schema.md`](./quiz-schema.md)。
+
+実装: `web/src/schemas/quiz.ts`、`web/src/api/client.ts`  
+試し書き: ルート `play.ts`（`npm run play`）
+
+## Defining a schema
+
+公開クイズ 1 件は `quizSchema`。型は schema から取る。
+
+```ts
+import { z } from 'zod'
+import { quizSchema } from '../../src/schemas/quiz'
+
+type QuizParseSuccess = z.infer<typeof quizSchema>
+```
+
+> **Note** — `import * as z from "zod"` への変更は却下。公式の注意は esbuild でバンドルする一部のケース向け。本番は Vite 7 + Rollup。記録は [`../../backlog.md`](../../backlog.md) の REJECTED。
+
+## Parsing data
+
+信頼できない JSON には `.parse` ではなく `.safeParse` を使う。`web/src/api/client.ts` の `requestJson` がこの結果を `ApiError` に正規化する。
+
+```ts
+const result = quizSchema.safeParse(input)
+if (!result.success) {
+  result.error.issues
+} else {
+  result.data
+}
+```
+
+> **Note** — このアプリは throw する `.parse()` を公開 API 境界では使わない。失敗時に starter クイズへフォールバックするため。
+
+## Handling errors
+
+失敗時の `issues` は `path` と `message` を持つ。`correctAnswerIndex` が選択肢の個数以上なら refine が `path: ['correctAnswerIndex']` を付ける。
+
+```ts
+const result = quizSchema.safeParse(invalidQuiz)
+if (!result.success) {
+  result.error.issues[0]?.path
+  // => ['correctAnswerIndex']
+}
+```
+
+UI への載せ方は [`error-formatting.md`](./error-formatting.md)。
+
+## Inferring types
+
+```ts
+type QuizParseSuccess = z.infer<typeof quizSchema>
+```
+
+`as Quiz` で外部 JSON を通さない。入力と出力が分かれる transform は公開 quiz schema では使っていない。
+
+
+# web quiz Zod schema
+
+Source: docs/detailed-design/web/quiz-schema.md
+
+# web quiz Zod schema
+
+基本設計: [`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)（`Quiz`）、[`../../adr/0006-public-quiz-api.md`](../../adr/0006-public-quiz-api.md)、[`../../implement-policy.md`](../../implement-policy.md)
+
+実装: `web/src/schemas/quiz.ts`  
+テスト: `web/tests/schemas/quiz.test.ts`、`web/tests/contract/public-api.test.ts`  
+例: [`../../api/fixtures/`](../../api/fixtures/README.md)（`quiz.json` / `quiz-invalid-answer-index.json`）  
+試し書き: `web/scripts/try-quiz-parse.ts`（本番スキーマに残さない）
+
+## OpenAPI と 1:1 にできるもの
+
+`id` / `section` / `title` / `question` / `options`（min 2）/ `correctAnswerIndex`（>= 0）/ `explanation` / `source` / 任意の `code`。
+
+型は `z.infer<typeof quizSchema>`（`QuizParseSuccess`）から取る。
+
+## OpenAPI に書けない業務ルール
+
+正解番号は選択肢の個数未満であること。
+
+```ts
+.refine(
+  ({ correctAnswerIndex, options }) =>
+    correctAnswerIndex >= 0 && correctAnswerIndex < options.length,
+  { path: ['correctAnswerIndex'], message: 'correctAnswerIndex is out of range' },
+)
+```
+
+yaml 側は description のみ。shape を変えたら OpenAPI・[`fixtures`](../../api/fixtures/README.md)・このファイル・テストを同じ差分で直す。手順は [`public-contract.md`](./public-contract.md)。
+
+> **Note** — 使い方（safeParse / infer / issues）は [`basics.md`](./basics.md)。UI への載せ方は [`error-formatting.md`](./error-formatting.md)。
+
+
+# Error formatting (web)
+
+Source: docs/detailed-design/web/error-formatting.md
+
+# Error formatting (web)
+
+Zod 公式の [Formatting errors](https://zod.dev/error-formatting) に相当する、このアプリ側の正規化。
+
+実装: `web/src/api/client.ts`、`web/src/hooks/useQuizCatalog.ts`
+
+## 境界で止める
+
+`requestJson` は `schema.safeParse(payload)` の失敗を throw しない ZodError のまま渡さず、`ApiError` にする。
+
+```ts
+const result = schema.safeParse(payload)
+if (!result.success) {
+  throw new ApiError(
+    `API response validation failed: ${result.error.message}`,
+    response.status,
+    payload,
+  )
+}
+```
+
+`result.error.message` は Zod の連結メッセージ。`result.error.issues` はログやテストで `path` を見るときに使う。
+
+## UI
+
+`useQuizCatalog` は API 検証失敗を catch し、starter クイズへ戻す。ユーザーには `errorMessage` を出し、不正 JSON を画面に描画しない。
+
+> **Note** — 管理画面のフォームエラーは日本語メッセージ（`admin-web` の `quizPayloadSchema`）。公開 API の refine メッセージは英語（`correctAnswerIndex is out of range`）。混ぜない。
+
+
+# public API contract sync
+
+Source: docs/detailed-design/web/public-contract.md
+
+# public API contract sync
+
+基本設計: [`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)、[`../../adr/0006-public-quiz-api.md`](../../adr/0006-public-quiz-api.md)
+
+公開 JSON の shape を変えたら、**同じ PR** で次を全部直す。
+
+| 層 | パス |
+| --- | --- |
+| 契約 | `docs/api/public-quiz-api.yaml` |
+| 例（実行時 SSOT） | `docs/api/fixtures/` |
+| Zod | `web/src/schemas/quiz.ts`、`web/src/api/quiz.ts` |
+| 実装 | `backend/types.go` の `publicQuiz` / `public.go` |
+| 詳細設計 | このファイルと [`quiz-schema.md`](./quiz-schema.md)（`.refine`） |
+| テスト | `web/tests/contract/`、`backend/public_contract_test.go`、`scripts/check_public_contract.py` |
+| モバイル | `mobile/lib/layers/data/dto/public_quiz_dto.dart` |
+
+## コマンド
+
+```bash
+npm run test:contract
+```
+
+個別: `python3 scripts/check_public_contract.py`、`cd web && npm test`、`cd backend && go test ./... -count=1`。
+
+CI: `.github/workflows/public-contract.yml` と `.github/workflows/quality.yml`。
+
+
+# admin-web
+
+Source: docs/detailed-design/admin-web/README.md
+
+# admin-web
+
+管理画面（`admin-web/`）の詳細設計を置く。
+
+基本設計: [`../../adr/0004-login-verification-code-flow.md`](../../adr/0004-login-verification-code-flow.md)、[`../../architecture/backend-flow.md`](../../architecture/backend-flow.md)、[`../../validation-policy.md`](../../validation-policy.md)
+
+実装: `admin-web/src/`、スキーマテストは `admin-web/tests/`
+
+| ページ | 概要 |
+| --- | --- |
+| [`quiz-schema.md`](./quiz-schema.md) | 管理 Zod。公開 `quizSchema` との差と `.refine` |
+
+
+# admin-web quiz Zod schema
+
+Source: docs/detailed-design/admin-web/quiz-schema.md
+
+# admin-web quiz Zod schema
+
+基本設計: [`../../validation-policy.md`](../../validation-policy.md)、[`../../adr/0004-login-verification-code-flow.md`](../../adr/0004-login-verification-code-flow.md)
+
+実装: `admin-web/src/schemas/quiz.ts`  
+テスト: `admin-web/tests/schemas/quiz.test.ts`  
+試し書き: `admin-web/scripts/`（本番スキーマに残さない）
+
+公開 API の `quizSchema`（`web/src/schemas/quiz.ts`）とは別物。管理画面は `status` / `pushEnabled` / `createdAt` / `updatedAt` を持つ。これらのフィールドを `publicQuiz` に出してはならない。
+
+## OpenAPI に書けない業務ルール
+
+正解番号は選択肢の個数未満であること。入力フォーム用 `quizPayloadSchema` のメッセージは日本語。
+
+```ts
+.refine(
+  ({ correctAnswerIndex, options }) =>
+    correctAnswerIndex >= 0 && correctAnswerIndex < options.length,
+  { path: ['correctAnswerIndex'], message: '正解の選択肢を指定してください' },
+)
+```
+
+
+# mobile
+
+Source: docs/detailed-design/mobile/README.md
+
+# mobile
+
+Flutter アプリ（`mobile/`）の詳細設計を置く。
+
+基本設計: [`../../adr/0009-mobile-state-management.md`](../../adr/0009-mobile-state-management.md)、[`../../../mobile/docs/remote-data-source.md`](../../../mobile/docs/remote-data-source.md)、[`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)
+
+実装: `mobile/lib/`

@@ -1,0 +1,10 @@
+{
+  "title": "web",
+  "pages": [
+    "README",
+    "basics",
+    "quiz-schema",
+    "error-formatting",
+    "public-contract"
+  ]
+}
