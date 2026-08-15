@@ -36,6 +36,7 @@
 | ドキュメント | 概要 |
 | --- | --- |
 | [`../quiz.md`](../quiz.md) | アプリの要件定義（実装準拠のスタック） |
+| [`./quiz-app-wbs.md`](./quiz-app-wbs.md) | 1人開発の概算 WBS（仮置き日程） |
 | [`../AGENTS.md`](../AGENTS.md) | コーディングエージェント向け手順 |
 | [`../CLAUDE.md`](../CLAUDE.md) | AGENTS.md への入口 |
 | [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | Contributor Covenant |
