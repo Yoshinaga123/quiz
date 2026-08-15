@@ -7,6 +7,7 @@ TARGET_URL="${TARGET_URL:-http://127.0.0.1:8082}"
 ZAP_SPIDER_MINUTES="${ZAP_SPIDER_MINUTES:-3}"
 
 mkdir -p "$REPORT_DIR"
+chmod 777 "$REPORT_DIR"
 
 echo "[pentest] target: $TARGET_URL"
 echo "[pentest] report dir: $REPORT_DIR"
@@ -18,6 +19,7 @@ docker run --rm \
   zap-baseline.py \
   -t "$TARGET_URL" \
   -m "$ZAP_SPIDER_MINUTES" \
+  -I \
   -r zap-report.html \
   -w zap-report.md \
   -x zap-report.xml

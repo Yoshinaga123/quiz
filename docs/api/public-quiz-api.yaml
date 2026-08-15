@@ -2,6 +2,9 @@ openapi: 3.1.0
 info:
   title: Public Quiz API
   version: 0.1.0-draft
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   description: |
     ユーザー向けクイズアプリ（`web/`, `mobile/`）から呼び出される公開 API のドラフト仕様。
 
@@ -32,6 +35,8 @@ tags:
     description: Push 通知モック feed
   - name: meta
     description: メタ情報
+
+security: []
 
 paths:
   /healthz:

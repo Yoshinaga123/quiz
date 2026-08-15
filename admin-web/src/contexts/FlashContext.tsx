@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
-type FlashContextValue = {
+interface FlashContextValue {
   message: string | null
   showFlash: (message: string) => void
   clearFlash: () => void
@@ -22,7 +22,7 @@ export function FlashProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (message == null) {
+    if (message === null) {
       return
     }
 

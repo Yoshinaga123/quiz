@@ -7,7 +7,6 @@ const responseSchema = z.object({ value: z.number() });
 
 declare global {
   // ensure fetch can be assigned in test environment
-  // eslint-disable-next-line no-var
   var fetch: typeof globalThis.fetch;
 }
 

@@ -36,7 +36,7 @@ function DeleteQuizDialog({
   const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
-    if (!open || quiz == null) {
+    if (!open || quiz === null) {
       setDetail(null)
       setDetailErrorMessage(null)
       setIsLoadingDetail(false)
@@ -81,7 +81,7 @@ function DeleteQuizDialog({
     }
   }, [open, quiz, reloadKey, navigate])
 
-  if (!open || quiz == null) {
+  if (!open || quiz === null) {
     return null
   }
 
