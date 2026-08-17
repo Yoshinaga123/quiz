@@ -7,7 +7,7 @@
 
 ```mermaid
 flowchart LR
-    Seed["backend/seeds/quizzes.production.json"]
+    Seed["packages/backend/seeds/quizzes.production.json"]
     Quizzes["quizzes table"]
     Views["views table"]
     LoginLogs["login_logs table"]
@@ -131,7 +131,7 @@ Phase A では Firebase / FCM へは送らず、mock 配信として「送信し
 
 | モデル | 由来 | `quizzes` との差分 |
 | --- | --- | --- |
-| `productionSeedQuiz` | `backend/seeds/quizzes.production.json` | `status`, `pushEnabled`, `createdAt`, `updatedAt` を持たない |
+| `productionSeedQuiz` | `packages/backend/seeds/quizzes.production.json` | `status`, `pushEnabled`, `createdAt`, `updatedAt` を持たない |
 | `quizPayload` | 管理 API の create/update 入力 | `id`, `createdAt`, `updatedAt` を持たない |
 | `quiz` | 管理 API の完全レコード | `quizzes` のほぼ 1:1 表現 |
 | `publicQuiz` | 公開 API の出力 | `status`, `pushEnabled`, `createdAt`, `updatedAt` を意図的に隠す |

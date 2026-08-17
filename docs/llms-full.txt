@@ -20,7 +20,7 @@ Source: docs/detailed-design/README.md
 | 要件 | [`../../quiz.md`](../../quiz.md) | 何をしたいか |
 | 基本設計（外の契約） | [`../architecture/`](../architecture/)、[`../api/`](../api/)、[`../adr/`](../adr/) | 構成、OpenAPI、なぜそう決めたか |
 | **詳細設計（中の組み立て）** | **このフォルダ** | ハンドラ、SQL、Zod refine、画面内フロー |
-| 実装 | `backend/`、`web/`、`admin-web/`、`mobile/` | コード |
+| 実装 | `packages/backend/`、`packages/web/`、`packages/admin-web/`、`packages/mobile/` | コード |
 
 OpenAPI（[`../api/public-quiz-api.yaml`](../api/public-quiz-api.yaml)）は基本設計。ここには書かない。
 
@@ -79,7 +79,7 @@ Zod の `packages/docs/content` と同じ約束を、このフォルダに適用
 2. YAML frontmatter に `title` と `description` を書く（[zod.dev の各 MDX](https://github.com/colinhacks/zod/blob/main/packages/docs/content/basics.mdx) と同じ）。
 3. 本文の先頭は `#` 見出し。続けて参照する基本設計（ADR / OpenAPI / architecture）へのリンクを置く。
 4. ルート [`meta.json`](./meta.json) と、パッケージフォルダの `meta.json` の両方に載せる。
-5. TypeScript の fence を書いたら、`web/tests/contract/docs-examples.test.ts`（または admin 側）で実装と突き合わせる。
+5. TypeScript の fence を書いたら、`packages/web/tests/contract/docs-examples.test.ts`（または admin 側）で実装と突き合わせる。
 
 ```bash
 python3 scripts/check_docs.py
@@ -119,7 +119,7 @@ Zod 本体のライブラリ実装は流用しない。流用するのは **同�
 
 | ファイル | 役割 |
 | --- | --- |
-| [`../../AGENTS.md`](../../AGENTS.md) | 公開契約・置き場・禁止事項 |
+| [`../../AGENTS.md`](../../AGENTS.md) | 公開契約・置き場・禁止事項。Codex の PR レビューは `## Code Review Rules` |
 | [`../../CLAUDE.md`](../../CLAUDE.md) | AGENTS.md への入口 |
 | [`../llms.txt`](../llms.txt) | ページ目録（zod.dev/llms.txt 相当） |
 | [`../llms-full.txt`](../llms-full.txt) | 詳細設計の連結（zod.dev/llms-full.txt 相当） |
@@ -129,23 +129,36 @@ Zod 本体のライブラリ実装は流用しない。流用するのは **同�
 | パス | 実行 |
 | --- | --- |
 | `play.ts`（ルート） | `npm run play`（振る舞い） |
-| `scratch/input.ts` | バンドルサイズ（kB）実験の入口。[ADR 0010](../adr/0010-scratch-input-bundle-size.md)。`npm run scratch:measure` |
-| `web/scripts/try-quiz-parse.ts` | `cd web && npx --yes tsx scripts/try-quiz-parse.ts` |
-| `admin-web/scripts/try-auth-parse.ts` | `cd admin-web && npx --yes tsx scripts/try-auth-parse.ts` |
-| `backend/play.go`（`//go:build ignore`） | `cd backend && go run play.go` |
+| 手元の `scratch/input.ts`（gitignore） | バンドルサイズ（kB）実験。[ADR 0010](../adr/0010-scratch-input-bundle-size.md)。道具は `scripts/scratch-measure.mjs`。`npm run scratch:measure` |
+| `packages/web/scripts/try-quiz-parse.ts` | `cd packages/web && npx --yes tsx scripts/try-quiz-parse.ts` |
+| `packages/admin-web/scripts/try-auth-parse.ts` | `cd packages/admin-web && npx --yes tsx scripts/try-auth-parse.ts` |
+| `packages/backend/play.go`（`//go:build ignore`） | `cd packages/backend && go run play.go` |
 
 恒久ケースは `tests/` または `*_test.go` へ。`play.local.ts` は gitignore。
 
 ## ドキュメント例のテスト
 
-`docs/detailed-design/web/` の fenced TypeScript は `web/tests/contract/docs-examples.test.ts` が実装と fixtures で実行する。例を変えたら実装かテストも同じ差分で直す。ページ追加時は [`writing.md`](./writing.md) に従い `python3 scripts/generate_llms_txt.py` を走らせる。
+`docs/detailed-design/web/` の fenced TypeScript は `packages/web/tests/contract/docs-examples.test.ts` が実装と fixtures で実行する。例を変えたら実装かテストも同じ差分で直す。ページ追加時は [`writing.md`](./writing.md) に従い `python3 scripts/generate_llms_txt.py` を走らせる。
 
 ## フック
 
 - pre-commit: `lint-staged`（ESLint / gofmt / 契約チェック）
 - pre-push: `npm run test:contract`
+- CI `quality.yml`: 毎 PR で衛生、ルート `npm ci` + `npm test`、循環 import（install 後）
 
-Node は `.nvmrc` の 22。Dependabot が `web/`、`admin-web/`、ルート、`backend/`、GitHub Actions を週次で見る。
+Node は `.nvmrc` の 22。ルート `package.json` の workspaces が `packages/web` と `packages/admin-web` を見る。依存関係はルートで `npm i`（lockfile もルートだけ）。Dependabot はルート npm、`packages/backend/`、GitHub Actions を週次で見る。
+
+## TypeScript
+
+ルート [`../../tsconfig.base.json`](../../tsconfig.base.json) は Zod の [`.configs/tsconfig.base.json`](https://github.com/colinhacks/zod/blob/main/.configs/tsconfig.base.json) と同じコンパイラフラグと `"exclude": ["node_modules"]` を置く。`packages/web/` と `packages/admin-web/` はこれを継承し、Vite が必要な `bundler` / `react-jsx` / `noEmit` だけ上書きする。エディタは VS Code 同梱の TypeScript ではなく、ルート `node_modules/typescript` を使う（`.vscode/settings.json` の `js/ts.tsdk.path`）。開いていないファイルの TS エラーも Problems に出す（`js/ts.tsserver.experimental.enableProjectDiagnostics`）。TS / TSX の保存時は ESLint を formatter にし、`source.fixAll.eslint` を走らせる。Biome は使わない（TASK-005）。
+
+## Dev Container
+
+[`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) は Zod の空テンプレをコピーしない。Node 22・Go・Python・Docker-in-Docker・`npm` を入れる。`postCreateCommand` は `npm i`。[ADR 0011](../adr/0011-devcontainer-runtimes.md)。
+
+## VS Code launch
+
+`.vscode/launch.json` は置かない。Zod の `tsx` + `@zod/source` はコピーしない。試し書きは `npm run play` / `go run`。[ADR 0012](../adr/0012-vscode-launch.json.md)。
 
 
 # backend
@@ -158,7 +171,7 @@ Go API と DB アクセスの詳細設計を置く。
 
 基本設計: [`../../architecture/backend-flow.md`](../../architecture/backend-flow.md)、[`../../architecture/data-model.md`](../../architecture/data-model.md)、[`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)、[`../../adr/0006-public-quiz-api.md`](../../adr/0006-public-quiz-api.md)
 
-実装: `backend/*.go`（`package main` を責務別に分割）、`backend/migrations/`
+実装: `packages/backend/*.go`（`package main` を責務別に分割）、`packages/backend/migrations/`
 
 | ページ | 概要 |
 | --- | --- |
@@ -197,11 +210,11 @@ Source: docs/detailed-design/web/README.md
 
 # web
 
-ユーザー向け Web（`web/`）の詳細設計を置く。
+ユーザー向け Web（`packages/web/`）の詳細設計を置く。
 
 基本設計: [`../../adr/0005-user-facing-web-quiz-app.md`](../../adr/0005-user-facing-web-quiz-app.md)、[`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)、[`../../implement-policy.md`](../../implement-policy.md)
 
-実装: `web/src/`
+実装: `packages/web/src/`
 
 | ページ | 概要 |
 | --- | --- |
@@ -219,7 +232,7 @@ Source: docs/detailed-design/web/basics.md
 
 Zod 公式の [Basic usage](https://zod.dev/basics) と同じ順で、このリポジトリの公開クイズ schema を説明する。完全なフィールド一覧と `.refine` は [`quiz-schema.md`](./quiz-schema.md)。
 
-実装: `web/src/schemas/quiz.ts`、`web/src/api/client.ts`  
+実装: `packages/web/src/schemas/quiz.ts`、`packages/web/src/api/client.ts`  
 試し書き: ルート `play.ts`（`npm run play`）
 
 ## Defining a schema
@@ -237,7 +250,7 @@ type QuizParseSuccess = z.infer<typeof quizSchema>
 
 ## Parsing data
 
-信頼できない JSON には `.parse` ではなく `.safeParse` を使う。`web/src/api/client.ts` の `requestJson` がこの結果を `ApiError` に正規化する。
+信頼できない JSON には `.parse` ではなく `.safeParse` を使う。`packages/web/src/api/client.ts` の `requestJson` がこの結果を `ApiError` に正規化する。
 
 ```ts
 const result = quizSchema.safeParse(input)
@@ -281,10 +294,10 @@ Source: docs/detailed-design/web/quiz-schema.md
 
 基本設計: [`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)（`Quiz`）、[`../../adr/0006-public-quiz-api.md`](../../adr/0006-public-quiz-api.md)、[`../../implement-policy.md`](../../implement-policy.md)
 
-実装: `web/src/schemas/quiz.ts`  
-テスト: `web/tests/schemas/quiz.test.ts`、`web/tests/contract/public-api.test.ts`  
+実装: `packages/web/src/schemas/quiz.ts`  
+テスト: `packages/web/tests/schemas/quiz.test.ts`、`packages/web/tests/contract/public-api.test.ts`  
 例: [`../../api/fixtures/`](../../api/fixtures/README.md)（`quiz.json` / `quiz-invalid-answer-index.json`）  
-試し書き: `web/scripts/try-quiz-parse.ts`（本番スキーマに残さない）
+試し書き: `packages/web/scripts/try-quiz-parse.ts`（本番スキーマに残さない）
 
 ## OpenAPI と 1:1 にできるもの
 
@@ -317,7 +330,7 @@ Source: docs/detailed-design/web/error-formatting.md
 
 Zod 公式の [Formatting errors](https://zod.dev/error-formatting) に相当する、このアプリ側の正規化。
 
-実装: `web/src/api/client.ts`、`web/src/hooks/useQuizCatalog.ts`
+実装: `packages/web/src/api/client.ts`、`packages/web/src/hooks/useQuizCatalog.ts`
 
 ## 境界で止める
 
@@ -357,11 +370,11 @@ Source: docs/detailed-design/web/public-contract.md
 | --- | --- |
 | 契約 | `docs/api/public-quiz-api.yaml` |
 | 例（実行時 SSOT） | `docs/api/fixtures/` |
-| Zod | `web/src/schemas/quiz.ts`、`web/src/api/quiz.ts` |
-| 実装 | `backend/types.go` の `publicQuiz` / `public.go` |
+| Zod | `packages/web/src/schemas/quiz.ts`、`packages/web/src/api/quiz.ts` |
+| 実装 | `packages/backend/types.go` の `publicQuiz` / `public.go` |
 | 詳細設計 | このファイルと [`quiz-schema.md`](./quiz-schema.md)（`.refine`） |
-| テスト | `web/tests/contract/`、`backend/public_contract_test.go`、`scripts/check_public_contract.py` |
-| モバイル | `mobile/lib/layers/data/dto/public_quiz_dto.dart` |
+| テスト | `packages/web/tests/contract/`、`packages/backend/public_contract_test.go`、`scripts/check_public_contract.py` |
+| モバイル | `packages/mobile/lib/layers/data/dto/public_quiz_dto.dart` |
 
 ## コマンド
 
@@ -369,7 +382,7 @@ Source: docs/detailed-design/web/public-contract.md
 npm run test:contract
 ```
 
-個別: `python3 scripts/check_public_contract.py`、`cd web && npm test`、`cd backend && go test ./... -count=1`。
+個別: `python3 scripts/check_public_contract.py`、`cd packages/web && npm test`、`cd packages/backend && go test ./... -count=1`。
 
 CI: `.github/workflows/public-contract.yml` と `.github/workflows/quality.yml`。
 
@@ -380,11 +393,11 @@ Source: docs/detailed-design/admin-web/README.md
 
 # admin-web
 
-管理画面（`admin-web/`）の詳細設計を置く。
+管理画面（`packages/admin-web/`）の詳細設計を置く。
 
 基本設計: [`../../adr/0004-login-verification-code-flow.md`](../../adr/0004-login-verification-code-flow.md)、[`../../architecture/backend-flow.md`](../../architecture/backend-flow.md)、[`../../validation-policy.md`](../../validation-policy.md)
 
-実装: `admin-web/src/`、スキーマテストは `admin-web/tests/`
+実装: `packages/admin-web/src/`、スキーマテストは `packages/admin-web/tests/`
 
 | ページ | 概要 |
 | --- | --- |
@@ -399,11 +412,11 @@ Source: docs/detailed-design/admin-web/quiz-schema.md
 
 基本設計: [`../../validation-policy.md`](../../validation-policy.md)、[`../../adr/0004-login-verification-code-flow.md`](../../adr/0004-login-verification-code-flow.md)
 
-実装: `admin-web/src/schemas/quiz.ts`  
-テスト: `admin-web/tests/schemas/quiz.test.ts`  
-試し書き: `admin-web/scripts/`（本番スキーマに残さない）
+実装: `packages/admin-web/src/schemas/quiz.ts`  
+テスト: `packages/admin-web/tests/schemas/quiz.test.ts`  
+試し書き: `packages/admin-web/scripts/`（本番スキーマに残さない）
 
-公開 API の `quizSchema`（`web/src/schemas/quiz.ts`）とは別物。管理画面は `status` / `pushEnabled` / `createdAt` / `updatedAt` を持つ。これらのフィールドを `publicQuiz` に出してはならない。
+公開 API の `quizSchema`（`packages/web/src/schemas/quiz.ts`）とは別物。管理画面は `status` / `pushEnabled` / `createdAt` / `updatedAt` を持つ。これらのフィールドを `publicQuiz` に出してはならない。
 
 ## OpenAPI に書けない業務ルール
 
@@ -424,8 +437,136 @@ Source: docs/detailed-design/mobile/README.md
 
 # mobile
 
-Flutter アプリ（`mobile/`）の詳細設計を置く。
+Flutter アプリ（`packages/mobile/`）の詳細設計を置く。
 
-基本設計: [`../../adr/0009-mobile-state-management.md`](../../adr/0009-mobile-state-management.md)、[`../../../mobile/docs/remote-data-source.md`](../../../mobile/docs/remote-data-source.md)、[`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)
+基本設計: [`../../adr/0009-mobile-state-management.md`](../../adr/0009-mobile-state-management.md)、[`remote-data-source.md`](./remote-data-source.md)、[`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)
 
-実装: `mobile/lib/`
+実装: `packages/mobile/lib/`
+
+
+# Remote data source
+
+Source: docs/detailed-design/mobile/remote-data-source.md
+
+# Remote Data Source（公開クイズ API 連携）
+
+このドキュメントは `packages/mobile/` から公開 API（[ADR 0006](../../adr/0006-public-quiz-api.md) /
+[`docs/api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)）を呼ぶための
+追加レイヤの使い方をまとめる。
+
+既存の local data source 経路（`QuizLocalDataSourceImpl` → `QuizRepositoryImpl` →
+`providers.dart` の `quizRepositoryProvider`）には**意図的に手を入れず**、
+remote 経路を**並行配置**することで段階的な切り替えを可能にする。
+
+## レイヤ構成（追加分のみ）
+
+```text
+lib/layers/
+├── domain/
+│   ├── entity/section_summary.dart                ← 新
+│   ├── errors/quiz_failure.dart                   ← 新（sealed: Network/NotFound/Server/Parse）
+│   ├── repository/quiz_section_repository.dart    ← 新
+│   └── usecase/get_section_summaries.dart         ← 新
+├── data/
+│   ├── dto/public_quiz_dto.dart                   ← 新（fromJson + toEntity）
+│   ├── dto/section_summary_dto.dart               ← 新
+│   ├── source/remote/
+│   │   ├── quiz_api_client.dart                   ← 新（dart:io HttpClient のみで構成）
+│   │   └── quiz_remote_data_source.dart           ← 新
+│   └── quiz_remote_repository_impl.dart           ← 新（QuizRepository + QuizSectionRepository を実装）
+└── presentation/using_riverpod/
+    └── remote_providers.dart                      ← 新（既存 providers.dart と並行）
+```
+
+## 設計原則
+
+- **`pubspec.yaml` を変更しない**: `http` などの追加依存を入れず、
+  `dart:io` の `HttpClient` と `dart:convert` だけで HTTP/JSON を扱う。
+- **失敗は sealed class**: `QuizApiClient` / DTO は必ず `QuizFailure` の
+  サブタイプ（`QuizNetworkFailure` / `QuizNotFoundFailure` / `QuizServerFailure`
+  / `QuizParseFailure`）を投げる。UI 側は `switch` で type narrow できる。
+- **DTO は新ファイルに分離**: 既存の `data/dto/quiz_dto.dart` には触れず、
+  Public API 用の `PublicQuizDto` を別ファイルとして追加。
+- **Provider 名は意図的に分ける**: `quizRepositoryProvider`（local）と
+  `quizRemoteRepositoryProvider`（remote）を共存させ、画面ごとに段階移行できる。
+
+## ベース URL の指定
+
+`QuizApiClient` は `String.fromEnvironment` でビルド時定数を読む。
+
+```bash
+flutter run \
+  --dart-define=QUIZ_API_BASE_URL=http://10.0.2.2:8082
+```
+
+| 接続先 | 推奨ベース URL |
+| --- | --- |
+| iOS シミュレータ → ホスト Mac | `http://localhost:8082` |
+| Android エミュレータ → ホスト | `http://10.0.2.2:8082` |
+| 実機 → 同一 LAN の dev マシン | `http://<host-ip>:8082` |
+| 本番 | `https://socrates-quiz.jp`（公開ポート **443**） |
+
+未指定時の既定値は `http://localhost:8082`（`packages/backend/docker-compose.yml` の
+ポートマッピング `8082:8080` に合わせている）。本番は `https://socrates-quiz.jp` の HTTPS 443 で公開する。
+
+## 切り替え方（既存画面に影響なし）
+
+`presentation/using_riverpod/remote_providers.dart` から必要なユースケースを
+そのまま参照するだけで、新画面を remote 経路にできる。
+
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz_mobile/layers/presentation/using_riverpod/remote_providers.dart';
+
+class RemoteQuizListPage extends ConsumerWidget {
+  const RemoteQuizListPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final useCase = ref.watch(getQuizListRemoteProvider);
+    // useCase() で /v1/quizzes を呼ぶ
+    ...
+  }
+}
+```
+
+既存の `QuizListPage` / `QuizDetailsPage` は `providers.dart` の
+local 用プロバイダを参照しているため、本変更で挙動が変わることはない。
+
+## エラーハンドリング例
+
+```dart
+try {
+  final quizzes = await useCase();
+} on QuizFailure catch (failure) {
+  switch (failure) {
+    case QuizNetworkFailure():
+      // ネットワーク不通／タイムアウト
+    case QuizNotFoundFailure():
+      // 404
+    case QuizServerFailure(:final statusCode):
+      // 4xx/5xx（404 を除く）
+    case QuizParseFailure():
+      // レスポンスの形が壊れている
+  }
+}
+```
+
+## テスト
+
+`packages/mobile/test/` 以下に以下のテストを配置している。
+ローカルに Flutter ツールチェーンが入っていれば
+`flutter test` で実行できる（`http` 等の追加依存は不要）。
+
+| テスト | 対象 |
+| --- | --- |
+| `test/data/dto/public_quiz_dto_test.dart` | `PublicQuizDto.fromJson` のバリデーション |
+| `test/data/dto/section_summary_dto_test.dart` | `SectionSummaryDto.fromJson` |
+| `test/data/source/remote/quiz_api_client_test.dart` | 実 `HttpServer` を立てて 200/404/500/壊れ JSON を検証 |
+| `test/data/quiz_remote_repository_impl_test.dart` | Fake 実装を使った変換と例外透過 |
+
+## 関連ドキュメント
+
+- [ADR 0006: Public Quiz API の仕様分離](../../adr/0006-public-quiz-api.md)
+- [ADR 0009: モバイル版の状態管理と層構造](../../adr/0009-mobile-state-management.md)
+- [`docs/api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)

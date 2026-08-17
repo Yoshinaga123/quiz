@@ -1,6 +1,6 @@
 # バックエンドリクエストフロー
 
-`backend/`（`package main`、`routes()` は `main.go`）の HTTP リクエスト処理を、ルーティング・認証・主要ハンドラ単位で整理する。
+`packages/backend/`（`package main`、`routes()` は `main.go`）の HTTP リクエスト処理を、ルーティング・認証・主要ハンドラ単位で整理する。
 対象は `net/http` ベースの API 本体で、クライアント実装や DB スキーマの詳細は別ドキュメントに委ねる。
 
 ## 入口
@@ -195,7 +195,7 @@ sequenceDiagram
 | ステップ | 処理 |
 | --- | --- |
 | 1 | `seedMu.TryLock()` で同時実行を拒否し、競合時は `409` を返す |
-| 2 | `backend/seeds/quizzes.production.json` を読み込み、正規化と重複 ID 検証を行う |
+| 2 | `packages/backend/seeds/quizzes.production.json` を読み込み、正規化と重複 ID 検証を行う |
 | 3 | 現在の `quizzes` テーブルとの差分から `deletedCount` を見積もる |
 | 4 | `migrate create` で空の `up/down` SQL を採番する |
 | 5 | `scripts/generate_migration.py` を `up` と `down` で呼び出し、返ってきた SQL をファイルへ書き込む |

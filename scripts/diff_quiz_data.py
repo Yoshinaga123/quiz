@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """2 つのクイズ JSON の差分を要約するツール。
 
-`admin-web/src/data/quizzes.json`（候補プール）と
-`backend/seeds/quizzes.production.json`（本番採用分）を比較し、
+`packages/admin-web/src/data/quizzes.json`（候補プール）と
+`packages/backend/seeds/quizzes.production.json`（本番採用分）を比較し、
 
   - 候補プールにしか存在しない ID
   - 本番にしか存在しない ID（候補プール側で削除された問題が残っていないか）
@@ -12,8 +12,8 @@
 
 例:
   python3 scripts/diff_quiz_data.py \
-    admin-web/src/data/quizzes.json \
-    backend/seeds/quizzes.production.json
+    packages/admin-web/src/data/quizzes.json \
+    packages/backend/seeds/quizzes.production.json
 """
 
 from __future__ import annotations

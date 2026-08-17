@@ -1,6 +1,6 @@
 # Socrates Quiz
 
-> High-difficulty IT quiz app. Monorepo, not a published library. Public JSON is OpenAPI + fixtures + handwritten Zod. Learning trees (samples/, archive/, docs/security-tools/) are not product.
+> High-difficulty IT quiz app. Monorepo, not a published library. Public JSON is OpenAPI + fixtures + handwritten Zod. Local learning trees (gitignored samples/) are not product.
 
 ## Detailed design
 
@@ -21,12 +21,15 @@
 
 ## Repo ops
 
-- [Repo ops](docs/detailed-design/repo-ops.md): Husky, play pads, and docs-example tests borrowed from Zod's repository operations
+- [Repo ops](docs/detailed-design/repo-ops.md): Husky, play pads, Dev Container runtimes, and docs-example tests borrowed from Zod's repository operations
 
 - [エージェント向け正本](docs/detailed-design/repo-ops.md#エージェント向け正本)
 - [試し書き](docs/detailed-design/repo-ops.md#試し書き)
 - [ドキュメント例のテスト](docs/detailed-design/repo-ops.md#ドキュメント例のテスト)
 - [フック](docs/detailed-design/repo-ops.md#フック)
+- [TypeScript](docs/detailed-design/repo-ops.md#typescript)
+- [Dev Container](docs/detailed-design/repo-ops.md#dev-container)
+- [VS Code launch](docs/detailed-design/repo-ops.md#vs-code-launch)
 
 ## backend
 
@@ -82,6 +85,18 @@
 ## mobile
 
 - [mobile](docs/detailed-design/mobile/README.md): Detailed design for the Flutter public-API client
+
+## Remote data source
+
+- [Remote data source](docs/detailed-design/mobile/remote-data-source.md): How the Flutter client calls the public quiz API without changing the local data path
+
+- [レイヤ構成（追加分のみ）](docs/detailed-design/mobile/remote-data-source.md#レイヤ構成追加分のみ)
+- [設計原則](docs/detailed-design/mobile/remote-data-source.md#設計原則)
+- [ベース URL の指定](docs/detailed-design/mobile/remote-data-source.md#ベース-url-の指定)
+- [切り替え方（既存画面に影響なし）](docs/detailed-design/mobile/remote-data-source.md#切り替え方既存画面に影響なし)
+- [エラーハンドリング例](docs/detailed-design/mobile/remote-data-source.md#エラーハンドリング例)
+- [テスト](docs/detailed-design/mobile/remote-data-source.md#テスト)
+- [関連ドキュメント](docs/detailed-design/mobile/remote-data-source.md#関連ドキュメント)
 
 ---
 

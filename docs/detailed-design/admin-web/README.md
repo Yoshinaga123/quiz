@@ -5,11 +5,11 @@ description: Detailed design for the admin CRUD UI and JWT login
 
 # admin-web
 
-管理画面（`admin-web/`）の詳細設計を置く。
+管理画面（`packages/admin-web/`）の詳細設計を置く。
 
 基本設計: [`../../adr/0004-login-verification-code-flow.md`](../../adr/0004-login-verification-code-flow.md)、[`../../architecture/backend-flow.md`](../../architecture/backend-flow.md)、[`../../validation-policy.md`](../../validation-policy.md)
 
-実装: `admin-web/src/`、スキーマテストは `admin-web/tests/`
+実装: `packages/admin-web/src/`、スキーマテストは `packages/admin-web/tests/`
 
 | ページ | 概要 |
 | --- | --- |

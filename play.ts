@@ -1,6 +1,6 @@
 /**
  * Scratch pad (Zod play.ts equivalent).
- * Do not import this file from web/src or admin-web/src.
+ * Do not import this file from packages/web/src or packages/admin-web/src.
  *
  * Run: npm run play
  * Local-only experiments: copy to play.local.ts (gitignored).

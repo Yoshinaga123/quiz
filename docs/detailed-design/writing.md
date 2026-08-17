@@ -13,7 +13,7 @@ Zod の `packages/docs/content` と同じ約束を、このフォルダに適用
 2. YAML frontmatter に `title` と `description` を書く（[zod.dev の各 MDX](https://github.com/colinhacks/zod/blob/main/packages/docs/content/basics.mdx) と同じ）。
 3. 本文の先頭は `#` 見出し。続けて参照する基本設計（ADR / OpenAPI / architecture）へのリンクを置く。
 4. ルート [`meta.json`](./meta.json) と、パッケージフォルダの `meta.json` の両方に載せる。
-5. TypeScript の fence を書いたら、`web/tests/contract/docs-examples.test.ts`（または admin 側）で実装と突き合わせる。
+5. TypeScript の fence を書いたら、`packages/web/tests/contract/docs-examples.test.ts`（または admin 側）で実装と突き合わせる。
 
 ```bash
 python3 scripts/check_docs.py

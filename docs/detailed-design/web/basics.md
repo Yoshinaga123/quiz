@@ -7,7 +7,7 @@ description: Define a schema, safeParse untrusted JSON, handle issues, and infer
 
 Zod 公式の [Basic usage](https://zod.dev/basics) と同じ順で、このリポジトリの公開クイズ schema を説明する。完全なフィールド一覧と `.refine` は [`quiz-schema.md`](./quiz-schema.md)。
 
-実装: `web/src/schemas/quiz.ts`、`web/src/api/client.ts`  
+実装: `packages/web/src/schemas/quiz.ts`、`packages/web/src/api/client.ts`  
 試し書き: ルート `play.ts`（`npm run play`）
 
 ## Defining a schema
@@ -25,7 +25,7 @@ type QuizParseSuccess = z.infer<typeof quizSchema>
 
 ## Parsing data
 
-信頼できない JSON には `.parse` ではなく `.safeParse` を使う。`web/src/api/client.ts` の `requestJson` がこの結果を `ApiError` に正規化する。
+信頼できない JSON には `.parse` ではなく `.safeParse` を使う。`packages/web/src/api/client.ts` の `requestJson` がこの結果を `ApiError` に正規化する。
 
 ```ts
 const result = quizSchema.safeParse(input)

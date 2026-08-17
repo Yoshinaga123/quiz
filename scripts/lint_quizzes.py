@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """クイズ JSON の静的検証スクリプト。
 
-`admin-web/src/data/quizzes.json` などのクイズ配列に対して、
+`packages/admin-web/src/data/quizzes.json` などのクイズ配列に対して、
 ID 一意性 / `correctAnswerIndex` の範囲 / オプション数の妥当性 / 必須フィールド充足を検査する。
 
-CI で `python3 scripts/lint_quizzes.py admin-web/src/data/quizzes.json` のように実行する想定。
+CI で `python3 scripts/lint_quizzes.py packages/admin-web/src/data/quizzes.json` のように実行する想定。
 失敗時は終了コード 1 を返し、検出された違反を 1 行 1 件で stderr に出力する。
 """
 

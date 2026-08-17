@@ -14,10 +14,10 @@ const eslintIn = (prefix, filenames) => {
 }
 
 export default {
-  'web/{src,tests}/**/*.{ts,tsx}': (filenames) => eslintIn('web', filenames),
-  'admin-web/{src,tests}/**/*.{ts,tsx}': (filenames) => eslintIn('admin-web', filenames),
-  'backend/**/*.go': 'gofmt -w',
-  '{docs/api/**,web/src/schemas/**,web/src/api/quiz.ts,backend/types.go,docs/detailed-design/web/**,docs/detailed-design/meta.json}':
+  'packages/web/{src,tests}/**/*.{ts,tsx}': (filenames) => eslintIn('packages/web', filenames),
+  'packages/admin-web/{src,tests}/**/*.{ts,tsx}': (filenames) => eslintIn('packages/admin-web', filenames),
+  'packages/backend/**/*.go': 'gofmt -w',
+  '{docs/api/**,packages/web/src/schemas/**,packages/web/src/api/quiz.ts,packages/backend/types.go,docs/detailed-design/web/**,docs/detailed-design/meta.json}':
     'python3 scripts/check_public_contract.py',
   'docs/detailed-design/**': 'python3 scripts/check_docs.py',
   '{AGENTS.md,docs/detailed-design/meta.json,package.json,.nvmrc,.editorconfig}':

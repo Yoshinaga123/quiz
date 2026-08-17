@@ -6,8 +6,8 @@
 
 | 層 | 保管場所 | 役割 |
 |---|---|---|
-| 候補プール | `admin-web/src/data/quizzes.json` | プレビュー用の問題文ストック。下書き・レビュー段階の問題をすべて含む |
-| 本番シードテンプレート | `backend/seeds/quizzes.production.json` | 本番反映用に選抜した問題のみを保持し、DB シード SQL 生成の入力にする |
+| 候補プール | `packages/admin-web/src/data/quizzes.json` | プレビュー用の問題文ストック。下書き・レビュー段階の問題をすべて含む |
+| 本番シードテンプレート | `packages/backend/seeds/quizzes.production.json` | 本番反映用に選抜した問題のみを保持し、DB シード SQL 生成の入力にする |
 | 本番データ | PostgreSQL `quizzes` テーブル | ユーザーに配信する選出済みの問題。管理画面から登録・編集する |
 
 ## データの流れ
@@ -21,14 +21,14 @@ quizzes.json（候補プール）
     ▼
 採用する問題を選抜
     │
-    │  `backend/seeds/quizzes.production.json` に移す
+    │  `packages/backend/seeds/quizzes.production.json` に移す
     │  （DB シード用テンプレート）
     │
     ▼
 スクリプトで SQL 生成
     │
     │  例: `python3 scripts/create_seed_migration.py --no-down`
-    │       → `backend/migrations/NNN_seed_quizzes.up.sql`
+    │       → `packages/backend/migrations/NNN_seed_quizzes.up.sql`
     │
     ▼
 PostgreSQL quizzes テーブル（本番データ）
@@ -108,12 +108,12 @@ PostgreSQL quizzes テーブル（本番データ）
 
 | ファイル | 役割 |
 |---|---|
-| `admin-web/src/data/quizzes.json` | 候補プールの実体 |
-| `admin-web/src/types/quiz.ts` | JSON 用の型定義 |
-| `admin-web/src/components/JsonQuizPreviewSection/quizUtils.ts` | JSON からの読み取り・検索・統計計算 |
-| `admin-web/src/components/JsonQuizPreviewSection/index.tsx` | JSON プレビュー表示 |
-| `admin-web/src/types/admin.ts` | DB 連携用の型定義 |
-| `admin-web/src/api/admin.ts` | DB 連携用の API クライアント |
+| `packages/admin-web/src/data/quizzes.json` | 候補プールの実体 |
+| `packages/admin-web/src/types/quiz.ts` | JSON 用の型定義 |
+| `packages/admin-web/src/components/JsonQuizPreviewSection/quizUtils.ts` | JSON からの読み取り・検索・統計計算 |
+| `packages/admin-web/src/components/JsonQuizPreviewSection/index.tsx` | JSON プレビュー表示 |
+| `packages/admin-web/src/types/admin.ts` | DB 連携用の型定義 |
+| `packages/admin-web/src/api/admin.ts` | DB 連携用の API クライアント |
 | `scripts/generate_migration.py` | seed JSON から `up/down` SQL テキストを生成 |
 | `scripts/create_seed_migration.py` | `golang-migrate create` と SQL 書き込みを自動化 |
 
@@ -121,7 +121,7 @@ PostgreSQL quizzes テーブル（本番データ）
 
 1. 新しい問題を思いついたら、まず `quizzes.json` に追加する
 2. 管理画面のプレビュー機能で問題文・選択肢・解説の品質を確認する
-3. 本番採用が決まった問題だけを `backend/seeds/quizzes.production.json` に移す
+3. 本番採用が決まった問題だけを `packages/backend/seeds/quizzes.production.json` に移す
 4. 管理画面の「production.json を DB 反映」ボタン、または `scripts/create_seed_migration.py` で migration を生成する
 5. 生成した migration を適用して DB に反映する
 6. 管理画面ボタンの同期は replace モードで動作し、JSON に存在しないクイズは DB から削除される
@@ -136,7 +136,7 @@ PostgreSQL quizzes テーブル（本番データ）
 python3 scripts/create_seed_migration.py
 ```
 
-- `migrate create -ext sql -dir backend/migrations -seq -digits 3 seed_quizzes` を内部で実行する
+- `migrate create -ext sql -dir packages/backend/migrations -seq -digits 3 seed_quizzes` を内部で実行する
 - 生成された `NNN_seed_quizzes.up.sql` に Upsert SQL を書き込む
 - 生成された `NNN_seed_quizzes.down.sql` には、今回の seed 対象 ID を削除する簡易ロールバック SQL を書き込む
 - 片方向マイグレーションとして扱いたい場合だけ `--no-down` を付ける
@@ -148,8 +148,8 @@ DATABASE_URL='postgres://postgres:password@localhost:5433/counter?sslmode=disabl
 python3 scripts/create_seed_migration.py --apply
 ```
 
-- `--apply` はファイル生成後に `migrate -path backend/migrations -database "$DATABASE_URL" up` を実行する
-- `backend/docker-compose.yml` のローカル DB を使う場合は上記 URL で接続できる
+- `--apply` はファイル生成後に `migrate -path packages/backend/migrations -database "$DATABASE_URL" up` を実行する
+- `packages/backend/docker-compose.yml` のローカル DB を使う場合は上記 URL で接続できる
 
 ## ロールバックの注意点
 
@@ -159,8 +159,8 @@ python3 scripts/create_seed_migration.py --apply
 
 ## 管理画面ボタンの同期仕様
 
-- `production.json を DB 反映` ボタンは `backend/seeds/quizzes.production.json` から新しい migration を生成して適用する
-- 生成される migration ファイルは `backend/migrations/NNN_seed_quizzes.up.sql` / `.down.sql`
+- `production.json を DB 反映` ボタンは `packages/backend/seeds/quizzes.production.json` から新しい migration を生成して適用する
+- 生成される migration ファイルは `packages/backend/migrations/NNN_seed_quizzes.up.sql` / `.down.sql`
 - JSON に存在する ID は Upsert される
 - JSON に存在しない ID は DB から削除される
 - `quizzes` 配列が空なら `quizzes` テーブルは全件削除される

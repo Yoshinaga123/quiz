@@ -57,7 +57,7 @@
 補足:
 
 - フォーム検証は UX 改善が目的であり、セキュリティの最終防衛線ではない
-- 現在の `admin-web/src/schemas/*.ts` と `admin-web/src/api/*.ts` はこの方針の対象とする
+- 現在の `packages/admin-web/src/schemas/*.ts` と `packages/admin-web/src/api/*.ts` はこの方針の対象とする
 
 ### `backend`
 
@@ -89,7 +89,7 @@
 ### 1. API レスポンス
 
 - `admin-web` は `fetch` 後に Zod または TypeScript ベースのランタイム検証で shape を検証する
-- `web` は公開 API レスポンスを `web/src/schemas/quiz.ts` で検証する。成功・失敗は `web/tests/schemas/quiz.test.ts` で固定する
+- `web` は公開 API レスポンスを `packages/web/src/schemas/quiz.ts` で検証する。成功・失敗は `packages/web/tests/schemas/quiz.test.ts` で固定する
 - `mobile` でも将来的に API DTO の shape を検証する
 - `as SomeType` だけで通過させない
 

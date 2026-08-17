@@ -16,7 +16,7 @@ description: Internal assembly docs — handlers, SQL, Zod refine, in-page state
 | 要件 | [`../../quiz.md`](../../quiz.md) | 何をしたいか |
 | 基本設計（外の契約） | [`../architecture/`](../architecture/)、[`../api/`](../api/)、[`../adr/`](../adr/) | 構成、OpenAPI、なぜそう決めたか |
 | **詳細設計（中の組み立て）** | **このフォルダ** | ハンドラ、SQL、Zod refine、画面内フロー |
-| 実装 | `backend/`、`web/`、`admin-web/`、`mobile/` | コード |
+| 実装 | `packages/backend/`、`packages/web/`、`packages/admin-web/`、`packages/mobile/` | コード |
 
 OpenAPI（[`../api/public-quiz-api.yaml`](../api/public-quiz-api.yaml)）は基本設計。ここには書かない。
 

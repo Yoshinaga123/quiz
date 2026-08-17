@@ -30,7 +30,7 @@ def generate_env(output_path: Path) -> None:
             print("キャンセルしました。")
             sys.exit(0)
 
-    print("\nbackend/.env に書き込む値を入力してください（Enterでデフォルト値を使用）:\n")
+    print("\npackages/backend/.env に書き込む値を入力してください（Enterでデフォルト値を使用）:\n")
 
     lines = []
     for key, default in FIELDS:
@@ -50,7 +50,7 @@ def generate_env(output_path: Path) -> None:
 
 def main() -> None:
     project_root = Path(__file__).resolve().parent.parent
-    output_path = project_root / "backend" / ".env"
+    output_path = project_root / "packages" / "backend" / ".env"
     generate_env(output_path)
 
 

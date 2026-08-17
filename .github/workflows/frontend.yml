@@ -2,15 +2,19 @@ name: Frontend
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     paths:
-      - "admin-web/**"
-      - "web/**"
+      - "packages/admin-web/**"
+      - "packages/web/**"
+      - "package.json"
+      - "package-lock.json"
       - ".github/workflows/frontend.yml"
   pull_request:
     paths:
-      - "admin-web/**"
-      - "web/**"
+      - "packages/admin-web/**"
+      - "packages/web/**"
+      - "package.json"
+      - "package-lock.json"
       - ".github/workflows/frontend.yml"
 
 permissions:
@@ -20,53 +24,43 @@ jobs:
   admin-web:
     name: admin-web build, lint & test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: admin-web
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: npm
-          cache-dependency-path: admin-web/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm ci
       - name: Lint
+        working-directory: packages/admin-web
         run: npm run lint
       - name: Test
+        working-directory: packages/admin-web
         run: npm run test
       - name: Type check & build
+        working-directory: packages/admin-web
         run: npm run build
 
   web:
     name: web build, lint & test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: npm
-          cache-dependency-path: web/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm ci
       - name: Lint
+        working-directory: packages/web
         run: npm run lint
       - name: Test
+        working-directory: packages/web
         run: npm run test
       - name: Type check & build
+        working-directory: packages/web
         run: npm run build

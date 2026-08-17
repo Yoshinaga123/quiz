@@ -26,10 +26,11 @@
 | [`./detailed-design/web/quiz-schema.md`](./detailed-design/web/quiz-schema.md) | 公開クイズ Zod（`.refine` 含む） |
 | [`./detailed-design/web/error-formatting.md`](./detailed-design/web/error-formatting.md) | Zod issues → ApiError |
 | [`./detailed-design/web/public-contract.md`](./detailed-design/web/public-contract.md) | 公開契約の同一 PR 同期 |
-| [`./detailed-design/repo-ops.md`](./detailed-design/repo-ops.md) | husky / play / docs 例テスト |
+| [`./detailed-design/repo-ops.md`](./detailed-design/repo-ops.md) | husky / play / Dev Container / docs 例テスト |
 | [`./detailed-design/admin-web/`](./detailed-design/admin-web/) | 管理画面 |
 | [`./detailed-design/admin-web/quiz-schema.md`](./detailed-design/admin-web/quiz-schema.md) | 管理画面 Zod（公開 schema との差） |
 | [`./detailed-design/mobile/`](./detailed-design/mobile/) | Flutter |
+| [`./detailed-design/mobile/remote-data-source.md`](./detailed-design/mobile/remote-data-source.md) | 公開 API の remote 経路 |
 
 ## プロジェクト全体
 
@@ -47,16 +48,16 @@
 | [`./implement-policy.md`](./implement-policy.md) | 実装ポリシー（Zod 検証、SPA 採用、Google Search Central 対応など） |
 | [`./validation-policy.md`](./validation-policy.md) | フロント／バックの入力検証ポリシー |
 | [`./quiz-data-workflow.md`](./quiz-data-workflow.md) | クイズデータの 3 層フロー（候補プール → 本番シード → DB） |
-| [`./firebase-api-key-handling.md`](./firebase-api-key-handling.md) | Firebase API キーと `GoogleService-Info.plist` の扱い方針 |
+| [`./firebase-api-key-handling.md`](./firebase-api-key-handling.md) | Firebase 設定は gitignore。このアプリのプロジェクト以外を入れない |
 | [`./local-https-setup.md`](./local-https-setup.md) | ローカル開発環境の HTTPS 設定（自己署名証明書 + Vite） |
 | [`./counter-api.md`](./counter-api.md) | PV カウンター API（`/counter`、永続化は `views` テーブル） |
 | [`./push-notification-mock.md`](./push-notification-mock.md) | Push 通知 Phase A モック（手動送信 + feed + ローカル通知） |
 | [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |
-| [`./backlog.md`](./backlog.md) | 未着手の改善タスク（出典品質・テスト基盤・Zod Mini 先送りなど） |
+| [`./backlog.md`](./backlog.md) | 未着手の改善タスク（出典品質・テスト基盤・Zod Mini / Biome 先送りなど） |
 | [`./initializer.md`](./initializer.md) | 初期化責務の所在 |
 | [`./late.md`](./late.md) | 遅延読み込みの方針 |
-| [`../backend/.env.example`](../backend/.env.example) | backend 環境変数テンプレート |
-| [`../web/.env.example`](../web/.env.example) | web 環境変数テンプレート |
+| [`../packages/backend/.env.example`](../packages/backend/.env.example) | backend 環境変数テンプレート |
+| [`../packages/web/.env.example`](../packages/web/.env.example) | web 環境変数テンプレート |
 
 ## アーキテクチャ決定記録（ADR）
 
@@ -66,12 +67,14 @@
 | [0002](./adr/0002-frontend-architecture-spa.md) | Accepted | フロントエンドを Vite + React SPA で構築 |
 | [0003](./adr/0003-styling-tailwindcss.md) | Accepted | スタイリングに Tailwind CSS を採用 |
 | [0004](./adr/0004-login-verification-code-flow.md) | Accepted | ログインの検証コードフロー |
-| [0005](./adr/0005-user-facing-web-quiz-app.md) | Accepted | ユーザー向け Web クイズアプリ (`web/`) |
+| [0005](./adr/0005-user-facing-web-quiz-app.md) | Accepted | ユーザー向け Web クイズアプリ (`packages/web/`) |
 | [0006](./adr/0006-public-quiz-api.md) | Accepted | 公開クイズ API の仕様分離 |
 | [0007](./adr/0007-push-notification-delivery.md) | Proposed | プッシュ通知の配信方式 |
 | [0008](./adr/0008-user-attempt-history.md) | Proposed | ユーザー回答履歴の保存方式 |
 | [0009](./adr/0009-mobile-state-management.md) | Accepted | モバイル版の状態管理と層構造 |
-| [0010](./adr/0010-scratch-input-bundle-size.md) | Accepted | バンドルサイズ実験の入口は `scratch/input.ts` |
+| [0010](./adr/0010-scratch-input-bundle-size.md) | Accepted | バンドルサイズ実験の入口は手元の `scratch/input.ts`（gitignore） |
+| [0011](./adr/0011-devcontainer-runtimes.md) | Accepted | Dev Container にはこのリポジトリが実際に使うランタイムだけ入れる |
+| [0012](./adr/0012-vscode-launch.json.md) | Accepted | VS Code `launch.json` は Zod のコピーを置かない |
 
 ## API 仕様
 
@@ -84,28 +87,29 @@
 
 | パス | 内容 |
 | --- | --- |
-| [`../admin-web/README.md`](../admin-web/README.md) | 管理画面（React + Vite） |
-| [`../admin-web/tests/README.md`](../admin-web/tests/README.md) | `admin-web/` の Vitest（Zod スキーマ含む） |
-| [`../admin-web/docs/linting.md`](../admin-web/docs/linting.md) | 管理画面の Lint ルール |
-| [`../web/README.md`](../web/README.md) | ユーザー向け Web アプリ（React + Vite） |
-| [`../web/tests/README.md`](../web/tests/README.md) | `web/` の Vitest（Zod スキーマ含む） |
-| [`../web/scripts/README.md`](../web/scripts/README.md) | Zod `play.ts` 相当の試し書き |
-| [`../admin-web/scripts/README.md`](../admin-web/scripts/README.md) | 管理画面スキーマの試し書き |
+| [`../packages/admin-web/README.md`](../packages/admin-web/README.md) | 管理画面（React + Vite） |
+| [`../packages/admin-web/tests/README.md`](../packages/admin-web/tests/README.md) | `packages/admin-web/` の Vitest（Zod スキーマ含む） |
+| [`./linting.md`](./linting.md) | フロントエンドの Lint / tsconfig 方針 |
+| [`../packages/web/README.md`](../packages/web/README.md) | ユーザー向け Web アプリ（React + Vite） |
+| [`../packages/web/tests/README.md`](../packages/web/tests/README.md) | `packages/web/` の Vitest（Zod スキーマ含む） |
+| [`../packages/web/scripts/README.md`](../packages/web/scripts/README.md) | Zod `play.ts` 相当の試し書き |
+| [`../packages/admin-web/scripts/README.md`](../packages/admin-web/scripts/README.md) | 管理画面スキーマの試し書き |
 | [`../play.ts`](../play.ts) | ルートの試し書き（`npm run play`） |
-| [`../scratch/README.md`](../scratch/README.md) | バンドルサイズ計測（`scratch/input.ts` / `npm run scratch:measure`） |
-| [`../mobile/README.md`](../mobile/README.md) | モバイル版（Flutter + Riverpod） |
-| [`../backend/README.md`](../backend/README.md) | Go API（Public / Admin / 認証 / Seed 同期） |
+| [ADR 0010](./adr/0010-scratch-input-bundle-size.md) | バンドルサイズ計測（手元の `scratch/input.ts`。フォルダは gitignore） |
+| [`../packages/mobile/README.md`](../packages/mobile/README.md) | モバイル版（Flutter + Riverpod） |
+| [`../packages/backend/README.md`](../packages/backend/README.md) | Go API（Public / Admin / 認証 / Seed 同期） |
 
 ## CI / 運用スクリプト
 
 | パス | 役割 |
 | --- | --- |
-| [`../.github/workflows/frontend.yml`](../.github/workflows/frontend.yml) | `admin-web/` と `web/` のビルド・Lint・Test |
-| [`../.github/workflows/backend.yml`](../.github/workflows/backend.yml) | Go の vet / build / test |
+| [`../.github/workflows/frontend.yml`](../.github/workflows/frontend.yml) | `packages/admin-web/` と `packages/web/` のビルド・Lint・Test（`main` / `develop`） |
+| [`../.github/workflows/backend.yml`](../.github/workflows/backend.yml) | Go の vet / build / test（`main` / `develop`） |
+| [`../.github/workflows/mobile.yml`](../.github/workflows/mobile.yml) | `packages/mobile/` の `flutter analyze` / `flutter test` |
 | [`../.github/workflows/quiz-data.yml`](../.github/workflows/quiz-data.yml) | クイズ JSON の lint と本番シード drift 検出 |
 | [`../.github/workflows/openapi.yml`](../.github/workflows/openapi.yml) | OpenAPI 仕様の Redocly Lint |
 | [`../.github/workflows/public-contract.yml`](../.github/workflows/public-contract.yml) | 公開契約（OpenAPI + fixtures + Zod + Go） |
-| [`../.github/workflows/quality.yml`](../.github/workflows/quality.yml) | リポジトリ衛生 + 循環 import |
+| [`../.github/workflows/quality.yml`](../.github/workflows/quality.yml) | 衛生 + ルート `npm test` + 循環 import（毎 PR） |
 | [`../scripts/check_public_contract.py`](../scripts/check_public_contract.py) | OpenAPI / fixtures / Zod / Go のフィールド同期 |
 | [`../scripts/check_repo_hygiene.py`](../scripts/check_repo_hygiene.py) | AGENTS / nvmrc / detailed-design 目次 |
 | [`../scripts/check_docs.py`](../scripts/check_docs.py) | frontmatter・孤児ページ・相対リンク・llms drift |
@@ -116,15 +120,14 @@
 | [`../scripts/check_quiz_drift.py`](../scripts/check_quiz_drift.py) | 本番シードと最新マイグレーションの drift 検出 |
 | [`../scripts/generate_migration.py`](../scripts/generate_migration.py) | シード JSON から SQL を生成 |
 | [`../scripts/create_seed_migration.py`](../scripts/create_seed_migration.py) | `golang-migrate create` ラッパ |
-| [`../scripts/create_backend_env.py`](../scripts/create_backend_env.py) | `backend/.env` のセットアップ補助 |
+| [`../scripts/create_backend_env.py`](../scripts/create_backend_env.py) | `packages/backend/.env` のセットアップ補助 |
 | [`../scripts/run_zap_baseline.sh`](../scripts/run_zap_baseline.sh) | ローカル向け OWASP ZAP ベースライン実行 |
 
 ## 学習・診断アーカイブ（プロダクトではない）
 
 | パス | 概要 |
 | --- | --- |
-| [`../archive/README.md`](../archive/README.md) | 隔離方針 |
-| [`../samples/README.md`](../samples/README.md) | 参考クローン |
+| [`../archive/README.md`](../archive/README.md) | 隔離方針（`samples/` などは手元のみ） |
 | [`./security-tools/`](./security-tools/owasp-zap.md) | ZAP / Burp / w3af 手順 |
 | [`./penetration-testing.md`](./penetration-testing.md) | ペネトレーション導入 |
 | [`./script-learning-tasks.md`](./script-learning-tasks.md) | 学習用スクリプト課題 |

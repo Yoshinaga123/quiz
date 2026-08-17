@@ -13,14 +13,14 @@
 
 **背景**
 
-`admin-web/src/data/quizzes.json`（586 問）の構造は lint 通過済みだが、出典の品質が要件（高品質ドキュメント由来・正確・最新）を満たしていない。
+`packages/admin-web/src/data/quizzes.json`（586 問）の構造は lint 通過済みだが、出典の品質が要件（高品質ドキュメント由来・正確・最新）を満たしていない。
 
 **現状の課題**
 
 | 種別 | 件数（概算） | 内容 |
 | --- | --- | --- |
 | 曖昧な `source` ラベル | 491 | `sourceLinks.ts` 未マップ、検索フォールバック依存 |
-| リポジトリ内ファイル参照 | 126 | `backend/main.go` 等を出典にしている |
+| リポジトリ内ファイル参照 | 126 | `packages/backend/main.go` 等を出典にしている |
 | 直接 URL | 82 | 比較的妥当 |
 | 正誤根拠が崩れている問題 | 1+ | 例: id 225（Googlebot 50MB 変更の検証不可） |
 
@@ -44,11 +44,11 @@
 
 - **由来**: システムレビュー指摘 #7
 - **優先度**: P1（backend） / P2（web）
-- **参照**: [`web/tests/README.md`](../web/tests/README.md), [`.github/workflows/backend.yml`](../.github/workflows/backend.yml)
+- **参照**: [`packages/web/tests/README.md`](../web/tests/README.md), [`.github/workflows/backend.yml`](../.github/workflows/backend.yml)
 
 **背景**
 
-CI はテストを実行しているが、backend に `*_test.go` がなく web は Vitest 未導入のため、実質的な自動テストがほぼない。lint 方針（`admin-web/docs/linting.md`）と実態にギャップがある。
+CI はテストを実行しているが、backend に `*_test.go` がなく web は Vitest 未導入のため、実質的な自動テストがほぼない。lint 方針（`packages/admin-web/docs/linting.md`）と実態にギャップがある。
 
 **やること**
 
@@ -60,13 +60,13 @@ CI はテストを実行しているが、backend に `*_test.go` がなく web 
 
 #### web（P2）
 
-1. `web/package.json` に Vitest 依存を追加する（手順は `web/tests/README.md`）
+1. `packages/web/package.json` に Vitest 依存を追加する（手順は `packages/web/tests/README.md`）
 2. 既存雛形（`quizUtils`, `historyStorage`, `client`, `schemas/quiz`）を実行可能にする
 3. `npm run test` を CI（`frontend.yml`）に組み込む
 
 #### mobile（P3・任意）
 
-1. 既存 `mobile/test/` を CI で回す（Flutter ツールチェーン導入後）
+1. 既存 `packages/mobile/test/` を CI で回す（Flutter ツールチェーン導入後）
 
 **完了条件**
 
@@ -176,10 +176,10 @@ CREATE INDEX idx_push_deliveries_quiz_id ON push_deliveries (quiz_id);
 
 #### Phase 4: admin-web — 管理 UI
 
-- [x] **TODO-003-15** `admin-web/src/schemas/push.ts` に zod スキーマを追加する
+- [x] **TODO-003-15** `packages/admin-web/src/schemas/push.ts` に zod スキーマを追加する
   - `pushDispatchResponseSchema`
   - `pushDeliveryListResponseSchema`
-- [x] **TODO-003-16** `admin-web/src/api/admin.ts` に API 関数を追加する
+- [x] **TODO-003-16** `packages/admin-web/src/api/admin.ts` に API 関数を追加する
   - `dispatchMockPush(): Promise<PushDispatchResponse>`
   - `fetchPushDeliveries(params): Promise<PushDeliveryListResponse>`
 - [x] **TODO-003-17** クイズ一覧画面または専用セクションに UI を追加する
@@ -214,7 +214,7 @@ CREATE INDEX idx_push_deliveries_quiz_id ON push_deliveries (quiz_id);
 - [x] **TODO-003-23** 通知タップ時の遷移を実装する
   - `quizId` を受け取り `QuizDetailsPage` へ遷移（go_router 未導入なら `Navigator.push`）
 - [x] **TODO-003-24** Android / iOS の権限ダイアログと拒否時 UXを実装する
-- [x] **TODO-003-25** [`mobile/README.md`](../mobile/README.md) にモック通知の起動手順を追記する
+- [x] **TODO-003-25** [`packages/mobile/README.md`](../packages/mobile/README.md) にモック通知の起動手順を追記する
 
 ---
 
@@ -266,14 +266,14 @@ Phase 0（合意済み: 案 A） → Phase 1（DB） → Phase 2–3（backend A
 
 **背景**
 
-`web/` と `admin-web/` は classic `zod`（メソッド API）。Mini は関数 API で tree-shake しやすく、既定 locale も載せない。低速モバイル回線では魅力がある。
+`packages/web/` と `packages/admin-web/` は classic `zod`（メソッド API）。Mini は関数 API で tree-shake しやすく、既定 locale も載せない。低速モバイル回線では魅力がある。
 
 ただし本番バンドルは Vite 7 + Rollup であり、esbuild の locale 残留問題は本番に当てはまらない。React / react-router / Tailwind のほうが Zod より重い。メンテナは大多数のアプリに classic を推奨している。
 
 **やること（着手するとき）**
 
 1. `scratch/input.ts` で classic と Mini の kB を測る（ADR 0010）
-2. 差がユーザー体感に効くと分かってから `web/` / `admin-web/` の schema を Mini API に書き換える
+2. 差がユーザー体感に効くと分かってから `packages/web/` / `packages/admin-web/` の schema を Mini API に書き換える
 3. 公開 JSON の shape は変えない（OpenAPI / fixtures / `publicQuiz` はそのまま）
 
 **完了条件**
@@ -284,15 +284,44 @@ Phase 0（合意済み: 案 A） → Phase 1（DB） → Phase 2–3（backend A
 
 ---
 
+### TASK-005: ESLint から Biome への移行（将来・先送り）
+
+- **由来**: 2026-08-17。人が「将来的には Biome に移行する」と決めた。いま着手しない。
+- **優先度**: P3
+- **状態**: 先送り。ESLint が正本のまま。
+- **参照**: [Zod #3499](https://github.com/colinhacks/zod/pull/3499)、[`docs/linting.md`](./linting.md)、`AGENTS.md`（Do not）
+
+**背景**
+
+Zod は TypeScript ライブラリとして ESLint をやめて Biome にした（移行は楽だった、と PR にある）。quiz の web / admin-web でも、将来は lint と format を Biome に寄せる。
+
+いま移さない理由: Go は `gofmt`、Flutter は `flutter analyze` のまま残る。husky / lint-staged / frontend CI / VS Code 拡張は ESLint で動いている。依存配列は Biome でも足りるが、付け替え自体は公開契約を良くしない。
+
+**やること（着手するとき）**
+
+1. `biome migrate eslint` で設定の下書きを出し、`typescript-eslint` strict / stylistic と `react-hooks` / `react-refresh` の差分を目で見る
+2. `eslint-disable` を `biome-ignore` に直し、依存配列の判定差（安定値・意図した余分な依存）を確認する
+3. husky、lint-staged、`frontend.yml`、`.vscode` を Biome に切り替え、ESLint 依存を同じ PR で消す
+4. Go / Flutter の検査は残す。Biome に一本化しない
+
+**完了条件**
+
+- web / admin-web の lint / format の正本が Biome
+- CI と pre-commit が Biome
+- `npm run lint` 相当が green
+- 公開契約チェックが green
+
+---
+
 ### REJECTED: `import { z } from "zod"` を `import * as z from "zod"` に揃える
 
 - **状態**: 却下（2026-08-15）
 - **由来**: Zod 公式の esbuild 向け注意、および [zod#5561](https://github.com/colinhacks/zod/issues/5561) の「`import {z} from "zod"` can exacerbate the issue in some cases」
 - **却下理由**: 名指しは esbuild でバンドルする一部のケース。本番は Vite 7 + Rollup。該当しない。メンテナ自身も「一部のケース」と慎重に書いている。
 
-`web/` / `admin-web/` の `import { z } from "zod"` はそのままにする。エージェントはこの書き換えを再提案しない。
+`packages/web/` / `packages/admin-web/` の `import { z } from "zod"` はそのままにする。エージェントはこの書き換えを再提案しない。
 
-事後計測: [`../scratch/RESULTS.md`](../scratch/RESULTS.md)（`npm run scratch:measure`）。判断は変えない。
+事後計測: 手元で `npm run scratch:measure`（`scratch/` は gitignore。Zod と同じ）。判断は変えない。
 
 ---
 
@@ -300,3 +329,4 @@ Phase 0（合意済み: 案 A） → Phase 1（DB） → Phase 2–3（backend A
 
 - TASK-003 Phase B（本番 FCM）: ADR 0007 の cron + `device_tokens` + FCM SDK。TASK-003 完了後に別タスク化する。
 - TASK-004 はバンドル計測（ADR 0010）より先に Mini へ書き換えない。
+- TASK-005 は人が「着手して」と言うまで ESLint を外さない。

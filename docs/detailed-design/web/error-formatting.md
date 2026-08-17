@@ -7,7 +7,7 @@ description: How Zod issues become ApiError and a UI fallback, instead of raw Zo
 
 Zod 公式の [Formatting errors](https://zod.dev/error-formatting) に相当する、このアプリ側の正規化。
 
-実装: `web/src/api/client.ts`、`web/src/hooks/useQuizCatalog.ts`
+実装: `packages/web/src/api/client.ts`、`packages/web/src/hooks/useQuizCatalog.ts`
 
 ## 境界で止める
 

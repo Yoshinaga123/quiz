@@ -29,5 +29,5 @@ body:
           required: true
         - label: docs/detailed-design（.refine 含む）
           required: true
-        - label: web/Go/mobile テストと check_public_contract.py
+        - label: packages/web/Go/mobile テストと check_public_contract.py
           required: true

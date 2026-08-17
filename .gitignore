@@ -3,16 +3,26 @@ dist/
 .env
 *.log
 .DS_Store
-backend/tmp/server
-backend/view-counter
+packages/backend/tmp/server
+packages/backend/view-counter
 __pycache__/
 *.pyc
 certs/
 coverage/
 play.local.ts
 *.local.ts
-backend/play.local.go
+packages/backend/play.local.go
 .husky/_
-scratch/out_*.js
-scratch/.input-namespace.ts
+scratch
+
+# Local-only learning / other-product clones (kept on disk, not published)
+samples/
+game/
+falling_puzzle
+reports/
+**/GoogleService-Info.plist
+docs/juice-shop-*
+scripts/juice_shop_tree_dirs_rich.py
+security-attack-notes.md
+侵入テスト.md
 

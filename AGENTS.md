@@ -9,13 +9,14 @@ Socrates Quiz is an application monorepo, not a published library.
 
 | Path | Role |
 | --- | --- |
-| `web/` | User quiz UI (React 19 + Vite + Zod) |
-| `admin-web/` | Admin CRUD + mock Push (JWT) |
-| `mobile/` | Flutter client for the public API |
-| `backend/` | Go `net/http` API (`package main` split across files) |
-| `docs/api/` | Public OpenAPI + shared fixtures |
-| `docs/detailed-design/` | Internal assembly (refine rules, handlers, SQL) |
-| `samples/` `archive/` `docs/security-tools/` | Learning / diagnostics — not product |
+| `packages/web/` | User quiz UI (React 19 + Vite + Zod) |
+| `packages/admin-web/` | Admin CRUD + mock Push (JWT) |
+| `packages/mobile/` | Flutter client for the public API |
+| `packages/backend/` | Go `net/http` API (`package main` split across files) |
+| `docs/` | Manuals only (OpenAPI, detailed-design, ADR, linting). Not inside a product |
+| `scratch/` | Local bundle-size lab (gitignored, same as Zod). Entry name is `input.ts` |
+| `samples/` | Local learning clones (gitignored). Not in the published tree |
+| `archive/` | Isolation note for local-only learning / diagnostics |
 
 Production host: `https://socrates-quiz.jp`. Dev API: host `8082` → container `8080`.
 
@@ -25,12 +26,12 @@ Changing the public JSON shape requires **the same PR** to update all of:
 
 1. `docs/api/public-quiz-api.yaml`
 2. `docs/api/fixtures/`
-3. `web/src/schemas/quiz.ts` and `web/src/api/quiz.ts`
-4. `backend/types.go` (`publicQuiz` / `publicQuizListResponse`) and handlers
+3. `packages/web/src/schemas/quiz.ts` and `packages/web/src/api/quiz.ts`
+4. `packages/backend/types.go` (`publicQuiz` / `publicQuizListResponse`) and handlers
 5. `docs/detailed-design/web/quiz-schema.md` (especially `.refine`)
 6. `docs/detailed-design/web/public-contract.md` if the process changes
-7. `web/tests/contract/`, `backend/public_contract_test.go`, `scripts/check_public_contract.py`
-8. `mobile/lib/layers/data/dto/public_quiz_dto.dart` when the DTO fields change
+7. `packages/web/tests/contract/`, `packages/backend/public_contract_test.go`, `scripts/check_public_contract.py`
+8. `packages/mobile/lib/layers/data/dto/public_quiz_dto.dart` when the DTO fields change
 
 OpenAPI cannot express `.refine`. Those rules belong in detailed-design, with a failing fixture (`quiz-invalid-answer-index.json`).
 
@@ -43,18 +44,18 @@ Do not expose admin fields (`status`, `pushEnabled`, `createdAt`, `updatedAt`) o
 | Quiz body in production | PostgreSQL `quizzes` |
 | Public HTTP shape | OpenAPI + `docs/api/fixtures/` |
 | Runtime parse (web) | handwritten Zod |
-| Admin input | `admin-web/src/schemas/` |
+| Admin input | `packages/admin-web/src/schemas/` |
 | Why a decision exists | `docs/adr/` |
 
 Do not generate Zod from OpenAPI. Dual-write both (ADR 0006).
 
 ## Where to put code
 
-- Scratch / experiments: `play.ts` (repo root), `web/scripts/`, `admin-web/scripts/`, `backend/play.go` (`//go:build ignore`). Never leave experiments in `src/` or in a `package main` file that `go build` compiles.
-- Bundle-size (kB) experiments use **`scratch/input.ts` only** (ADR 0010). Do not invent another entry name. Do not import that file from `web/src/` or `admin-web/src/`.
-- Tests live next to the API they protect: `web/tests/schemas/`, `web/tests/contract/`, `admin-web/tests/schemas/`, `backend/*_test.go`.
+- Scratch / experiments: `play.ts` (repo root), `packages/web/scripts/`, `packages/admin-web/scripts/`, `packages/backend/play.go` (`//go:build ignore`). Never leave experiments in `src/` or in a `package main` file that `go build` compiles.
+- Bundle-size (kB) experiments use a **local** `scratch/input.ts` (ADR 0010). The `scratch/` directory is gitignored, same as Zod. Do not invent another entry name. Do not commit that folder. Do not import it from `packages/web/src/` or `packages/admin-web/src/`.
+- Tests live next to the API they protect: `packages/web/tests/schemas/`, `packages/web/tests/contract/`, `packages/admin-web/tests/schemas/`, `packages/backend/*_test.go`.
 - A schema or contract change without a success **and** failure test is unfinished.
-- Documentation examples are executable. If you change a fenced TypeScript block in `docs/detailed-design/`, update `web/tests/contract/docs-examples.test.ts` (and the implementation) in the same diff.
+- Documentation examples are executable. If you change a fenced TypeScript block in `docs/detailed-design/`, update `packages/web/tests/contract/docs-examples.test.ts` (and the implementation) in the same diff.
 - New detailed-design pages must be kebab-case English, have YAML `title` + `description` frontmatter, and be listed in both `docs/detailed-design/meta.json` and the package folder `meta.json`. Then run `npm run docs:llms`.
 - Follow `docs/detailed-design/writing.md`. Do not add a Fumadocs/Next docs site.
 
@@ -63,6 +64,7 @@ Do not generate Zod from OpenAPI. Dual-write both (ADR 0006).
 From the repo root (Node 22, see `.nvmrc`):
 
 ```bash
+npm i                    # root workspaces: packages/web + packages/admin-web
 npm test                 # public contract + web + Go + admin-web
 npm run test:contract    # OpenAPI/fixtures/Zod/Go only
 npm run lint             # web, admin-web, gofmt
@@ -71,14 +73,18 @@ npm run check:circular   # madge on web + admin-web
 npm run check:docs       # frontmatter, orphans, links, llms drift
 npm run docs:llms        # regenerate docs/llms.txt and docs/llms-full.txt
 npm run play             # root play.ts scratch pad
-npm run scratch:measure  # named vs namespace Zod kB (does not change web/)
+npm run scratch:measure  # local scratch/input.ts kB (folder is gitignored)
 ```
 
 Husky runs `lint-staged` on commit and `npm run test:contract` on push.
 
 ## Do not
 
-- Switch the package manager (npm stays). Do not migrate ESLint → Biome, or rewrite Go into `internal/` packages, unless a human explicitly asks.
+- Switch the package manager (npm stays). Do not rewrite Go into `internal/` packages, unless a human explicitly asks.
+- Do not migrate ESLint → Biome now. Future intent is `docs/backlog.md` TASK-005. Do not start it unless a human opens that task.
+- Do not add `package-lock.json` under `packages/web` or `packages/admin-web`. Install from the repo root (`npm i`).
+- Do not empty `.devcontainer` features to match Zod. Keep Node 22, Go, Python, Docker-in-Docker, and `npm` (ADR 0011).
+- Do not copy Zod's `.vscode/launch.json` (`--conditions=@zod/source`). Debug pads with `npm run play` / `go run` (ADR 0012).
 - Commit `samples/`, juice-shop dumps, or diagnostic transcripts in a product PR.
 - Commit `.env`, credentials, or real JWT secrets.
 - Invent a public field that is not in OpenAPI + fixtures + Zod + Go in the same change.
@@ -88,3 +94,26 @@ Husky runs `lint-staged` on commit and `npm run test:contract` on push.
 ## PR shape
 
 One purpose per PR. Public-contract edits must include the checklist in `.github/PULL_REQUEST_TEMPLATE.md`.
+
+## Code Review Rules
+
+Codex Cloud reviews pull requests. It reads this file, not Zod's `claude-code-review.yml`. Do not ask for `gh pr comment` or Claude OAuth. Post a normal GitHub review. Flag P0/P1 only. Leave lint, format, and `npm test` to CI.
+
+### Public contract
+
+If the public JSON shape changes and the same PR does not update OpenAPI, fixtures, handwritten Zod, and Go `publicQuiz`, that is a defect. Safe path: the checklist in `.github/PULL_REQUEST_TEMPLATE.md`.
+
+Do not expose `status`, `pushEnabled`, `createdAt`, or `updatedAt` on `publicQuiz`.
+
+### Tooling this repo does not want
+
+Treat these as defects unless a human explicitly asked for them:
+
+- Switching npm to pnpm, or adding `package-lock.json` under `packages/web` or `packages/admin-web`
+- Emptying `.devcontainer` features to match Zod (ADR 0011)
+- Rewriting `import { z } from "zod"` to `import * as z from "zod"`
+- Generating Zod from OpenAPI
+
+### Secrets and product boundary
+
+Flag committed `.env`, JWT secrets, or `samples/` / juice-shop dumps in a product PR.

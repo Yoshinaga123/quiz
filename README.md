@@ -6,12 +6,12 @@
 
 | パッケージ | 役割 | 認証 |
 | --- | --- | --- |
-| [`web/`](web/) | 解答 UI・端末内履歴 | なし |
-| [`admin-web/`](admin-web/) | 問題 CRUD・mock Push | JWT Bearer |
-| [`mobile/`](mobile/) | ネイティブ解答・mock 通知 | なし（公開 API） |
-| [`backend/`](backend/) | Public `/v1/*` + Admin `/api/admin/*` | 公開なし / 管理 JWT |
+| [`packages/web/`](packages/web/) | 解答 UI・端末内履歴 | なし |
+| [`packages/admin-web/`](packages/admin-web/) | 問題 CRUD・mock Push | JWT Bearer |
+| [`packages/mobile/`](packages/mobile/) | ネイティブ解答・mock 通知 | なし（公開 API） |
+| [`packages/backend/`](packages/backend/) | Public `/v1/*` + Admin `/api/admin/*` | 公開なし / 管理 JWT |
 
-クイズ本文の正本は PostgreSQL `quizzes`。候補プールは `admin-web/src/data/quizzes.json`、本番シードは `backend/seeds/quizzes.production.json`。
+クイズ本文の正本は PostgreSQL `quizzes`。候補プールは `packages/admin-web/src/data/quizzes.json`、本番シードは `packages/backend/seeds/quizzes.production.json`。
 
 ## 必要なもの
 
@@ -23,7 +23,7 @@
 ## クイックスタート
 
 ```bash
-cd backend
+cd packages/backend
 cp .env.example .env
 docker compose up --build
 ```
@@ -32,8 +32,8 @@ docker compose up --build
 | --- | --- |
 | API | http://localhost:8082 |
 | ヘルス | http://localhost:8082/healthz |
-| 管理画面 | `cd admin-web && npm install && npm run dev`（既定 5173） |
-| ユーザー Web | `cd web && npm install && npm run dev`（5174） |
+| 管理画面 | ルートで `npm i` のあと `cd packages/admin-web && npm run dev`（既定 5173） |
+| ユーザー Web | ルートで `npm i` のあと `cd packages/web && npm run dev`（5174） |
 
 公開 API 仕様: [`docs/api/public-quiz-api.yaml`](docs/api/public-quiz-api.yaml)  
 ドキュメント目次: [`docs/INDEX.md`](docs/INDEX.md)
@@ -53,10 +53,10 @@ npm run lint
 ```bash
 python3 scripts/check_public_contract.py
 python3 scripts/check_repo_hygiene.py
-cd web && npm test
-cd backend && go test ./...
-cd admin-web && npm test
-cd mobile && flutter test
+cd packages/web && npm test
+cd packages/backend && go test ./...
+cd packages/admin-web && npm test
+cd packages/mobile && flutter test
 ```
 
 試し書きは `npm run play`（`src/` には残さない）。エージェント向け手順は [`AGENTS.md`](AGENTS.md)。
@@ -65,7 +65,10 @@ cd mobile && flutter test
 
 | パス | 位置づけ |
 | --- | --- |
-| `web/` `admin-web/` `mobile/` `backend/` `docs/architecture/` `docs/api/` `docs/adr/` `docs/detailed-design/` | **プロダクト** |
-| [`samples/`](samples/) [`archive/`](archive/README.md) `docs/security-tools/` など | **学習・診断アーカイブ**（実行時に不要） |
+| [`packages/`](packages/) | **商品**（web / admin-web / backend / mobile） |
+| [`docs/`](docs/INDEX.md) | **説明書**（OpenAPI / 詳細設計 / ADR / lint）。商品フォルダには置かない |
+| `scratch/`（gitignore） | **計測**（手元の `input.ts`。[ADR 0010](docs/adr/0010-scratch-input-bundle-size.md)） |
+| `samples/`（gitignore） | **学習**（手元の参考クローン。公開ツリーには含めない） |
+| [`archive/`](archive/README.md) | **学習・診断の隔離方針** |
 
 貢献手順は [`CONTRIBUTING.md`](CONTRIBUTING.md)。行動規範は [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)。脆弱性報告は [`SECURITY.md`](SECURITY.md)。ライセンスは MIT（[`LICENSE`](LICENSE)）。

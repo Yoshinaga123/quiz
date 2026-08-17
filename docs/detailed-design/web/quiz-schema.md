@@ -7,10 +7,10 @@ description: Public quiz Zod fields plus the correctAnswerIndex .refine that Ope
 
 基本設計: [`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)（`Quiz`）、[`../../adr/0006-public-quiz-api.md`](../../adr/0006-public-quiz-api.md)、[`../../implement-policy.md`](../../implement-policy.md)
 
-実装: `web/src/schemas/quiz.ts`  
-テスト: `web/tests/schemas/quiz.test.ts`、`web/tests/contract/public-api.test.ts`  
+実装: `packages/web/src/schemas/quiz.ts`  
+テスト: `packages/web/tests/schemas/quiz.test.ts`、`packages/web/tests/contract/public-api.test.ts`  
 例: [`../../api/fixtures/`](../../api/fixtures/README.md)（`quiz.json` / `quiz-invalid-answer-index.json`）  
-試し書き: `web/scripts/try-quiz-parse.ts`（本番スキーマに残さない）
+試し書き: `packages/web/scripts/try-quiz-parse.ts`（本番スキーマに残さない）
 
 ## OpenAPI と 1:1 にできるもの
 

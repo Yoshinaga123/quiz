@@ -11,12 +11,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OPENAPI = ROOT / "docs" / "api" / "public-quiz-api.yaml"
 FIXTURES = ROOT / "docs" / "api" / "fixtures"
-ZOD_QUIZ = ROOT / "web" / "src" / "schemas" / "quiz.ts"
-ZOD_LIST = ROOT / "web" / "src" / "api" / "quiz.ts"
-GO_TYPES = ROOT / "backend" / "types.go"
+ZOD_QUIZ = ROOT / "packages" / "web" / "src" / "schemas" / "quiz.ts"
+ZOD_LIST = ROOT / "packages" / "web" / "src" / "api" / "quiz.ts"
+GO_TYPES = ROOT / "packages" / "backend" / "types.go"
 DETAIL = ROOT / "docs" / "detailed-design" / "web" / "quiz-schema.md"
 CONTRACT_DOC = ROOT / "docs" / "detailed-design" / "web" / "public-contract.md"
-MOBILE_DTO = ROOT / "mobile" / "lib" / "layers" / "data" / "dto" / "public_quiz_dto.dart"
+MOBILE_DTO = ROOT / "packages" / "mobile" / "lib" / "layers" / "data" / "dto" / "public_quiz_dto.dart"
 AGENTS = ROOT / "AGENTS.md"
 
 QUIZ_REQUIRED = [
@@ -150,14 +150,14 @@ def main() -> None:
     zod_quiz = ZOD_QUIZ.read_text(encoding="utf-8")
     for field in QUIZ_REQUIRED + ["code"]:
         if f"{field}:" not in zod_quiz and f"{field} :" not in zod_quiz:
-            fail(f"web/src/schemas/quiz.ts missing field {field}")
+            fail(f"packages/web/src/schemas/quiz.ts missing field {field}")
     if ".refine(" not in zod_quiz:
-        fail("web/src/schemas/quiz.ts must keep .refine for correctAnswerIndex")
+        fail("packages/web/src/schemas/quiz.ts must keep .refine for correctAnswerIndex")
 
     zod_list = ZOD_LIST.read_text(encoding="utf-8")
     for field in LIST_REQUIRED:
         if f"{field}:" not in zod_list:
-            fail(f"web/src/api/quiz.ts missing list field {field}")
+            fail(f"packages/web/src/api/quiz.ts missing list field {field}")
 
     go_types = GO_TYPES.read_text(encoding="utf-8")
     quiz_tags = go_struct_json_tags(go_types, "publicQuiz")

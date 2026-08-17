@@ -7,7 +7,7 @@
 
 ## Context
 
-`mobile/` は Flutter ベースで、`flutter_riverpod` と Clean Architecture 風の `layers/` 構成だけ導入済み。
+`packages/mobile/` は Flutter ベースで、`flutter_riverpod` と Clean Architecture 風の `layers/` 構成だけ導入済み。
 今後、API 連携・履歴・通知購読などが入ると、状態管理ライブラリの選定とレイヤ間の責務が曖昧なままだと
 コードが急速に絡まり合うリスクがある。
 

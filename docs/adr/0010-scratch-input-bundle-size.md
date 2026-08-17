@@ -1,7 +1,8 @@
-# ADR 0010: バンドルサイズ実験の入口は `scratch/input.ts`
+# ADR 0010: バンドルサイズ実験の入口は手元の `scratch/input.ts`
 
 - Status: Accepted
 - Date: 2026-08-14
+- Updated: 2026-08-16
 - Deciders: Quiz App Team
 - Related: ADR 0002（まず bundle size を測る）
 
@@ -10,27 +11,26 @@
 Zod の tree-shake 実験は、本番エントリではなく小さな TypeScript 入口を Rollup し、残った kB を見る。
 入口の名前をその都度決めると、エージェントも人も置き場を増やしてしまう。
 
-このリポジトリにはすでに振る舞いの試し書き（`play.ts`、`web/scripts/` など）がある。
-**コードサイズ（kB）がどう変化するか** を見る実験は、それとは別物である。
+Zod は `scratch/` 全体を gitignore する。入口ファイルはリポジトリに載せない。計測用 Rollup 設定だけをコミットする。
 
 ## Decision
 
-バンドルサイズ（kB）実験の TypeScript 入口は、リポジトリルートの **`scratch/input.ts`** とする。
+バンドルサイズ（kB）実験の TypeScript 入口は **`scratch/input.ts`** とする。フォルダごと gitignore する（Zod と同じ）。
 
-- パスは `./scratch/input.ts` で固定する。別名（`in.ts`、`bundle-entry.ts`、`web/scratch/` など）は使わない。
-- このファイルは計測用であり、`web/src/` や `admin-web/src/` からは import しない。Vite の本番エントリにもしない。
-- スキーマや fetch の振る舞いを試すときは、これまでどおり `play.ts` / `web/scripts/` / `admin-web/scripts/` / `backend/play.go` を使う。`scratch/input.ts` には置かない。
-
-計測コマンドは `npm run scratch:measure`。出力は `scratch/out_rollup.js`（named import）と、比較用の一時出力 `scratch/out_rollup_namespace.js`。どちらも gitignore。差分の正本は `scratch/RESULTS.md`。
+- パス名は `./scratch/input.ts` で固定する。別名は使わない。
+- このファイルは手元で作る。コミットしない。`packages/web/src/` や `packages/admin-web/src/` からは import しない。
+- 計測コマンドは `npm run scratch:measure`（`scripts/scratch-measure.mjs`）。出力と `RESULTS.md` も gitignore。
+- コミットする道具は `scripts/scratch-measure.mjs`、`scripts/rollup.scratch.config.js`、`scripts/scratch-tsconfig.json`。
+- 振る舞いの試し書きは `play.ts` / `packages/web/scripts/` などへ。`scratch/input.ts` には置かない。
 
 ## Consequences
 
 ### Positive
 
-- 「サイズ実験の入口はどこか」を毎回判断しなくてよい。
-- Zod の `scratch/input.ts` と同じ名前なので、参照元の設定を読み替えやすい。
+- 入口の名前は固定したまま、計測用紙をリポジトリに混ぜない。
+- Zod の `.gitignore` の `scratch` と同じ扱い。
 
 ### Negative / follow-up
 
-- `play.ts` と `scratch/input.ts` の二系統になる。用途が違うので許容する。
-- 出力は `scratch/out_rollup.js` / `scratch/out_rollup_namespace.js`（gitignore）。再実行は `npm run scratch:measure`。
+- クローンしただけでは `npm run scratch:measure` は失敗する。先に `scratch/input.ts` を手元で作る。
+- 過去の kB 表は git の正本に残さない。必要ならその場で測り直す。

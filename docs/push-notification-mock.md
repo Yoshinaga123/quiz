@@ -28,7 +28,7 @@ sequenceDiagram
 
 ### DB
 
-`backend/migrations/015_create_push_deliveries.*.sql` で `push_deliveries` を追加する。
+`packages/backend/migrations/015_create_push_deliveries.*.sql` で `push_deliveries` を追加する。
 
 | カラム | 用途 |
 | --- | --- |

@@ -34,8 +34,6 @@ REQUIRED_FILES = [
     "docs/detailed-design/web/public-contract.md",
     "docs/detailed-design/web/basics.md",
     "docs/detailed-design/repo-ops.md",
-    "scratch/input.ts",
-    "scratch/RESULTS.md",
 ]
 
 
@@ -53,6 +51,14 @@ def main() -> None:
     nvmrc = (ROOT / ".nvmrc").read_text(encoding="utf-8").strip()
     if nvmrc != "22":
         fail(f".nvmrc must be 22, got {nvmrc!r}")
+
+    package_json = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
+    workspaces = package_json.get("workspaces")
+    if not isinstance(workspaces, list) or "packages/web" not in workspaces or "packages/admin-web" not in workspaces:
+        fail("package.json workspaces must include packages/web and packages/admin-web")
+    for nested in ("packages/web/package-lock.json", "packages/admin-web/package-lock.json"):
+        if (ROOT / nested).is_file():
+            fail(f"{nested} must not exist; install from the repo root lockfile")
 
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     for needle in ("docs/api/fixtures/", "publicQuiz", ".refine", "play.ts"):

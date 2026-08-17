@@ -20,8 +20,8 @@ certs/
 
 | サービス | URL |
 |---|---|
-| `web/` | `https://localhost:5174/` |
-| `admin-web/` | `https://localhost:5173/` |
+| `packages/web/` | `https://localhost:5174/` |
+| `packages/admin-web/` | `https://localhost:5173/` |
 
 ## セットアップ手順
 
@@ -45,7 +45,7 @@ echo "certs/" >> .gitignore
 
 ### 3. Vite 設定を更新する
 
-`web/vite.config.ts` と `admin-web/vite.config.ts` の両方に以下を追加する。
+`packages/web/vite.config.ts` と `packages/admin-web/vite.config.ts` の両方に以下を追加する。
 
 ```ts
 import fs from 'node:fs'
@@ -67,8 +67,8 @@ export default defineConfig({
 ### 4. 起動して確認する
 
 ```bash
-cd web && npm run dev       # https://localhost:5174/
-cd admin-web && npm run dev # https://localhost:5173/
+cd packages/web && npm run dev       # https://localhost:5174/
+cd packages/admin-web && npm run dev # https://localhost:5173/
 ```
 
 証明書が適用されているか確認する場合:

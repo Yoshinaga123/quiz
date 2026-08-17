@@ -2,7 +2,7 @@
 
 対象:
 
-- `admin-web/src/data/quizzes.json`
+- `packages/admin-web/src/data/quizzes.json`
 
 レビュー日:
 
@@ -67,8 +67,8 @@
 問題:
 
 - `view-counter/frontend/src/components/ViewCounter.tsx`
-- `backend/main.go - main()`
-- `admin-web/src/layouts/AdminLayout.tsx / admin-web/src/App.tsx`
+- `packages/backend/main.go - main()`
+- `packages/admin-web/src/layouts/AdminLayout.tsx / packages/admin-web/src/App.tsx`
 
 のような書き方は、問題文の元ネタではあっても、**出典**としては弱い。
 要件では高品質なドキュメント由来が求められているため、少なくとも次のどちらかに統一したほうがよい。

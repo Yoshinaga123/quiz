@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """本番シードと最新シードマイグレーションの drift 検出ツール。
 
-`backend/seeds/quizzes.production.json` を `scripts/generate_migration.py` で
-仮想的に生成した SQL と、`backend/migrations/` の **最新の seed_quizzes 系マイグレーション** の
+`packages/backend/seeds/quizzes.production.json` を `scripts/generate_migration.py` で
+仮想的に生成した SQL と、`packages/backend/migrations/` の **最新の seed_quizzes 系マイグレーション** の
 SQL を比較し、内容差分があれば検出する。
 
 CI で「本番シード JSON を編集したのにマイグレーションを生成し忘れた」ケースを
@@ -10,8 +10,8 @@ CI で「本番シード JSON を編集したのにマイグレーションを�
 
 例:
   python3 scripts/check_quiz_drift.py \\
-    --seed backend/seeds/quizzes.production.json \\
-    --migrations-dir backend/migrations
+    --seed packages/backend/seeds/quizzes.production.json \\
+    --migrations-dir packages/backend/migrations
 """
 
 from __future__ import annotations
@@ -70,13 +70,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--seed",
         type=Path,
-        default=Path("backend/seeds/quizzes.production.json"),
+        default=Path("packages/backend/seeds/quizzes.production.json"),
         help="本番シード JSON",
     )
     parser.add_argument(
         "--migrations-dir",
         type=Path,
-        default=Path("backend/migrations"),
+        default=Path("packages/backend/migrations"),
         help="マイグレーション格納ディレクトリ",
     )
     parser.add_argument(

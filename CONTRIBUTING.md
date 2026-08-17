@@ -14,9 +14,9 @@
 ## 開発の流れ
 
 1. プロダクトコードだけを触る（`samples/` や診断教材は原則 PR に含めない）。
-2. ルートで `npm test` / `npm run lint` を通す（Node 22、`.nvmrc`）。
+2. ルートで `npm i` したあと `npm test` / `npm run lint` を通す（Node 22、`.nvmrc`。workspaces）。
 3. 公開契約を変えたら、実装・スキーマ・ドキュメント・テストを **同じ PR** で直す。
-4. 詳細設計の fenced TypeScript を変えたら、`web/tests/contract/docs-examples.test.ts` も同じ差分で直す。
+4. 詳細設計の fenced TypeScript を変えたら、`packages/web/tests/contract/docs-examples.test.ts` も同じ差分で直す。
 5. 詳細設計のページを足したら frontmatter（`title` / `description`）と `meta.json`（ルートとパッケージフォルダ）を更新し、`npm run docs:llms` を走らせる。書き方は [`docs/detailed-design/writing.md`](docs/detailed-design/writing.md)。
 
 Husky が commit 前に lint-staged、push 前に `npm run test:contract` を走らせる。
@@ -27,12 +27,12 @@ Zod の CONTRIBUTING（実装と docs を同時更新）に合わせる。公開
 
 | 変更 | 同時に更新する |
 | --- | --- |
-| 公開 JSON の shape | `docs/api/public-quiz-api.yaml` + `docs/api/fixtures/` + `web/src/schemas/quiz.ts` + `web/src/api/quiz.ts` + `backend/types.go`（`publicQuiz`）+ `web/tests/contract/` + `backend/public_contract_test.go` + mobile DTO |
+| 公開 JSON の shape | `docs/api/public-quiz-api.yaml` + `docs/api/fixtures/` + `packages/web/src/schemas/quiz.ts` + `packages/web/src/api/quiz.ts` + `packages/backend/types.go`（`publicQuiz`）+ `packages/web/tests/contract/` + `packages/backend/public_contract_test.go` + mobile DTO |
 | OpenAPI に書けない業務ルール（`.refine` など） | `docs/detailed-design/web/quiz-schema.md` と `meta.json` |
-| 管理画面の入力スキーマ | `admin-web/src/schemas/` + `admin-web/tests/schemas/` + `docs/detailed-design/admin-web/quiz-schema.md` |
+| 管理画面の入力スキーマ | `packages/admin-web/src/schemas/` + `packages/admin-web/tests/schemas/` + `docs/detailed-design/admin-web/quiz-schema.md` |
 | なぜ変えたか | 必要なら `docs/adr/` |
 
-試し書きは `play.ts`、`web/scripts/`、`admin-web/scripts/`、`backend/play.go`（本番の `src/` に残さない）。
+試し書きは `play.ts`、`packages/web/scripts/`、`packages/admin-web/scripts/`、`packages/backend/play.go`（本番の `src/` に残さない）。
 
 ## チェック
 
@@ -49,9 +49,9 @@ npx --yes @redocly/cli lint docs/api/public-quiz-api.yaml
 ```bash
 python3 scripts/check_public_contract.py
 python3 scripts/check_repo_hygiene.py
-cd web && npm test && npm run lint && npm run build
-cd admin-web && npm test && npm run lint && npm run build
-cd backend && gofmt -l . && go test ./... && go vet ./...
+cd packages/web && npm test && npm run lint && npm run build
+cd packages/admin-web && npm test && npm run lint && npm run build
+cd packages/backend && gofmt -l . && go test ./... && go vet ./...
 ```
 
 ## PR

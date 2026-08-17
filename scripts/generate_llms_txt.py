@@ -13,7 +13,7 @@ def catalog_text() -> str:
     lines = [
         "# Socrates Quiz",
         "",
-        "> High-difficulty IT quiz app. Monorepo, not a published library. Public JSON is OpenAPI + fixtures + handwritten Zod. Learning trees (samples/, archive/, docs/security-tools/) are not product.",
+        "> High-difficulty IT quiz app. Monorepo, not a published library. Public JSON is OpenAPI + fixtures + handwritten Zod. Local learning trees (gitignored samples/) are not product.",
         "",
     ]
     for slug, path, fields, body in product_pages():

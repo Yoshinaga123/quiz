@@ -5,7 +5,7 @@
 
 ## Scope
 
-- Target: `backend/` が提供する HTTP API
+- Target: `packages/backend/` が提供する HTTP API
 - Default URL: `http://127.0.0.1:8082`
 - Scan type: OWASP ZAP Baseline Scan (DAST)
 
@@ -14,7 +14,7 @@
 前提:
 
 - Docker が利用可能
-- `backend/` の依存コンテナが起動できる
+- `packages/backend/` の依存コンテナが起動できる
 
 実行:
 
@@ -42,9 +42,9 @@ GitHub Actions に `security-pentest.yml` を追加済み。
 
 - Trigger:
   - `workflow_dispatch`
-  - `pull_request` (backend/web/admin-web/security workflow 変更時)
+  - `pull_request` (`packages/backend/` / `packages/web/` / `packages/admin-web/` / security workflow 変更時)
 - 実行内容:
-  1. `backend/docker compose` で API を起動
+  1. `packages/backend/docker compose` で API を起動
   2. `/healthz` が起動するまで待機
   3. ZAP ベースラインスキャンを実行
   4. レポートを Artifact として保存

@@ -4,16 +4,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
-  - package-ecosystem: npm
-    directory: /web
-    schedule:
-      interval: weekly
-  - package-ecosystem: npm
-    directory: /admin-web
-    schedule:
-      interval: weekly
   - package-ecosystem: gomod
-    directory: /backend
+    directory: /packages/backend
     schedule:
       interval: weekly
   - package-ecosystem: github-actions

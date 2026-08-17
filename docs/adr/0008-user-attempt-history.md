@@ -7,7 +7,7 @@
 
 ## Context
 
-`web/` ではすでに **`localStorage` ベースの履歴保存** を実装済み（`web/src/lib/historyStorage.ts`）。
+`packages/web/` ではすでに **`localStorage` ベースの履歴保存** を実装済み（`packages/web/src/lib/historyStorage.ts`）。
 一方で次の要望が想定される。
 
 - 端末を変えても履歴を引き継ぎたい。
@@ -68,6 +68,6 @@ CREATE TABLE attempt_answers (
 
 ## Migration
 
-1. `web/` は ADR 0005 の通り `localStorage` を一次ソースとして既に動作している。
+1. `packages/web/` は ADR 0005 の通り `localStorage` を一次ソースとして既に動作している。
 2. ADR 0006 の `POST /v1/attempts` 実装後、結果画面送信時に **best-effort** で送る（失敗は UI 体験を妨げない）。
 3. モバイル版でも `clientSessionId` を導入し、同 API を呼ぶ。

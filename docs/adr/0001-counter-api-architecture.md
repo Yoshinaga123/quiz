@@ -29,7 +29,7 @@ We adopt the following design:
 - Do not use in-process `sync.Mutex` for this API path.
 
 3. CORS allows browser access from local frontend origins in development.
-- Current implementation reflects the request `Origin` header in `Access-Control-Allow-Origin` (see `withCORS` in `backend/main.go`).
+- Current implementation reflects the request `Origin` header in `Access-Control-Allow-Origin` (see `withCORS` in `packages/backend/main.go`).
 - Production deployments should revisit an explicit origin allowlist before public exposure.
 
 4. Response format is unified as JSON.

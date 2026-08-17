@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true
+  },
+  "include": ["../scratch/*.ts", "../scratch/.input-namespace.ts"],
+  "exclude": ["node_modules"]
+}

@@ -5,11 +5,11 @@ description: Detailed design for the user-facing React quiz UI
 
 # web
 
-ユーザー向け Web（`web/`）の詳細設計を置く。
+ユーザー向け Web（`packages/web/`）の詳細設計を置く。
 
 基本設計: [`../../adr/0005-user-facing-web-quiz-app.md`](../../adr/0005-user-facing-web-quiz-app.md)、[`../../api/public-quiz-api.yaml`](../../api/public-quiz-api.yaml)、[`../../implement-policy.md`](../../implement-policy.md)
 
-実装: `web/src/`
+実装: `packages/web/src/`
 
 | ページ | 概要 |
 | --- | --- |

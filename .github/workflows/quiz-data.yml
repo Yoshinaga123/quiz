@@ -4,16 +4,16 @@ on:
   push:
     branches: [main]
     paths:
-      - "admin-web/src/data/quizzes.json"
-      - "backend/seeds/**"
-      - "backend/migrations/**"
+      - "packages/admin-web/src/data/quizzes.json"
+      - "packages/backend/seeds/**"
+      - "packages/backend/migrations/**"
       - "scripts/**"
       - ".github/workflows/quiz-data.yml"
   pull_request:
     paths:
-      - "admin-web/src/data/quizzes.json"
-      - "backend/seeds/**"
-      - "backend/migrations/**"
+      - "packages/admin-web/src/data/quizzes.json"
+      - "packages/backend/seeds/**"
+      - "packages/backend/migrations/**"
       - "scripts/**"
       - ".github/workflows/quiz-data.yml"
 
@@ -30,9 +30,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Lint candidate pool
-        run: python3 scripts/lint_quizzes.py admin-web/src/data/quizzes.json
+        run: python3 scripts/lint_quizzes.py packages/admin-web/src/data/quizzes.json
       - name: Lint production seed
-        run: python3 scripts/lint_quizzes.py backend/seeds/quizzes.production.json
+        run: python3 scripts/lint_quizzes.py packages/backend/seeds/quizzes.production.json
 
   drift:
     name: Production seed drift
@@ -45,8 +45,8 @@ jobs:
       - name: Check production seed drift
         run: |
           python3 scripts/check_quiz_drift.py \
-            --seed backend/seeds/quizzes.production.json \
-            --migrations-dir backend/migrations \
+            --seed packages/backend/seeds/quizzes.production.json \
+            --migrations-dir packages/backend/migrations \
             --print-diff
 
   diff-summary:
@@ -60,5 +60,5 @@ jobs:
       - name: Summarize differences
         run: |
           python3 scripts/diff_quiz_data.py \
-            admin-web/src/data/quizzes.json \
-            backend/seeds/quizzes.production.json
+            packages/admin-web/src/data/quizzes.json \
+            packages/backend/seeds/quizzes.production.json

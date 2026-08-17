@@ -6,11 +6,11 @@ info:
     name: MIT
     url: https://opensource.org/licenses/MIT
   description: |
-    ユーザー向けクイズアプリ（`web/`, `mobile/`）から呼び出される公開 API のドラフト仕様。
+    ユーザー向けクイズアプリ（`packages/web/`, `packages/mobile/`）から呼び出される公開 API のドラフト仕様。
 
     - 認証はオプション。匿名ユーザーでもクイズの取得と回答送信が可能。
     - 個人特定情報は持たず、回答ログはアプリ内 ID で集計する（ADR 0008 参照）。
-    - レスポンス境界は `web/src/schemas/quiz.ts` の Zod スキーマと一対一で一致させる
+    - レスポンス境界は `packages/web/src/schemas/quiz.ts` の Zod スキーマと一対一で一致させる
       （docs/implement-policy.md「外部入力の検証」原則）。
     - 実行時の突き合わせ例は `docs/api/fixtures/`。shape を変えたら OpenAPI・Zod・Go・
       fixtures・詳細設計・テストを同じ PR で直す。
@@ -18,7 +18,7 @@ info:
     本ファイルは仕様の合意を取るためのドラフトであり、サーバー実装は段階的に追加する。
 servers:
   - url: http://localhost:8082
-    description: Local development (backend/docker-compose.yml). Host 8082 → container 8080.
+    description: Local development (packages/backend/docker-compose.yml). Host 8082 → container 8080.
   - url: https://socrates-quiz.jp
     description: |
       Production public URL (HTTPS port 443).
