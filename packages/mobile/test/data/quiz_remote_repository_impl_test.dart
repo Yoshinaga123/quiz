@@ -10,17 +10,13 @@ class _FakeRemoteDataSource implements QuizRemoteDataSource {
     this.list,
     this.details,
     this.sections,
-    this.errorOnList,
     this.errorOnDetails,
-    this.errorOnSections,
   });
 
   final List<PublicQuizDto>? list;
   final PublicQuizDto? details;
   final List<SectionSummaryDto>? sections;
-  final Object? errorOnList;
   final Object? errorOnDetails;
-  final Object? errorOnSections;
 
   int callsToList = 0;
   int callsToDetails = 0;
@@ -29,7 +25,6 @@ class _FakeRemoteDataSource implements QuizRemoteDataSource {
   @override
   Future<List<PublicQuizDto>> fetchQuizList({String? section, int? limit}) async {
     callsToList++;
-    if (errorOnList != null) throw errorOnList!;
     return list ?? const [];
   }
 
@@ -43,7 +38,6 @@ class _FakeRemoteDataSource implements QuizRemoteDataSource {
   @override
   Future<List<SectionSummaryDto>> fetchSectionSummaries() async {
     callsToSections++;
-    if (errorOnSections != null) throw errorOnSections!;
     return sections ?? const [];
   }
 }
