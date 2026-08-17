@@ -7,7 +7,7 @@ import 'package:quiz_mobile/layers/domain/errors/quiz_failure.dart';
 
 Map<String, dynamic> loadQuizFixture({String name = 'quiz.json'}) {
   final candidates = [
-    File('../docs/api/fixtures/$name'),
+    File('../../docs/api/fixtures/$name'),
     File('docs/api/fixtures/$name'),
   ];
   for (final file in candidates) {
