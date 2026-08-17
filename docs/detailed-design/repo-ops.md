@@ -24,6 +24,7 @@ Zod 本体のライブラリ実装は流用しない。流用するのは **同�
 | --- | --- |
 | `play.ts`（ルート） | `npm run play`（振る舞い） |
 | 手元の `scratch/input.ts`（gitignore） | バンドルサイズ（kB）実験。[ADR 0010](../adr/0010-scratch-input-bundle-size.md)。道具は `scripts/scratch-measure.mjs`。`npm run scratch:measure` |
+| `packages/bench/` | 実行速度（ops/sec）。[ADR 0013](../adr/0013-runtime-bench.md)。`npm run bench` |
 | `packages/web/scripts/try-quiz-parse.ts` | `cd packages/web && npx --yes tsx scripts/try-quiz-parse.ts` |
 | `packages/admin-web/scripts/try-auth-parse.ts` | `cd packages/admin-web && npx --yes tsx scripts/try-auth-parse.ts` |
 | `packages/backend/play.go`（`//go:build ignore`） | `cd packages/backend && go run play.go` |

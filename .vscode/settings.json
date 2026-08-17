@@ -29,5 +29,6 @@
     "editor.defaultFormatter": "golang.go"
   },
   "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true
+  "files.trimTrailingWhitespace": true,
+  "editor.guides.indentation": false
 }

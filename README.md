@@ -65,9 +65,9 @@ cd packages/mobile && flutter test
 
 | パス | 位置づけ |
 | --- | --- |
-| [`packages/`](packages/) | **商品**（web / admin-web / backend / mobile） |
+| [`packages/`](packages/) | **商品**（web / admin-web / backend / mobile）と **実行速度計測**（[`bench/`](packages/bench/)） |
 | [`docs/`](docs/INDEX.md) | **説明書**（OpenAPI / 詳細設計 / ADR / lint）。商品フォルダには置かない |
-| `scratch/`（gitignore） | **計測**（手元の `input.ts`。[ADR 0010](docs/adr/0010-scratch-input-bundle-size.md)） |
+| `scratch/`（gitignore） | **kB 計測**（手元の `input.ts`。[ADR 0010](docs/adr/0010-scratch-input-bundle-size.md)） |
 | `samples/`（gitignore） | **学習**（手元の参考クローン。公開ツリーには含めない） |
 | [`archive/`](archive/README.md) | **学習・診断の隔離方針** |
 

@@ -13,6 +13,7 @@ Socrates Quiz is an application monorepo, not a published library.
 | `packages/admin-web/` | Admin CRUD + mock Push (JWT) |
 | `packages/mobile/` | Flutter client for the public API |
 | `packages/backend/` | Go `net/http` API (`package main` split across files) |
+| `packages/bench/` | Runtime speed (ops/sec) for the public Zod parse. Not a product app |
 | `docs/` | Manuals only (OpenAPI, detailed-design, ADR, linting). Not inside a product |
 | `scratch/` | Local bundle-size lab (gitignored, same as Zod). Entry name is `input.ts` |
 | `samples/` | Local learning clones (gitignored). Not in the published tree |
@@ -53,6 +54,7 @@ Do not generate Zod from OpenAPI. Dual-write both (ADR 0006).
 
 - Scratch / experiments: `play.ts` (repo root), `packages/web/scripts/`, `packages/admin-web/scripts/`, `packages/backend/play.go` (`//go:build ignore`). Never leave experiments in `src/` or in a `package main` file that `go build` compiles.
 - Bundle-size (kB) experiments use a **local** `scratch/input.ts` (ADR 0010). The `scratch/` directory is gitignored, same as Zod. Do not invent another entry name. Do not commit that folder. Do not import it from `packages/web/src/` or `packages/admin-web/src/`.
+- Runtime speed (ops/sec) lives in `packages/bench` (ADR 0013). Run `npm run bench`. Do not put ArkType / Valibot there. Do not add it to npm workspaces.
 - Tests live next to the API they protect: `packages/web/tests/schemas/`, `packages/web/tests/contract/`, `packages/admin-web/tests/schemas/`, `packages/backend/*_test.go`.
 - A schema or contract change without a success **and** failure test is unfinished.
 - Documentation examples are executable. If you change a fenced TypeScript block in `docs/detailed-design/`, update `packages/web/tests/contract/docs-examples.test.ts` (and the implementation) in the same diff.
@@ -74,6 +76,7 @@ npm run check:docs       # frontmatter, orphans, links, llms drift
 npm run docs:llms        # regenerate docs/llms.txt and docs/llms-full.txt
 npm run play             # root play.ts scratch pad
 npm run scratch:measure  # local scratch/input.ts kB (folder is gitignored)
+npm run bench            # packages/bench ops/sec (public quiz Zod parse)
 ```
 
 Husky runs `lint-staged` on commit and `npm run test:contract` on push.

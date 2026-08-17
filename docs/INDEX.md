@@ -75,6 +75,7 @@
 | [0010](./adr/0010-scratch-input-bundle-size.md) | Accepted | バンドルサイズ実験の入口は手元の `scratch/input.ts`（gitignore） |
 | [0011](./adr/0011-devcontainer-runtimes.md) | Accepted | Dev Container にはこのリポジトリが実際に使うランタイムだけ入れる |
 | [0012](./adr/0012-vscode-launch.json.md) | Accepted | VS Code `launch.json` は Zod のコピーを置かない |
+| [0013](./adr/0013-runtime-bench.md) | Accepted | 実行速度の比較は `packages/bench` |
 
 ## API 仕様
 
@@ -96,6 +97,7 @@
 | [`../packages/admin-web/scripts/README.md`](../packages/admin-web/scripts/README.md) | 管理画面スキーマの試し書き |
 | [`../play.ts`](../play.ts) | ルートの試し書き（`npm run play`） |
 | [ADR 0010](./adr/0010-scratch-input-bundle-size.md) | バンドルサイズ計測（手元の `scratch/input.ts`。フォルダは gitignore） |
+| [`../packages/bench/README.md`](../packages/bench/README.md) | 実行速度計測（ops/sec。[ADR 0013](./adr/0013-runtime-bench.md)） |
 | [`../packages/mobile/README.md`](../packages/mobile/README.md) | モバイル版（Flutter + Riverpod） |
 | [`../packages/backend/README.md`](../packages/backend/README.md) | Go API（Public / Admin / 認証 / Seed 同期） |
 

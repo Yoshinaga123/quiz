@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `packages/bench` runs public-quiz Zod parse speed (`npm run bench`). Bundle size stays in local `scratch/` (ADR 0013).
 - Backlog TASK-005: ESLint → Biome is a future migration. ESLint stays until a human opens that task.
 - ADR 0012: do not copy Zod's VS Code `launch.json` (`@zod/source`). Debug pads with `npm run play` / `go run`.
 - Quality CI runs root `npm ci` + `npm test` on every PR, and circular import check after install. Mobile CI runs `flutter analyze` / `flutter test`. Frontend and backend push also cover `develop`.

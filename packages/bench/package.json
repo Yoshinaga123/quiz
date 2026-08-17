@@ -1,0 +1,8 @@
+{
+  "name": "@quiz/bench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "tsx index.ts"
+  }
+}

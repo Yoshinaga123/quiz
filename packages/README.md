@@ -1,6 +1,6 @@
 # packages
 
-商品（実行するアプリ）だけを置く。説明書は [`../docs/`](../docs/INDEX.md)。計測の `scratch/` は gitignore（Zod と同じ）。
+商品（実行するアプリ）と、Zod と同じ実行速度計測だけを置く。説明書は [`../docs/`](../docs/INDEX.md)。kB 計測の `scratch/` は gitignore。
 
 | パッケージ | 役割 |
 | --- | --- |
@@ -8,3 +8,4 @@
 | [`admin-web/`](admin-web/) | 管理画面 |
 | [`backend/`](backend/) | Go API |
 | [`mobile/`](mobile/) | Flutter クライアント |
+| [`bench/`](bench/) | 実行速度（ops/sec）。商品ではない。[ADR 0013](../docs/adr/0013-runtime-bench.md) |
