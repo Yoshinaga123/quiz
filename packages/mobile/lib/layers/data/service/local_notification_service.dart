@@ -19,7 +19,7 @@ class LocalNotificationService {
     );
 
     await _plugin.initialize(
-      initializationSettings,
+      settings: initializationSettings,
       onDidReceiveNotificationResponse: (response) {
         final payload = response.payload;
         if (payload == null) return;
@@ -52,10 +52,10 @@ class LocalNotificationService {
     );
 
     return _plugin.show(
-      feed.deliveryId,
-      feed.title,
-      feed.body,
-      details,
+      id: feed.deliveryId,
+      title: feed.title,
+      body: feed.body,
+      notificationDetails: details,
       payload: feed.quizId.toString(),
     );
   }
