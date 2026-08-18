@@ -79,7 +79,7 @@ class RemoteQuizListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final useCase = ref.watch(getQuizListRemoteProvider);
-    // useCase() で /v1/quizzes を呼ぶ
+    // useCase() で /v1/quizzes を呼ぶ（limit 未指定時は offset で全ページ取得）
     ...
   }
 }

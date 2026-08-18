@@ -61,6 +61,10 @@ paths:
       description: |
         管理画面で `status = published` に設定されたクイズのみを返す。
         section 指定時は前方一致ではなく完全一致でフィルタする。
+        `limit` は 1 ページあたりの件数（未指定時 100、最大 100）。
+        `offset` は 0 始まりのスキップ件数（未指定時 0）。
+        `totalCount` はページではなく、条件に合う公開クイズの全件数。
+        100 件を超える公開データを取るときは `offset` を進めて次ページを取る。
       parameters:
         - in: query
           name: section
@@ -75,6 +79,12 @@ paths:
             type: integer
             minimum: 1
             maximum: 100
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: integer
+            minimum: 0
       responses:
         "200":
           description: クイズ一覧

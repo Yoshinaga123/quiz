@@ -35,19 +35,42 @@ function parseLimit(raw: string | null): number {
 }
 
 function QuizPlayPage() {
-  const { quizzes } = useQuizCatalog()
+  const { quizzes, isLoading } = useQuizCatalog()
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  const { appendRecord } = useHistory()
-
   const initialSection = searchParams.get('section')
   const initialLimit = parseLimit(searchParams.get('limit'))
 
+  if (isLoading) {
+    return (
+      <div className="rounded-card border border-navy/12 bg-white/86 p-card text-center shadow-card">
+        <h1 className="m-0 text-[1.4rem] font-semibold">問題を読み込んでいます</h1>
+        <p className="mt-2 mb-0 text-[#4f5d75]">Public API からクイズを読み込み中です。</p>
+      </div>
+    )
+  }
+
+  return (
+    <QuizPlaySession quizzes={quizzes} sectionFilter={initialSection} limit={initialLimit} />
+  )
+}
+
+function QuizPlaySession({
+  quizzes,
+  sectionFilter,
+  limit,
+}: {
+  quizzes: readonly Quiz[]
+  sectionFilter: string | null
+  limit: number
+}) {
+  const navigate = useNavigate()
+  const { appendRecord } = useHistory()
+
   const [session] = useState<SessionState>(() => ({
     id: generateSessionId(),
-    sectionFilter: initialSection,
+    sectionFilter,
     startedAt: nowIso(),
-    quizIds: pickQuizIds(quizzes, initialSection, initialLimit),
+    quizIds: pickQuizIds(quizzes, sectionFilter, limit),
   }))
 
   const [currentIndex, setCurrentIndex] = useState(0)

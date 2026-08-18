@@ -5,7 +5,11 @@ import 'package:quiz_mobile/layers/domain/errors/quiz_failure.dart';
 
 /// バックエンドの公開エンドポイント (`/v1/...`) を抽象化したデータソース。
 abstract class QuizRemoteDataSource {
-  Future<List<PublicQuizDto>> fetchQuizList({String? section, int? limit});
+  Future<List<PublicQuizDto>> fetchQuizList({
+    String? section,
+    int? limit,
+    int? offset,
+  });
   Future<PublicQuizDto> fetchQuizDetails({required int id});
   Future<List<SectionSummaryDto>> fetchSectionSummaries();
 }
@@ -15,23 +19,62 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
 
   final QuizApiClient _client;
 
+  static const int publicListPageSize = 100;
+
   @override
   Future<List<PublicQuizDto>> fetchQuizList({
     String? section,
     int? limit,
+    int? offset,
+  }) async {
+    if (limit != null || offset != null) {
+      return (await _fetchQuizPage(
+        section: section,
+        limit: limit,
+        offset: offset ?? 0,
+      )).quizzes;
+    }
+
+    final collected = <PublicQuizDto>[];
+    var pageOffset = 0;
+    var totalCount = 1 << 30;
+    while (collected.length < totalCount) {
+      final page = await _fetchQuizPage(
+        section: section,
+        limit: publicListPageSize,
+        offset: pageOffset,
+      );
+      totalCount = page.totalCount;
+      if (page.quizzes.isEmpty) {
+        break;
+      }
+      collected.addAll(page.quizzes);
+      pageOffset += page.quizzes.length;
+    }
+    return List<PublicQuizDto>.unmodifiable(collected);
+  }
+
+  Future<({List<PublicQuizDto> quizzes, int totalCount})> _fetchQuizPage({
+    String? section,
+    int? limit,
+    required int offset,
   }) async {
     final query = <String, String>{};
     if (section != null && section.isNotEmpty) {
       query['section'] = section;
     }
     if (limit != null) {
-      if (limit < 1 || limit > 100) {
+      if (limit < 1 || limit > publicListPageSize) {
         throw QuizParseFailure(
-          message: 'limit must be between 1 and 100, got $limit',
+          message: 'limit must be between 1 and $publicListPageSize, got $limit',
         );
       }
       query['limit'] = '$limit';
     }
+    if (offset < 0) {
+      throw QuizParseFailure(message: 'offset must be >= 0, got $offset');
+    }
+    query['offset'] = '$offset';
 
     final raw = await _client.getJson(
       '/v1/quizzes',
@@ -46,7 +89,7 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
       );
     }
 
-    return quizzes
+    final parsed = quizzes
         .map((entry) {
           if (entry is! Map<String, dynamic>) {
             throw const QuizParseFailure(
@@ -56,6 +99,19 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
           return PublicQuizDto.fromJson(entry);
         })
         .toList(growable: false);
+
+    return (quizzes: parsed, totalCount: _readTotalCount(payload, parsed.length));
+  }
+
+  int _readTotalCount(Map<String, dynamic> payload, int pageLength) {
+    final raw = payload['totalCount'];
+    if (raw is int && raw >= 0) {
+      return raw;
+    }
+    if (raw is num && raw >= 0) {
+      return raw.toInt();
+    }
+    return pageLength;
   }
 
   @override

@@ -198,6 +198,14 @@ def main() -> None:
         if f"'{field}'" not in mobile_dto and f'"{field}"' not in mobile_dto:
             fail(f"public_quiz_dto.dart missing field {field}")
 
+    if "name: offset" not in openapi or "name: limit" not in openapi:
+        fail("OpenAPI /v1/quizzes must document limit and offset query parameters")
+    public_go = (ROOT / "packages" / "backend" / "public.go").read_text(encoding="utf-8")
+    if "OFFSET" not in public_go:
+        fail("packages/backend/public.go must page with OFFSET")
+    if "offset" not in zod_list:
+        fail("packages/web/src/api/quiz.ts must send offset when paging")
+
     if not AGENTS.is_file():
         fail("AGENTS.md is required")
     agents = AGENTS.read_text(encoding="utf-8")

@@ -387,6 +387,15 @@ npm run test:contract
 
 CI: `.github/workflows/public-contract.yml` と `.github/workflows/quality.yml`。
 
+## 一覧のページング
+
+`GET /v1/quizzes` は `limit`（1..100、未指定時 100）と `offset`（0 始まり、未指定時 0）を受け取る。
+レスポンスの JSON shape は変えない（`quizzes` / `totalCount` / `generatedAt`）。
+`totalCount` は今のページではなく、条件に合う公開クイズの全件数。
+
+1 回の応答は最大 100 件なので、100 件を超える公開データを取るときは `offset` を進める。
+web の `fetchQuizzes` と mobile の `fetchQuizList` は、呼び出し側が `limit` / `offset` を付けないとき、全ページを辿ってカタログを揃える。
+
 
 # admin-web
 
@@ -525,7 +534,7 @@ class RemoteQuizListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final useCase = ref.watch(getQuizListRemoteProvider);
-    // useCase() で /v1/quizzes を呼ぶ
+    // useCase() で /v1/quizzes を呼ぶ（limit 未指定時は offset で全ページ取得）
     ...
   }
 }

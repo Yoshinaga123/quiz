@@ -21,10 +21,12 @@ services:
       ADMIN_PASSWORD: password
       JWT_SECRET: dev-only-secret
       QUIZ_SEED_GENERATOR_SCRIPT: /workspace/scripts/generate_migration.py
+      QUIZ_SEED_PATH: /data/quizzes.json
     ports:
       - "8082:8080"
     volumes:
       - .:/app
+      - ../admin-web/src/data/quizzes.json:/data/quizzes.json:ro
       - ../../scripts:/workspace/scripts:ro
       - go-mod-cache:/go/pkg/mod
       - go-build-cache:/root/.cache/go-build

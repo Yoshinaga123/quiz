@@ -71,6 +71,7 @@
 - [public API contract sync](docs/detailed-design/web/public-contract.md): Same-PR checklist for OpenAPI, fixtures, Zod, Go publicQuiz, detailed design, and tests
 
 - [コマンド](docs/detailed-design/web/public-contract.md#コマンド)
+- [一覧のページング](docs/detailed-design/web/public-contract.md#一覧のページング)
 
 ## admin-web
 

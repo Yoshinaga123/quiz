@@ -57,12 +57,12 @@ sequenceDiagram
     Client->>API: GET /v1/quizzes with optional filters
     API->>API: query を読む
     API->>API: status = published を強制
-    alt limit が不正
+    alt limit または offset が不正
         API-->>Client: 400 public error
-    else limit が有効
+    else クエリが有効
         API->>DB: COUNT rows with published filter
         DB-->>API: totalCount
-        API->>DB: SELECT projected columns ORDER BY id ASC LIMIT N
+        API->>DB: SELECT projected columns ORDER BY id ASC LIMIT N OFFSET M
         DB-->>API: rows
         API->>API: options JSON を unmarshal
         API-->>Client: 200 list response
@@ -73,6 +73,8 @@ sequenceDiagram
 
 - `section` が指定されたときだけ `WHERE section = $n` を追加する
 - `limit` は `1..100` のみ許容し、未指定時は `100`
+- `offset` は `0` 以上の整数のみ許容し、未指定時は `0`
+- `totalCount` はページではなく、条件に合う公開クイズの全件数
 - `status = 'published'` を必ず付与するため、未公開クイズは返らない
 - 一覧レスポンスは `publicQuizListResponse`、個別取得は単一 `publicQuiz` を返す
 - 公開 API の失敗形式は `publicErrorResponse` で、`code` と `message` を返す
