@@ -13,7 +13,9 @@ Zod 本体のライブラリ実装は流用しない。流用するのは **同�
 
 | ファイル | 役割 |
 | --- | --- |
-| [`../../AGENTS.md`](../../AGENTS.md) | 公開契約・置き場・禁止事項。Codex の PR レビューは `## Code Review Rules` |
+| [`../../AGENTS.md`](../../AGENTS.md) | 正本。公開契約・Rules・Do not。調査は triage スキル、公開レビューは `## Code Review Rules` |
+| [`../../.claude/skills/triage/SKILL.md`](../../.claude/skills/triage/SKILL.md) | Issue / PR 調査。Codex は `.codex/skills` → `.claude/skills`。メモは gitignore の `.triage/` |
+| [`../../.gitignore`](../../.gitignore) | Zod と同じ `scratch` / `.triage/` / `tmp/`。加えて `samples/` と Firebase 設定 |
 | [`../../CLAUDE.md`](../../CLAUDE.md) | AGENTS.md への入口 |
 | [`../llms.txt`](../llms.txt) | ページ目録（zod.dev/llms.txt 相当） |
 | [`../llms-full.txt`](../llms-full.txt) | 詳細設計の連結（zod.dev/llms-full.txt 相当） |
@@ -29,7 +31,7 @@ Zod 本体のライブラリ実装は流用しない。流用するのは **同�
 | `packages/admin-web/scripts/try-auth-parse.ts` | `cd packages/admin-web && npx --yes tsx scripts/try-auth-parse.ts` |
 | `packages/backend/play.go`（`//go:build ignore`） | `cd packages/backend && go run play.go` |
 
-恒久ケースは `tests/` または `*_test.go` へ。`play.local.ts` は gitignore。
+恒久ケースは `tests/` または `*_test.go` へ。`play.local.ts` は gitignore。Vitest は [`../../scripts/fail-on-console.ts`](../../scripts/fail-on-console.ts) を setup し、テスト中の `console.*` を落とす。連続 `//` 散文は [`../../scripts/check-comments.ts`](../../scripts/check-comments.ts)（`npm run check:comments`）。
 
 ## ドキュメント例のテスト
 

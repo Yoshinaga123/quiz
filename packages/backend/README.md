@@ -23,7 +23,7 @@ docker compose up --build
 | API | `http://localhost:8082` |
 | PostgreSQL | `localhost:5433`（DB 名 `counter`） |
 
-本番の公開 URL は **`https://socrates-quiz.jp`（HTTPS 443）**（コンテナ内は引き続き 8080）。
+本番の公開 URL は **`https://socrates-quiz.jp`（HTTPS 443）**（コンテナ内は引き続き 8080）。置き場は Lightsail 1台（[ADR 0015](../../docs/adr/0015-lightsail-production.md)）。
 
 起動時に golang-migrate で `migrations/` を自動適用する。
 
@@ -66,6 +66,7 @@ set -a && source .env && set +a && go run .
 | `ADMIN_PASSWORD` | `password` | 管理者パスワード |
 | `JWT_SECRET` | `dev-only-secret` | JWT 署名鍵 |
 | `QUIZ_SEED_GENERATOR_SCRIPT` | `../scripts/generate_migration.py` | Seed SQL 生成スクリプト |
+| `QUIZ_SEED_PATH` | `../admin-web/src/data/quizzes.json` | シード JSON（`published: true` のみ投入） |
 | `QUIZ_PYTHON_BIN` | `python3` | Seed 同期時に使う Python |
 | `QUIZ_MIGRATIONS_DIR` | `migrations` | migration SQL のディレクトリ |
 
@@ -130,12 +131,10 @@ packages/backend/
   admin_quizzes.go     # /api/admin/quizzes*
   public.go            # /v1/*（公開）
   push.go              # mock Push
-  seed.go              # 本番シード同期
+  seed.go              # quizzes.json の published 分を同期
   quiz_scan.go         # Scan ヘルパー
   debug.go             # 起動時メモリ診断
   migrations/          # golang-migrate SQL（embed も可）
-  seeds/
-    quizzes.production.json   # 本番 Seed テンプレート
   docker-compose.yml
   Dockerfile
   .air.toml            # 開発用ホットリロード設定

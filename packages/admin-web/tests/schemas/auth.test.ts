@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  loginChallengeResponseSchema,
   loginRequestSchema,
   loginVerificationSchema,
 } from '../../src/schemas/auth';
@@ -41,5 +42,26 @@ describe('loginVerificationSchema', () => {
         verificationCode: '12',
       }).success,
     ).toBe(false);
+  });
+});
+
+describe('loginChallengeResponseSchema', () => {
+  it('accepts a challenge without a verification code', () => {
+    expect(
+      loginChallengeResponseSchema.safeParse({
+        message: 'confirm your ID',
+        challengeId: 'chal-1',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts an optional development code', () => {
+    expect(
+      loginChallengeResponseSchema.safeParse({
+        message: 'confirm your ID',
+        challengeId: 'chal-1',
+        code: '123456',
+      }).success,
+    ).toBe(true);
   });
 });

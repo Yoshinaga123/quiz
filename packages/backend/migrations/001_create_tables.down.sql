@@ -1,2 +1,4 @@
+DROP TABLE IF EXISTS push_deliveries;
+DROP TABLE IF EXISTS login_logs;
 DROP TABLE IF EXISTS quizzes;
 DROP TABLE IF EXISTS views;

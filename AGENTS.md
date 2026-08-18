@@ -19,7 +19,7 @@ Socrates Quiz is an application monorepo, not a published library.
 | `samples/` | Local learning clones (gitignored). Not in the published tree |
 | `archive/` | Isolation note for local-only learning / diagnostics |
 
-Production host: `https://socrates-quiz.jp`. Dev API: host `8082` → container `8080`.
+Production host: `https://socrates-quiz.jp` on one AWS Lightsail instance (ADR 0015). Dev API: host `8082` → container `8080`.
 
 ## Non-negotiable: public JSON contract
 
@@ -36,13 +36,14 @@ Changing the public JSON shape requires **the same PR** to update all of:
 
 OpenAPI cannot express `.refine`. Those rules belong in detailed-design, with a failing fixture (`quiz-invalid-answer-index.json`).
 
-Do not expose admin fields (`status`, `pushEnabled`, `createdAt`, `updatedAt`) on `publicQuiz`.
+Do not expose admin fields (`status`, `pushEnabled`, `createdAt`, `updatedAt`) or seed-only `published` on `publicQuiz`.
 
 ## Source of truth
 
 | Concern | SSOT |
 | --- | --- |
 | Quiz body in production | PostgreSQL `quizzes` |
+| Quiz body in Git | `packages/admin-web/src/data/quizzes.json` (`published` selects the seed set) |
 | Public HTTP shape | OpenAPI + `docs/api/fixtures/` |
 | Runtime parse (web) | handwritten Zod |
 | Admin input | `packages/admin-web/src/schemas/` |
@@ -73,6 +74,7 @@ npm run lint             # web, admin-web, gofmt
 npm run fix              # eslint --fix + gofmt -w
 npm run check:circular   # madge on web + admin-web
 npm run check:docs       # frontmatter, orphans, links, llms drift
+npm run check:comments   # stacked `//` prose (Zod). ` -- --fix` joins them
 npm run docs:llms        # regenerate docs/llms.txt and docs/llms-full.txt
 npm run play             # root play.ts scratch pad
 npm run scratch:measure  # local scratch/input.ts kB (folder is gitignored)
@@ -80,6 +82,24 @@ npm run bench            # packages/bench ops/sec (public quiz Zod parse)
 ```
 
 Husky runs `lint-staged` on commit and `npm run test:contract` on push.
+
+Mobile (when Flutter is installed): `cd packages/mobile && flutter test`.
+
+## Rules
+
+Adapted from Zod's `AGENTS.md`. Library-only rules (three axes, version bump, Biome, stacked `//` comments) are not in force here.
+
+- Node 22 (`.nvmrc`). Install from the repo root (`npm i`).
+- Use `play.ts` / package scripts / `play.go` for experiments. Permanent cases belong in `tests/` or `*_test.go`.
+- A feature or bug fix without tests is unfinished. Do not skip tests because of type errors — fix the types.
+- Test success and failure. Keep new tests small; one focused case beats a broad fixture.
+- No `console.log` or `debugger` in tests or production code.
+- Ask before creating new files. Prefer editing an existing path from "Where to put code".
+- Fetch GitHub issues and PRs with `gh`. Do not guess from search snippets.
+- JSDoc stays short. A clear name needs no comment. When a comment is required, one sentence about behavior — not history.
+- When you open, change, or comment on a PR, include its URL in the reply at least once.
+- Do not bypass Husky with `--no-verify` unless the user explicitly asks.
+- Do not invent a public JSON field. The list under "Non-negotiable: public JSON contract" is the whole surface.
 
 ## Do not
 
@@ -97,6 +117,47 @@ Husky runs `lint-staged` on commit and `npm run test:contract` on push.
 ## PR shape
 
 One purpose per PR. Public-contract edits must include the checklist in `.github/PULL_REQUEST_TEMPLATE.md`.
+
+## Triaging issues and PRs
+
+This file is the operating manual. The `triage` skill is the procedure for investigation only.
+
+Follow [`.claude/skills/triage/SKILL.md`](.claude/skills/triage/SKILL.md) when asked to investigate, triage, or form an opinion on an issue or PR. Claude and Codex both auto-discover it (Codex via the `.codex/skills` symlink); read the skill directly if the agent does not. If the skill and this file disagree, this file wins — especially the public-contract list, `## Do not`, and `## Code Review Rules`.
+
+Write-ups live in the gitignored `.triage/` tree: `.triage/issues/NNNN/results.md` and `.triage/prs/NNNN/results.md`, with scratch files beside them. When investigating from a PR worktree, resolve the root checkout first (`git worktree list | head -1`) and write there. A relative write lands in the worktree's own ignored `.triage/` and is lost.
+
+That skill is read-only on GitHub. Published Codex Cloud reviews still follow `## Code Review Rules`.
+
+## Iterating on a PR in a worktree
+
+When asked to change an open PR without dirtying `develop`, use a worktree:
+
+```bash
+git fetch origin pull/<N>/head:pr-<N>
+git worktree add ~/.cursor/worktrees/quiz/pr-<N> pr-<N>
+cd ~/.cursor/worktrees/quiz/pr-<N>
+npm i
+```
+
+Do not use `gh pr checkout --detach`. It detaches the current tree.
+
+Look up the head with `gh pr view <N> -R Yoshinaga123/quiz --json headRefName,headRepositoryOwner,maintainerCanModify`. Push to the PR head ref, not to a local branch name that tracks `develop`. Preserve existing commits; do not `git reset --hard` a contributor's history. When done: `git worktree remove ~/.cursor/worktrees/quiz/pr-<N>` and `git branch -D pr-<N>`.
+
+## Commenting on issues and PRs
+
+Only post when the user asks in this session (or when Codex Cloud review is the assigned job). Use `gh`. Write the body to a file and pass `--body-file` (or `-F body=@…`) so backticks survive.
+
+Lead with the decision. Keep it short. Use the user's wording verbatim when they dictate a comment. Cross-reference as `#12` or a commit SHA. Codex Cloud reviews stay P0/P1-only and do not ask for `gh pr comment` or Claude OAuth.
+
+## Pushing a new branch
+
+A "new PR" or "new branch" must land on a new remote ref, never on `develop` or `main`. `git worktree add -b … origin/develop` can set upstream to `develop`. On the first push use an explicit refspec and check the right-hand side of the result:
+
+```bash
+git push -u origin <branch>:refs/heads/<branch>
+```
+
+The line you want is `* [new branch]  <branch> -> <branch>`. If the right-hand side is `develop` or `main`, stop.
 
 ## Code Review Rules
 

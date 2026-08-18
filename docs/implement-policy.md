@@ -120,7 +120,7 @@ export async function fetchUser(apiUrl: string): Promise<User> {
 ## コードに置いてよいもの
 - ルーティングや初期化順序など、アプリの構造そのもの
 - ドメインルールや固定仕様
-- seed データそのもの (`quizzes.production.json` など)
+- seed データそのもの (`quizzes.json` など)
 
 ## 運用ルール
 - ローカル開発では `.env.example` を配布し、各自が `.env` を作る

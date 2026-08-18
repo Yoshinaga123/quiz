@@ -23,7 +23,8 @@ servers:
     description: |
       Production public URL (HTTPS port 443).
       Hostname: socrates-quiz.jp.
-      TLS is terminated at the edge (ALB / CloudFront). The Go container still listens on 8080.
+      TLS is terminated by Caddy on a single Lightsail instance (ADR 0015).
+      The Go container still listens on 8080.
 
 
 tags:

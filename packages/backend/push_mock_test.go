@@ -148,6 +148,38 @@ func TestHandleGetPublicPushFeedReturnsLatestMockDelivery(t *testing.T) {
 	}
 }
 
+func TestHandleGetPublicPushFeedSkipsUnpublishedQuizzes(t *testing.T) {
+	s, mock, cleanup := newMockPushTestServer(t)
+	defer cleanup()
+
+	mock.ExpectQuery(regexp.QuoteMeta("AND q.status = 'published'")).
+		WillReturnRows(sqlmock.NewRows([]string{
+			"delivery_id",
+			"quiz_id",
+			"title",
+			"question",
+			"sent_at",
+			"channel",
+		}))
+
+	req := httptest.NewRequest(http.MethodGet, "/v1/push/feed", nil)
+	res := httptest.NewRecorder()
+
+	s.routes().ServeHTTP(res, req)
+
+	if res.Code != http.StatusNotFound {
+		t.Fatalf("status = %d, body = %s", res.Code, res.Body.String())
+	}
+
+	var body publicErrorResponse
+	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if body.Code != publicErrCodePushFeedNone {
+		t.Fatalf("code = %q, body = %+v", body.Code, body)
+	}
+}
+
 func TestHandleListPushDeliveriesReturnsPaginatedHistory(t *testing.T) {
 	s, mock, cleanup := newMockPushTestServer(t)
 	defer cleanup()

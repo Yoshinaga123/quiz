@@ -10,6 +10,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+func isDevelopmentMode() bool {
+	env := strings.ToLower(strings.TrimSpace(getEnv("APP_ENV", "")))
+	return env == "development" || env == "dev"
+}
+
 func (s *server) issueJWT() (string, error) {
 	claims := jwt.RegisteredClaims{
 		Subject:   s.adminUser,
@@ -143,11 +148,14 @@ func (s *server) handleRequestLoginVerification(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	writeJSON(w, http.StatusOK, verificationResponse{
+	response := verificationResponse{
 		Message:     verificationPrompt,
 		ChallengeID: challengeID,
-		Code:        code,
-	})
+	}
+	if s.returnVerificationCode {
+		response.Code = code
+	}
+	writeJSON(w, http.StatusOK, response)
 }
 
 func (s *server) handleLogin(w http.ResponseWriter, r *http.Request) {

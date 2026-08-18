@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.git
+**/.vite
+**/coverage
+scratch
+samples
+archive
+packages/mobile
+packages/bench
+docs

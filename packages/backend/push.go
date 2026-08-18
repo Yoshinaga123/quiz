@@ -169,6 +169,7 @@ func (s *server) handleGetPublicPushFeed(w http.ResponseWriter, r *http.Request)
 		INNER JOIN quizzes q ON q.id = pd.quiz_id
 		WHERE pd.channel = 'mock'
 		  AND pd.status = 'mock_sent'
+		  AND q.status = 'published'
 		ORDER BY pd.sent_at DESC, pd.id DESC
 		LIMIT 1
 	`).Scan(

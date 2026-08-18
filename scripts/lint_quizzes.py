@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """クイズ JSON の静的検証スクリプト。
 
-`packages/admin-web/src/data/quizzes.json` などのクイズ配列に対して、
-ID 一意性 / `correctAnswerIndex` の範囲 / オプション数の妥当性 / 必須フィールド充足を検査する。
+`packages/admin-web/src/data/quizzes.json` のクイズ配列に対して、
+ID 一意性 / `published` / `correctAnswerIndex` の範囲 / オプション数の妥当性 / 必須フィールド充足を検査する。
 
 CI で `python3 scripts/lint_quizzes.py packages/admin-web/src/data/quizzes.json` のように実行する想定。
 失敗時は終了コード 1 を返し、検出された違反を 1 行 1 件で stderr に出力する。
@@ -55,6 +55,10 @@ def validate_quiz(quiz: dict[str, Any], index: int) -> Iterable[str]:
 
     if any(not isinstance(opt, str) or opt.strip() == "" for opt in options):
         yield f"{prefix}: every option must be a non-empty string"
+
+    published = quiz.get("published")
+    if not isinstance(published, bool):
+        yield f"{prefix}: 'published' must be a boolean"
 
     correct = quiz.get("correctAnswerIndex")
     if not isinstance(correct, int) or correct < 0 or correct >= len(options):
@@ -116,7 +120,8 @@ def lint_file(path: Path) -> int:
         )
         return 1
 
-    print(f"OK: {path} ({len(quizzes)} quizzes)")
+    published_count = sum(1 for quiz in quizzes if quiz.get("published") is True)
+    print(f"OK: {path} ({len(quizzes)} quizzes, {published_count} published)")
     return 0
 
 

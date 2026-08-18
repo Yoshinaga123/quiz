@@ -6,8 +6,8 @@
 
 - `scripts/` にはすでにクイズデータ運用向けの補助がある
   - `lint_quizzes.py`: JSON 構造チェック
-  - `diff_quiz_data.py`: 候補プールと production seed の差分確認
-  - `check_quiz_drift.py`: production seed と最新 migration の drift 検出
+  - `diff_quiz_data.py`: 2 つのクイズ JSON の差分確認
+  - `check_quiz_drift.py`: `quizzes.json` の published 分と最新 migration の drift 検出
   - `create_seed_migration.py`: seed migration 作成補助
   - `create_backend_env.py`: `packages/backend/.env` の生成補助
 - 一方で、日常開発の入口になる「横断スクリプト」はまだ薄い
@@ -15,7 +15,7 @@
   - `packages/web/` と `packages/admin-web/` はそれぞれ `dev/build/lint` のみ
   - `packages/backend/` は CI で `gofmt / go vet / go build / go test` を回しているが、ローカル用のまとめ入口はない
   - `docs/api/public-quiz-api.yaml` はあるが、ローカルで叩く簡易スモークチェックはない
-- データの流れは整理されているが、`packages/web/src/data/quizzes.ts` の starter pack と `packages/backend/seeds/quizzes.production.json` の同期は手作業になりやすい
+- データの流れは整理されているが、`packages/web/src/data/quizzes.ts` の starter pack と `packages/admin-web/src/data/quizzes.json` の同期は手作業になりやすい
 
 このため、追加するなら「データ lint の重複」ではなく、開発体験と横断整合性を補うスクリプトが優先度高め。
 
@@ -43,7 +43,7 @@
   - `flutter`（任意扱いでもよい）
 - ファイル確認
   - `packages/backend/.env`
-  - `packages/backend/seeds/quizzes.production.json`
+  - `packages/admin-web/src/data/quizzes.json`
   - `docs/api/public-quiz-api.yaml`
 - 結果を `OK / WARN / FAIL` で表示する
 - `FAIL` が1件でもあれば終了コード `1`
@@ -102,18 +102,18 @@
 
 ### 目的
 
-`packages/backend/seeds/quizzes.production.json` から `packages/web/` 用の starter pack を生成する `scripts/export_starter_quizzes.py` を作る。
+`packages/admin-web/src/data/quizzes.json` の `published: true` から `packages/web/` 用の starter pack を生成する `scripts/export_starter_quizzes.py` を作る。
 
 ### あると便利な理由
 
 - `packages/web/README.md` では、公開 API 未統合の間は `packages/web/src/data/quizzes.ts` の starter pack を使う構成になっている
-- ただし production seed とは別管理なので、内容がずれる可能性がある
-- 既存の `diff_quiz_data.py` は候補プールと production seed しか見ていない
+- ただし `quizzes.json` とは別管理なので、内容がずれる可能性がある
+- 既存の `diff_quiz_data.py` は 2 つの JSON を比較する汎用ツールである
 
 ### 仕様の例
 
 - 入力
-  - `packages/backend/seeds/quizzes.production.json`
+  - `packages/admin-web/src/data/quizzes.json`
 - 出力
   - `packages/web/src/data/quizzes.generated.ts`
 - 出力内容

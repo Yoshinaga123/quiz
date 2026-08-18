@@ -5,9 +5,12 @@
  * Run: npm run play
  * Local-only experiments: copy to play.local.ts (gitignored).
  */
-import quiz from './docs/api/fixtures/quiz.json' with { type: 'json' }
-import { quizSchema } from './web/src/schemas/quiz.ts'
+function padLeft(padding: number | string, input: string): string {
+  if (typeof padding === 'number') {
+    return ' '.repeat(padding) + input
+  }
+  return padding + input
+}
 
-const result = quizSchema.safeParse(quiz)
-console.log('success:', result.success)
-console.log(result.success ? result.data : result.error)
+console.log(JSON.stringify(padLeft(4, 'hello')))
+console.log(JSON.stringify(padLeft('>>> ', 'hello')))

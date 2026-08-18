@@ -122,11 +122,12 @@ func main() {
 	defer db.Close()
 
 	s := &server{
-		db:                   db,
-		adminUser:            getEnv("ADMIN_USER", "admin"),
-		adminPassword:        getEnv("ADMIN_PASSWORD", "password"),
-		jwtSecret:            []byte(getEnv("JWT_SECRET", "dev-only-secret")),
-		pendingVerifications: make(map[string]verificationChallenge),
+		db:                     db,
+		adminUser:              getEnv("ADMIN_USER", "admin"),
+		adminPassword:          getEnv("ADMIN_PASSWORD", "password"),
+		jwtSecret:              []byte(getEnv("JWT_SECRET", "dev-only-secret")),
+		pendingVerifications:   make(map[string]verificationChallenge),
+		returnVerificationCode: isDevelopmentMode(),
 	}
 
 	if err := http.ListenAndServe(":8080", s.routes()); err != nil {

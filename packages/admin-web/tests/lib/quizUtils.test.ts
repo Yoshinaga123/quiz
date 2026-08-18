@@ -12,6 +12,7 @@ const quiz: Quiz = {
   correctAnswerIndex: 1,
   explanation: 'e',
   source: 's',
+  published: true,
 };
 
 describe('isAnswerCorrect', () => {

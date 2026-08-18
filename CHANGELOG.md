@@ -27,4 +27,5 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Quiz seed data is a single `packages/admin-web/src/data/quizzes.json`. `published` selects the seed set; `quizzes.production.json` is gone (ADR 0014).
 - `quiz.md` aligned with the implemented stack (React 19, Go `net/http`, mock Push Phase A).

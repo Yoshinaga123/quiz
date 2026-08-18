@@ -14,6 +14,7 @@ const eslintIn = (prefix, filenames) => {
 }
 
 export default {
+  'packages/{web,admin-web}/{src,tests,scripts}/**/*.{ts,tsx}': 'npm run check:comments',
   'packages/web/{src,tests}/**/*.{ts,tsx}': (filenames) => eslintIn('packages/web', filenames),
   'packages/admin-web/{src,tests}/**/*.{ts,tsx}': (filenames) => eslintIn('packages/admin-web', filenames),
   'packages/backend/**/*.go': 'gofmt -w',

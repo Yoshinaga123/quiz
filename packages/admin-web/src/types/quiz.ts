@@ -13,6 +13,7 @@ export interface Quiz {
   correctAnswerIndex: number
   explanation: string
   source: string
+  published: boolean
 }
 
 export interface QuizzesData {

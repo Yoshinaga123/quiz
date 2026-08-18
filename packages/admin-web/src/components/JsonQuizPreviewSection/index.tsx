@@ -10,6 +10,7 @@ import {
 } from './quizUtils'
 
 const allQuizzes = getAllQuizzes()
+const publishedCount = allQuizzes.filter((quiz) => quiz.published).length
 const sectionCount = groupQuizzesBySection().size
 const quizCountPerSession = allQuizzes.length
 
@@ -71,13 +72,16 @@ function JsonQuizPreviewSection() {
           <p className="m-0 mb-2.5 text-[0.78rem] uppercase tracking-[0.18em] text-[#8b5e00]">Local JSON Preview</p>
           <h2 className="m-0 text-[clamp(1.6rem,2.8vw,2.2rem)] font-semibold">`quizzes.json` ローカル出題プレビュー</h2>
           <p className="mt-3 mb-0 max-w-[760px] text-[#4f5d75]">
-            `src/data/quizzes.json` を `quizUtils.ts` から直接読み込む、旧デモ相当のローカル出題です。DB や
-            管理 API を通さず、フロントだけで確認できます。
+            `src/data/quizzes.json` を `quizUtils.ts` から直接読み込む、旧デモ相当のローカル出題です。
+            `published` はシード対象の印で、このプレビューは下書きも含めて出題します。
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
           <span className="inline-flex items-center rounded-full bg-[#f9c952]/18 px-3.5 py-2.5 font-semibold text-[#7a5a00]">
             {allQuizzes.length}問
+          </span>
+          <span className="inline-flex items-center rounded-full bg-[#f9c952]/18 px-3.5 py-2.5 font-semibold text-[#7a5a00]">
+            {publishedCount}公開
           </span>
           <span className="inline-flex items-center rounded-full bg-[#f9c952]/18 px-3.5 py-2.5 font-semibold text-[#7a5a00]">
             {sectionCount}セクション

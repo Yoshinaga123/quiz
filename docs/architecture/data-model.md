@@ -7,7 +7,7 @@
 
 ```mermaid
 flowchart LR
-    Seed["packages/backend/seeds/quizzes.production.json"]
+    Seed["packages/admin-web/src/data/quizzes.json"]
     Quizzes["quizzes table"]
     Views["views table"]
     LoginLogs["login_logs table"]
@@ -69,7 +69,7 @@ flowchart LR
 - `correct_answer_index` と `options` の整合性は DB 制約ではなくアプリケーション側の検証で守っている
 - `status` は DB enum ではなく文字列カラムなので、値域制約もアプリケーション側に寄っている
 - `push_enabled` の既定値は `false`
-- seed 同期では `status` と `push_enabled` を seed JSON から読まず、既存値保持または既定値で扱う
+- seed 同期では `published: true` だけを投入する。DB の `status` と `push_enabled` は seed JSON から読まず、既存値保持または既定値で扱う
 
 ## `views` テーブル
 
@@ -131,7 +131,7 @@ Phase A では Firebase / FCM へは送らず、mock 配信として「送信し
 
 | モデル | 由来 | `quizzes` との差分 |
 | --- | --- | --- |
-| `productionSeedQuiz` | `packages/backend/seeds/quizzes.production.json` | `status`, `pushEnabled`, `createdAt`, `updatedAt` を持たない |
+| `productionSeedQuiz` | `packages/admin-web/src/data/quizzes.json` | `published` でシード対象を選ぶ。`status`, `pushEnabled`, `createdAt`, `updatedAt` は持たない |
 | `quizPayload` | 管理 API の create/update 入力 | `id`, `createdAt`, `updatedAt` を持たない |
 | `quiz` | 管理 API の完全レコード | `quizzes` のほぼ 1:1 表現 |
 | `publicQuiz` | 公開 API の出力 | `status`, `pushEnabled`, `createdAt`, `updatedAt` を意図的に隠す |

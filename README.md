@@ -2,7 +2,7 @@
 
 高難度 IT クイズアプリ。ユーザー向け Web / Flutter、管理画面、Go API で構成する。
 
-本番の公開ホストは [`https://socrates-quiz.jp`](https://socrates-quiz.jp)（HTTPS 443）。開発時の API は `http://localhost:8082`。
+本番の公開ホストは [`https://socrates-quiz.jp`](https://socrates-quiz.jp)（HTTPS 443、[Lightsail 1台](docs/adr/0015-lightsail-production.md)）。開発時の API は `http://localhost:8082`。
 
 | パッケージ | 役割 | 認証 |
 | --- | --- | --- |
@@ -11,7 +11,7 @@
 | [`packages/mobile/`](packages/mobile/) | ネイティブ解答・mock 通知 | なし（公開 API） |
 | [`packages/backend/`](packages/backend/) | Public `/v1/*` + Admin `/api/admin/*` | 公開なし / 管理 JWT |
 
-クイズ本文の正本は PostgreSQL `quizzes`。候補プールは `packages/admin-web/src/data/quizzes.json`、本番シードは `packages/backend/seeds/quizzes.production.json`。
+クイズ本文の正本は PostgreSQL `quizzes`。Git 上の問題ファイルは `packages/admin-web/src/data/quizzes.json`（`published: true` がシード対象）。
 
 ## 必要なもの
 

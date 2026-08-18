@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """本番シードと最新シードマイグレーションの drift 検出ツール。
 
-`packages/backend/seeds/quizzes.production.json` を `scripts/generate_migration.py` で
-仮想的に生成した SQL と、`packages/backend/migrations/` の **最新の seed_quizzes 系マイグレーション** の
-SQL を比較し、内容差分があれば検出する。
+`packages/admin-web/src/data/quizzes.json` の `published: true` 分を
+`scripts/generate_migration.py` で仮想的に生成した SQL と、
+`packages/backend/migrations/` の **最新シード SQL**（`001_create_tables.up.sql`
+の `INSERT INTO quizzes` 以降、または後続の `*_seed_quizzes*.up.sql`）と
+比較し、内容差分があれば検出する。
 
-CI で「本番シード JSON を編集したのにマイグレーションを生成し忘れた」ケースを
+CI で「シード JSON を編集したのにマイグレーションを生成し忘れた」ケースを
 落とすことを目的とする。
 
 例:
   python3 scripts/check_quiz_drift.py \\
-    --seed packages/backend/seeds/quizzes.production.json \\
+    --seed packages/admin-web/src/data/quizzes.json \\
     --migrations-dir packages/backend/migrations
 """
 
@@ -24,6 +26,8 @@ from pathlib import Path
 from typing import Iterable
 
 MIGRATION_PATTERN = re.compile(r"^(\d+)_seed_quizzes(?:[_a-z0-9]*)\.up\.sql$")
+INITIAL_MIGRATION = "001_create_tables.up.sql"
+SEED_START = "INSERT INTO quizzes"
 
 
 def find_latest_seed_migration(migrations_dir: Path) -> Path:
@@ -35,12 +39,24 @@ def find_latest_seed_migration(migrations_dir: Path) -> Path:
         if match is None:
             continue
         candidates.append((int(match.group(1)), entry))
-    if not candidates:
-        raise FileNotFoundError(
-            f"No seed_quizzes migration found in {migrations_dir}",
-        )
-    candidates.sort(key=lambda item: item[0])
-    return candidates[-1][1]
+    if candidates:
+        candidates.sort(key=lambda item: item[0])
+        return candidates[-1][1]
+
+    initial = migrations_dir / INITIAL_MIGRATION
+    if initial.is_file():
+        return initial
+
+    raise FileNotFoundError(
+        f"No seed SQL found in {migrations_dir}",
+    )
+
+
+def extract_seed_sql(sql: str) -> str:
+    index = sql.find(SEED_START)
+    if index < 0:
+        raise ValueError(f"seed SQL must contain {SEED_START!r}")
+    return sql[index:]
 
 
 def normalize_sql(sql: str) -> str:
@@ -70,8 +86,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--seed",
         type=Path,
-        default=Path("packages/backend/seeds/quizzes.production.json"),
-        help="本番シード JSON",
+        default=Path("packages/admin-web/src/data/quizzes.json"),
+        help="quizzes.json（published: true がシード対象）",
     )
     parser.add_argument(
         "--migrations-dir",
@@ -111,16 +127,16 @@ def main(argv: list[str] | None = None) -> int:
     print(f"latest seed migration: {latest}")
 
     generated_sql = render_seed_sql(args.generator, args.seed)
-    actual_sql = latest.read_text(encoding="utf-8")
+    actual_sql = extract_seed_sql(latest.read_text(encoding="utf-8"))
 
     normalized_generated = normalize_sql(generated_sql)
     normalized_actual = normalize_sql(actual_sql)
 
     if normalized_generated == normalized_actual:
-        print("OK: production seed JSON matches latest migration")
+        print("OK: published quizzes.json matches latest migration")
         return 0
 
-    print("FAIL: production seed JSON drift detected", file=sys.stderr)
+    print("FAIL: quizzes.json seed drift detected", file=sys.stderr)
     print(
         "      run scripts/create_seed_migration.py and commit the result.",
         file=sys.stderr,

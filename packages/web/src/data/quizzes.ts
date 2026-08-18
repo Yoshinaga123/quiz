@@ -5,7 +5,7 @@ import type { Quiz } from '../types/quiz'
  *
  * - すべて MDN Web Docs / React 公式 / TC39 / RFC など信頼できる一次情報からの引用に基づく
  * - `quiz.md` の方針に従い、IT 範囲で「コードの意味」「公式英文の和訳」を含む高難易度問題のみを採用する
- * - id は `packages/admin-web/src/data/quizzes.json`（437 問の候補プール）と衝突しない 9000 番台で割り当てる
+ * - id は `packages/admin-web/src/data/quizzes.json` と衝突しない 9000 番台で割り当てる
  */
 export const STARTER_QUIZZES: readonly Quiz[] = [
   {

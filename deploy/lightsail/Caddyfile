@@ -1,0 +1,30 @@
+{
+	email {$CADDY_EMAIL}
+}
+
+{$PUBLIC_HOST} {
+	handle /v1/* {
+		reverse_proxy api:8080
+	}
+	handle /healthz {
+		reverse_proxy api:8080
+	}
+	handle /counter {
+		reverse_proxy api:8080
+	}
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+	handle {
+		reverse_proxy web:80
+	}
+}
+
+{$ADMIN_HOST} {
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+	handle {
+		reverse_proxy admin:80
+	}
+}

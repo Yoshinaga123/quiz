@@ -111,6 +111,9 @@ func normalizeProductionSeedQuiz(payload *productionSeedQuiz) error {
 	if payload.CorrectAnswerIndex < 0 || payload.CorrectAnswerIndex >= len(payload.Options) {
 		return fmt.Errorf("correctAnswerIndex is out of range for quiz id %d", payload.ID)
 	}
+	if payload.Published == nil {
+		return fmt.Errorf("published is required for quiz id %d", payload.ID)
+	}
 
 	return nil
 }
@@ -119,7 +122,7 @@ func validateProductionSeedDocument(document *productionSeedDocument) error {
 	seenIDs := make(map[int64]struct{}, len(document.Quizzes))
 	for _, quiz := range document.Quizzes {
 		if _, exists := seenIDs[quiz.ID]; exists {
-			return fmt.Errorf("duplicate quiz id in production seed: %d", quiz.ID)
+			return fmt.Errorf("duplicate quiz id in seed: %d", quiz.ID)
 		}
 		seenIDs[quiz.ID] = struct{}{}
 	}
@@ -128,10 +131,13 @@ func validateProductionSeedDocument(document *productionSeedDocument) error {
 }
 
 func getProductionSeedPath() string {
+	if value := os.Getenv("QUIZ_SEED_PATH"); value != "" {
+		return value
+	}
 	if value := os.Getenv("QUIZ_PRODUCTION_SEED_PATH"); value != "" {
 		return value
 	}
-	return defaultProductionSeedPath
+	return defaultSeedPath
 }
 
 func loadProductionSeedDocument(seedPath string) (productionSeedDocument, error) {
@@ -140,13 +146,13 @@ func loadProductionSeedDocument(seedPath string) (productionSeedDocument, error)
 		if errors.Is(err, os.ErrNotExist) {
 			return productionSeedDocument{}, &statusError{
 				Status:  http.StatusNotFound,
-				Message: fmt.Sprintf("production seed file not found: %s", seedPath),
+				Message: fmt.Sprintf("seed file not found: %s", seedPath),
 				Err:     err,
 			}
 		}
 		return productionSeedDocument{}, &statusError{
 			Status:  http.StatusInternalServerError,
-			Message: fmt.Sprintf("failed to read production seed file: %s", seedPath),
+			Message: fmt.Sprintf("failed to read seed file: %s", seedPath),
 			Err:     err,
 		}
 	}
@@ -155,7 +161,7 @@ func loadProductionSeedDocument(seedPath string) (productionSeedDocument, error)
 	if err := json.Unmarshal(content, &document); err != nil {
 		return productionSeedDocument{}, &statusError{
 			Status:  http.StatusUnprocessableEntity,
-			Message: fmt.Sprintf("production seed JSON is invalid: %s", seedPath),
+			Message: fmt.Sprintf("seed JSON is invalid: %s", seedPath),
 			Err:     err,
 		}
 	}
@@ -402,7 +408,9 @@ func (s *server) syncProductionSeedQuizzes(ctx context.Context) (productionSeedS
 
 	ids := make([]int64, 0, len(document.Quizzes))
 	for _, quiz := range document.Quizzes {
-		ids = append(ids, quiz.ID)
+		if quiz.Published != nil && *quiz.Published {
+			ids = append(ids, quiz.ID)
+		}
 	}
 
 	deletedCount, err := countDeletedQuizzes(ctx, s.db, ids)
@@ -428,7 +436,7 @@ func (s *server) syncProductionSeedQuizzes(ctx context.Context) (productionSeedS
 	}
 
 	return productionSeedSyncResponse{
-		SeededCount:      len(document.Quizzes),
+		SeededCount:      len(ids),
 		DeletedCount:     deletedCount,
 		Source:           seedPath,
 		MigrationVersion: version,

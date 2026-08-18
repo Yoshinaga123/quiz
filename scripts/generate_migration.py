@@ -69,6 +69,20 @@ def load_quizzes(input_path: str | None, stdin_timeout: float) -> list[dict[str,
   return quizzes
 
 
+def select_seed_quizzes(quizzes: list[dict[str, Any]]) -> list[dict[str, Any]]:
+  selected: list[dict[str, Any]] = []
+  for quiz in quizzes:
+    published = quiz.get('published')
+    if not isinstance(published, bool):
+      raise ValueError(
+          f"quiz id={quiz.get('id', '?')}: 'published' must be a boolean.\n"
+          f"quiz id={quiz.get('id', '?')}: 'published' は boolean である必要があります。"
+      )
+    if published:
+      selected.append(quiz)
+  return selected
+
+
 def build_row(quiz: dict[str, Any]) -> str:
   return (
       f"  ({quiz['id']}, "
@@ -81,6 +95,19 @@ def build_row(quiz: dict[str, Any]) -> str:
       f"'{esc(quiz.get('explanation', ''))}', "
       f"'{esc(quiz.get('source', ''))}')"
   )
+
+
+def delete_replaced_quiz_rows_sql(ids: str | None) -> list[str]:
+  """Remove quizzes that left the published seed set, plus dependent deliveries."""
+  if ids:
+    return [
+        f'DELETE FROM push_deliveries WHERE NOT (quiz_id = ANY(ARRAY[{ids}]::bigint[]));',
+        f'DELETE FROM quizzes WHERE NOT (id = ANY(ARRAY[{ids}]::bigint[]));',
+    ]
+  return [
+      'DELETE FROM push_deliveries;',
+      'DELETE FROM quizzes;',
+  ]
 
 
 def build_up_sql(quizzes: list[dict[str, Any]], source_label: str) -> str:
@@ -107,13 +134,13 @@ def build_up_sql(quizzes: list[dict[str, Any]], source_label: str) -> str:
         '  source = EXCLUDED.source,',
         '  updated_at = NOW();',
         '',
-        f'DELETE FROM quizzes WHERE NOT (id = ANY(ARRAY[{ids}]::bigint[]));',
+        *delete_replaced_quiz_rows_sql(ids),
         '',
         "SELECT setval('quizzes_id_seq', COALESCE((SELECT MAX(id) FROM quizzes), 1), (SELECT COUNT(*) > 0 FROM quizzes));",
     ]
   else:
     lines += [
-        'DELETE FROM quizzes;',
+        *delete_replaced_quiz_rows_sql(None),
         '',
         "SELECT setval('quizzes_id_seq', COALESCE((SELECT MAX(id) FROM quizzes), 1), (SELECT COUNT(*) > 0 FROM quizzes));",
     ]
@@ -134,6 +161,7 @@ def build_down_sql(quizzes: list[dict[str, Any]], source_label: str) -> str:
 
   ids = ', '.join(str(quiz['id']) for quiz in quizzes)
   lines += [
+      f'DELETE FROM push_deliveries WHERE quiz_id IN ({ids});',
       f'DELETE FROM quizzes WHERE id IN ({ids});',
       '',
       "SELECT setval('quizzes_id_seq', COALESCE((SELECT MAX(id) FROM quizzes), 1), (SELECT COUNT(*) > 0 FROM quizzes));",
@@ -179,7 +207,7 @@ def main() -> None:
   log_debug("this is a config path")
   log_debug(f"os.fspath(config_path): {os.fspath(config_path)}")      
 
-  quizzes = load_quizzes(args.input, args.stdin_timeout)
+  quizzes = select_seed_quizzes(load_quizzes(args.input, args.stdin_timeout))
   source_label = args.source_label or (Path(args.input).name if args.input else 'stdin')
 
   if args.mode == 'down':

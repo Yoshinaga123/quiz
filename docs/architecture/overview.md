@@ -21,7 +21,7 @@ graph TB
 
     subgraph DataLayer["データ層"]
         DB[("PostgreSQL<br/>quizzes / views / login_logs<br/>★ Single Source of Truth")]
-        SeedJSON["seeds/quizzes.production.json<br/>本番シードテンプレート<br/>（マイグレーション生成の入力）"]
+        SeedJSON["admin-web/src/data/quizzes.json<br/>published: true がシード対象"]
         MigrationSQL["migrations/*.sql<br/>golang-migrate で管理"]
     end
 
@@ -82,7 +82,7 @@ Vite + TypeScript の SPA。`/api/admin/` エンドポイントのみ使用。JW
 | 開発（docker-compose） | `http://localhost:8082` | `8080` |
 | 本番 | `https://socrates-quiz.jp`（**443**） | `8080` |
 
-本番は ALB / CloudFront 等で TLS 終端し、公開面は 443 のみとする。ホスト名は `socrates-quiz.jp`。管理画面は ADR 0005 どおり別ホストで配信する（ホスト名は未定）。
+本番は **Lightsail 1台**（[ADR 0015](../adr/0015-lightsail-production.md)）。Caddy が TLS を終端し、公開面は 443 のみ。ホスト名は `socrates-quiz.jp`。管理画面は `admin.socrates-quiz.jp`（同じマシン）。手順は [`../deploy-lightsail.md`](../deploy-lightsail.md)。
 
 **Public API（認証なし）**
 
@@ -117,7 +117,7 @@ sequenceDiagram
     participant DB as PostgreSQL
 
     Admin->>API: POST /api/admin/quizzes/sync-production
-    API->>API: seeds/quizzes.production.json を読み込み・バリデーション
+    API->>API: quizzes.json を読み込み、published: true をバリデーション
     API->>migrate: migrate create -seq -digits 3 seed_quizzes
     migrate-->>FS: NNN_seed_quizzes.up.sql（空）を作成
     migrate-->>FS: NNN_seed_quizzes.down.sql（空）を作成

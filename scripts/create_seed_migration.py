@@ -14,8 +14,8 @@ ROOT_DIR = Path(__file__).parent.parent
 
 # The paths are being concatenated using the `/` operator in `Pathlib`
 LOGGER_PATH = ROOT_DIR / 'scripts' / 'create_seed_migration.log'
-DEFAULT_JSON = ROOT_DIR / 'backend' / 'seeds' / 'quizzes.production.json'
-DEFAULT_MIGRATIONS_DIR = ROOT_DIR / 'backend' / 'migrations'
+DEFAULT_JSON = ROOT_DIR / 'packages' / 'admin-web' / 'src' / 'data' / 'quizzes.json'
+DEFAULT_MIGRATIONS_DIR = ROOT_DIR / 'packages' / 'backend' / 'migrations'
 GENERATOR = ROOT_DIR / 'scripts' / 'generate_migration.py'
 
 # This is a type-annotated function of a function that writes log messages

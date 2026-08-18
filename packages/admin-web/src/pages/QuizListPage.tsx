@@ -47,11 +47,11 @@ function getSyncProductionErrorMessage(error: unknown): string {
       case 403:
         return 'この操作を実行する権限がありません。'
       case 404:
-        return `production.json が見つかりません: ${error.message}`
+        return `quizzes.json が見つかりません: ${error.message}`
       case 409:
         return `同期ジョブの競合または dirty database により反映できません: ${error.message}`
       case 422:
-        return `production.json の内容が不正です: ${error.message}`
+        return `quizzes.json の内容が不正です: ${error.message}`
       case 500:
         return `サーバー内部で反映に失敗しました: ${error.message}`
       case 502:
@@ -59,7 +59,7 @@ function getSyncProductionErrorMessage(error: unknown): string {
       case 504:
         return `バックエンドが一時的に利用できません: ${error.message}`
       default:
-        return `production.json の反映に失敗しました (${error.status}): ${error.message}`
+        return `quizzes.json の反映に失敗しました (${error.status}): ${error.message}`
     }
   }
 
@@ -67,7 +67,7 @@ function getSyncProductionErrorMessage(error: unknown): string {
     return 'バックエンドへ接続できません。API サーバーが起動しているか確認してください。'
   }
 
-  return `production.json の反映に失敗しました: ${getErrorMessage(error)}`
+  return `quizzes.json の反映に失敗しました: ${getErrorMessage(error)}`
 }
 
 function createDraft(searchParams: URLSearchParams): SearchDraft {
@@ -306,7 +306,7 @@ function QuizListPage() {
 
   const handleSyncProduction = async () => {
     const shouldSync = window.confirm(
-      'quizzes.production.json からマイグレーションを生成し、DB を完全同期します。JSON に存在しないクイズは削除されます。続行しますか？',
+      'quizzes.json の published: true からマイグレーションを生成し、DB を完全同期します。シード対象にないクイズは削除されます。続行しますか？',
     )
     if (!shouldSync) {
       return
@@ -372,7 +372,7 @@ function QuizListPage() {
             onClick={() => void handleSyncProduction()}
             type="button"
           >
-            {isSyncingProduction ? 'DB反映中...' : 'production.json を DB 反映'}
+            {isSyncingProduction ? 'DB反映中...' : 'quizzes.json を DB 反映'}
           </button>
           <button
             className={`${pillButtonClassName} border border-[#1768ac]/20 bg-[#1768ac]/10 text-[#0f4c81] disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none`}

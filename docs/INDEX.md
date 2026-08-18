@@ -37,7 +37,7 @@
 | ドキュメント | 概要 |
 | --- | --- |
 | [`../quiz.md`](../quiz.md) | アプリの要件定義（実装準拠のスタック） |
-| [`./quiz-app-wbs.md`](./quiz-app-wbs.md) | 1人開発の概算 WBS（仮置き日程） |
+| [`./quiz-app-wbs.md`](./quiz-app-wbs.md) | 1人開発の概算 WBS（2026-08-18 実績反映） |
 | [`../AGENTS.md`](../AGENTS.md) | コーディングエージェント向け手順 |
 | [`../CLAUDE.md`](../CLAUDE.md) | AGENTS.md への入口 |
 | [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | Contributor Covenant |
@@ -47,9 +47,10 @@
 | [`../SECURITY.md`](../SECURITY.md) | 脆弱性報告 |
 | [`./implement-policy.md`](./implement-policy.md) | 実装ポリシー（Zod 検証、SPA 採用、Google Search Central 対応など） |
 | [`./validation-policy.md`](./validation-policy.md) | フロント／バックの入力検証ポリシー |
-| [`./quiz-data-workflow.md`](./quiz-data-workflow.md) | クイズデータの 3 層フロー（候補プール → 本番シード → DB） |
+| [`./quiz-data-workflow.md`](./quiz-data-workflow.md) | クイズデータは `quizzes.json` + `published` → DB |
 | [`./firebase-api-key-handling.md`](./firebase-api-key-handling.md) | Firebase 設定は gitignore。このアプリのプロジェクト以外を入れない |
 | [`./local-https-setup.md`](./local-https-setup.md) | ローカル開発環境の HTTPS 設定（自己署名証明書 + Vite） |
+| [`./deploy-lightsail.md`](./deploy-lightsail.md) | 本番 Lightsail 1台の起動手順（ADR 0015） |
 | [`./counter-api.md`](./counter-api.md) | PV カウンター API（`/counter`、永続化は `views` テーブル） |
 | [`./push-notification-mock.md`](./push-notification-mock.md) | Push 通知 Phase A モック（手動送信 + feed + ローカル通知） |
 | [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |
@@ -76,6 +77,8 @@
 | [0011](./adr/0011-devcontainer-runtimes.md) | Accepted | Dev Container にはこのリポジトリが実際に使うランタイムだけ入れる |
 | [0012](./adr/0012-vscode-launch.json.md) | Accepted | VS Code `launch.json` は Zod のコピーを置かない |
 | [0013](./adr/0013-runtime-bench.md) | Accepted | 実行速度の比較は `packages/bench` |
+| [0014](./adr/0014-single-quizzes-json.md) | Accepted | 問題ファイルは `quizzes.json` 一本、公開選別は `published` |
+| [0015](./adr/0015-lightsail-production.md) | Accepted | 本番は AWS Lightsail 1台 |
 
 ## API 仕様
 
@@ -115,11 +118,13 @@
 | [`../scripts/check_public_contract.py`](../scripts/check_public_contract.py) | OpenAPI / fixtures / Zod / Go のフィールド同期 |
 | [`../scripts/check_repo_hygiene.py`](../scripts/check_repo_hygiene.py) | AGENTS / nvmrc / detailed-design 目次 |
 | [`../scripts/check_docs.py`](../scripts/check_docs.py) | frontmatter・孤児ページ・相対リンク・llms drift |
+| [`../scripts/fail-on-console.ts`](../scripts/fail-on-console.ts) | Vitest で予期しない `console.*` を落とす（Zod と同じ） |
+| [`../scripts/check-comments.ts`](../scripts/check-comments.ts) | 連続した `//` 散文を落とす。`npm run check:comments` |
 | [`../scripts/generate_llms_txt.py`](../scripts/generate_llms_txt.py) | `docs/llms.txt` と `docs/llms-full.txt` を生成 |
 | [`../.github/workflows/security-pentest.yml`](../.github/workflows/security-pentest.yml) | OWASP ZAP ベースライン・ペネトレーションテスト |
 | [`../scripts/lint_quizzes.py`](../scripts/lint_quizzes.py) | クイズ JSON の構造 lint |
-| [`../scripts/diff_quiz_data.py`](../scripts/diff_quiz_data.py) | 候補プールと本番シードの差分要約 |
-| [`../scripts/check_quiz_drift.py`](../scripts/check_quiz_drift.py) | 本番シードと最新マイグレーションの drift 検出 |
+| [`../scripts/diff_quiz_data.py`](../scripts/diff_quiz_data.py) | 2 つのクイズ JSON の差分要約 |
+| [`../scripts/check_quiz_drift.py`](../scripts/check_quiz_drift.py) | published 分と最新マイグレーションの drift 検出 |
 | [`../scripts/generate_migration.py`](../scripts/generate_migration.py) | シード JSON から SQL を生成 |
 | [`../scripts/create_seed_migration.py`](../scripts/create_seed_migration.py) | `golang-migrate create` ラッパ |
 | [`../scripts/create_backend_env.py`](../scripts/create_backend_env.py) | `packages/backend/.env` のセットアップ補助 |

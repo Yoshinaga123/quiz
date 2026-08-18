@@ -29,7 +29,7 @@ docs/detailed-design/
 ├── README.md          ← このファイル（入口）
 ├── meta.json          ← 目次（追加したら必ず更新）
 ├── writing.md         ← frontmatter / 例のテスト / llms.txt
-├── repo-ops.md        ← husky / play / docs 例テスト
+├── repo-ops.md        ← husky / play / triage / docs 例テスト
 ├── backend/           ← Go API・DB アクセス
 ├── web/               ← ユーザー向け Web
 ├── admin-web/         ← 管理画面

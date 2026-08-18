@@ -88,7 +88,7 @@ sequenceDiagram
     participant DB as PostgreSQL
 
     Mobile->>API: GET /v1/push/feed
-    API->>DB: SELECT latest mock_sent delivery JOIN quizzes
+    API->>DB: SELECT latest mock_sent delivery JOIN published quizzes
     alt 配信履歴がない
         API-->>Mobile: 404 public error (push_feed_not_found)
     else 最新配信がある
@@ -101,7 +101,8 @@ sequenceDiagram
 ### 実装メモ
 
 - Phase A の Push 通知モック専用エンドポイント
-- 認証なしで呼べるが、返すのは最新の `channel = 'mock'` かつ `status = 'mock_sent'` の 1 件だけ
+- 認証なしで呼べるが、返すのは最新の `channel = 'mock'` かつ `status = 'mock_sent'` かつ対象クイズが `published` の 1 件だけ
+- 配信後にクイズを unpublished へ戻したら feed からは落ちる（ADR 0006 の公開 status 不変条件）
 - mobile は `deliveryId` を保存し、同じ配信を重複通知しない想定
 - 配信がない場合は `404` と `code = push_feed_not_found` を返す
 
@@ -197,7 +198,7 @@ sequenceDiagram
 | ステップ | 処理 |
 | --- | --- |
 | 1 | `seedMu.TryLock()` で同時実行を拒否し、競合時は `409` を返す |
-| 2 | `packages/backend/seeds/quizzes.production.json` を読み込み、正規化と重複 ID 検証を行う |
+| 2 | `packages/admin-web/src/data/quizzes.json` を読み込み、正規化と重複 ID 検証を行う。シード対象は `published: true` |
 | 3 | 現在の `quizzes` テーブルとの差分から `deletedCount` を見積もる |
 | 4 | `migrate create` で空の `up/down` SQL を採番する |
 | 5 | `scripts/generate_migration.py` を `up` と `down` で呼び出し、返ってきた SQL をファイルへ書き込む |

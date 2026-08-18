@@ -1,28 +1,47 @@
-node_modules/
-dist/
+# Secrets / machine-local pads (do not commit)
 .env
-*.log
-.DS_Store
-packages/backend/tmp/server
-packages/backend/view-counter
-__pycache__/
-*.pyc
-certs/
-coverage/
 play.local.ts
 *.local.ts
 packages/backend/play.local.go
+certs/
+**/GoogleService-Info.plist
+**/google-services.json
+
+# Dependencies and build
+node_modules/
+dist/
+coverage/
+*.tgz
+tsconfig.vitest-temp.json
+__pycache__/
+*.pyc
 .husky/_
+packages/backend/tmp/server
+packages/backend/view-counter
+
+# Zod-aligned local labs (never in a product PR)
 scratch
+.triage/
+tmp/
+.worktrees/
+
+# Editors / OS
+.idea
+.zed
+**/.DS_Store
+*.log
+
+# Other package-manager leftovers (this repo stays on npm)
+bun.lock
+bun.lockb
+.pnpm-store
 
 # Local-only learning / other-product clones (kept on disk, not published)
 samples/
 game/
 falling_puzzle
 reports/
-**/GoogleService-Info.plist
 docs/juice-shop-*
 scripts/juice_shop_tree_dirs_rich.py
 security-attack-notes.md
 侵入テスト.md
-

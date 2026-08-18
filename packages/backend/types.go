@@ -11,20 +11,21 @@ import (
 )
 
 const verificationPrompt = "quzzesアカウントの安全性を確保するために、IDを確認する必要があります。確認コードを送信してください。"
-const defaultProductionSeedPath = "seeds/quizzes.production.json"
+const defaultSeedPath = "../admin-web/src/data/quizzes.json"
 const defaultMigrationsDir = "migrations"
 const defaultSeedMigrationName = "seed_quizzes"
 const defaultSeedGeneratorScript = "../scripts/generate_migration.py"
 
 type server struct {
-	db                   *sql.DB
-	adminUser            string
-	adminPassword        string
-	jwtSecret            []byte
-	verificationMu       sync.Mutex
-	pendingVerifications map[string]verificationChallenge
-	seedMu               sync.Mutex
-	pushMu               sync.Mutex
+	db                     *sql.DB
+	adminUser              string
+	adminPassword          string
+	jwtSecret              []byte
+	verificationMu         sync.Mutex
+	pendingVerifications   map[string]verificationChallenge
+	returnVerificationCode bool
+	seedMu                 sync.Mutex
+	pushMu                 sync.Mutex
 }
 
 type rowScanner interface {
@@ -135,6 +136,7 @@ type productionSeedQuiz struct {
 	CorrectAnswerIndex int      `json:"correctAnswerIndex"`
 	Explanation        string   `json:"explanation"`
 	Source             string   `json:"source"`
+	Published          *bool    `json:"published"`
 }
 
 type productionSeedSyncResponse struct {

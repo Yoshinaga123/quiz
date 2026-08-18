@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 """2 つのクイズ JSON の差分を要約するツール。
 
-`packages/admin-web/src/data/quizzes.json`（候補プール）と
-`packages/backend/seeds/quizzes.production.json`（本番採用分）を比較し、
+2 つのクイズ JSON を ID 単位で比較し、
 
-  - 候補プールにしか存在しない ID
-  - 本番にしか存在しない ID（候補プール側で削除された問題が残っていないか）
-  - 両者に存在するが内容が異なる ID（編集忘れ）
+  - 基準側にしか存在しない ID
+  - 比較対象にしか存在しない ID
+  - 両者に存在するが内容が異なる ID
 
-を一覧化する。
+を一覧化する。公開可否は `quizzes.json` の `published` で管理する。
 
 例:
   python3 scripts/diff_quiz_data.py \
     packages/admin-web/src/data/quizzes.json \
-    packages/backend/seeds/quizzes.production.json
+    other-quizzes.json
 """
 
 from __future__ import annotations
