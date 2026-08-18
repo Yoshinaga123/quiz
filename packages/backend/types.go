@@ -22,6 +22,7 @@ type server struct {
 	adminPassword        string
 	jwtSecret            []byte
 	memberJWTSecret      []byte
+	mailer               Mailer
 	verificationMu       sync.Mutex
 	pendingVerifications map[string]verificationChallenge
 	seedMu               sync.Mutex

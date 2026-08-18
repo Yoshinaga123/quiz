@@ -26,8 +26,9 @@ type ctxKey string
 const ctxKeyMemberID ctxKey = "memberID"
 
 type publicMember struct {
-	ID     string `json:"id"`
-	Handle string `json:"handle"`
+	ID               string `json:"id"`
+	Handle           string `json:"handle"`
+	HasVerifiedEmail bool   `json:"hasVerifiedEmail"`
 }
 
 type answerHistoryEntry struct {
@@ -141,12 +142,15 @@ func (s *server) handleGetMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var handle string
+	var (
+		handle          string
+		emailVerifiedAt sql.NullTime
+	)
 	err := s.db.QueryRowContext(
 		r.Context(),
-		`SELECT handle FROM members WHERE id = $1 AND deleted_at IS NULL`,
+		`SELECT handle, email_verified_at FROM members WHERE id = $1 AND deleted_at IS NULL`,
 		id,
-	).Scan(&handle)
+	).Scan(&handle, &emailVerifiedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		writePublicError(w, http.StatusUnauthorized, publicErrCodeMemberDeleted, "member is deleted")
 		return
@@ -156,7 +160,11 @@ func (s *server) handleGetMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, publicMember{ID: id, Handle: handle})
+	writeJSON(w, http.StatusOK, publicMember{
+		ID:               id,
+		Handle:           handle,
+		HasVerifiedEmail: emailVerifiedAt.Valid,
+	})
 }
 
 func (s *server) handleDeleteMe(w http.ResponseWriter, r *http.Request) {

@@ -36,6 +36,20 @@ describe('member API fixtures (ADR 0016)', () => {
     expect(result.success).toBe(false);
   });
 
+  it('rejects publicMember with raw email (ADR 0018 §6)', () => {
+    const forbidden = { ...(readFixture('member-self.json') as object), email: 'user@example.com' };
+    const result = publicMemberSchema.safeParse(forbidden);
+    expect(result.success).toBe(false);
+  });
+
+  it('exposes hasVerifiedEmail boolean (ADR 0018 §6)', () => {
+    const result = publicMemberSchema.safeParse(readFixture('member-self.json'));
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.hasVerifiedEmail).toBe(false);
+    }
+  });
+
   it('parses answer-history-create.json with answerHistoryCreateRequestSchema', () => {
     const result = answerHistoryCreateRequestSchema.safeParse(readFixture('answer-history-create.json'));
     expect(result.success).toBe(true);

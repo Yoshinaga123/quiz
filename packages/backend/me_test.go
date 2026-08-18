@@ -100,9 +100,9 @@ func TestHandleGetMe(t *testing.T) {
 	defer cleanup()
 
 	expectActiveMemberLookup(mock)
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT handle FROM members WHERE id = $1 AND deleted_at IS NULL`)).
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT handle, email_verified_at FROM members WHERE id = $1 AND deleted_at IS NULL`)).
 		WithArgs(memberTestID).
-		WillReturnRows(sqlmock.NewRows([]string{"handle"}).AddRow(memberTestHandle))
+		WillReturnRows(sqlmock.NewRows([]string{"handle", "email_verified_at"}).AddRow(memberTestHandle, nil))
 
 	res := doAuth(s, http.MethodGet, "/api/me", "", meBearer(t, s))
 	if res.Code != http.StatusOK {
@@ -115,6 +115,31 @@ func TestHandleGetMe(t *testing.T) {
 	if got.ID != memberTestID || got.Handle != memberTestHandle {
 		t.Fatalf("got = %+v", got)
 	}
+	if got.HasVerifiedEmail {
+		t.Fatalf("hasVerifiedEmail should be false when email_verified_at is NULL")
+	}
+}
+
+func TestHandleGetMeReportsVerifiedEmail(t *testing.T) {
+	s, mock, cleanup := newMockMemberServer(t)
+	defer cleanup()
+
+	expectActiveMemberLookup(mock)
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT handle, email_verified_at FROM members WHERE id = $1 AND deleted_at IS NULL`)).
+		WithArgs(memberTestID).
+		WillReturnRows(sqlmock.NewRows([]string{"handle", "email_verified_at"}).AddRow(memberTestHandle, time.Now()))
+
+	res := doAuth(s, http.MethodGet, "/api/me", "", meBearer(t, s))
+	if res.Code != http.StatusOK {
+		t.Fatalf("status = %d", res.Code)
+	}
+	var got publicMember
+	if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	if !got.HasVerifiedEmail {
+		t.Fatalf("hasVerifiedEmail should be true")
+	}
 }
 
 func TestHandleGetMeDoesNotLeakPrivateFields(t *testing.T) {
@@ -122,9 +147,9 @@ func TestHandleGetMeDoesNotLeakPrivateFields(t *testing.T) {
 	defer cleanup()
 
 	expectActiveMemberLookup(mock)
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT handle FROM members WHERE id = $1 AND deleted_at IS NULL`)).
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT handle, email_verified_at FROM members WHERE id = $1 AND deleted_at IS NULL`)).
 		WithArgs(memberTestID).
-		WillReturnRows(sqlmock.NewRows([]string{"handle"}).AddRow(memberTestHandle))
+		WillReturnRows(sqlmock.NewRows([]string{"handle", "email_verified_at"}).AddRow(memberTestHandle, nil))
 
 	res := doAuth(s, http.MethodGet, "/api/me", "", meBearer(t, s))
 	if res.Code != http.StatusOK {
@@ -136,7 +161,7 @@ func TestHandleGetMeDoesNotLeakPrivateFields(t *testing.T) {
 		t.Fatalf("decode raw: %v", err)
 	}
 	// ADR 0016 §6: publicMember must expose id and handle only.
-	for _, forbidden := range []string{"password_hash", "passwordHash", "created_at", "createdAt", "updated_at", "updatedAt", "deleted_at", "deletedAt"} {
+	for _, forbidden := range []string{"password_hash", "passwordHash", "created_at", "createdAt", "updated_at", "updatedAt", "deleted_at", "deletedAt", "email", "emailVerifiedAt", "email_verified_at"} {
 		if _, ok := raw[forbidden]; ok {
 			t.Fatalf("publicMember leaked field %q", forbidden)
 		}

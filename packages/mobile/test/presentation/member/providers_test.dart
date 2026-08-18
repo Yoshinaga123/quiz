@@ -45,7 +45,11 @@ class _FakeRepository implements MemberRepository {
 
   @override
   Future<PublicMemberDto> fetchMe(MemberSession session) async {
-    return PublicMemberDto(id: session.memberId, handle: session.handle);
+    return PublicMemberDto(
+      id: session.memberId,
+      handle: session.handle,
+      hasVerifiedEmail: false,
+    );
   }
 
   @override

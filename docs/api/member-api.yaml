@@ -76,15 +76,20 @@ components:
           type: string
     PublicMember:
       type: object
-      required: [id, handle]
+      required: [id, handle, hasVerifiedEmail]
       properties:
         id:
           type: string
           format: uuid
         handle:
           type: string
+        hasVerifiedEmail:
+          type: boolean
+          description: |
+            ADR 0018 §6: email そのものは決してレスポンスに含めない。
+            検証済みメールが登録されているかどうかの boolean だけを公開する。
       description: |
-        ADR 0016 §6: password_hash, createdAt, updatedAt, deletedAt を含めてはならない。
+        ADR 0016 §6: password_hash, createdAt, updatedAt, deletedAt, email を含めてはならない。
     AnswerHistoryCreateRequest:
       type: object
       required: [quizId, selectedIndex]

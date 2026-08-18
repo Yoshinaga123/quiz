@@ -28,11 +28,13 @@ export const memberSessionResponseSchema = z.object({
   token: z.string().min(1),
 });
 
-// publicMember は id と handle のみ。ADR 0016 §6 の禁止フィールドは strict() で弾く。
+// publicMember は id と handle と hasVerifiedEmail のみ。ADR 0016 §6 と
+// ADR 0018 §6 の禁止フィールドは strict() で弾く。
 export const publicMemberSchema = z
   .object({
     id: z.string().uuid(),
     handle: memberHandleSchema,
+    hasVerifiedEmail: z.boolean(),
   })
   .strict();
 

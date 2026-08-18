@@ -65,6 +65,7 @@ describe('createMemberSession + fetchMe', () => {
         jsonResponse(200, {
           id: '0192b6f7-4c50-73b1-8b71-11223344aabb',
           handle: 'quiztaker_01',
+          hasVerifiedEmail: false,
         }),
       );
     globalThis.fetch = fetchMock;

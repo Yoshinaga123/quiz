@@ -49,6 +49,10 @@ func (s *server) routes() http.Handler {
 	mux.Handle("DELETE /api/me", s.requireMemberAuth(http.HandlerFunc(s.handleDeleteMe)))
 	mux.Handle("POST /api/me/answers", s.requireMemberAuth(http.HandlerFunc(s.handleCreateAnswerHistory)))
 	mux.Handle("GET /api/me/answers", s.requireMemberAuth(http.HandlerFunc(s.handleListAnswerHistory)))
+	mux.Handle("POST /api/me/email", s.requireMemberAuth(http.HandlerFunc(s.handleSetMemberEmail)))
+	mux.HandleFunc("POST /api/email-verifications/{token}", s.handleConsumeEmailVerification)
+	mux.HandleFunc("POST /api/password-resets", s.handleRequestPasswordReset)
+	mux.HandleFunc("POST /api/password-resets/{token}", s.handleConsumePasswordReset)
 	mux.Handle("GET /api/admin/quizzes", s.requireAuth(http.HandlerFunc(s.handleListQuizzes)))
 	mux.Handle("POST /api/admin/quizzes/sync-production", s.requireAuth(http.HandlerFunc(s.handleSyncProductionQuizzes)))
 	mux.Handle("POST /api/admin/push/dispatch", s.requireAuth(http.HandlerFunc(s.handleDispatchMockPush)))
@@ -133,6 +137,7 @@ func main() {
 		adminPassword:        getEnv("ADMIN_PASSWORD", "password"),
 		jwtSecret:            []byte(getEnv("JWT_SECRET", "dev-only-secret")),
 		memberJWTSecret:      []byte(getEnv("MEMBER_JWT_SECRET", "dev-only-member-secret")),
+		mailer:               newMailer(),
 		pendingVerifications: make(map[string]verificationChallenge),
 	}
 
