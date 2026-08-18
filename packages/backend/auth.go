@@ -132,7 +132,17 @@ func (s *server) handleRequestLoginVerification(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	ip := clientIP(r)
 	if payload.Username != s.adminUser || payload.Password != s.adminPassword {
+		limited, rlErr := s.rateLimitExceeded(
+			r.Context(), "login_logs", "username", payload.Username, ip,
+			adminLoginWindow, adminLoginIPLimit, adminLoginUserLimit,
+		)
+		s.recordLoginLog(payload.Username, false, r)
+		if rlErr == nil && limited {
+			writeRateLimited(w, adminLoginWindow)
+			return
+		}
 		writeError(w, http.StatusUnauthorized, "invalid credentials")
 		return
 	}
@@ -157,8 +167,17 @@ func (s *server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ip := clientIP(r)
 	if payload.Username != s.adminUser || payload.Password != s.adminPassword {
+		limited, rlErr := s.rateLimitExceeded(
+			r.Context(), "login_logs", "username", payload.Username, ip,
+			adminLoginWindow, adminLoginIPLimit, adminLoginUserLimit,
+		)
 		s.recordLoginLog(payload.Username, false, r)
+		if rlErr == nil && limited {
+			writeRateLimited(w, adminLoginWindow)
+			return
+		}
 		writeError(w, http.StatusUnauthorized, "invalid credentials")
 		return
 	}

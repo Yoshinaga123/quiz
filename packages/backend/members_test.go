@@ -71,6 +71,9 @@ func TestHandleRegisterMemberSuccess(t *testing.T) {
 	s, mock, cleanup := newMockMemberServer(t)
 	defer cleanup()
 
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM member_login_logs WHERE ip_address`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(0))
 	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO members (id, handle, password_hash) VALUES ($1, $2, $3)`)).
 		WithArgs(sqlmock.AnyArg(), memberTestHandle, sqlmock.AnyArg()).
 		WillReturnResult(sqlmock.NewResult(0, 1))
@@ -98,9 +101,15 @@ func TestHandleRegisterMemberDuplicateHandle(t *testing.T) {
 	s, mock, cleanup := newMockMemberServer(t)
 	defer cleanup()
 
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM member_login_logs WHERE ip_address`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(0))
 	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO members (id, handle, password_hash) VALUES ($1, $2, $3)`)).
 		WithArgs(sqlmock.AnyArg(), memberTestHandle, sqlmock.AnyArg()).
 		WillReturnError(&pq.Error{Code: pqUniqueViolation})
+	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO member_login_logs`)).
+		WithArgs(memberTestHandle, false, sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	body := `{"handle":"` + memberTestHandle + `","password":"` + memberTestPassword + `"}`
 	res := doJSON(s, http.MethodPost, "/api/members", body)
@@ -157,6 +166,9 @@ func TestHandleCreateMemberSessionSuccess(t *testing.T) {
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, password_hash FROM members WHERE handle = $1 AND deleted_at IS NULL`)).
 		WithArgs(memberTestHandle).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "password_hash"}).AddRow(memberTestID, string(hash)))
+	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO member_login_logs`)).
+		WithArgs(memberTestHandle, true, sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	body := `{"handle":"` + memberTestHandle + `","password":"` + memberTestPassword + `"}`
 	res := doJSON(s, http.MethodPost, "/api/session", body)
@@ -185,6 +197,17 @@ func TestHandleCreateMemberSessionSuccess(t *testing.T) {
 	}
 }
 
+func expectMemberLoginFailureCounts(mock sqlmock.Sqlmock, ipCount, handleCount int) {
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM member_login_logs WHERE ip_address`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(ipCount))
+	if ipCount < memberSessionIPLimit {
+		mock.ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM member_login_logs WHERE handle`)).
+			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(handleCount))
+	}
+}
+
 func TestHandleCreateMemberSessionRejectsWrongPassword(t *testing.T) {
 	s, mock, cleanup := newMockMemberServer(t)
 	defer cleanup()
@@ -197,6 +220,10 @@ func TestHandleCreateMemberSessionRejectsWrongPassword(t *testing.T) {
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, password_hash FROM members WHERE handle = $1 AND deleted_at IS NULL`)).
 		WithArgs(memberTestHandle).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "password_hash"}).AddRow(memberTestID, string(hash)))
+	expectMemberLoginFailureCounts(mock, 0, 0)
+	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO member_login_logs`)).
+		WithArgs(memberTestHandle, false, sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	body := `{"handle":"` + memberTestHandle + `","password":"wrong-password"}`
 	res := doJSON(s, http.MethodPost, "/api/session", body)
@@ -210,15 +237,114 @@ func TestHandleCreateMemberSessionRejectsDeletedMember(t *testing.T) {
 	s, mock, cleanup := newMockMemberServer(t)
 	defer cleanup()
 
-	// The `WHERE deleted_at IS NULL` filter turns a soft-deleted lookup into ErrNoRows.
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, password_hash FROM members WHERE handle = $1 AND deleted_at IS NULL`)).
 		WithArgs(memberTestHandle).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "password_hash"}))
+	expectMemberLoginFailureCounts(mock, 0, 0)
+	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO member_login_logs`)).
+		WithArgs(memberTestHandle, false, sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	body := `{"handle":"` + memberTestHandle + `","password":"` + memberTestPassword + `"}`
 	res := doJSON(s, http.MethodPost, "/api/session", body)
 
 	if res.Code != http.StatusUnauthorized {
+		t.Fatalf("status = %d, body = %s", res.Code, res.Body.String())
+	}
+}
+
+func TestHandleCreateMemberSessionRateLimitsByIP(t *testing.T) {
+	s, mock, cleanup := newMockMemberServer(t)
+	defer cleanup()
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(memberTestPassword), bcrypt.MinCost)
+	if err != nil {
+		t.Fatalf("hash: %v", err)
+	}
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, password_hash FROM members WHERE handle = $1 AND deleted_at IS NULL`)).
+		WithArgs(memberTestHandle).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "password_hash"}).AddRow(memberTestID, string(hash)))
+	// IP already at limit; short-circuits handle check (see rateLimitExceeded).
+	expectMemberLoginFailureCounts(mock, memberSessionIPLimit, 0)
+	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO member_login_logs`)).
+		WithArgs(memberTestHandle, false, sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	body := `{"handle":"` + memberTestHandle + `","password":"wrong"}`
+	res := doJSON(s, http.MethodPost, "/api/session", body)
+
+	if res.Code != http.StatusTooManyRequests {
+		t.Fatalf("status = %d, body = %s", res.Code, res.Body.String())
+	}
+	if res.Header().Get("Retry-After") == "" {
+		t.Fatalf("Retry-After header missing")
+	}
+}
+
+func TestHandleCreateMemberSessionRateLimitsByHandle(t *testing.T) {
+	s, mock, cleanup := newMockMemberServer(t)
+	defer cleanup()
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(memberTestPassword), bcrypt.MinCost)
+	if err != nil {
+		t.Fatalf("hash: %v", err)
+	}
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, password_hash FROM members WHERE handle = $1 AND deleted_at IS NULL`)).
+		WithArgs(memberTestHandle).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "password_hash"}).AddRow(memberTestID, string(hash)))
+	expectMemberLoginFailureCounts(mock, 0, memberSessionUserLimit)
+	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO member_login_logs`)).
+		WithArgs(memberTestHandle, false, sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	body := `{"handle":"` + memberTestHandle + `","password":"wrong"}`
+	res := doJSON(s, http.MethodPost, "/api/session", body)
+
+	if res.Code != http.StatusTooManyRequests {
+		t.Fatalf("status = %d, body = %s", res.Code, res.Body.String())
+	}
+}
+
+func TestHandleCreateMemberSessionAllowsAtBoundaryMinusOne(t *testing.T) {
+	s, mock, cleanup := newMockMemberServer(t)
+	defer cleanup()
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(memberTestPassword), bcrypt.MinCost)
+	if err != nil {
+		t.Fatalf("hash: %v", err)
+	}
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, password_hash FROM members WHERE handle = $1 AND deleted_at IS NULL`)).
+		WithArgs(memberTestHandle).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "password_hash"}).AddRow(memberTestID, string(hash)))
+	// 19/20: still under the limit -> 401, not 429.
+	expectMemberLoginFailureCounts(mock, memberSessionIPLimit-1, memberSessionUserLimit-1)
+	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO member_login_logs`)).
+		WithArgs(memberTestHandle, false, sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	body := `{"handle":"` + memberTestHandle + `","password":"wrong"}`
+	res := doJSON(s, http.MethodPost, "/api/session", body)
+
+	if res.Code != http.StatusUnauthorized {
+		t.Fatalf("status = %d, body = %s", res.Code, res.Body.String())
+	}
+}
+
+func TestHandleRegisterMemberRateLimitsByIP(t *testing.T) {
+	s, mock, cleanup := newMockMemberServer(t)
+	defer cleanup()
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM member_login_logs WHERE ip_address`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(memberRegisterIPLimit))
+
+	body := `{"handle":"` + memberTestHandle + `","password":"` + memberTestPassword + `"}`
+	res := doJSON(s, http.MethodPost, "/api/members", body)
+
+	if res.Code != http.StatusTooManyRequests {
 		t.Fatalf("status = %d, body = %s", res.Code, res.Body.String())
 	}
 }

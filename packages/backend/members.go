@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -26,6 +27,9 @@ const (
 	memberJWTAudience    = "member"
 	memberJWTTTL         = 24 * time.Hour
 	pqUniqueViolation    = "23505"
+	// Pre-generated bcrypt hash of "quzzes-dummy-password-not-used" at cost 12.
+	// Used only to keep timing similar when a handle does not exist (ADR 0017 §1).
+	dummyBcryptHash = "$2a$12$abcdefghijklmnopqrstuu4Sf.wCkbeKfQeoT.5Gc/JqLXPfazyjS"
 )
 
 var memberHandlePattern = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -102,6 +106,17 @@ func (s *server) handleRegisterMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ADR 0017: cap registrations per source IP even before hashing.
+	ip := clientIP(r)
+	limited, err := s.rateLimitExceeded(
+		r.Context(), "member_login_logs", "handle", "", ip,
+		memberRegisterWindow, memberRegisterIPLimit, 0,
+	)
+	if err == nil && limited {
+		writeRateLimited(w, memberRegisterWindow)
+		return
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), memberBcryptCost)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to hash password")
@@ -117,6 +132,7 @@ func (s *server) handleRegisterMember(w http.ResponseWriter, r *http.Request) {
 	if err := s.insertMember(r.Context(), id, handle, string(hash)); err != nil {
 		var pqErr *pq.Error
 		if errors.As(err, &pqErr) && string(pqErr.Code) == pqUniqueViolation {
+			s.recordMemberLoginLog(r.Context(), handle, false, r)
 			writeError(w, http.StatusConflict, "handle already taken")
 			return
 		}
@@ -136,6 +152,18 @@ func (s *server) insertMember(ctx context.Context, id, handle, passwordHash stri
 	return err
 }
 
+func (s *server) recordMemberLoginLog(ctx context.Context, handle string, success bool, r *http.Request) {
+	ip := clientIP(r)
+	ua := r.UserAgent()
+	if _, err := s.db.ExecContext(
+		ctx,
+		`INSERT INTO member_login_logs (handle, success, ip_address, user_agent) VALUES ($1, $2, $3, $4)`,
+		handle, success, ip, ua,
+	); err != nil {
+		log.Printf("failed to record member_login_logs: %v", err)
+	}
+}
+
 func (s *server) handleCreateMemberSession(w http.ResponseWriter, r *http.Request) {
 	var payload memberSessionRequest
 	if err := decodeJSON(r, &payload); err != nil {
@@ -149,6 +177,8 @@ func (s *server) handleCreateMemberSession(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	ip := clientIP(r)
+
 	var (
 		id           string
 		passwordHash string
@@ -158,16 +188,28 @@ func (s *server) handleCreateMemberSession(w http.ResponseWriter, r *http.Reques
 		`SELECT id, password_hash FROM members WHERE handle = $1 AND deleted_at IS NULL`,
 		handle,
 	).Scan(&id, &passwordHash)
+	// Always run bcrypt so 401 / 429 / handle-missing paths take similar time (ADR 0017 §1).
+	credentialsOK := false
 	if errors.Is(err, sql.ErrNoRows) {
-		writeError(w, http.StatusUnauthorized, "invalid credentials")
-		return
-	}
-	if err != nil {
+		// Compare against a fixed dummy hash to keep timing similar.
+		_ = bcrypt.CompareHashAndPassword([]byte(dummyBcryptHash), []byte(payload.Password))
+	} else if err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to look up member")
 		return
+	} else {
+		credentialsOK = bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(payload.Password)) == nil
 	}
 
-	if bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(payload.Password)) != nil {
+	if !credentialsOK {
+		limited, rlErr := s.rateLimitExceeded(
+			r.Context(), "member_login_logs", "handle", handle, ip,
+			memberSessionWindow, memberSessionIPLimit, memberSessionUserLimit,
+		)
+		s.recordMemberLoginLog(r.Context(), handle, false, r)
+		if rlErr == nil && limited {
+			writeRateLimited(w, memberSessionWindow)
+			return
+		}
 		writeError(w, http.StatusUnauthorized, "invalid credentials")
 		return
 	}
@@ -178,6 +220,7 @@ func (s *server) handleCreateMemberSession(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	s.recordMemberLoginLog(r.Context(), handle, true, r)
 	writeJSON(w, http.StatusOK, memberSessionResponse{Token: token})
 }
 
