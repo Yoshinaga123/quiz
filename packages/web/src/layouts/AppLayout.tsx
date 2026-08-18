@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import { useMemberSession } from '../contexts/MemberSessionContext'
 
 const navLinkBaseClassName =
   'inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium transition duration-150 hover:-translate-y-0.5 hover:shadow-float'
@@ -11,6 +12,7 @@ interface BannerNotice {
 
 function AppLayout() {
   const [notice, setNotice] = useState<BannerNotice | null>(null)
+  const { session } = useMemberSession()
 
   useEffect(() => {
     function pushNotice(event: Event) {
@@ -58,6 +60,29 @@ function AppLayout() {
               >
                 履歴
               </NavLink>
+              {session === null ? (
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive
+                      ? `${navLinkBaseClassName} bg-linear-to-br from-accent to-accent-strong text-white`
+                      : `${navLinkBaseClassName} border border-navy/12 bg-white/80 text-navy`
+                  }
+                >
+                  ログイン
+                </NavLink>
+              ) : (
+                <NavLink
+                  to="/me"
+                  className={({ isActive }) =>
+                    isActive
+                      ? `${navLinkBaseClassName} bg-linear-to-br from-accent to-accent-strong text-white`
+                      : `${navLinkBaseClassName} border border-navy/12 bg-white/80 text-navy`
+                  }
+                >
+                  {session.handle}
+                </NavLink>
+              )}
             </nav>
           </div>
         </div>
