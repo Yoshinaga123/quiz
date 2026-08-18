@@ -262,7 +262,7 @@ Phase 0（合意済み: 案 A） → Phase 1（DB） → Phase 2–3（backend A
 - **由来**: Zod 公式が Mini を「バンドル制約が異常に厳しいとき」向けと位置づけていること。低速回線向けの超軽量化の検討。
 - **優先度**: P3（マストではない。公式も多数派には classic `zod` を推奨）
 - **状態**: 先送り。いまは対応しない。
-- **参照**: [zod.dev/packages/mini](https://zod.dev/packages/mini)、[ADR 0002](./adr/0002-frontend-architecture-spa.md)（先に測る）、[ADR 0010](./adr/0010-scratch-input-bundle-size.md)（測る入口は `scratch/input.ts`）
+- **参照**: [zod.dev/packages/mini](https://zod.dev/packages/mini)、[ADR 0002](./adr/0002-frontend-architecture-spa.md)（先に測る）、[Issue #19](https://github.com/Yoshinaga123/quiz/issues/19)（測る入口は `scratch/input.ts`）
 
 **背景**
 
@@ -272,7 +272,7 @@ Phase 0（合意済み: 案 A） → Phase 1（DB） → Phase 2–3（backend A
 
 **やること（着手するとき）**
 
-1. `scratch/input.ts` で classic と Mini の kB を測る（ADR 0010）
+1. `scratch/input.ts` で classic と Mini の kB を測る
 2. 差がユーザー体感に効くと分かってから `packages/web/` / `packages/admin-web/` の schema を Mini API に書き換える
 3. 公開 JSON の shape は変えない（OpenAPI / fixtures / `publicQuiz` はそのまま）
 
@@ -328,5 +328,5 @@ Zod は TypeScript ライブラリとして ESLint をやめて Biome にした�
 ## 参考
 
 - TASK-003 Phase B（本番 FCM）: ADR 0007 の cron + `device_tokens` + FCM SDK。TASK-003 完了後に別タスク化する。
-- TASK-004 はバンドル計測（ADR 0010）より先に Mini へ書き換えない。
+- TASK-004 は `scratch/input.ts` でのバンドル計測より先に Mini へ書き換えない。
 - TASK-005 は人が「着手して」と言うまで ESLint を外さない。

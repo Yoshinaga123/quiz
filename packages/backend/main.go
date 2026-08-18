@@ -4,16 +4,51 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/shirou/gopsutil/mem"
 )
 
+func corsAllowedOrigins() []string {
+	raw := strings.TrimSpace(os.Getenv("CORS_ALLOWED_ORIGINS"))
+	if raw == "" {
+		return nil
+	}
+	parts := strings.Split(raw, ",")
+	out := make([]string, 0, len(parts))
+	for _, part := range parts {
+		origin := strings.TrimSpace(part)
+		if origin != "" {
+			out = append(out, origin)
+		}
+	}
+	return out
+}
+
+func originAllowed(origin string, allowlist []string) bool {
+	if origin == "" {
+		return false
+	}
+	if len(allowlist) == 0 {
+		// Empty allowlist keeps the local-dev Origin reflection behavior.
+		return true
+	}
+	for _, allowed := range allowlist {
+		if origin == allowed {
+			return true
+		}
+	}
+	return false
+}
+
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if origin != "" {
+		allowlist := corsAllowedOrigins()
+		if originAllowed(origin, allowlist) {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
 		}
@@ -41,6 +76,7 @@ func (s *server) routes() http.Handler {
 	mux.HandleFunc("GET /v1/quizzes/{id}", s.handleGetPublicQuiz)
 	mux.HandleFunc("GET /v1/sections", s.handleListPublicSections)
 	mux.HandleFunc("GET /v1/push/feed", s.handleGetPublicPushFeed)
+	mux.HandleFunc("POST /v1/attempts", s.handleSubmitAttempt)
 	mux.HandleFunc("POST /api/admin/login/verification", s.handleRequestLoginVerification)
 	mux.HandleFunc("POST /api/admin/login", s.handleLogin)
 	mux.HandleFunc("POST /api/members", s.handleRegisterMember)

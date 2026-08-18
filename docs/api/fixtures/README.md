@@ -12,5 +12,8 @@ shape を変えたら、この JSON・`public-quiz-api.yaml`・Zod・Go `publicQ
 | `sections.json` | セクション一覧 | `GET /v1/sections` |
 | `error.json` | `Error` | 公開エラー `{ code, message }` |
 | `push-feed.json` | `PushFeed` | `GET /v1/push/feed` |
+| `attempt-create.json` | `AttemptCreateRequest` | `POST /v1/attempts` 成功リクエスト |
+| `attempt-accepted.json` | `AttemptAccepted` | `POST /v1/attempts` 202 |
+| `attempt-invalid-empty-answers.json` | `AttemptCreateRequest` | `answers` が空（失敗） |
 
 `quiz-list.json` の先頭要素は `quiz.json` と同一であること（`scripts/check_public_contract.py` が検証する）。

@@ -13,7 +13,7 @@ function QuizResultPage() {
   const { recordId } = useParams<{ recordId: string }>()
   const { records } = useHistory()
   const location = useLocation()
-  const { quizzes } = useQuizCatalog()
+  const { quizzes, isLoading } = useQuizCatalog()
 
   const fallbackRecord = (location.state as { record?: HistoryRecord } | null)?.record
   const record = useMemo<HistoryRecord | undefined>(() => {
@@ -77,7 +77,9 @@ function QuizResultPage() {
                 className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card"
               >
                 <p className="m-0 text-[#4f5d75]">
-                  問題 ID {answer.quizId} のデータが見つかりません（カタログから削除された可能性があります）。
+                  {isLoading
+                    ? `問題 ID ${answer.quizId} のデータを読み込んでいます。`
+                    : `問題 ID ${answer.quizId} のデータが見つかりません（カタログから削除された可能性があります）。`}
                 </p>
               </article>
             )

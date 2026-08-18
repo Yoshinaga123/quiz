@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import SignInNudge from '../components/SignInNudge'
 import { useMemberSession } from '../contexts/MemberSessionContext'
 
 const navLinkBaseClassName =
@@ -89,6 +90,9 @@ function AppLayout() {
       </header>
 
       <main className="mx-auto w-full max-w-[1100px] px-4 py-8 pb-16 sm:px-6 lg:px-8">
+        <div className="mb-5">
+          <SignInNudge />
+        </div>
         {notice ? (
           <div
             key={notice.id}

@@ -50,6 +50,7 @@
 | [`./quiz-data-workflow.md`](./quiz-data-workflow.md) | クイズデータの 3 層フロー（候補プール → 本番シード → DB） |
 | [`./firebase-api-key-handling.md`](./firebase-api-key-handling.md) | Firebase 設定は gitignore。このアプリのプロジェクト以外を入れない |
 | [`./local-https-setup.md`](./local-https-setup.md) | ローカル開発環境の HTTPS 設定（自己署名証明書 + Vite） |
+| [`./deploy-lightsail.md`](./deploy-lightsail.md) | 本番 Lightsail 1台の起動手順（ADR 0015） |
 | [`./counter-api.md`](./counter-api.md) | PV カウンター API（`/counter`、永続化は `views` テーブル） |
 | [`./push-notification-mock.md`](./push-notification-mock.md) | Push 通知 Phase A モック（手動送信 + feed + ローカル通知） |
 | [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |
@@ -61,6 +62,8 @@
 
 ## アーキテクチャ決定記録（ADR）
 
+ADR は、複数領域に長期間影響し、後戻りコストが高い判断に限定する。認証境界、公開契約、データの正本、本番構成、アプリ分離などが対象となる。実験方法、コマンド、エディタ設定、局所的なツール構成、通常の依存関係更新は GitHub Issue / PR に残す（整理経緯: [Issue #19](https://github.com/Yoshinaga123/quiz/issues/19)）。
+
 | 番号 | 状態 | タイトル |
 | --- | --- | --- |
 | [0001](./adr/0001-counter-api-architecture.md) | Accepted | カウンタ API 構成 |
@@ -70,12 +73,9 @@
 | [0005](./adr/0005-user-facing-web-quiz-app.md) | Accepted | ユーザー向け Web クイズアプリ (`packages/web/`) |
 | [0006](./adr/0006-public-quiz-api.md) | Accepted | 公開クイズ API の仕様分離 |
 | [0007](./adr/0007-push-notification-delivery.md) | Proposed | プッシュ通知の配信方式 |
-| [0008](./adr/0008-user-attempt-history.md) | Proposed | ユーザー回答履歴の保存方式 |
+| [0008](./adr/0008-user-attempt-history.md) | Accepted | ユーザー回答履歴の保存方式 |
 | [0009](./adr/0009-mobile-state-management.md) | Accepted | モバイル版の状態管理と層構造 |
-| [0010](./adr/0010-scratch-input-bundle-size.md) | Accepted | バンドルサイズ実験の入口は手元の `scratch/input.ts`（gitignore） |
-| [0011](./adr/0011-devcontainer-runtimes.md) | Accepted | Dev Container にはこのリポジトリが実際に使うランタイムだけ入れる |
-| [0012](./adr/0012-vscode-launch.json.md) | Accepted | VS Code `launch.json` は Zod のコピーを置かない |
-| [0013](./adr/0013-runtime-bench.md) | Accepted | 実行速度の比較は `packages/bench` |
+| [0015](./adr/0015-lightsail-production.md) | Accepted | 本番は AWS Lightsail 1台 |
 
 ## API 仕様
 
@@ -96,8 +96,8 @@
 | [`../packages/web/scripts/README.md`](../packages/web/scripts/README.md) | Zod `play.ts` 相当の試し書き |
 | [`../packages/admin-web/scripts/README.md`](../packages/admin-web/scripts/README.md) | 管理画面スキーマの試し書き |
 | [`../play.ts`](../play.ts) | ルートの試し書き（`npm run play`） |
-| [ADR 0010](./adr/0010-scratch-input-bundle-size.md) | バンドルサイズ計測（手元の `scratch/input.ts`。フォルダは gitignore） |
-| [`../packages/bench/README.md`](../packages/bench/README.md) | 実行速度計測（ops/sec。[ADR 0013](./adr/0013-runtime-bench.md)） |
+| [`../scripts/scratch-measure.mjs`](../scripts/scratch-measure.mjs) | バンドルサイズ計測（手元の `scratch/input.ts`。フォルダは gitignore） |
+| [`../packages/bench/README.md`](../packages/bench/README.md) | 実行速度計測（ops/sec） |
 | [`../packages/mobile/README.md`](../packages/mobile/README.md) | モバイル版（Flutter + Riverpod） |
 | [`../packages/backend/README.md`](../packages/backend/README.md) | Go API（Public / Admin / 認証 / Seed 同期） |
 

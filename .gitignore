@@ -5,6 +5,7 @@ dist/
 .DS_Store
 packages/backend/tmp/server
 packages/backend/view-counter
+packages/backend/quiz
 __pycache__/
 *.pyc
 certs/
@@ -20,9 +21,9 @@ samples/
 game/
 falling_puzzle
 reports/
+.triage/
 **/GoogleService-Info.plist
 docs/juice-shop-*
 scripts/juice_shop_tree_dirs_rich.py
 security-attack-notes.md
 侵入テスト.md
-

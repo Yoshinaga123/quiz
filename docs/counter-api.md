@@ -97,7 +97,7 @@ UPDATE views SET count = count + 1 WHERE id = 1 RETURNING count;
 
 ADR 0001 では開発向けにオリジン whitelist を採用する方針だったが、
 Vite がポートを自動変更する（5173 → 5174 など）ローカル開発の都合から、現実装は Origin 反射に寄せている。
-本番公開時は許可オリジンの allowlist 化を再検討する。
+本番では `CORS_ALLOWED_ORIGINS`（カンマ区切り）を設定して allowlist 化する（[ADR 0015](./adr/0015-lightsail-production.md)）。
 
 ## ローカル確認
 

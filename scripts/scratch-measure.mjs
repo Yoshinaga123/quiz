@@ -28,7 +28,7 @@ const kb = (bytes) => (bytes / 1024).toFixed(2)
 
 if (!existsSync(inputPath)) {
   throw new Error(
-    'scratch/input.ts is missing. Create it locally (gitignored, same as Zod). Name must stay input.ts. See docs/adr/0010-scratch-input-bundle-size.md',
+    'scratch/input.ts is missing. Create it locally (gitignored, same as Zod). Name must stay input.ts. See https://github.com/Yoshinaga123/quiz/issues/19',
   )
 }
 

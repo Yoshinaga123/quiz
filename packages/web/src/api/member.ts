@@ -12,6 +12,7 @@ import {
   type AnswerHistoryEntry,
   type AnswerHistoryListResponse,
   type MemberRegisterRequest,
+  type MemberRegisterResponse,
   type MemberSessionResponse,
   type PublicMember,
 } from '../schemas/member';
@@ -31,7 +32,7 @@ const withSignal = (signal?: AbortSignal): Pick<RequestOptions, 'signal'> =>
 export const registerMember = async (
   payload: MemberRegisterRequest,
   signal?: AbortSignal,
-): Promise<PublicMember> => {
+): Promise<MemberRegisterResponse> => {
   const validated = memberRegisterRequestSchema.parse(payload);
   return requestJson('/api/members', memberRegisterResponseSchema, {
     method: 'POST',

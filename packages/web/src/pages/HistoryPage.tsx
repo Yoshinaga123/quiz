@@ -54,6 +54,9 @@ function HistoryPage() {
         <p className="m-0 max-w-[720px] text-[#4f5d75]">
           ブラウザ内（LocalStorage）に保存された履歴です。キャッシュをクリアすると消えます。
         </p>
+        <p className="m-0 max-w-[720px] text-[#4f5d75]">
+          匿名の回答集計を別送することがありますが、履歴の正本はこの端末内のデータです。
+        </p>
       </section>
 
       <section className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card">

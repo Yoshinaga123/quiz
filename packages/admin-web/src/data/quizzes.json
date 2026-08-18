@@ -13337,6 +13337,22 @@
       "correctAnswerIndex": 0,
       "explanation": "ルートから特定 workspace のスクリプトを走らせるには `--workspace`（短縮 `-w`）を使います。例は `npm run test --workspace=a` です。`cd packages/a && npm run test` でも同じスクリプトが走ります。`pnpm i -w a` は依存追加の文脈で、この設問の実行方法ではありません。",
       "source": "https://docs.npmjs.com/cli/v11/using-npm/workspaces"
+    },
+    {
+      "id": 838,
+      "section": "セクション: TypeScript・VS Code",
+      "title": "ワークスペース版 TypeScript の選択",
+      "question": "`tsconfig.json` で `allowImportingTsExtensions: true` を有効にしても、VS Code 上だけ TS5097 が表示されました。`.vscode/settings.json` には次の設定があり、コマンドラインの型検査は成功します。最も適切な対応はどれですか？",
+      "code": "{\n  \"js/ts.tsdk.path\": \"node_modules/typescript/lib\"\n}",
+      "options": [
+        "`TypeScript: Select TypeScript Version` を実行し、`Use Workspace Version` を選択する",
+        "`typescript.useWorkspaceTsdk: true` を `tsconfig.json` の `compilerOptions` に追加する",
+        "`allowImportingTsExtensions` を `.vscode/settings.json` に移動する",
+        "`noEmit: true` を削除して、VS Code に JavaScript を出力させる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`js/ts.tsdk.path` はワークスペース版 TypeScript の場所を VS Code に知らせますが、それだけでは使用版は切り替わりません。TypeScript ファイルを開いて `TypeScript: Select TypeScript Version` から `Use Workspace Version` を選択します。選択状態は TypeScript 拡張の内部 workspace state（`typescript.useWorkspaceTsdk`）に保存されるため、このキーを通常の `settings.json` や `tsconfig.json` に直接書く設定ではありません。",
+      "source": "https://code.visualstudio.com/docs/typescript/typescript-transpiling#_using-the-workspace-version-of-typescript"
     }
   ]
 }

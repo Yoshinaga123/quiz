@@ -54,8 +54,40 @@ export function calculateAccuracy(correct: number, total: number): number {
   return Math.round((correct / total) * 100)
 }
 
+// The public attempts API requires a UUID, but `crypto.randomUUID` only exists
+// in secure contexts, so plain-HTTP hosts fall back to `getRandomValues`.
 export function generateSessionId(): string {
-  return globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+  const webCrypto = globalThis.crypto as Crypto | undefined
+  if (typeof webCrypto?.randomUUID === 'function') {
+    return webCrypto.randomUUID()
+  }
+  return uuidV4FromBytes(randomBytes(16))
+}
+
+function randomBytes(length: number): Uint8Array {
+  const bytes = new Uint8Array(length)
+  const webCrypto = globalThis.crypto as Crypto | undefined
+  if (typeof webCrypto?.getRandomValues === 'function') {
+    webCrypto.getRandomValues(bytes)
+    return bytes
+  }
+  for (let i = 0; i < length; i++) {
+    bytes[i] = Math.floor(Math.random() * 256)
+  }
+  return bytes
+}
+
+function uuidV4FromBytes(bytes: Uint8Array): string {
+  bytes[6] = ((bytes[6] as number) & 0x0f) | 0x40
+  bytes[8] = ((bytes[8] as number) & 0x3f) | 0x80
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20, 32),
+  ].join('-')
 }
 
 export function nowIso(): string {

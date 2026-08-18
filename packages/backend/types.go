@@ -222,6 +222,25 @@ type pushFeedResponse struct {
 	Channel    string    `json:"channel"`
 }
 
+type attemptAnswer struct {
+	QuizID        int64      `json:"quizId"`
+	SelectedIndex int        `json:"selectedIndex"`
+	IsCorrect     bool       `json:"isCorrect"`
+	AnsweredAt    *time.Time `json:"answeredAt,omitempty"`
+}
+
+type attemptCreateRequest struct {
+	ClientSessionID string          `json:"clientSessionId"`
+	CompletedAt     time.Time       `json:"completedAt"`
+	Section         *string         `json:"section,omitempty"`
+	Answers         []attemptAnswer `json:"answers"`
+}
+
+type attemptAccepted struct {
+	ClientSessionID string `json:"clientSessionId"`
+	Status          string `json:"status"`
+}
+
 // publicErrorResponse は ADR 0006 で合意した公開 API のエラー形式。
 // 管理 API の errorResponse とは別フォーマットとし、
 // クライアント（web, mobile）は `code` でハンドリングできる。

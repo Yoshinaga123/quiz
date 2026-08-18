@@ -51,9 +51,9 @@ ADR 0005 で `packages/web/` と `packages/mobile/` のユーザー向けクラ�
 1. `docs/api/public-quiz-api.yaml` をレビューして合意。 ✅ 初版レビュー済み。
 2. `packages/backend/main.go` に `/v1/quizzes`, `/v1/quizzes/{id}`, `/v1/sections`, `/healthz` を実装し、
    `status = published` フィルタを適用する。 ✅ 実装済み（`handleListPublicQuizzes` / `handleGetPublicQuiz` / `handleListPublicSections` / `handleHealthz`）。
-3. `packages/web/` の `useQuizCatalog` を `fetchQuizzes()` に切り替える（`VITE_API_BASE_URL` がある場合）。⏳ 次イテレーションで対応。
+3. `packages/web/` の `useQuizCatalog` を `fetchQuizzes()` に切り替える（`VITE_API_BASE_URL` がある場合）。✅ 実装済み。
 4. `packages/mobile/` の Repository も同 API を参照する Remote DataSource に置き換える。⏳ 次イテレーションで対応。
-5. `POST /v1/attempts` は ADR 0008 と合わせて後続イテレーションで実装する。⏳ 未着手。
+5. `POST /v1/attempts` は ADR 0008 と合わせて後続イテレーションで実装する。✅ 実装済み。web から best-effort 送信。
 
 ## Alternatives Considered
 

@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import AnswerOption from '../components/AnswerOption'
 import { createAnswerHistoryBestEffort } from '../api/member'
+import { submitAttemptBestEffort } from '../api/quiz'
 import CodeBlock from '../components/CodeBlock'
 import ProgressBar from '../components/ProgressBar'
 import { useHistory } from '../contexts/HistoryContext'
@@ -16,8 +17,8 @@ import {
 } from '../lib/quizUtils'
 import type { HistoryRecord, Quiz, QuizAnswer } from '../types/quiz'
 
-const DEFAULT_LIMIT = 5
-const MAX_LIMIT = 20
+const DEFAULT_LIMIT = 10
+const MAX_LIMIT = 100
 
 interface SessionState {
   id: string
@@ -37,7 +38,23 @@ function parseLimit(raw: string | null): number {
 }
 
 function QuizPlayPage() {
-  const { quizzes } = useQuizCatalog()
+  const { quizzes, isLoading } = useQuizCatalog()
+
+  if (isLoading) {
+    return (
+      <div className="rounded-card border border-navy/12 bg-white/86 p-card text-center shadow-card">
+        <h1 className="m-0 text-[1.4rem] font-semibold">問題を読み込んでいます</h1>
+        <p className="mt-2 mb-0 text-[#4f5d75]">Public API からクイズを取得中です。</p>
+      </div>
+    )
+  }
+
+  return <QuizSession quizzes={quizzes} />
+}
+
+// The session snapshots quiz ids once, so it must mount only after the catalog
+// settled: starter-pack ids and Public API ids do not overlap.
+function QuizSession({ quizzes }: { quizzes: readonly Quiz[] }) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { appendRecord } = useHistory()
@@ -103,6 +120,7 @@ function QuizPlayPage() {
         answers: [...allAnswers],
       }
       appendRecord(record)
+      void submitAttemptBestEffort(record)
       navigate(`/result/${record.id}`, { state: { record }, replace: true })
     },
     [session.id, session.sectionFilter, session.startedAt, totalQuestions, appendRecord, navigate],

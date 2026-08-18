@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { quizzesSchema } from '../schemas/quiz';
 // 
-import type { Quiz } from '../types/quiz';
+import type { HistoryRecord, Quiz } from '../types/quiz';
 
 import { requestJson } from './client';
 
@@ -53,4 +53,56 @@ export const fetchQuizzes = async (params: FetchQuizzesParams = {}): Promise<Qui
     },
   );
   return response.quizzes;
+};
+
+export const attemptAnswerSchema = z.object({
+  quizId: z.number().int().positive(),
+  selectedIndex: z.number().int().nonnegative(),
+  isCorrect: z.boolean(),
+  answeredAt: z.string().min(1).optional(),
+});
+
+export const attemptCreateRequestSchema = z.object({
+  clientSessionId: z.string().uuid(),
+  completedAt: z.string().min(1),
+  section: z.string().min(1).optional(),
+  answers: z.array(attemptAnswerSchema).min(1),
+});
+
+export const attemptAcceptedSchema = z.object({
+  clientSessionId: z.string().min(1),
+  status: z.literal('accepted'),
+});
+
+export type AttemptCreateRequest = z.infer<typeof attemptCreateRequestSchema>;
+export type AttemptAccepted = z.infer<typeof attemptAcceptedSchema>;
+
+export const historyRecordToAttempt = (record: HistoryRecord): AttemptCreateRequest => {
+  const request: AttemptCreateRequest = {
+    clientSessionId: record.id,
+    completedAt: record.completedAt,
+    answers: record.answers.map((answer) => ({
+      quizId: answer.quizId,
+      selectedIndex: answer.selectedIndex,
+      isCorrect: answer.correct,
+    })),
+  };
+  if (record.sectionFilter !== null && record.sectionFilter !== '') {
+    request.section = record.sectionFilter;
+  }
+  return request;
+};
+
+export const submitAttempt = async (record: HistoryRecord): Promise<AttemptAccepted> =>
+  requestJson('/v1/attempts', attemptAcceptedSchema, {
+    method: 'POST',
+    body: historyRecordToAttempt(record),
+  });
+
+export const submitAttemptBestEffort = async (record: HistoryRecord): Promise<void> => {
+  try {
+    await submitAttempt(record);
+  } catch {
+    // localStorage remains the primary history source
+  }
 };

@@ -5,7 +5,7 @@ import { useHistory } from '../contexts/HistoryContext'
 import { useQuizCatalog } from '../hooks/useQuizCatalog'
 import { calculateAccuracy, filterBySection, listSections } from '../lib/quizUtils'
 
-const QUIZ_LIMIT_OPTIONS = [3, 5, 10] as const
+const QUIZ_LIMIT_OPTIONS = [10, 30, 100] as const
 
 const pillButtonClassName =
   'inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition duration-150 hover:-translate-y-0.5 hover:shadow-float disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none'

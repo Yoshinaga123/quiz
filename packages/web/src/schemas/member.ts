@@ -60,4 +60,5 @@ export type AnswerHistoryEntry = z.infer<typeof answerHistoryEntrySchema>;
 export type AnswerHistoryListResponse = z.infer<typeof answerHistoryListResponseSchema>;
 export type AnswerHistoryCreateRequest = z.infer<typeof answerHistoryCreateRequestSchema>;
 export type MemberRegisterRequest = z.infer<typeof memberRegisterRequestSchema>;
+export type MemberRegisterResponse = z.infer<typeof memberRegisterResponseSchema>;
 export type MemberSessionResponse = z.infer<typeof memberSessionResponseSchema>;

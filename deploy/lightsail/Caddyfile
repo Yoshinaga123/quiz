@@ -1,0 +1,34 @@
+# Public HTTPS edge for the Lightsail static IPv4 address.
+# Let's Encrypt IP certificates use the short-lived profile (160 hours),
+# so Caddy must keep /data persistent and renew automatically.
+{
+	# Most TLS clients omit SNI when connecting to a literal IP address.
+	default_sni 52.196.241.106
+}
+
+52.196.241.106 {
+	tls {
+		issuer acme {
+			profile shortlived
+			disable_tlsalpn_challenge
+		}
+	}
+
+	encode gzip
+
+	handle /v1/* {
+		reverse_proxy api:8080
+	}
+	handle /healthz {
+		reverse_proxy api:8080
+	}
+	handle /counter {
+		reverse_proxy api:8080
+	}
+	# Admin API is intentionally not reverse-proxied on the public IP preview.
+	# Add `handle /api/*` after you lock down secrets / network, or use SSH tunnel.
+
+	handle {
+		reverse_proxy web:80
+	}
+}
