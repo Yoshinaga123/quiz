@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  createAnswerHistoryBestEffort,
   createMemberSession,
   deleteMe,
   fetchMe,
@@ -116,5 +117,38 @@ describe('listAnswerHistory', () => {
     await listAnswerHistory({ token: TOKEN });
     const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe('https://api.test/api/me/answers');
+  });
+});
+
+describe('createAnswerHistoryBestEffort', () => {
+  it('resolves and swallows network failures', async () => {
+    globalThis.fetch = vi.fn(async () => {
+      throw new Error('network down');
+    });
+
+    await expect(
+      createAnswerHistoryBestEffort(TOKEN, { quizId: 42, selectedIndex: 1 }),
+    ).resolves.toBeUndefined();
+  });
+
+  it('POSTs with bearer + JSON body on the happy path', async () => {
+    const fetchMock = vi.fn(async () =>
+      jsonResponse(201, {
+        id: 5,
+        quizId: 42,
+        selectedIndex: 1,
+        isCorrect: true,
+        answeredAt: '2026-08-19T00:00:00.000Z',
+      }),
+    );
+    globalThis.fetch = fetchMock;
+
+    await createAnswerHistoryBestEffort(TOKEN, { quizId: 42, selectedIndex: 1 });
+
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://api.test/api/me/answers');
+    expect(init.method).toBe('POST');
+    expect(new Headers(init.headers).get('Authorization')).toBe(`Bearer ${TOKEN}`);
+    expect(JSON.parse(init.body as string)).toEqual({ quizId: 42, selectedIndex: 1 });
   });
 });

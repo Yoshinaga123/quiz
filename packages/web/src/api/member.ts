@@ -125,3 +125,16 @@ export const createAnswerHistory = async (
     ...withSignal(opts.signal),
   });
 };
+
+// Fire-and-forget wrapper for the play flow; swallows errors so a network
+// hiccup does not disrupt the quiz UI. Local history remains the primary record.
+export const createAnswerHistoryBestEffort = async (
+  token: string,
+  payload: AnswerHistoryCreateRequest,
+): Promise<void> => {
+  try {
+    await createAnswerHistory({ token }, payload);
+  } catch {
+    // Intentionally ignored: server-side history is a secondary source.
+  }
+};

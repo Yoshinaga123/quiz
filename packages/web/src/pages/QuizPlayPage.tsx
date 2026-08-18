@@ -1,9 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import AnswerOption from '../components/AnswerOption'
+import { createAnswerHistoryBestEffort } from '../api/member'
 import CodeBlock from '../components/CodeBlock'
 import ProgressBar from '../components/ProgressBar'
 import { useHistory } from '../contexts/HistoryContext'
+import { useMemberSession } from '../contexts/MemberSessionContext'
 import { useQuizCatalog } from '../hooks/useQuizCatalog'
 import {
   findQuiz,
@@ -39,6 +41,7 @@ function QuizPlayPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { appendRecord } = useHistory()
+  const { session: memberSession } = useMemberSession()
 
   const initialSection = searchParams.get('section')
   const initialLimit = parseLimit(searchParams.get('limit'))
@@ -79,7 +82,13 @@ function QuizPlayPage() {
       { quizId: currentQuiz.id, selectedIndex, correct },
     ])
     setRevealed(true)
-  }, [selectedIndex, currentQuiz, revealed])
+    if (memberSession !== null) {
+      void createAnswerHistoryBestEffort(memberSession.token, {
+        quizId: currentQuiz.id,
+        selectedIndex,
+      })
+    }
+  }, [selectedIndex, currentQuiz, revealed, memberSession])
 
   const finalizeAndGo = useCallback(
     (allAnswers: readonly QuizAnswer[]) => {
