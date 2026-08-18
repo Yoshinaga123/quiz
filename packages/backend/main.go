@@ -43,6 +43,8 @@ func (s *server) routes() http.Handler {
 	mux.HandleFunc("GET /v1/push/feed", s.handleGetPublicPushFeed)
 	mux.HandleFunc("POST /api/admin/login/verification", s.handleRequestLoginVerification)
 	mux.HandleFunc("POST /api/admin/login", s.handleLogin)
+	mux.HandleFunc("POST /api/members", s.handleRegisterMember)
+	mux.HandleFunc("POST /api/session", s.handleCreateMemberSession)
 	mux.Handle("GET /api/admin/quizzes", s.requireAuth(http.HandlerFunc(s.handleListQuizzes)))
 	mux.Handle("POST /api/admin/quizzes/sync-production", s.requireAuth(http.HandlerFunc(s.handleSyncProductionQuizzes)))
 	mux.Handle("POST /api/admin/push/dispatch", s.requireAuth(http.HandlerFunc(s.handleDispatchMockPush)))
@@ -126,6 +128,7 @@ func main() {
 		adminUser:            getEnv("ADMIN_USER", "admin"),
 		adminPassword:        getEnv("ADMIN_PASSWORD", "password"),
 		jwtSecret:            []byte(getEnv("JWT_SECRET", "dev-only-secret")),
+		memberJWTSecret:      []byte(getEnv("MEMBER_JWT_SECRET", "dev-only-member-secret")),
 		pendingVerifications: make(map[string]verificationChallenge),
 	}
 
