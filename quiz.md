@@ -6,15 +6,21 @@
 
 - コードの意味を問う問題と、公式ドキュメント英文の日本語訳問題を出す。
 - 選択肢は複数、正解は 1 つ。出典は高品質な公式ドキュメント。
-- ユーザーは登録なしで解ける。管理者だけが問題を CRUD する。
+- ユーザーは登録なしでも解ける。任意で会員登録すると回答履歴を端末間で共有できる。管理者だけが問題を CRUD する。
 
 ## 機能要件
 
 ### ユーザー（web / mobile）
 
 - 問題と選択肢の表示、解答、結果（解説・出典）
-- 履歴・正答率は端末ローカル（`localStorage` / `shared_preferences`）
-- ログインは不要（公開 API は匿名）
+- 匿名時の履歴・正答率は端末ローカル（`localStorage` / `shared_preferences`）
+- 匿名回答は best-effort で `POST /v1/attempts` に送信（集計用、[ADR 0008](docs/adr/0008-anonymous-attempts.md)）
+- 会員機能は任意（[ADR 0016](docs/adr/0016-member-accounts.md)）
+  - ハンドル + パスワードで登録・ログイン（`/api/members`, `/api/session`）
+  - 端末間で共有する回答履歴（`/api/me/answers`）
+  - メールアドレス登録によるパスワードリセット（`/api/me/email`, `/api/password-resets`）
+  - ソフト削除（`DELETE /api/me`）
+  - 会員 JWT は管理者 JWT と別鍵で発行し、`publicQuiz` の JSON 形状には会員フィールドを混ぜない
 
 ### 管理者（admin-web）
 
@@ -24,9 +30,10 @@
 
 ### バックエンド
 
-- 公開: `GET /v1/quizzes`, `/v1/quizzes/{id}`, `/v1/sections`, `/v1/push/feed`, `GET /healthz`
-- 管理: `/api/admin/*`（JWT Bearer）
-- データ正本: PostgreSQL `quizzes`
+- 公開: `GET /v1/quizzes`, `/v1/quizzes/{id}`, `/v1/sections`, `/v1/push/feed`, `POST /v1/attempts`, `GET /healthz`
+- 会員: `/api/members`, `/api/session`, `/api/me`, `/api/me/answers`, `/api/me/email`, `/api/email-verifications/{token}`, `/api/password-resets`（会員 JWT Bearer）
+- 管理: `/api/admin/*`（管理者 JWT Bearer）
+- データ正本: PostgreSQL `quizzes` / `members` / `answer_history`
 - 候補プール → 本番シード → DB の 3 層（`docs/quiz-data-workflow.md`）
 
 ## 画面
@@ -34,6 +41,7 @@
 - 出題（英文読解 / コード）
 - 結果（解説）
 - 履歴（正答率）
+- 会員: 登録・ログイン・プロフィール（任意利用）
 - 管理: 一覧・作成・編集
 
 ## 技術スタック（実装準拠）
@@ -46,7 +54,7 @@
 | 状態（Web） | `useState` / Context |
 | ルーティング（Web） | react-router-dom v7（History API） |
 | API | Go 1.26 **`net/http`**（Echo ではない）+ PostgreSQL 16 |
-| 認証 | JWT（管理者のみ）+ 検証コード |
+| 認証 | 管理者 JWT（検証コードフロー）+ 会員 JWT（`MEMBER_JWT_SECRET` で別鍵、`aud: "member"`、bcrypt cost 12） |
 | コンテナ | Docker Compose（API ホスト 8082 → コンテナ 8080） |
 | バリデーション | Zod（web / admin-web）。公開契約は OpenAPI 3.1 |
 | 品質 | ESLint、Vitest（web / admin-web）、go test、Redocly |
@@ -60,3 +68,5 @@
 - AI 生成コードは開発者が理解してから入れる。
 - クイズ本文は公式ドキュメント由来で、正確・最新であること。
 - 公開 API の shape を変えたら OpenAPI・Zod・テストを同じ PR で直す（[`CONTRIBUTING.md`](CONTRIBUTING.md)）。
+- 会員 API の shape を変えたら [`docs/api/member-api.yaml`](docs/api/member-api.yaml)・Zod（[`packages/web/src/schemas/member.ts`](packages/web/src/schemas/member.ts)）・Flutter DTO・契約テストを同じ PR で直す。
+- `publicQuiz` に会員向けフィールド（`answeredByMe` など）を混ぜない（[ADR 0016](docs/adr/0016-member-accounts.md) §2）。

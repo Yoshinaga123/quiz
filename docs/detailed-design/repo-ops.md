@@ -9,6 +9,8 @@ description: Husky, play pads, Dev Container runtimes, and docs-example tests bo
 
 Zod 本体のライブラリ実装は流用しない。流用するのは **同じ PR で docs とテストを直す**、試し書きを `src/` に残さない、エージェント向け手順を文書化する、という運用である。
 
+開発ツールや実験コードの配置は ADR ではなく GitHub Issue / PR で管理する（整理経緯: [Issue #19](https://github.com/Yoshinaga123/quiz/issues/19)）。
+
 ## エージェント向け正本
 
 | ファイル | 役割 |
@@ -23,8 +25,8 @@ Zod 本体のライブラリ実装は流用しない。流用するのは **同�
 | パス | 実行 |
 | --- | --- |
 | `play.ts`（ルート） | `npm run play`（振る舞い） |
-| 手元の `scratch/input.ts`（gitignore） | バンドルサイズ（kB）実験。[ADR 0010](../adr/0010-scratch-input-bundle-size.md)。道具は `scripts/scratch-measure.mjs`。`npm run scratch:measure` |
-| `packages/bench/` | 実行速度（ops/sec）。[ADR 0013](../adr/0013-runtime-bench.md)。`npm run bench` |
+| 手元の `scratch/input.ts`（gitignore） | バンドルサイズ（kB）実験。道具は `scripts/scratch-measure.mjs`。`npm run scratch:measure` |
+| `packages/bench/` | 実行速度（ops/sec）。`npm run bench` |
 | `packages/web/scripts/try-quiz-parse.ts` | `cd packages/web && npx --yes tsx scripts/try-quiz-parse.ts` |
 | `packages/admin-web/scripts/try-auth-parse.ts` | `cd packages/admin-web && npx --yes tsx scripts/try-auth-parse.ts` |
 | `packages/backend/play.go`（`//go:build ignore`） | `cd packages/backend && go run play.go` |
@@ -49,8 +51,8 @@ Node は `.nvmrc` の 22。ルート `package.json` の workspaces が `packages
 
 ## Dev Container
 
-[`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) は Zod の空テンプレをコピーしない。Node 22・Go・Python・Docker-in-Docker・`npm` を入れる。`postCreateCommand` は `npm i`。[ADR 0011](../adr/0011-devcontainer-runtimes.md)。
+[`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) は Zod の空テンプレをコピーしない。Node 22・Go・Python・Docker-in-Docker・`npm` を入れる。`postCreateCommand` は `npm i`。
 
 ## VS Code launch
 
-`.vscode/launch.json` は置かない。Zod の `tsx` + `@zod/source` はコピーしない。試し書きは `npm run play` / `go run`。[ADR 0012](../adr/0012-vscode-launch.json.md)。
+`.vscode/launch.json` は置かない。Zod の `tsx` + `@zod/source` はコピーしない。試し書きは `npm run play` / `go run`。

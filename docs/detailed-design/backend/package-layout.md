@@ -19,6 +19,7 @@ description: package main file split — not internal/ packages — and what eac
 | `counter.go` | `/` と `/counter` |
 | `admin_quizzes.go` | `/api/admin/quizzes*` |
 | `public.go` | `/healthz` と `/v1/*` |
+| `attempts.go` | `POST /v1/attempts` の検証と匿名集計保存 |
 | `push.go` | mock Push |
 | `seed.go` | 本番シード同期と payload 正規化 |
 | `quiz_scan.go` | `scanQuiz` / `scanPublicQuiz` |

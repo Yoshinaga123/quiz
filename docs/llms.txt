@@ -71,6 +71,7 @@
 - [public API contract sync](docs/detailed-design/web/public-contract.md): Same-PR checklist for OpenAPI, fixtures, Zod, Go publicQuiz, detailed design, and tests
 
 - [コマンド](docs/detailed-design/web/public-contract.md#コマンド)
+- [匿名回答集計](docs/detailed-design/web/public-contract.md#匿名回答集計)
 
 ## admin-web
 

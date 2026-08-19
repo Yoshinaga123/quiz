@@ -93,6 +93,22 @@ func TestPublicErrorAndSectionsFixtures(t *testing.T) {
 	if feed.Channel != "mock" || feed.QuizID != 1 {
 		t.Fatalf("unexpected feed: %+v", feed)
 	}
+
+	var accepted attemptAccepted
+	if err := json.Unmarshal(readFixture(t, "attempt-accepted.json"), &accepted); err != nil {
+		t.Fatalf("unmarshal attempt-accepted.json: %v", err)
+	}
+	if accepted.ClientSessionID == "" || accepted.Status != "accepted" {
+		t.Fatalf("unexpected accepted: %+v", accepted)
+	}
+
+	var created attemptCreateRequest
+	if err := json.Unmarshal(readFixture(t, "attempt-create.json"), &created); err != nil {
+		t.Fatalf("unmarshal attempt-create.json: %v", err)
+	}
+	if created.ClientSessionID == "" || len(created.Answers) == 0 {
+		t.Fatalf("unexpected create: %+v", created)
+	}
 }
 
 func TestPublicQuizJSONTagsMatchFixtureKeys(t *testing.T) {

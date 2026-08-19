@@ -12,8 +12,10 @@ const StackShowcase = lazy(() => import('./pages/StackShowcase'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
+  const basename = import.meta.env.BASE_URL.replace(/\/$/u, '') || '/'
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <FlashProvider>
         <Suspense fallback={<div className="grid min-h-screen place-items-center text-[#4f5d75]">読み込み中...</div>}>
           <Routes>

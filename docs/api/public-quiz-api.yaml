@@ -313,6 +313,15 @@ components:
           minItems: 1
           items:
             $ref: "#/components/schemas/AttemptAnswer"
+      example:
+        clientSessionId: 550e8400-e29b-41d4-a716-446655440000
+        completedAt: "2026-01-15T10:30:00.000Z"
+        section: React
+        answers:
+          - quizId: 1
+            selectedIndex: 0
+            isCorrect: true
+            answeredAt: "2026-01-15T10:29:30.000Z"
 
     AttemptAnswer:
       type: object
@@ -339,6 +348,9 @@ components:
         status:
           type: string
           enum: [accepted]
+      example:
+        clientSessionId: 550e8400-e29b-41d4-a716-446655440000
+        status: accepted
 
     Error:
       type: object

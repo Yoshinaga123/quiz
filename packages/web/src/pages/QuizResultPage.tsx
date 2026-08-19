@@ -2,8 +2,10 @@ import { useMemo } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import CodeBlock from '../components/CodeBlock'
 import { useHistory } from '../contexts/HistoryContext'
+import { useMastery } from '../contexts/MasteryContext'
 import { useQuizCatalog } from '../hooks/useQuizCatalog'
 import { calculateAccuracy, findQuiz } from '../lib/quizUtils'
+import { computeRank, type RankResult } from '../lib/rank'
 import type { HistoryRecord } from '../types/quiz'
 
 const pillButtonClassName =
@@ -12,14 +14,26 @@ const pillButtonClassName =
 function QuizResultPage() {
   const { recordId } = useParams<{ recordId: string }>()
   const { records } = useHistory()
+  const { streaks } = useMastery()
   const location = useLocation()
-  const { quizzes } = useQuizCatalog()
+  const { quizzes, isLoading } = useQuizCatalog()
 
-  const fallbackRecord = (location.state as { record?: HistoryRecord } | null)?.record
+  const locationState = location.state as
+    | { record?: HistoryRecord; preRank?: RankResult }
+    | null
+  const fallbackRecord = locationState?.record
+  const preRank = locationState?.preRank ?? null
   const record = useMemo<HistoryRecord | undefined>(() => {
     if (recordId === undefined) return fallbackRecord
     return records.find((entry) => entry.id === recordId) ?? fallbackRecord
   }, [recordId, records, fallbackRecord])
+
+  const quizIds = useMemo(() => quizzes.map((quiz) => quiz.id), [quizzes])
+  const currentRank = useMemo(
+    () => computeRank(streaks, quizIds),
+    [streaks, quizIds],
+  )
+  const rankChange = useMemo(() => resolveRankChange(preRank, currentRank), [preRank, currentRank])
 
   if (record === undefined) {
     return (
@@ -40,6 +54,42 @@ function QuizResultPage() {
 
   return (
     <div className="grid gap-6">
+      {rankChange !== null ? (
+        <section
+          className={`rounded-card border p-card shadow-card ${
+            rankChange.kind === 'promoted'
+              ? 'border-accent/30 bg-linear-to-br from-white to-[#fdf7e3]'
+              : 'border-navy/12 bg-white/86'
+          }`}
+          role="status"
+          aria-live="polite"
+        >
+          <p className="m-0 text-[0.78rem] uppercase tracking-[0.18em] text-accent">
+            {rankChange.kind === 'promoted' ? 'Rank Up' : 'Rank Status'}
+          </p>
+          <p className="mt-1 mb-2 text-[1.4rem] font-semibold text-navy">
+            {rankChange.kind === 'promoted'
+              ? `${rankChange.from} → ${rankChange.to} に昇級しました 🎉`
+              : rankChange.kind === 'demoted'
+                ? `${rankChange.from} → ${rankChange.to} に変わりました`
+                : `段位: ${rankChange.to}`}
+          </p>
+          <div className="flex flex-wrap items-center gap-4 text-sm text-[#4f5d75]">
+            <span>
+              習熟度: <strong className="text-navy">{currentRank.mastery}</strong> /{' '}
+              {currentRank.totalPossible} pt ({Math.round(currentRank.progress * 100)}%)
+            </span>
+            {currentRank.nextRank !== null ? (
+              <span>
+                次の段位「{currentRank.nextRank}」まで +{currentRank.toNextRank} pt
+              </span>
+            ) : (
+              <span className="font-semibold text-accent">最高位「名人」到達!</span>
+            )}
+          </div>
+        </section>
+      ) : null}
+
       <section className="rounded-card border border-navy/12 bg-white/92 p-card shadow-card">
         <p className="m-0 text-[0.78rem] uppercase tracking-[0.18em] text-accent">Result</p>
         <h1 className="mt-1 mb-3 text-[clamp(1.6rem,2.8vw,2.1rem)] font-semibold">
@@ -77,7 +127,9 @@ function QuizResultPage() {
                 className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card"
               >
                 <p className="m-0 text-[#4f5d75]">
-                  問題 ID {answer.quizId} のデータが見つかりません（カタログから削除された可能性があります）。
+                  {isLoading
+                    ? `問題 ID ${answer.quizId} のデータを読み込んでいます。`
+                    : `問題 ID ${answer.quizId} のデータが見つかりません（カタログから削除された可能性があります）。`}
                 </p>
               </article>
             )
@@ -166,6 +218,20 @@ function ScoreCard({
       </p>
     </div>
   )
+}
+
+type RankChange =
+  | { kind: 'promoted'; from: string; to: string }
+  | { kind: 'demoted'; from: string; to: string }
+  | { kind: 'unchanged'; to: string }
+
+function resolveRankChange(pre: RankResult | null, current: RankResult): RankChange | null {
+  if (pre === null) return null
+  const to = current.rank
+  const from = pre.rank
+  if (current.index > pre.index) return { kind: 'promoted', from, to }
+  if (current.index < pre.index) return { kind: 'demoted', from, to }
+  return { kind: 'unchanged', to }
 }
 
 export default QuizResultPage

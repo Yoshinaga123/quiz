@@ -4,6 +4,7 @@ import {
   calculateAccuracy,
   filterBySection,
   findQuiz,
+  generateSessionId,
   isAnswerCorrect,
   listSections,
   pickQuizIds,
@@ -121,5 +122,44 @@ describe('calculateAccuracy', () => {
     expect(calculateAccuracy(1, 3)).toBe(33);
     expect(calculateAccuracy(2, 3)).toBe(67);
     expect(calculateAccuracy(5, 5)).toBe(100);
+  });
+});
+
+describe('generateSessionId', () => {
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
+  it('uses crypto.randomUUID for UUID session ids', () => {
+    const uuid = '550e8400-e29b-41d4-a716-446655440000';
+    const randomUUID = vi.fn<() => `${string}-${string}-${string}-${string}-${string}`>(() => uuid);
+    vi.stubGlobal('crypto', { randomUUID } as Pick<Crypto, 'randomUUID'>);
+    try {
+      expect(generateSessionId()).toBe(uuid);
+      expect(randomUUID).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('falls back to getRandomValues when randomUUID is unavailable', () => {
+    const getRandomValues = vi.fn((bytes: Uint8Array) => {
+      bytes.fill(0xff);
+      return bytes;
+    });
+    vi.stubGlobal('crypto', { getRandomValues } as Pick<Crypto, 'getRandomValues'>);
+    try {
+      expect(generateSessionId()).toMatch(uuidPattern);
+      expect(getRandomValues).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('still returns a UUID without any Web Crypto', () => {
+    vi.stubGlobal('crypto', undefined);
+    try {
+      expect(generateSessionId()).toMatch(uuidPattern);
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

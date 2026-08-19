@@ -6,7 +6,7 @@
  * Local-only experiments: copy to play.local.ts (gitignored).
  */
 import quiz from './docs/api/fixtures/quiz.json' with { type: 'json' }
-import { quizSchema } from './web/src/schemas/quiz.ts'
+import { quizSchema } from './packages/web/src/schemas/quiz.ts'
 
 const result = quizSchema.safeParse(quiz)
 console.log('success:', result.success)

@@ -1,6 +1,6 @@
 # ADR 0008: ユーザー回答履歴の保存方式
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-04-21
 - Deciders: Quiz App Team
 - Related: ADR 0005, ADR 0006
@@ -69,5 +69,5 @@ CREATE TABLE attempt_answers (
 ## Migration
 
 1. `packages/web/` は ADR 0005 の通り `localStorage` を一次ソースとして既に動作している。
-2. ADR 0006 の `POST /v1/attempts` 実装後、結果画面送信時に **best-effort** で送る（失敗は UI 体験を妨げない）。
+2. ADR 0006 の `POST /v1/attempts` 実装後、結果画面送信時に **best-effort** で送る（失敗は UI 体験を妨げない）。✅ web 実装済み
 3. モバイル版でも `clientSessionId` を導入し、同 API を呼ぶ。

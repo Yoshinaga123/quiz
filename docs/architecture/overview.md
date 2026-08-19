@@ -82,7 +82,7 @@ Vite + TypeScript の SPA。`/api/admin/` エンドポイントのみ使用。JW
 | 開発（docker-compose） | `http://localhost:8082` | `8080` |
 | 本番 | `https://socrates-quiz.jp`（**443**） | `8080` |
 
-本番は ALB / CloudFront 等で TLS 終端し、公開面は 443 のみとする。ホスト名は `socrates-quiz.jp`。管理画面は ADR 0005 どおり別ホストで配信する（ホスト名は未定）。
+本番は Lightsail 1 台で Caddy が TLS 終端し、公開面は 443 のみとする（[ADR 0015](../adr/0015-lightsail-production.md)）。ホスト名は `socrates-quiz.jp`。管理画面は ADR 0005 どおり別ホストで配信する（ホスト名は未定）。
 
 **Public API（認証なし）**
 

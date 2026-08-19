@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -132,7 +133,17 @@ func (s *server) handleRequestLoginVerification(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	ip := clientIP(r)
 	if payload.Username != s.adminUser || payload.Password != s.adminPassword {
+		limited, rlErr := s.rateLimitExceeded(
+			r.Context(), "login_logs", "username", payload.Username, ip,
+			adminLoginWindow, adminLoginIPLimit, adminLoginUserLimit,
+		)
+		s.recordLoginLog(payload.Username, false, r)
+		if rlErr == nil && limited {
+			writeRateLimited(w, adminLoginWindow)
+			return
+		}
 		writeError(w, http.StatusUnauthorized, "invalid credentials")
 		return
 	}
@@ -143,10 +154,15 @@ func (s *server) handleRequestLoginVerification(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	responseCode := code
+	if strings.EqualFold(strings.TrimSpace(os.Getenv("APP_ENV")), "production") {
+		responseCode = ""
+	}
+
 	writeJSON(w, http.StatusOK, verificationResponse{
 		Message:     verificationPrompt,
 		ChallengeID: challengeID,
-		Code:        code,
+		Code:        responseCode,
 	})
 }
 
@@ -157,8 +173,17 @@ func (s *server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ip := clientIP(r)
 	if payload.Username != s.adminUser || payload.Password != s.adminPassword {
+		limited, rlErr := s.rateLimitExceeded(
+			r.Context(), "login_logs", "username", payload.Username, ip,
+			adminLoginWindow, adminLoginIPLimit, adminLoginUserLimit,
+		)
 		s.recordLoginLog(payload.Username, false, r)
+		if rlErr == nil && limited {
+			writeRateLimited(w, adminLoginWindow)
+			return
+		}
 		writeError(w, http.StatusUnauthorized, "invalid credentials")
 		return
 	}

@@ -13337,6 +13337,70 @@
       "correctAnswerIndex": 0,
       "explanation": "ルートから特定 workspace のスクリプトを走らせるには `--workspace`（短縮 `-w`）を使います。例は `npm run test --workspace=a` です。`cd packages/a && npm run test` でも同じスクリプトが走ります。`pnpm i -w a` は依存追加の文脈で、この設問の実行方法ではありません。",
       "source": "https://docs.npmjs.com/cli/v11/using-npm/workspaces"
+    },
+    {
+      "id": 838,
+      "section": "セクション: TypeScript・VS Code",
+      "title": "ワークスペース版 TypeScript の選択",
+      "question": "`tsconfig.json` で `allowImportingTsExtensions: true` を有効にしても、VS Code 上だけ TS5097 が表示されました。`.vscode/settings.json` には次の設定があり、コマンドラインの型検査は成功します。最も適切な対応はどれですか？",
+      "code": "{\n  \"js/ts.tsdk.path\": \"node_modules/typescript/lib\"\n}",
+      "options": [
+        "`TypeScript: Select TypeScript Version` を実行し、`Use Workspace Version` を選択する",
+        "`typescript.useWorkspaceTsdk: true` を `tsconfig.json` の `compilerOptions` に追加する",
+        "`allowImportingTsExtensions` を `.vscode/settings.json` に移動する",
+        "`noEmit: true` を削除して、VS Code に JavaScript を出力させる"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`js/ts.tsdk.path` はワークスペース版 TypeScript の場所を VS Code に知らせますが、それだけでは使用版は切り替わりません。TypeScript ファイルを開いて `TypeScript: Select TypeScript Version` から `Use Workspace Version` を選択します。選択状態は TypeScript 拡張の内部 workspace state（`typescript.useWorkspaceTsdk`）に保存されるため、このキーを通常の `settings.json` や `tsconfig.json` に直接書く設定ではありません。",
+      "source": "https://code.visualstudio.com/docs/typescript/typescript-transpiling#_using-the-workspace-version-of-typescript"
+    },
+    {
+      "id": 839,
+      "section": "セクション: SSH・ネットワーク",
+      "title": "外部ユーザー想定のSSH疎通確認",
+      "question": "次のコマンドを実行したところ、`external-test@52.196.241.106: Permission denied (publickey).` と表示されました。この結果の解釈として最も適切なものはどれですか？",
+      "code": "ssh \\\n  -F /dev/null \\\n  -o UserKnownHostsFile=/tmp/quiz-external-known-hosts \\\n  -o StrictHostKeyChecking=accept-new \\\n  -o BatchMode=yes \\\n  -o PubkeyAuthentication=no \\\n  -o PasswordAuthentication=no \\\n  -o KbdInteractiveAuthentication=no \\\n  -o ConnectTimeout=10 \\\n  external-test@52.196.241.106 true",
+      "options": [
+        "TCP 22への接続にも失敗しており、SSHサーバーとは通信できていない",
+        "TCP 22とSSHサーバーへの到達には成功したが、有効な公開鍵を提示していないため認証で拒否された",
+        "パスワード認証に成功したが、`true`コマンドの実行だけが失敗した",
+        "SSH接続に成功し、`external-test`ユーザーとしてログイン済みである"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`Permission denied (publickey)` は、対象のTCP 22へ接続してSSHプロトコルのやり取りを行った後、公開鍵認証を完了できずに拒否されたことを示します。このコマンドは `-F /dev/null` でユーザーのSSH設定を使わず、公開鍵・パスワード・キーボード対話認証も送らないため、外部の未認証ユーザーを想定した到達確認になります。ポートへ到達できない場合は、一般にタイムアウトまたは接続拒否になります。",
+      "source": "https://man.openbsd.org/ssh"
+    },
+    {
+      "id": 840,
+      "section": "セクション: Bash ヒアドキュメント",
+      "title": "<<'py' の単引用符の効果",
+      "question": "次のシェル構文で、区切り語を単引用符で囲んだ `<<'py'` の主な効果として正しいものはどれですか？",
+      "code": "python3 - <<'py'\nprint(\"$HOME\")\npy",
+      "options": [
+        "ヒアドキュメント本文の `$HOME` やコマンド置換が展開されず、そのまま渡される",
+        "終端マーカーを必ず `EOF` にしなければならず、`py` では終了できない",
+        "本文が自動的に Python として構文チェックされてから実行される",
+        "標準入力ではなく、一時ファイル経由でのみコマンドに渡される"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Bash のヒアドキュメントでは、区切り語を引用符で囲むと本文中のパラメータ展開・コマンド置換・算術展開が行われません。`<<'py'` の `py` は終端マーカー名であり、言語名ではありません。単引用符の有無が展開の有無を決めます。",
+      "source": "https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Here-Documents"
+    },
+    {
+      "id": 841,
+      "section": "セクション: Bash ヒアドキュメント",
+      "title": "ヒアドキュメントの終端マーカー",
+      "question": "次のコマンドでヒアドキュメントが正しく終わる条件として最も適切なものはどれですか？",
+      "code": "cat <<'py'\nhello\npy",
+      "options": [
+        "本文のあとに、行頭から正確に `py` だけの行が来る（前後に空白やインデントがない）",
+        "`py` の代わりに常に `EOF` と書かなければ終了しない",
+        "本文中に一度でも `py` という単語が出れば、そこでヒアドキュメントが打ち切られる",
+        "終端行は `'</py>'` のように XML 風の閉じタグでなければならない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "ヒアドキュメントは、区切り語と一致する行が現れるまで続きます。その行は区切り語そのものだけである必要があり、通常は行頭一致で前後に空白を付けません（`<<-` を使う場合は先頭タブの削除はできますが、マーカー名自体は一致必須です）。`py` や `EOF` は慣習的な識別子で、特別なキーワードではありません。",
+      "source": "https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Here-Documents"
     }
   ]
 }
