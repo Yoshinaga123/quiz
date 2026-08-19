@@ -78,7 +78,7 @@ curl -fsS https://<静的IP>/v1/sections
 
 `http://<静的IP>/` は HTTPS へ恒久リダイレクトされる。
 
-### 5. 更新
+### 5. 更新（手動）
 
 ```bash
 cd ~/quiz
@@ -87,7 +87,46 @@ cd deploy/lightsail
 ./launch.sh
 ```
 
+または CD 用スクリプト:
+
+```bash
+~/quiz/deploy/lightsail/remote-update.sh
+```
+
 IP を変えたときは `.env` の `PUBLIC_IP` を直し、**web イメージを再ビルド**する（`VITE_API_BASE_URL` が焼き付くため）。
+
+## CD（GitHub Actions → Lightsail）
+
+`develop` への push（web / admin-web / backend / deploy の変更）または workflow_dispatch で  
+[`.github/workflows/deploy-lightsail.yml`](../.github/workflows/deploy-lightsail.yml) が動く。
+
+### なぜ self-hosted か
+
+ファイアウォールで **22 を管理者 IP のみ**にしているため、GitHub ホストランナーからの SSH は届かない。  
+インスタンス上に Actions runner を置き、**外向き通信だけ**でジョブを取る方式にする。
+
+### 初回セットアップ（インスタンス上）
+
+1. GitHub → Settings → Actions → Runners → **New self-hosted runner**（Linux x64）
+2. 表示された `config.sh` / `run.sh` 手順に従う
+3. ラベルに **`lightsail`** を付ける（workflow の `runs-on: [self-hosted, lightsail]`）
+4. サービス化して常駐させる（公式の `svc.sh install` / `start`）
+5. runner ユーザーが `docker` グループに入り、`~/quiz` が clone 済みであること
+6. `deploy/lightsail/.env` は手で用意済みであること（CD は `.env` を作らない）
+
+確認:
+
+```bash
+# Actions タブで "Deploy Lightsail" → Run workflow
+# または develop に deploy 対象パスを push
+curl -fsS https://<静的IP>/healthz
+```
+
+### 安全上の注意
+
+- runner は本番ホスト上の権限を持つ。リポジトリへの書き込み権限を持つ人だけが Actions を起動できる前提
+- `.env` や PEM を workflow に載せない
+- 失敗時は Actions ログと `docker compose -f ~/quiz/deploy/lightsail/docker-compose.yml ps` を見る
 
 ## 秘密情報
 

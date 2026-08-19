@@ -145,10 +145,17 @@ Always include:
 
 ## Update / redeploy
 
+Manual:
+
 ```bash
 cd ~/quiz && git pull
 cd deploy/lightsail && ./launch.sh
 ```
+
+CD (preferred): self-hosted runner labeled `lightsail` runs
+[`deploy/lightsail/remote-update.sh`](../../../deploy/lightsail/remote-update.sh)
+via [`.github/workflows/deploy-lightsail.yml`](../../../.github/workflows/deploy-lightsail.yml)
+on push to `develop` (or workflow_dispatch). See `docs/deploy-lightsail.md` § CD.
 
 If `PUBLIC_IP` changed, edit `.env` and rebuild (web bakes `VITE_API_BASE_URL`).
 
