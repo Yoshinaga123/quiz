@@ -37,6 +37,10 @@ jobs:
         run: |
           set -euo pipefail
           head="${{ github.ref_name }}"
+          owner="${{ github.repository_owner }}"
+          # gh pr view --head is picky (owner prefix, drafts). Treat any match as done.
+          if gh pr view --repo "${{ github.repository }}" --head "${head}" --json number --jq .number >/dev/null 2>&1 \
+            || gh pr view --repo "${{ github.repository }}" --head "${owner}:${head}" --json number --jq .number >/dev/null 2>&1; then
           existing_pr="$(
             gh pr list --repo "${{ github.repository }}" \
               --head "${{ github.repository_owner }}:${head}" \
@@ -54,9 +58,25 @@ jobs:
           if [[ -z "${body}" ]]; then
             body="Auto-created from \`${head}\` after push to origin."
           fi
-          gh pr create --repo "${{ github.repository }}" --base develop --head "${head}" \
+          set +e
+          create_out="$(gh pr create --repo "${{ github.repository }}" --base develop --head "${head}" \
             --title "${title}" \
-            --body "${body}"
+            --body "${body}" 2>&1)"
+          create_ec=$?
+          set -e
+
+          if [[ $create_ec -eq 0 ]]; then
+            echo "${create_out}"
+            exit 0
+          fi
+
+          if echo "${create_out}" | grep -qi "already exists"; then
+            echo "PR already exists for ${head}; continuing."
+            exit 0
+          fi
+
+          echo "${create_out}"
+          exit $create_ec
 
   enable-automerge:
     name: enable auto-merge
