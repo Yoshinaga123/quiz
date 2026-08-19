@@ -1,0 +1,524 @@
+openapi: 3.1.0
+info:
+  title: Member API
+  version: 0.1.0-draft
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  description: |
+    会員向け認証つき API のドラフト仕様 (ADR 0016)。
+
+    - 匿名の Public Quiz API (`public-quiz-api.yaml`) とは別ファイル。`publicQuiz` に
+      会員フィールドは混ぜない。
+    - 認証: `MEMBER_JWT_SECRET` で署名した Bearer JWT (aud=`member`)。admin JWT は
+      受理しない。
+    - shape を変えたら、この YAML・`packages/web/src/schemas/member.ts`・
+      `packages/backend/me.go` の型・`docs/api/fixtures/member-*.json` /
+      `answer-history-*.json`・テストを同じ PR で直す。
+
+servers:
+  - url: http://localhost:8082
+    description: Local development (packages/backend/docker-compose.yml).
+  - url: https://socrates-quiz.jp
+    description: Production public URL.
+
+tags:
+  - name: members
+    description: 会員登録・ログイン
+  - name: me
+    description: 自分自身の情報・回答履歴（要 Bearer 認証）
+
+components:
+  securitySchemes:
+    memberBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        `POST /api/session` で発行される会員 JWT。`aud=member`。admin JWT は不可。
+  schemas:
+    MemberRegisterRequest:
+      type: object
+      required: [handle, password]
+      properties:
+        handle:
+          type: string
+          minLength: 3
+          maxLength: 32
+          pattern: "^[a-zA-Z0-9_]+$"
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+    MemberRegisterResponse:
+      type: object
+      required: [id, handle]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: UUID v7
+        handle:
+          type: string
+    MemberSessionRequest:
+      type: object
+      required: [handle, password]
+      properties:
+        handle:
+          type: string
+        password:
+          type: string
+    MemberSessionResponse:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+    PublicMember:
+      type: object
+      required: [id, handle, hasVerifiedEmail]
+      properties:
+        id:
+          type: string
+          format: uuid
+        handle:
+          type: string
+        hasVerifiedEmail:
+          type: boolean
+          description: |
+            ADR 0018 §6: email そのものは決してレスポンスに含めない。
+            検証済みメールが登録されているかどうかの boolean だけを公開する。
+      description: |
+        ADR 0016 §6: password_hash, createdAt, updatedAt, deletedAt, email を含めてはならない。
+    AnswerHistoryCreateRequest:
+      type: object
+      required: [quizId, selectedIndex]
+      properties:
+        quizId:
+          type: integer
+          format: int64
+          minimum: 1
+        selectedIndex:
+          type: integer
+          minimum: 0
+    AnswerHistoryEntry:
+      type: object
+      required: [id, quizId, selectedIndex, isCorrect, answeredAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        quizId:
+          type: integer
+          format: int64
+        selectedIndex:
+          type: integer
+          minimum: 0
+        isCorrect:
+          type: boolean
+          description: |
+            `quizzes.correct_answer_index` との JOIN で都度算出（ADR 0016 §4）。
+            過去に正解訂正があった場合、過去の履歴の isCorrect も自動追従する。
+        answeredAt:
+          type: string
+          format: date-time
+    AnswerHistoryListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnswerHistoryEntry"
+    MasteryEntry:
+      type: object
+      required: [quizId, streak]
+      properties:
+        quizId:
+          type: integer
+          format: int64
+          minimum: 1
+        streak:
+          type: integer
+          minimum: 0
+          maximum: 2
+          description: |
+            直近の連続正解数。上限は `streakCap` (2)。誤答すると 0 にリセットされる。
+    MasteryRank:
+      type: object
+      required: [rank, index, mastery, totalPossible, progress, nextRank, toNextRank]
+      properties:
+        rank:
+          type: string
+          description: |
+            段位ラベル。"4級", "3級", "2級", "1級", "初段"..."九段", "名人" の 14 段階。
+            初回ユーザーは "4級"、全問題を 2 回連続正解すると "名人"。
+        index:
+          type: integer
+          minimum: 0
+          maximum: 13
+        mastery:
+          type: integer
+          minimum: 0
+          description: 現在の習熟度 (すべての streak の合計)。
+        totalPossible:
+          type: integer
+          minimum: 0
+          description: 満点時の習熟度 (公開中の全問題数 × streakCap)。
+        progress:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+        nextRank:
+          type: string
+          nullable: true
+          description: 次の段位ラベル。"名人" のときは null。
+        toNextRank:
+          type: integer
+          minimum: 0
+          description: 次の段位まで必要な追加習熟度。"名人" のときは 0。
+    MasteryResponse:
+      type: object
+      required: [items, streakCap, rank]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MasteryEntry"
+        streakCap:
+          type: integer
+          minimum: 1
+          description: |
+            サーバー側で streak に適用する上限値。クライアント (`packages/web/src/lib/rank.ts`
+            の `STREAK_CAP`) と一致させる。
+        rank:
+          $ref: "#/components/schemas/MasteryRank"
+    SetMemberEmailRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: RFC 5322 準拠。保存時に小文字化。
+    PasswordResetRequest:
+      type: object
+      required: [handleOrEmail]
+      properties:
+        handleOrEmail:
+          type: string
+          description: ハンドル or email。列挙対策のため常に 202 を返す。
+    PasswordResetConsumeRequest:
+      type: object
+      required: [newPassword]
+      properties:
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
+    PublicError:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+paths:
+  /api/members:
+    post:
+      tags: [members]
+      summary: 会員登録
+      operationId: registerMember
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberRegisterRequest"
+      responses:
+        "201":
+          description: 作成
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemberRegisterResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+        "409":
+          description: ハンドル重複
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/session:
+    post:
+      tags: [members]
+      summary: ログインして会員 JWT を発行
+      operationId: createMemberSession
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberSessionRequest"
+      responses:
+        "200":
+          description: 発行成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemberSessionResponse"
+        "401":
+          description: 認証失敗（存在しない・パスワード違い・削除済み）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/me:
+    get:
+      tags: [me]
+      summary: 自分自身の会員情報
+      operationId: getMe
+      security: [{memberBearer: []}]
+      responses:
+        "200":
+          description: 取得
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicMember"
+        "401":
+          description: 未認証 / 削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+    delete:
+      tags: [me]
+      summary: 自分自身をソフト削除
+      operationId: deleteMe
+      security: [{memberBearer: []}]
+      responses:
+        "204":
+          description: 削除完了
+        "401":
+          description: 未認証 / 既に削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/me/answers:
+    get:
+      tags: [me]
+      summary: 自分の回答履歴
+      operationId: listAnswerHistory
+      security: [{memberBearer: []}]
+      parameters:
+        - in: query
+          name: quizId
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+          required: false
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          required: false
+      responses:
+        "200":
+          description: 履歴一覧
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnswerHistoryListResponse"
+        "400":
+          description: パラメータ不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+        "401":
+          description: 未認証 / 削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+    post:
+      tags: [me]
+      summary: 回答を記録
+      operationId: createAnswerHistory
+      security: [{memberBearer: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnswerHistoryCreateRequest"
+      responses:
+        "201":
+          description: 記録完了
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnswerHistoryEntry"
+        "400":
+          description: 不正なリクエスト（未知の quizId 等）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+        "401":
+          description: 未認証 / 削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/me/mastery:
+    get:
+      tags: [me]
+      summary: 自分の段位・習熟度データ
+      description: |
+        `answer_history` から直近の連続正解数を都度導出する。
+        誤答があると当該クイズの streak は 0 に戻る。上限は `streakCap` (2)。
+        レスポンスは quiz_id 昇順。0 のクイズは含めない (未回答 or 誤答直後)。
+      operationId: getMemberMastery
+      security: [{memberBearer: []}]
+      responses:
+        "200":
+          description: 取得
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MasteryResponse"
+        "401":
+          description: 未認証 / 削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/me/email:
+    post:
+      tags: [me]
+      summary: email を登録または変更し、検証メールを送る
+      description: |
+        ADR 0018 §3。既存 email があれば `email_verified_at` が NULL に戻り、
+        再検証が必要になる。開発環境ではメールは stdout にログ出力するのみ。
+      operationId: setMemberEmail
+      security: [{memberBearer: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetMemberEmailRequest"
+      responses:
+        "202":
+          description: 受理（検証メールを送信）
+        "400":
+          description: 不正な email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+        "401":
+          description: 未認証 / 削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/email-verifications/{token}:
+    post:
+      tags: [me]
+      summary: 検証トークンを消費して email を検証済みにする
+      description: |
+        ADR 0018 §3。24 時間で失効。一度きり利用可能。
+      operationId: consumeEmailVerification
+      security: []
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+            description: 平文の一回性トークン（サーバー側は SHA-256 の hex を保持）。
+      responses:
+        "204":
+          description: 検証完了
+        "400":
+          description: トークン不正 / 期限切れ / 消費済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/password-resets:
+    post:
+      tags: [members]
+      summary: パスワード再設定リンクの送信を要求
+      description: |
+        ADR 0018 §3。列挙対策のため、handle/email の実在に関わらず常に 202 を返す。
+        検証済み email があるときのみ内部でメール送信する。
+      operationId: requestPasswordReset
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetRequest"
+      responses:
+        "202":
+          description: 受理（実在有無に関わらず同じ応答）
+
+  /api/password-resets/{token}:
+    post:
+      tags: [members]
+      summary: パスワード再設定を実行
+      description: |
+        ADR 0018 §3。30 分で失効、一度きり利用可能。成功時に同一会員の未消費トークンを
+        すべて無効化する。
+      operationId: consumePasswordReset
+      security: []
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+            description: 平文の一回性トークン。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetConsumeRequest"
+      responses:
+        "204":
+          description: 更新完了
+        "400":
+          description: トークン不正 / 期限切れ / 消費済み / 新パスワード不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"

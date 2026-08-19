@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz_mobile/layers/domain/entity/quiz.dart';
+import 'package:quiz_mobile/layers/presentation/member/member_profile_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/notifier/quiz_details_notifier.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/notifier/quiz_details_state.dart';
 
@@ -79,6 +80,15 @@ class _QuizDetailsViewState extends ConsumerState<_QuizDetailsView> {
           'Quiz Details',
           style: theme.textTheme.titleLarge,
         ),
+        actions: [
+          IconButton(
+            key: const Key('quiz-details-profile'),
+            tooltip: 'プロフィール',
+            onPressed: () =>
+                Navigator.of(context).push(MemberProfilePage.route()),
+            icon: const Icon(Icons.person_outline),
+          ),
+        ],
       ),
       body: DecoratedBox(
         decoration: const BoxDecoration(

@@ -4,6 +4,8 @@
 
 本番の公開ホストは [`https://socrates-quiz.jp`](https://socrates-quiz.jp)（HTTPS 443）。開発時の API は `http://localhost:8082`。
 
+本番の起動手順は [`docs/deploy-lightsail.md`](docs/deploy-lightsail.md)（[ADR 0015](docs/adr/0015-lightsail-production.md)）。
+
 | パッケージ | 役割 | 認証 |
 | --- | --- | --- |
 | [`packages/web/`](packages/web/) | 解答 UI・端末内履歴 | なし |
@@ -67,7 +69,7 @@ cd packages/mobile && flutter test
 | --- | --- |
 | [`packages/`](packages/) | **商品**（web / admin-web / backend / mobile）と **実行速度計測**（[`bench/`](packages/bench/)） |
 | [`docs/`](docs/INDEX.md) | **説明書**（OpenAPI / 詳細設計 / ADR / lint）。商品フォルダには置かない |
-| `scratch/`（gitignore） | **kB 計測**（手元の `input.ts`。[ADR 0010](docs/adr/0010-scratch-input-bundle-size.md)） |
+| `scratch/`（gitignore） | **kB 計測**（手元の `input.ts`。運用経緯は [Issue #19](https://github.com/Yoshinaga123/quiz/issues/19)） |
 | `samples/`（gitignore） | **学習**（手元の参考クローン。公開ツリーには含めない） |
 | [`archive/`](archive/README.md) | **学習・診断の隔離方針** |
 

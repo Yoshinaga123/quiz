@@ -19,7 +19,7 @@ Socrates Quiz is an application monorepo, not a published library.
 | `samples/` | Local learning clones (gitignored). Not in the published tree |
 | `archive/` | Isolation note for local-only learning / diagnostics |
 
-Production host: `https://socrates-quiz.jp`. Dev API: host `8082` → container `8080`.
+Production host: `https://socrates-quiz.jp` on one AWS Lightsail instance (ADR 0015). Dev API: host `8082` → container `8080`.
 
 ## Non-negotiable: public JSON contract
 
@@ -46,15 +46,16 @@ Do not expose admin fields (`status`, `pushEnabled`, `createdAt`, `updatedAt`) o
 | Public HTTP shape | OpenAPI + `docs/api/fixtures/` |
 | Runtime parse (web) | handwritten Zod |
 | Admin input | `packages/admin-web/src/schemas/` |
-| Why a decision exists | `docs/adr/` |
+| Why a long-lived, cross-cutting decision exists | `docs/adr/` |
+| Why a local tooling or experiment decision exists | GitHub Issue / implementation PR |
 
 Do not generate Zod from OpenAPI. Dual-write both (ADR 0006).
 
 ## Where to put code
 
 - Scratch / experiments: `play.ts` (repo root), `packages/web/scripts/`, `packages/admin-web/scripts/`, `packages/backend/play.go` (`//go:build ignore`). Never leave experiments in `src/` or in a `package main` file that `go build` compiles.
-- Bundle-size (kB) experiments use a **local** `scratch/input.ts` (ADR 0010). The `scratch/` directory is gitignored, same as Zod. Do not invent another entry name. Do not commit that folder. Do not import it from `packages/web/src/` or `packages/admin-web/src/`.
-- Runtime speed (ops/sec) lives in `packages/bench` (ADR 0013). Run `npm run bench`. Do not put ArkType / Valibot there. Do not add it to npm workspaces.
+- Bundle-size (kB) experiments use a **local** `scratch/input.ts`. The `scratch/` directory is gitignored, same as Zod. Do not invent another entry name. Do not commit that folder. Do not import it from `packages/web/src/` or `packages/admin-web/src/`.
+- Runtime speed (ops/sec) lives in `packages/bench`. Run `npm run bench`. Do not put ArkType / Valibot there. Do not add it to npm workspaces.
 - Tests live next to the API they protect: `packages/web/tests/schemas/`, `packages/web/tests/contract/`, `packages/admin-web/tests/schemas/`, `packages/backend/*_test.go`.
 - A schema or contract change without a success **and** failure test is unfinished.
 - Documentation examples are executable. If you change a fenced TypeScript block in `docs/detailed-design/`, update `packages/web/tests/contract/docs-examples.test.ts` (and the implementation) in the same diff.
@@ -86,8 +87,8 @@ Husky runs `lint-staged` on commit and `npm run test:contract` on push.
 - Switch the package manager (npm stays). Do not rewrite Go into `internal/` packages, unless a human explicitly asks.
 - Do not migrate ESLint → Biome now. Future intent is `docs/backlog.md` TASK-005. Do not start it unless a human opens that task.
 - Do not add `package-lock.json` under `packages/web` or `packages/admin-web`. Install from the repo root (`npm i`).
-- Do not empty `.devcontainer` features to match Zod. Keep Node 22, Go, Python, Docker-in-Docker, and `npm` (ADR 0011).
-- Do not copy Zod's `.vscode/launch.json` (`--conditions=@zod/source`). Debug pads with `npm run play` / `go run` (ADR 0012).
+- Do not empty `.devcontainer` features to match Zod. Keep Node 22, Go, Python, Docker-in-Docker, and `npm`.
+- Do not copy Zod's `.vscode/launch.json` (`--conditions=@zod/source`). Debug pads with `npm run play` / `go run`.
 - Commit `samples/`, juice-shop dumps, or diagnostic transcripts in a product PR.
 - Commit `.env`, credentials, or real JWT secrets.
 - Invent a public field that is not in OpenAPI + fixtures + Zod + Go in the same change.
@@ -113,7 +114,7 @@ Do not expose `status`, `pushEnabled`, `createdAt`, or `updatedAt` on `publicQui
 Treat these as defects unless a human explicitly asked for them:
 
 - Switching npm to pnpm, or adding `package-lock.json` under `packages/web` or `packages/admin-web`
-- Emptying `.devcontainer` features to match Zod (ADR 0011)
+- Emptying `.devcontainer` features to match Zod
 - Rewriting `import { z } from "zod"` to `import * as z from "zod"`
 - Generating Zod from OpenAPI
 

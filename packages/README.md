@@ -8,4 +8,4 @@
 | [`admin-web/`](admin-web/) | 管理画面 |
 | [`backend/`](backend/) | Go API |
 | [`mobile/`](mobile/) | Flutter クライアント |
-| [`bench/`](bench/) | 実行速度（ops/sec）。商品ではない。[ADR 0013](../docs/adr/0013-runtime-bench.md) |
+| [`bench/`](bench/) | 実行速度（ops/sec）。商品ではない。運用経緯は [Issue #19](https://github.com/Yoshinaga123/quiz/issues/19) |

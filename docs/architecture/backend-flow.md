@@ -42,7 +42,7 @@ flowchart TD
 | グループ | エンドポイント | 主な処理 |
 | --- | --- | --- |
 | System | `GET /`, `GET /healthz`, `GET/POST /counter` | ヘルスチェック、PV カウンター |
-| Public | `GET /v1/quizzes`, `GET /v1/quizzes/{id}`, `GET /v1/sections`, `GET /v1/push/feed` | 公開済みクイズと mock Push feed を返す読み取り API |
+| Public | `GET /v1/quizzes`, `GET /v1/quizzes/{id}`, `GET /v1/sections`, `GET /v1/push/feed`, `POST /v1/attempts` | 公開済みクイズ取得、mock Push feed、匿名回答集計 |
 | Auth | `POST /api/admin/login/verification`, `POST /api/admin/login` | 検証コード発行、JWT 発行 |
 | Admin | `GET/POST /api/admin/quizzes`, `GET/PUT/DELETE /api/admin/quizzes/{id}`, `PATCH /status`, `PATCH /push`, `POST /sync-production`, `POST /api/admin/push/dispatch`, `GET /api/admin/push/deliveries` | 管理画面向け CRUD、seed 同期、mock Push 手動送信・履歴一覧 |
 
@@ -102,6 +102,44 @@ sequenceDiagram
 - 認証なしで呼べるが、返すのは最新の `channel = 'mock'` かつ `status = 'mock_sent'` の 1 件だけ
 - mobile は `deliveryId` を保存し、同じ配信を重複通知しない想定
 - 配信がない場合は `404` と `code = push_feed_not_found` を返す
+
+## Public API: `POST /v1/attempts`
+
+```mermaid
+sequenceDiagram
+    participant Web as Web
+    participant API as handleSubmitAttempt
+    participant DB as PostgreSQL
+
+    Web->>API: POST /v1/attempts
+    API->>API: decodeJSON and validate UUID or answers
+    alt body が不正
+        API-->>Web: 400 public error
+    else body が妥当
+        API->>DB: BEGIN
+        API->>DB: quiz IDs の存在確認
+        alt 未知の quizId が含まれる
+            API->>DB: ROLLBACK
+            API-->>Web: 400 public error
+        else 新規 session
+            API->>DB: INSERT attempts ON CONFLICT DO NOTHING RETURNING
+            API->>DB: INSERT attempt_answers
+            API->>DB: COMMIT
+            API-->>Web: 202 accepted
+        else 既存 session
+            API->>DB: COMMIT
+            API-->>Web: 202 accepted
+        end
+    end
+```
+
+### 実装メモ
+
+- 匿名集計専用の public write endpoint で、web の結果画面から best-effort で送る
+- `clientSessionId` は UUID v4 を前提とし、サーバー側でも UUID 形式を検証する
+- `answers` は 1 件以上必須で、同一リクエスト内の `quizId` 重複を許さない
+- `total_count` と `correct_count` はリクエストの `answers` から計算し、クライアントに別送させない
+- 既存 `clientSessionId` は再送として扱い、保存内容を書き換えずに `202` を返す
 
 ## 管理ログインフロー
 

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import SignInNudge from '../components/SignInNudge'
+import { useMemberSession } from '../contexts/MemberSessionContext'
 
 const navLinkBaseClassName =
   'inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium transition duration-150 hover:-translate-y-0.5 hover:shadow-float'
@@ -11,6 +13,7 @@ interface BannerNotice {
 
 function AppLayout() {
   const [notice, setNotice] = useState<BannerNotice | null>(null)
+  const { session } = useMemberSession()
 
   useEffect(() => {
     function pushNotice(event: Event) {
@@ -58,12 +61,38 @@ function AppLayout() {
               >
                 履歴
               </NavLink>
+              {session === null ? (
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive
+                      ? `${navLinkBaseClassName} bg-linear-to-br from-accent to-accent-strong text-white`
+                      : `${navLinkBaseClassName} border border-navy/12 bg-white/80 text-navy`
+                  }
+                >
+                  ログイン
+                </NavLink>
+              ) : (
+                <NavLink
+                  to="/me"
+                  className={({ isActive }) =>
+                    isActive
+                      ? `${navLinkBaseClassName} bg-linear-to-br from-accent to-accent-strong text-white`
+                      : `${navLinkBaseClassName} border border-navy/12 bg-white/80 text-navy`
+                  }
+                >
+                  {session.handle}
+                </NavLink>
+              )}
             </nav>
           </div>
         </div>
       </header>
 
       <main className="mx-auto w-full max-w-[1100px] px-4 py-8 pb-16 sm:px-6 lg:px-8">
+        <div className="mb-5">
+          <SignInNudge />
+        </div>
         {notice ? (
           <div
             key={notice.id}

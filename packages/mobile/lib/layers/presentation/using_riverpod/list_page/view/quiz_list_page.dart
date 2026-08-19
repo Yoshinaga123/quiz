@@ -4,6 +4,7 @@ import 'package:quiz_mobile/layers/data/service/local_notification_service.dart'
 import 'package:quiz_mobile/layers/data/service/push_feed_poller.dart';
 import 'package:quiz_mobile/layers/domain/entity/quiz.dart';
 import 'package:quiz_mobile/layers/domain/errors/quiz_failure.dart';
+import 'package:quiz_mobile/layers/presentation/member/member_profile_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/view/quiz_details_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/list_page/notifier/quiz_list_notifier.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/list_page/notifier/quiz_list_state.dart';
@@ -119,6 +120,13 @@ class _QuizListViewState extends ConsumerState<_QuizListView> {
                 ? null
                 : () => _checkPushFeed(showResult: true),
             icon: const Icon(Icons.notifications_active_outlined),
+          ),
+          IconButton(
+            key: const Key('quiz-list-profile'),
+            tooltip: 'プロフィール',
+            onPressed: () =>
+                Navigator.of(context).push(MemberProfilePage.route()),
+            icon: const Icon(Icons.person_outline),
           ),
         ],
       ),

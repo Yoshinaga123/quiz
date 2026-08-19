@@ -4,16 +4,51 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/shirou/gopsutil/mem"
 )
 
+func corsAllowedOrigins() []string {
+	raw := strings.TrimSpace(os.Getenv("CORS_ALLOWED_ORIGINS"))
+	if raw == "" {
+		return nil
+	}
+	parts := strings.Split(raw, ",")
+	out := make([]string, 0, len(parts))
+	for _, part := range parts {
+		origin := strings.TrimSpace(part)
+		if origin != "" {
+			out = append(out, origin)
+		}
+	}
+	return out
+}
+
+func originAllowed(origin string, allowlist []string) bool {
+	if origin == "" {
+		return false
+	}
+	if len(allowlist) == 0 {
+		// Empty allowlist keeps the local-dev Origin reflection behavior.
+		return true
+	}
+	for _, allowed := range allowlist {
+		if origin == allowed {
+			return true
+		}
+	}
+	return false
+}
+
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if origin != "" {
+		allowlist := corsAllowedOrigins()
+		if originAllowed(origin, allowlist) {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
 		}
@@ -41,8 +76,20 @@ func (s *server) routes() http.Handler {
 	mux.HandleFunc("GET /v1/quizzes/{id}", s.handleGetPublicQuiz)
 	mux.HandleFunc("GET /v1/sections", s.handleListPublicSections)
 	mux.HandleFunc("GET /v1/push/feed", s.handleGetPublicPushFeed)
+	mux.HandleFunc("POST /v1/attempts", s.handleSubmitAttempt)
 	mux.HandleFunc("POST /api/admin/login/verification", s.handleRequestLoginVerification)
 	mux.HandleFunc("POST /api/admin/login", s.handleLogin)
+	mux.HandleFunc("POST /api/members", s.handleRegisterMember)
+	mux.HandleFunc("POST /api/session", s.handleCreateMemberSession)
+	mux.Handle("GET /api/me", s.requireMemberAuth(http.HandlerFunc(s.handleGetMe)))
+	mux.Handle("DELETE /api/me", s.requireMemberAuth(http.HandlerFunc(s.handleDeleteMe)))
+	mux.Handle("POST /api/me/answers", s.requireMemberAuth(http.HandlerFunc(s.handleCreateAnswerHistory)))
+	mux.Handle("GET /api/me/answers", s.requireMemberAuth(http.HandlerFunc(s.handleListAnswerHistory)))
+	mux.Handle("GET /api/me/mastery", s.requireMemberAuth(http.HandlerFunc(s.handleGetMemberMastery)))
+	mux.Handle("POST /api/me/email", s.requireMemberAuth(http.HandlerFunc(s.handleSetMemberEmail)))
+	mux.HandleFunc("POST /api/email-verifications/{token}", s.handleConsumeEmailVerification)
+	mux.HandleFunc("POST /api/password-resets", s.handleRequestPasswordReset)
+	mux.HandleFunc("POST /api/password-resets/{token}", s.handleConsumePasswordReset)
 	mux.Handle("GET /api/admin/quizzes", s.requireAuth(http.HandlerFunc(s.handleListQuizzes)))
 	mux.Handle("POST /api/admin/quizzes/sync-production", s.requireAuth(http.HandlerFunc(s.handleSyncProductionQuizzes)))
 	mux.Handle("POST /api/admin/push/dispatch", s.requireAuth(http.HandlerFunc(s.handleDispatchMockPush)))
@@ -126,6 +173,8 @@ func main() {
 		adminUser:            getEnv("ADMIN_USER", "admin"),
 		adminPassword:        getEnv("ADMIN_PASSWORD", "password"),
 		jwtSecret:            []byte(getEnv("JWT_SECRET", "dev-only-secret")),
+		memberJWTSecret:      []byte(getEnv("MEMBER_JWT_SECRET", "dev-only-member-secret")),
+		mailer:               newMailer(),
 		pendingVerifications: make(map[string]verificationChallenge),
 	}
 

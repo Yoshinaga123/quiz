@@ -1,7 +1,7 @@
 # データモデル
 
 現在の永続データ、seed JSON、API へ露出する投影モデルの関係を整理する。
-対象は 2026-05-25 時点で **実装済みのモデル** を中心とし、ADR にだけ存在する将来モデルは最後に分離して記載する。
+対象は 2026-08-18 時点で **実装済みのモデル** を中心とし、ADR にだけ存在する将来モデルは最後に分離して記載する。
 
 ## 全体像
 
@@ -19,7 +19,7 @@ flowchart LR
     MockPushFeed["mock push feed JSON"]
     MobileQuiz["mobile Quiz entity"]
     Verification["pendingVerifications memory map"]
-    Attempts["attempts tables planned only"]
+    Attempts["attempts tables"]
 
     Seed -->|migration input| Quizzes
     Quizzes -->|full record| AdminQuiz
@@ -29,7 +29,7 @@ flowchart LR
     PushDeliveries -->|latest mock delivery| MockPushFeed
     PublicQuiz --> MobileQuiz
     Counter --> Views
-    Attempts -. ADR 0008 only .-> Quizzes
+    Attempts -->|quiz_id FK| Quizzes
 ```
 
 ## 永続テーブル
@@ -40,8 +40,10 @@ flowchart LR
 | `views` | `id` | PV カウンター | 実質 1 行だけを使う singleton テーブル |
 | `login_logs` | `id` | 管理ログイン監査 | 成功・失敗の監査ログを append-only で保持する |
 | `push_deliveries` | `id` | Push 通知配信履歴 | Phase A では mock 配信のみ記録する |
+| `attempts` | `client_session_id` | 匿名セッション集計 | 1 セッション 1 行。冪等キーを兼ねる |
+| `attempt_answers` | `(client_session_id, quiz_id)` | セッション内の各回答 | `attempts` と `quizzes` の橋渡し |
 
-現時点で `push_deliveries.quiz_id` は `quizzes.id` への外部キーを持つ。`views` と `login_logs` は補助データとして独立している。
+現時点で `push_deliveries.quiz_id` と `attempt_answers.quiz_id` は `quizzes.id` への外部キーを持つ。`views` と `login_logs` は補助データとして独立している。
 
 ## `quizzes` テーブル
 
@@ -125,6 +127,32 @@ Phase A では Firebase / FCM へは送らず、mock 配信として「送信し
 - `GET /v1/push/feed` は、このテーブルから最新の `channel = 'mock'` かつ `status = 'mock_sent'` の 1 件を返す予定
 - 本番 FCM 配信に必要な `device_tokens` はまだ未実装であり、このテーブルには端末トークンを保存しない
 
+## `attempts` / `attempt_answers` テーブル
+
+`attempts` と `attempt_answers` は ADR 0008 に沿った匿名回答集計の保存先である。
+ユーザー識別情報は持たず、web が生成した UUID を `client_session_id` としてそのまま冪等キーに使う。
+
+| テーブル | カラム | 型 | 必須 | 役割 |
+| --- | --- | --- | --- | --- |
+| `attempts` | `client_session_id` | `UUID` | yes | セッション ID 兼 冪等キー |
+| `attempts` | `section` | `TEXT` | no | 出題セクションの記録 |
+| `attempts` | `completed_at` | `TIMESTAMPTZ` | yes | セッション完了時刻 |
+| `attempts` | `total_count` | `INT` | yes | 回答数 |
+| `attempts` | `correct_count` | `INT` | yes | 正解数 |
+| `attempts` | `created_at` | `TIMESTAMPTZ` | yes | 受信時刻 |
+| `attempt_answers` | `client_session_id` | `UUID` | yes | 親セッション。`attempts` への外部キー |
+| `attempt_answers` | `quiz_id` | `BIGINT` | yes | 対象クイズ。`quizzes.id` への外部キー |
+| `attempt_answers` | `selected_index` | `INT` | yes | 選択した選択肢 index |
+| `attempt_answers` | `is_correct` | `BOOLEAN` | yes | クライアント採点結果 |
+| `attempt_answers` | `answered_at` | `TIMESTAMPTZ` | no | 各回答の時刻。web は現状未送信 |
+
+### 実装上の注意
+
+- `POST /v1/attempts` は `INSERT ... ON CONFLICT DO NOTHING` で冪等化する
+- `total_count` と `correct_count` はリクエストの `answers` からサーバー側で計算する
+- 同一セッション内で同じ `quiz_id` を重複送信できないよう、複合主キー `(client_session_id, quiz_id)` を持つ
+- 履歴の一次ソースは依然として web の `localStorage` であり、このテーブルは匿名集計の二次ソースである
+
 ## Seed JSON と投影モデル
 
 永続テーブルだけ見ると API とのズレが見えにくいため、主要な JSON 形状も整理する。
@@ -188,22 +216,16 @@ flowchart TD
 ### 実装上の注意
 
 - `verificationChallenge` は DB に保存されないため、サーバー再起動で消える
-- 回答履歴はまだサーバー永続化されていない
+- Web 履歴はサーバーへ best-effort で送られるが、正本は引き続きローカル保存である
 
 ## 将来モデル
 
-ADR 0008 と OpenAPI ドラフトには、匿名集計用の `attempts` / `attempt_answers` が出てくる。
-ただし **現時点では migration に存在せず、実装も未着手** である。
-
 | モデル | 状態 | 出典 |
 | --- | --- | --- |
-| `attempts` | Proposed only | `docs/adr/0008-user-attempt-history.md` |
-| `attempt_answers` | Proposed only | `docs/adr/0008-user-attempt-history.md` |
-| `POST /v1/attempts` | OpenAPI draft only | `docs/api/public-quiz-api.yaml` |
 | `device_tokens` | Proposed only | `docs/adr/0007-push-notification-delivery.md` |
 | FCM / cron delivery | Proposed only | `docs/adr/0007-push-notification-delivery.md` |
 
-このため、2026-05-25 時点の実データモデルとしては `quizzes`, `views`, `login_logs`, `push_deliveries` の 4 テーブルを正とする。
+このため、2026-08-18 時点の実データモデルとしては `quizzes`, `views`, `login_logs`, `push_deliveries`, `attempts`, `attempt_answers` の 6 テーブルを正とする。
 
 ## 更新ガイド
 

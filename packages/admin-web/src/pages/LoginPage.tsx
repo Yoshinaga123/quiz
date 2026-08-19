@@ -121,8 +121,7 @@ function LoginPage() {
           <p className="m-0 text-[0.78rem] uppercase tracking-[0.18em] text-[#1768ac]">Quiz Admin</p>
           <h1 className="m-0 text-[clamp(2.1rem,5vw,3rem)] leading-[1.02] font-semibold">クイズ管理画面</h1>
           <p className="m-0 text-[#4f5d75]">
-            管理者ログイン後に、問題データの追加・編集・削除を行えます。API 側の開発デフォルト認証情報は
-            `admin / password` です。
+            管理者ログイン後に、問題データの追加・編集・削除を行えます。管理者から提供された認証情報を入力してください。
           </p>
         </div>
 

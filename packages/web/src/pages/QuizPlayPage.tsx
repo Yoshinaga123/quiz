@@ -1,9 +1,13 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import AnswerOption from '../components/AnswerOption'
+import { createAnswerHistoryBestEffort } from '../api/member'
+import { submitAttemptBestEffort } from '../api/quiz'
 import CodeBlock from '../components/CodeBlock'
 import ProgressBar from '../components/ProgressBar'
 import { useHistory } from '../contexts/HistoryContext'
+import { useMastery } from '../contexts/MasteryContext'
+import { useMemberSession } from '../contexts/MemberSessionContext'
 import { useQuizCatalog } from '../hooks/useQuizCatalog'
 import {
   findQuiz,
@@ -12,16 +16,18 @@ import {
   nowIso,
   pickQuizIds,
 } from '../lib/quizUtils'
+import { computeRank, type RankResult } from '../lib/rank'
 import type { HistoryRecord, Quiz, QuizAnswer } from '../types/quiz'
 
-const DEFAULT_LIMIT = 5
-const MAX_LIMIT = 20
+const DEFAULT_LIMIT = 10
+const MAX_LIMIT = 100
 
 interface SessionState {
   id: string
   sectionFilter: string | null
   startedAt: string
   quizIds: number[]
+  preRank: RankResult
 }
 
 const pillButtonClassName =
@@ -35,10 +41,28 @@ function parseLimit(raw: string | null): number {
 }
 
 function QuizPlayPage() {
-  const { quizzes } = useQuizCatalog()
+  const { quizzes, isLoading } = useQuizCatalog()
+
+  if (isLoading) {
+    return (
+      <div className="rounded-card border border-navy/12 bg-white/86 p-card text-center shadow-card">
+        <h1 className="m-0 text-[1.4rem] font-semibold">問題を読み込んでいます</h1>
+        <p className="mt-2 mb-0 text-[#4f5d75]">Public API からクイズを取得中です。</p>
+      </div>
+    )
+  }
+
+  return <QuizSession quizzes={quizzes} />
+}
+
+// The session snapshots quiz ids once, so it must mount only after the catalog
+// settled: starter-pack ids and Public API ids do not overlap.
+function QuizSession({ quizzes }: { quizzes: readonly Quiz[] }) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { appendRecord } = useHistory()
+  const { recordAnswer: recordMasteryAnswer, streaks } = useMastery()
+  const { session: memberSession } = useMemberSession()
 
   const initialSection = searchParams.get('section')
   const initialLimit = parseLimit(searchParams.get('limit'))
@@ -48,6 +72,10 @@ function QuizPlayPage() {
     sectionFilter: initialSection,
     startedAt: nowIso(),
     quizIds: pickQuizIds(quizzes, initialSection, initialLimit),
+    preRank: computeRank(
+      streaks,
+      quizzes.map((quiz) => quiz.id),
+    ),
   }))
 
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -79,7 +107,14 @@ function QuizPlayPage() {
       { quizId: currentQuiz.id, selectedIndex, correct },
     ])
     setRevealed(true)
-  }, [selectedIndex, currentQuiz, revealed])
+    recordMasteryAnswer(currentQuiz.id, correct)
+    if (memberSession !== null) {
+      void createAnswerHistoryBestEffort(memberSession.token, {
+        quizId: currentQuiz.id,
+        selectedIndex,
+      })
+    }
+  }, [selectedIndex, currentQuiz, revealed, memberSession, recordMasteryAnswer])
 
   const finalizeAndGo = useCallback(
     (allAnswers: readonly QuizAnswer[]) => {
@@ -94,9 +129,13 @@ function QuizPlayPage() {
         answers: [...allAnswers],
       }
       appendRecord(record)
-      navigate(`/result/${record.id}`, { state: { record }, replace: true })
+      void submitAttemptBestEffort(record)
+      navigate(`/result/${record.id}`, {
+        state: { record, preRank: session.preRank },
+        replace: true,
+      })
     },
-    [session.id, session.sectionFilter, session.startedAt, totalQuestions, appendRecord, navigate],
+    [session.id, session.sectionFilter, session.startedAt, session.preRank, totalQuestions, appendRecord, navigate],
   )
 
   const handleNext = useCallback(() => {
