@@ -41,7 +41,7 @@ function MemberRegisterPage() {
         <p className="m-0 text-[0.78rem] uppercase tracking-[0.18em] text-accent">Account</p>
         <h1 className="m-0 text-[clamp(1.4rem,2.4vw,1.8rem)] font-semibold">会員登録</h1>
         <p className="m-0 text-sm text-[#4f5d75]">
-          ハンドル名とパスワードだけで登録できます。メールアドレスは保存しません。
+          ハンドル名とパスワードで登録できます。メールは任意で、後から登録するとパスワード再設定に使えます。
         </p>
       </section>
 
@@ -76,7 +76,7 @@ function MemberRegisterPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <span className="text-xs text-[#4f5d75]">8 文字以上。忘れても再発行はできません（別 ADR 予定）。</span>
+          <span className="text-xs text-[#4f5d75]">8 文字以上。検証済みメールがあれば再設定できます。</span>
         </label>
 
         {errorMessage !== null ? (

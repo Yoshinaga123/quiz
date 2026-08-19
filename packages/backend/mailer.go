@@ -16,7 +16,8 @@ type Mailer interface {
 type stdoutMailer struct{}
 
 func (stdoutMailer) Send(_ context.Context, to, subject, body string) error {
-	log.Printf("[stdoutMailer] To=%s Subject=%q Body=%q", to, subject, body)
+	// Never log the body: password-reset / email-verification mails embed one-time tokens.
+	log.Printf("[stdoutMailer] To=%s Subject=%q bodyBytes=%d", to, subject, len(body))
 	return nil
 }
 
