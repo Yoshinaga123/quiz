@@ -37,7 +37,15 @@ jobs:
         run: |
           set -euo pipefail
           head="${{ github.ref_name }}"
-          if gh pr view --repo "${{ github.repository }}" --head "${head}" --json number --jq .number >/dev/null 2>&1; then
+          existing_pr="$(
+            gh pr list --repo "${{ github.repository }}" \
+              --head "${{ github.repository_owner }}:${head}" \
+              --base develop \
+              --state open \
+              --json number \
+              --jq '.[0].number // empty'
+          )"
+          if [[ -n "${existing_pr}" ]]; then
             echo "PR already exists for ${head}"
             exit 0
           fi
