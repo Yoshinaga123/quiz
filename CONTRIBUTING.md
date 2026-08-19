@@ -21,6 +21,8 @@
 
 Husky が commit 前に lint-staged、push 前に `npm run test:contract` を走らせる。
 
+<!-- auto-merge smoke #2 ran 2026-08-20 -->
+
 ## スキーマ・API を変えるとき
 
 Zod の CONTRIBUTING（実装と docs を同時更新）に合わせる。公開契約の手順は [`docs/detailed-design/web/public-contract.md`](docs/detailed-design/web/public-contract.md)。
