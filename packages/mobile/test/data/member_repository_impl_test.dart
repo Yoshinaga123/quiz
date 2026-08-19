@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_mobile/layers/data/dto/answer_history_entry_dto.dart';
+import 'package:quiz_mobile/layers/data/dto/mastery_dto.dart';
 import 'package:quiz_mobile/layers/data/dto/public_member_dto.dart';
 import 'package:quiz_mobile/layers/data/member_repository_impl.dart';
 import 'package:quiz_mobile/layers/data/source/local/member_session_storage.dart';
@@ -83,6 +84,29 @@ class _FakeApiClient implements MemberApiClient {
     createAnswerCalls++;
     lastToken = token;
     return createAnswerResult!;
+  }
+
+  @override
+  Future<void> setEmail({
+    required String token,
+    required String email,
+  }) async {}
+
+  @override
+  Future<void> consumeEmailVerification({required String token}) async {}
+
+  @override
+  Future<void> requestPasswordReset({required String handleOrEmail}) async {}
+
+  @override
+  Future<void> consumePasswordReset({
+    required String token,
+    required String newPassword,
+  }) async {}
+
+  @override
+  Future<MasteryResponseDto> fetchMastery({required String token}) async {
+    return const MasteryResponseDto(items: [], streakCap: 0);
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_mobile/layers/data/dto/answer_history_entry_dto.dart';
+import 'package:quiz_mobile/layers/data/dto/mastery_dto.dart';
 import 'package:quiz_mobile/layers/data/dto/public_member_dto.dart';
 import 'package:quiz_mobile/layers/domain/entity/member_session.dart';
 import 'package:quiz_mobile/layers/domain/errors/member_failure.dart';
@@ -85,6 +86,26 @@ class _FakeRepository implements MemberRepository {
   Future<void> deleteAccount(MemberSession session) async {
     deleteCalls++;
   }
+
+  @override
+  Future<MasteryResponseDto> fetchMastery(MemberSession session) async {
+    return const MasteryResponseDto(items: [], streakCap: 0);
+  }
+
+  @override
+  Future<void> setEmail(MemberSession session, {required String email}) async {}
+
+  @override
+  Future<void> consumeEmailVerification({required String token}) async {}
+
+  @override
+  Future<void> requestPasswordReset({required String handleOrEmail}) async {}
+
+  @override
+  Future<void> consumePasswordReset({
+    required String token,
+    required String newPassword,
+  }) async {}
 }
 
 ProviderContainer _containerWith(MemberRepository repo) {
