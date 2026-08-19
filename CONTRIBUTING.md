@@ -59,3 +59,5 @@ cd packages/backend && gofmt -l . && go test ./... && go vet ./...
 - 1 PR 1 目的。学習用 `samples/` の追加は別リポジトリか `archive/` 方針に従う。
 - コミットメッセージは変更理由が分かる短文。
 - 公開契約を変える Issue は `.github/ISSUE_TEMPLATE/contract.yml` を使う。
+- `develop` / `main` 以外への push は [`.github/workflows/auto-pr-merge.yml`](.github/workflows/auto-pr-merge.yml) が **PR を自動作成**し、draft でなければ **auto-merge を有効化**する。必須 CI が緑なら `develop` へ自動マージされる。コンフリクトや未解決レビュー会話がある場合は止まって人手待ち。
+- 手元で明示する場合: `gh pr create --base develop` のあと `gh pr merge --auto --merge`。

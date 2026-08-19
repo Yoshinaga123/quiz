@@ -1,0 +1,73 @@
+name: Auto PR and merge
+
+# Push on a feature branch → open a PR into develop.
+# Open / updated PR into develop → enable GitHub auto-merge (CI green then merge).
+# Forks are skipped. Dependabot already opens its own PRs.
+
+on:
+  push:
+    branches-ignore:
+      - develop
+      - main
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+    branches: [develop]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-pr-merge-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  create-pr:
+    name: create PR
+    if: >-
+      github.event_name == 'push' &&
+      github.actor != 'dependabot[bot]' &&
+      !startsWith(github.ref_name, 'dependabot/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Open PR against develop if missing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          head="${{ github.ref_name }}"
+          if gh pr view --repo "${{ github.repository }}" --head "${head}" --json number --jq .number >/dev/null 2>&1; then
+            echo "PR already exists for ${head}"
+            exit 0
+          fi
+          title="$(git log -1 --pretty=%s)"
+          body="$(git log -1 --pretty=%b)"
+          if [[ -z "${body}" ]]; then
+            body="Auto-created from \`${head}\` after push to origin."
+          fi
+          gh pr create --repo "${{ github.repository }}" --base develop --head "${head}" \
+            --title "${title}" \
+            --body "${body}"
+
+  enable-automerge:
+    name: enable auto-merge
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge (merge commit)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          number="${{ github.event.pull_request.number }}"
+          if gh pr merge "${number}" --repo "${{ github.repository }}" --auto --merge; then
+            echo "auto-merge enabled or merged for #${number}"
+            exit 0
+          fi
+          echo "auto-merge could not be enabled (conflicts, draft, or policy). leaving PR open."
+          gh pr view "${number}" --repo "${{ github.repository }}" --json mergeable,mergeStateStatus,autoMergeRequest
+          exit 0
