@@ -1,0 +1,11 @@
+Create a sequence diagram specification for the repository's PR workflow, suitable for draw.io.
+
+Requirements:
+- Show developer creating a feature branch and pushing it.
+- Show pull request creation targeting develop.
+- Show required checks running in GitHub Actions.
+- Show branch protection blocking direct pushes to develop.
+- Show reviewer approval and merge into develop.
+- Keep the layout readable and concise.
+
+Output only the diagram content, without any explanation.
