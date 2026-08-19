@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz_mobile/layers/presentation/member/forgot_password_page.dart';
 import 'package:quiz_mobile/layers/presentation/member/providers.dart';
 
 /// 実バックエンドに接続する会員向けログイン画面（ADR 0016 / ADR 0017）。
@@ -87,6 +88,17 @@ class _MemberLoginPageState extends ConsumerState<MemberLoginPage> {
                 onPressed: isLoading ? null : widget.onRegister,
                 child: const Text('未登録? 会員登録'),
               ),
+            TextButton(
+              key: const Key('member-login-forgot-password'),
+              onPressed: isLoading
+                  ? null
+                  : () => Navigator.of(context).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) => const ForgotPasswordPage(),
+                        ),
+                      ),
+              child: const Text('パスワードを忘れた場合'),
+            ),
           ],
         ),
       ),

@@ -55,6 +55,42 @@ export const answerHistoryListResponseSchema = z.object({
   items: z.array(answerHistoryEntrySchema),
 });
 
+// ADR 0018 §3: メール登録・検証・パスワードリセット系。
+// email は RFC 5322 準拠 + 254 文字上限 + 保存時に小文字化（サーバー側で正規化）。
+export const setMemberEmailRequestSchema = z.object({
+  email: z.string().email().max(254),
+});
+
+export const passwordResetRequestSchema = z.object({
+  handleOrEmail: z.string().min(1).max(320),
+});
+
+export const passwordResetConsumeRequestSchema = z.object({
+  newPassword: z.string().min(8).max(128),
+});
+
+// ADR 0018 系の派生: 段位計算用に answer_history からサーバー側で導出した streak。
+export const masteryEntrySchema = z.object({
+  quizId: z.number().int().positive(),
+  streak: z.number().int().min(0).max(2),
+});
+
+export const masteryRankSchema = z.object({
+  rank: z.string().min(1),
+  index: z.number().int().min(0),
+  mastery: z.number().int().min(0),
+  totalPossible: z.number().int().min(0),
+  progress: z.number().min(0).max(1),
+  nextRank: z.string().min(1).nullable(),
+  toNextRank: z.number().int().min(0),
+});
+
+export const masteryResponseSchema = z.object({
+  items: z.array(masteryEntrySchema),
+  streakCap: z.number().int().min(1),
+  rank: masteryRankSchema,
+});
+
 export type PublicMember = z.infer<typeof publicMemberSchema>;
 export type AnswerHistoryEntry = z.infer<typeof answerHistoryEntrySchema>;
 export type AnswerHistoryListResponse = z.infer<typeof answerHistoryListResponseSchema>;
@@ -62,3 +98,9 @@ export type AnswerHistoryCreateRequest = z.infer<typeof answerHistoryCreateReque
 export type MemberRegisterRequest = z.infer<typeof memberRegisterRequestSchema>;
 export type MemberRegisterResponse = z.infer<typeof memberRegisterResponseSchema>;
 export type MemberSessionResponse = z.infer<typeof memberSessionResponseSchema>;
+export type SetMemberEmailRequest = z.infer<typeof setMemberEmailRequestSchema>;
+export type PasswordResetRequest = z.infer<typeof passwordResetRequestSchema>;
+export type PasswordResetConsumeRequest = z.infer<typeof passwordResetConsumeRequestSchema>;
+export type MasteryEntry = z.infer<typeof masteryEntrySchema>;
+export type MasteryRank = z.infer<typeof masteryRankSchema>;
+export type MasteryResponse = z.infer<typeof masteryResponseSchema>;

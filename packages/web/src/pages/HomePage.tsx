@@ -2,8 +2,10 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import SectionPicker from '../components/SectionPicker'
 import { useHistory } from '../contexts/HistoryContext'
+import { useMastery } from '../contexts/MasteryContext'
 import { useQuizCatalog } from '../hooks/useQuizCatalog'
 import { calculateAccuracy, filterBySection, listSections } from '../lib/quizUtils'
+import { computeRank } from '../lib/rank'
 
 const QUIZ_LIMIT_OPTIONS = [10, 30, 100] as const
 
@@ -13,6 +15,7 @@ const pillButtonClassName =
 function HomePage() {
   const { quizzes, isLoading, errorMessage, source, reload } = useQuizCatalog()
   const { records } = useHistory()
+  const { streaks } = useMastery()
   const navigate = useNavigate()
   const [section, setSection] = useState<string | null>(null)
   const [limit, setLimit] = useState<number>(QUIZ_LIMIT_OPTIONS[1])
@@ -25,6 +28,9 @@ function HomePage() {
   const lifetimeQuestions = records.reduce((sum, record) => sum + record.total, 0)
   const lifetimeCorrect = records.reduce((sum, record) => sum + record.correct, 0)
   const lifetimeAccuracy = calculateAccuracy(lifetimeCorrect, lifetimeQuestions)
+
+  const quizIds = useMemo(() => quizzes.map((quiz) => quiz.id), [quizzes])
+  const rank = useMemo(() => computeRank(streaks, quizIds), [streaks, quizIds])
 
   function handleStart() {
     if (effectiveLimit <= 0) return
@@ -115,6 +121,47 @@ function HomePage() {
           >
             クイズを始める
           </button>
+        </div>
+      </section>
+
+      <section className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="m-0 text-[1.15rem] font-semibold text-navy">現在の段位</h2>
+          <Link to="/history" className="text-sm font-medium text-accent hover:underline">
+            詳細
+          </Link>
+        </div>
+        <div className="mt-stack grid gap-4 sm:grid-cols-[minmax(0,160px)_1fr] sm:items-center">
+          <div className="rounded-surface border border-navy/12 bg-linear-to-br from-white to-[#E8F1FA] px-5 py-5 text-center">
+            <p className="m-0 text-xs font-medium uppercase tracking-[0.14em] text-[#4f5d75]">
+              Current Rank
+            </p>
+            <p className="mt-1.5 mb-0 text-[1.9rem] font-bold text-navy">{rank.rank}</p>
+            {rank.nextRank !== null ? (
+              <p className="m-0 text-xs text-[#4f5d75]">次: {rank.nextRank}</p>
+            ) : (
+              <p className="m-0 text-xs text-accent">最高位に到達</p>
+            )}
+          </div>
+          <div className="grid gap-2">
+            <div className="flex items-center justify-between text-sm text-[#4f5d75]">
+              <span>習熟度</span>
+              <span>
+                {rank.mastery} / {rank.totalPossible} pt
+                <span className="ml-1 text-xs">({Math.round(rank.progress * 100)}%)</span>
+              </span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-navy/8">
+              <div
+                className="h-full bg-linear-to-r from-accent to-accent-strong"
+                style={{ width: `${Math.min(100, rank.progress * 100)}%` }}
+                aria-hidden="true"
+              />
+            </div>
+            <p className="m-0 text-xs text-[#4f5d75]">
+              各問題を 2 回連続で解くごとに +1 pt。全問制覇で「名人」になります。
+            </p>
+          </div>
         </div>
       </section>
 

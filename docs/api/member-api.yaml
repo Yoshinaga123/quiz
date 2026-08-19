@@ -130,6 +130,70 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AnswerHistoryEntry"
+    MasteryEntry:
+      type: object
+      required: [quizId, streak]
+      properties:
+        quizId:
+          type: integer
+          format: int64
+          minimum: 1
+        streak:
+          type: integer
+          minimum: 0
+          maximum: 2
+          description: |
+            直近の連続正解数。上限は `streakCap` (2)。誤答すると 0 にリセットされる。
+    MasteryRank:
+      type: object
+      required: [rank, index, mastery, totalPossible, progress, nextRank, toNextRank]
+      properties:
+        rank:
+          type: string
+          description: |
+            段位ラベル。"4級", "3級", "2級", "1級", "初段"..."九段", "名人" の 14 段階。
+            初回ユーザーは "4級"、全問題を 2 回連続正解すると "名人"。
+        index:
+          type: integer
+          minimum: 0
+          maximum: 13
+        mastery:
+          type: integer
+          minimum: 0
+          description: 現在の習熟度 (すべての streak の合計)。
+        totalPossible:
+          type: integer
+          minimum: 0
+          description: 満点時の習熟度 (公開中の全問題数 × streakCap)。
+        progress:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+        nextRank:
+          type: string
+          nullable: true
+          description: 次の段位ラベル。"名人" のときは null。
+        toNextRank:
+          type: integer
+          minimum: 0
+          description: 次の段位まで必要な追加習熟度。"名人" のときは 0。
+    MasteryResponse:
+      type: object
+      required: [items, streakCap, rank]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MasteryEntry"
+        streakCap:
+          type: integer
+          minimum: 1
+          description: |
+            サーバー側で streak に適用する上限値。クライアント (`packages/web/src/lib/rank.ts`
+            の `STREAK_CAP`) と一致させる。
+        rank:
+          $ref: "#/components/schemas/MasteryRank"
     SetMemberEmailRequest:
       type: object
       required: [email]
@@ -321,6 +385,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PublicError"
+        "401":
+          description: 未認証 / 削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/me/mastery:
+    get:
+      tags: [me]
+      summary: 自分の段位・習熟度データ
+      description: |
+        `answer_history` から直近の連続正解数を都度導出する。
+        誤答があると当該クイズの streak は 0 に戻る。上限は `streakCap` (2)。
+        レスポンスは quiz_id 昇順。0 のクイズは含めない (未回答 or 誤答直後)。
+      operationId: getMemberMastery
+      security: [{memberBearer: []}]
+      responses:
+        "200":
+          description: 取得
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MasteryResponse"
         "401":
           description: 未認証 / 削除済み
           content:

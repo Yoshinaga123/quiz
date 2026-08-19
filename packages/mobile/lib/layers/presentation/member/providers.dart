@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz_mobile/layers/data/dto/mastery_dto.dart';
 import 'package:quiz_mobile/layers/data/member_repository_impl.dart';
 import 'package:quiz_mobile/layers/data/source/local/member_session_storage.dart';
 import 'package:quiz_mobile/layers/data/source/remote/member_api_client.dart';
@@ -76,3 +77,18 @@ final memberSessionControllerProvider =
     AsyncNotifierProvider<MemberSessionController, MemberSession?>(
   MemberSessionController.new,
 );
+
+/// ADR 0018 系のフォローアップ: サーバー由来 mastery (streak マップ)。
+///
+/// セッションが確立していないとき、または fetch に失敗したときは
+/// `AsyncValue.data(null)` を返す。UI 側で null を「未取得/取得失敗」として扱う。
+final memberMasteryProvider = FutureProvider<MasteryResponseDto?>((ref) async {
+  final sessionState = ref.watch(memberSessionControllerProvider);
+  final session = sessionState.value;
+  if (session == null) return null;
+  try {
+    return await ref.read(memberRepositoryProvider).fetchMastery(session);
+  } catch (_) {
+    return null;
+  }
+});

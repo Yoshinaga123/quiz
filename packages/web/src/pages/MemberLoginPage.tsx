@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createMemberSession, fetchMe } from '../api/member';
 import { useMemberSession } from '../contexts/MemberSessionContext';
 
@@ -12,6 +12,11 @@ const buttonClassName =
 function MemberLoginPage() {
   const { setSession } = useMemberSession();
   const navigate = useNavigate();
+  const location = useLocation();
+  const notice =
+    typeof (location.state as { notice?: unknown } | null)?.notice === 'string'
+      ? (location.state as { notice: string }).notice
+      : null;
   const [handle, setHandle] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -74,12 +79,23 @@ function MemberLoginPage() {
           </p>
         ) : null}
 
+        {notice !== null ? (
+          <p className="m-0 rounded-surface border border-correct/16 bg-correct-bg px-3 py-2 text-sm text-correct" role="status">
+            {notice}
+          </p>
+        ) : null}
+
         <button className={buttonClassName} type="submit" disabled={isSubmitting}>
           {isSubmitting ? '確認中...' : 'ログイン'}
         </button>
 
         <p className="m-0 text-center text-sm text-[#4f5d75]">
           未登録? <Link to="/register" className="font-semibold text-accent hover:underline">会員登録</Link>
+        </p>
+        <p className="m-0 text-center text-sm text-[#4f5d75]">
+          <Link to="/forgot-password" className="font-semibold text-accent hover:underline">
+            パスワードを忘れた場合
+          </Link>
         </p>
       </form>
     </div>

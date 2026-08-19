@@ -6,6 +6,7 @@ import { submitAttemptBestEffort } from '../api/quiz'
 import CodeBlock from '../components/CodeBlock'
 import ProgressBar from '../components/ProgressBar'
 import { useHistory } from '../contexts/HistoryContext'
+import { useMastery } from '../contexts/MasteryContext'
 import { useMemberSession } from '../contexts/MemberSessionContext'
 import { useQuizCatalog } from '../hooks/useQuizCatalog'
 import {
@@ -15,6 +16,7 @@ import {
   nowIso,
   pickQuizIds,
 } from '../lib/quizUtils'
+import { computeRank, type RankResult } from '../lib/rank'
 import type { HistoryRecord, Quiz, QuizAnswer } from '../types/quiz'
 
 const DEFAULT_LIMIT = 10
@@ -25,6 +27,7 @@ interface SessionState {
   sectionFilter: string | null
   startedAt: string
   quizIds: number[]
+  preRank: RankResult
 }
 
 const pillButtonClassName =
@@ -58,6 +61,7 @@ function QuizSession({ quizzes }: { quizzes: readonly Quiz[] }) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { appendRecord } = useHistory()
+  const { recordAnswer: recordMasteryAnswer, streaks } = useMastery()
   const { session: memberSession } = useMemberSession()
 
   const initialSection = searchParams.get('section')
@@ -68,6 +72,10 @@ function QuizSession({ quizzes }: { quizzes: readonly Quiz[] }) {
     sectionFilter: initialSection,
     startedAt: nowIso(),
     quizIds: pickQuizIds(quizzes, initialSection, initialLimit),
+    preRank: computeRank(
+      streaks,
+      quizzes.map((quiz) => quiz.id),
+    ),
   }))
 
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -99,13 +107,14 @@ function QuizSession({ quizzes }: { quizzes: readonly Quiz[] }) {
       { quizId: currentQuiz.id, selectedIndex, correct },
     ])
     setRevealed(true)
+    recordMasteryAnswer(currentQuiz.id, correct)
     if (memberSession !== null) {
       void createAnswerHistoryBestEffort(memberSession.token, {
         quizId: currentQuiz.id,
         selectedIndex,
       })
     }
-  }, [selectedIndex, currentQuiz, revealed, memberSession])
+  }, [selectedIndex, currentQuiz, revealed, memberSession, recordMasteryAnswer])
 
   const finalizeAndGo = useCallback(
     (allAnswers: readonly QuizAnswer[]) => {
@@ -121,9 +130,12 @@ function QuizSession({ quizzes }: { quizzes: readonly Quiz[] }) {
       }
       appendRecord(record)
       void submitAttemptBestEffort(record)
-      navigate(`/result/${record.id}`, { state: { record }, replace: true })
+      navigate(`/result/${record.id}`, {
+        state: { record, preRank: session.preRank },
+        replace: true,
+      })
     },
-    [session.id, session.sectionFilter, session.startedAt, totalQuestions, appendRecord, navigate],
+    [session.id, session.sectionFilter, session.startedAt, session.preRank, totalQuestions, appendRecord, navigate],
   )
 
   const handleNext = useCallback(() => {

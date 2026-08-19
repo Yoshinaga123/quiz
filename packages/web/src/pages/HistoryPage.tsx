@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useHistory } from '../contexts/HistoryContext'
+import { useMastery } from '../contexts/MasteryContext'
+import { useQuizCatalog } from '../hooks/useQuizCatalog'
 import { calculateAccuracy } from '../lib/quizUtils'
+import { computeRank, STREAK_CAP } from '../lib/rank'
 
 const pillButtonClassName =
   'inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition duration-150 hover:-translate-y-0.5 hover:shadow-float'
@@ -13,7 +16,17 @@ const formatter = new Intl.DateTimeFormat('ja-JP', {
 
 function HistoryPage() {
   const { records, clearAll } = useHistory()
+  const { streaks, resetAll: resetMastery } = useMastery()
+  const { quizzes } = useQuizCatalog()
   const [confirming, setConfirming] = useState(false)
+  const [confirmingMastery, setConfirmingMastery] = useState(false)
+
+  const quizIds = useMemo(() => quizzes.map((quiz) => quiz.id), [quizzes])
+  const rank = useMemo(() => computeRank(streaks, quizIds), [streaks, quizIds])
+  const masteredCount = useMemo(
+    () => quizIds.filter((id) => (streaks[id] ?? 0) >= STREAK_CAP).length,
+    [streaks, quizIds],
+  )
 
   const sortedRecords = useMemo(
     () =>
@@ -65,6 +78,107 @@ function HistoryPage() {
           <Stat label="解答数" value={`${totalQuestions}`} unit="問" />
           <Stat label="正解数" value={`${totalCorrect}`} unit="問" />
           <Stat label="累計正答率" value={`${overallAccuracy}`} unit="%" />
+        </div>
+      </section>
+
+      <section className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card">
+        <div className="mb-stack flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="m-0 text-[1.15rem] font-semibold text-navy">現在の段位</h2>
+            <p className="m-0 mt-1 text-sm text-[#4f5d75]">
+              各問題を 2 回連続で解くごとに習熟度が上がります。すべての問題を 2
+              回連続で解いたら「名人」です。
+            </p>
+          </div>
+          {Object.keys(streaks).length > 0 ? (
+            confirmingMastery ? (
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="text-sm text-incorrect">段位もリセットしますか？</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetMastery()
+                    setConfirmingMastery(false)
+                  }}
+                  className={`${pillButtonClassName} bg-incorrect text-white`}
+                >
+                  4級に戻す
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingMastery(false)}
+                  className={`${pillButtonClassName} border border-navy/12 bg-white/90 text-navy`}
+                >
+                  キャンセル
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmingMastery(true)}
+                className={`${pillButtonClassName} border border-incorrect/20 bg-incorrect-bg text-incorrect`}
+              >
+                段位をリセット
+              </button>
+            )
+          ) : null}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-[minmax(0,180px)_1fr] sm:items-center">
+          <div className="rounded-surface border border-navy/12 bg-linear-to-br from-white to-[#E8F1FA] px-5 py-6 text-center">
+            <p className="m-0 text-xs font-medium uppercase tracking-[0.14em] text-[#4f5d75]">
+              Current Rank
+            </p>
+            <p className="mt-2 mb-0 text-[2rem] font-bold text-navy">{rank.rank}</p>
+            {rank.nextRank !== null ? (
+              <p className="mt-1 mb-0 text-xs text-[#4f5d75]">
+                次: {rank.nextRank}
+              </p>
+            ) : (
+              <p className="mt-1 mb-0 text-xs text-accent">最高位に到達</p>
+            )}
+          </div>
+
+          <div className="grid gap-3">
+            <div>
+              <div className="flex items-center justify-between text-sm text-[#4f5d75]">
+                <span>習熟度</span>
+                <span>
+                  {rank.mastery} / {rank.totalPossible} pt
+                  <span className="ml-1 text-xs">({Math.round(rank.progress * 100)}%)</span>
+                </span>
+              </div>
+              <div className="mt-1 h-2 overflow-hidden rounded-full bg-navy/8">
+                <div
+                  className="h-full bg-linear-to-r from-accent to-accent-strong"
+                  style={{ width: `${Math.min(100, rank.progress * 100)}%` }}
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-sm text-[#4f5d75]">
+              <div>
+                <p className="m-0 text-xs font-medium uppercase tracking-[0.12em]">
+                  制覇済み
+                </p>
+                <p className="mt-0.5 mb-0 font-semibold text-navy">
+                  {masteredCount} / {quizIds.length} 問
+                </p>
+              </div>
+              <div>
+                <p className="m-0 text-xs font-medium uppercase tracking-[0.12em]">
+                  次段位まで
+                </p>
+                <p className="mt-0.5 mb-0 font-semibold text-navy">
+                  {rank.nextRank === null ? '達成済み' : `+${rank.toNextRank} pt`}
+                </p>
+              </div>
+            </div>
+            <p className="m-0 text-xs text-[#4f5d75]">
+              直近で正解した問題は最大 2 点まで加算されます。誤答すると、その問題の習熟度は 0
+              にリセットされます。
+            </p>
+          </div>
         </div>
       </section>
 

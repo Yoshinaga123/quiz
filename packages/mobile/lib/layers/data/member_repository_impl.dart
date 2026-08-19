@@ -1,4 +1,5 @@
 import 'package:quiz_mobile/layers/data/dto/answer_history_entry_dto.dart';
+import 'package:quiz_mobile/layers/data/dto/mastery_dto.dart';
 import 'package:quiz_mobile/layers/data/dto/public_member_dto.dart';
 import 'package:quiz_mobile/layers/data/source/local/member_session_storage.dart';
 import 'package:quiz_mobile/layers/data/source/remote/member_api_client.dart';
@@ -82,11 +83,39 @@ class MemberRepositoryImpl implements MemberRepository {
   }
 
   @override
+  Future<MasteryResponseDto> fetchMastery(MemberSession session) {
+    return _client.fetchMastery(token: session.token);
+  }
+
+  @override
   Future<void> signOut() => _storage.clear();
 
   @override
   Future<void> deleteAccount(MemberSession session) async {
     await _client.deleteMe(token: session.token);
     await _storage.clear();
+  }
+
+  @override
+  Future<void> setEmail(MemberSession session, {required String email}) {
+    return _client.setEmail(token: session.token, email: email);
+  }
+
+  @override
+  Future<void> consumeEmailVerification({required String token}) {
+    return _client.consumeEmailVerification(token: token);
+  }
+
+  @override
+  Future<void> requestPasswordReset({required String handleOrEmail}) {
+    return _client.requestPasswordReset(handleOrEmail: handleOrEmail);
+  }
+
+  @override
+  Future<void> consumePasswordReset({
+    required String token,
+    required String newPassword,
+  }) {
+    return _client.consumePasswordReset(token: token, newPassword: newPassword);
   }
 }

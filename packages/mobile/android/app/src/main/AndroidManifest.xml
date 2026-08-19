@@ -26,6 +26,15 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- ADR 0018 §4: quzzes:// スキームでメール検証・パスワードリセットの
+                 deep link を受ける。https App Links にする場合は assetlinks.json を
+                 https://socrates-quiz.jp/.well-known/ に配置し autoVerify="true" を付ける。 -->
+            <intent-filter android:label="Socrates Quiz Deep Link">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="quzzes"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

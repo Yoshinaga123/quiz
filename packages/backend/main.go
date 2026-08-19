@@ -85,6 +85,7 @@ func (s *server) routes() http.Handler {
 	mux.Handle("DELETE /api/me", s.requireMemberAuth(http.HandlerFunc(s.handleDeleteMe)))
 	mux.Handle("POST /api/me/answers", s.requireMemberAuth(http.HandlerFunc(s.handleCreateAnswerHistory)))
 	mux.Handle("GET /api/me/answers", s.requireMemberAuth(http.HandlerFunc(s.handleListAnswerHistory)))
+	mux.Handle("GET /api/me/mastery", s.requireMemberAuth(http.HandlerFunc(s.handleGetMemberMastery)))
 	mux.Handle("POST /api/me/email", s.requireMemberAuth(http.HandlerFunc(s.handleSetMemberEmail)))
 	mux.HandleFunc("POST /api/email-verifications/{token}", s.handleConsumeEmailVerification)
 	mux.HandleFunc("POST /api/password-resets", s.handleRequestPasswordReset)

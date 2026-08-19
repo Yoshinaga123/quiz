@@ -3,18 +3,26 @@ import {
   answerHistoryCreateRequestSchema,
   answerHistoryEntrySchema,
   answerHistoryListResponseSchema,
+  masteryResponseSchema,
   memberRegisterRequestSchema,
   memberRegisterResponseSchema,
   memberSessionRequestSchema,
   memberSessionResponseSchema,
+  passwordResetConsumeRequestSchema,
+  passwordResetRequestSchema,
   publicMemberSchema,
+  setMemberEmailRequestSchema,
   type AnswerHistoryCreateRequest,
   type AnswerHistoryEntry,
   type AnswerHistoryListResponse,
+  type MasteryResponse,
   type MemberRegisterRequest,
   type MemberRegisterResponse,
   type MemberSessionResponse,
+  type PasswordResetConsumeRequest,
+  type PasswordResetRequest,
   type PublicMember,
+  type SetMemberEmailRequest,
 } from '../schemas/member';
 
 interface AuthOptions {
@@ -127,6 +135,13 @@ export const createAnswerHistory = async (
   });
 };
 
+export const fetchMastery = async (opts: AuthOptions): Promise<MasteryResponse> =>
+  requestJson('/api/me/mastery', masteryResponseSchema, {
+    method: 'GET',
+    headers: authHeaders(opts.token),
+    ...withSignal(opts.signal),
+  });
+
 // Fire-and-forget wrapper for the play flow; swallows errors so a network
 // hiccup does not disrupt the quiz UI. Local history remains the primary record.
 export const createAnswerHistoryBestEffort = async (
@@ -138,4 +153,102 @@ export const createAnswerHistoryBestEffort = async (
   } catch {
     // Intentionally ignored: server-side history is a secondary source.
   }
+};
+
+// ADR 0018 §3 系エンドポイントは 202/204 を返し JSON body を持たない。
+// requestJson は JSON パースを要求するため、ここでは fetch を直接叩く。
+async function fetchNoContent(
+  path: string,
+  init: RequestInit,
+  acceptStatuses: readonly number[],
+  errorLabel: string,
+): Promise<void> {
+  const base = getApiBaseUrl();
+  if (base === null) {
+    throw new ApiConfigError('VITE_API_BASE_URL is not configured.');
+  }
+  const response = await fetch(`${base}${path}`, {
+    ...init,
+    headers: {
+      Accept: 'application/json',
+      ...(init.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+      ...(init.headers ?? {}),
+    },
+  });
+  if (acceptStatuses.includes(response.status)) return;
+  const text = await response.text();
+  throw new ApiError(
+    `${errorLabel} failed: ${response.status} ${response.statusText}`,
+    response.status,
+    text,
+  );
+}
+
+export const setMemberEmail = async (
+  opts: AuthOptions,
+  payload: SetMemberEmailRequest,
+): Promise<void> => {
+  const validated = setMemberEmailRequestSchema.parse(payload);
+  const init: RequestInit = {
+    method: 'POST',
+    headers: authHeaders(opts.token),
+    body: JSON.stringify(validated),
+  };
+  if (opts.signal !== undefined) {
+    init.signal = opts.signal;
+  }
+  await fetchNoContent('/api/me/email', init, [202], 'POST /api/me/email');
+};
+
+export const consumeEmailVerification = async (
+  token: string,
+  signal?: AbortSignal,
+): Promise<void> => {
+  if (token === '') {
+    throw new ApiError('Verification token is empty', 400, null);
+  }
+  const init: RequestInit = { method: 'POST' };
+  if (signal !== undefined) init.signal = signal;
+  await fetchNoContent(
+    `/api/email-verifications/${encodeURIComponent(token)}`,
+    init,
+    [204],
+    'POST /api/email-verifications/{token}',
+  );
+};
+
+// ADR 0018 §3: 常に 202 を返すため、成否を UI に伝えない (列挙対策)。
+export const requestPasswordReset = async (
+  payload: PasswordResetRequest,
+  signal?: AbortSignal,
+): Promise<void> => {
+  const validated = passwordResetRequestSchema.parse(payload);
+  const init: RequestInit = {
+    method: 'POST',
+    body: JSON.stringify(validated),
+  };
+  if (signal !== undefined) init.signal = signal;
+  await fetchNoContent('/api/password-resets', init, [202], 'POST /api/password-resets');
+};
+
+export const consumePasswordReset = async (
+  token: string,
+  payload: PasswordResetConsumeRequest,
+  signal?: AbortSignal,
+): Promise<void> => {
+  if (token === '') {
+    throw new ApiError('Reset token is empty', 400, null);
+  }
+  const validated = passwordResetConsumeRequestSchema.parse(payload);
+  const init: RequestInit = {
+    method: 'POST',
+    body: JSON.stringify(validated),
+  };
+  if (signal !== undefined) init.signal = signal;
+  await fetchNoContent(
+    `/api/password-resets/${encodeURIComponent(token)}`,
+    init,
+    [204],
+    'POST /api/password-resets/{token}',
+  );
 };

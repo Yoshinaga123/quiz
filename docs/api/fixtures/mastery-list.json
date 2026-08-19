@@ -1,0 +1,17 @@
+{
+  "items": [
+    { "quizId": 1, "streak": 2 },
+    { "quizId": 3, "streak": 1 },
+    { "quizId": 42, "streak": 2 }
+  ],
+  "streakCap": 2,
+  "rank": {
+    "rank": "初段",
+    "index": 4,
+    "mastery": 5,
+    "totalPossible": 40,
+    "progress": 0.125,
+    "nextRank": "二段",
+    "toNextRank": 4
+  }
+}

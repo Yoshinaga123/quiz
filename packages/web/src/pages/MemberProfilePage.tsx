@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { deleteMe, listAnswerHistory } from '../api/member';
+import { deleteMe, listAnswerHistory, setMemberEmail } from '../api/member';
+import { fetchMe } from '../api/member';
+import { setMemberEmailRequestSchema } from '../schemas/member';
 import { useMemberSession } from '../contexts/MemberSessionContext';
 import type { AnswerHistoryEntry } from '../schemas/member';
 
@@ -22,6 +24,11 @@ function MemberProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [hasVerifiedEmail, setHasVerifiedEmail] = useState<boolean | null>(null);
+  const [emailInput, setEmailInput] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailNotice, setEmailNotice] = useState<string | null>(null);
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
 
   useEffect(() => {
     if (session === null) return undefined;
@@ -46,6 +53,21 @@ function MemberProfilePage() {
     return () => controller.abort();
   }, [session, reloadKey]);
 
+  useEffect(() => {
+    if (session === null) return undefined;
+    const controller = new AbortController();
+    fetchMe({ token: session.token, signal: controller.signal })
+      .then((me) => {
+        if (!controller.signal.aborted) {
+          setHasVerifiedEmail(me.hasVerifiedEmail);
+        }
+      })
+      .catch(() => {
+        // hasVerifiedEmail の表示は補助情報。失敗しても UI 全体は停止しない。
+      });
+    return () => controller.abort();
+  }, [session, reloadKey]);
+
   const reload = useCallback(() => {
     setIsLoading(true);
     setReloadKey((current) => current + 1);
@@ -66,6 +88,29 @@ function MemberProfilePage() {
       const message = error instanceof Error ? error.message : '退会に失敗しました';
       setErrorMessage(message);
       setIsDeleting(false);
+    }
+  }
+
+  async function handleSubmitEmail(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (session === null) return;
+    setEmailError(null);
+    setEmailNotice(null);
+    const parsed = setMemberEmailRequestSchema.safeParse({ email: emailInput });
+    if (!parsed.success) {
+      setEmailError('メールアドレスの形式が正しくありません');
+      return;
+    }
+    setIsSubmittingEmail(true);
+    try {
+      await setMemberEmail({ token: session.token }, parsed.data);
+      setEmailNotice('確認メールを送信しました（24 時間有効）。受信ボックスをご確認ください。');
+      setHasVerifiedEmail(false);
+      setEmailInput('');
+    } catch (error) {
+      setEmailError(error instanceof Error ? error.message : 'メール登録に失敗しました');
+    } finally {
+      setIsSubmittingEmail(false);
     }
   }
 
@@ -116,6 +161,59 @@ function MemberProfilePage() {
             ))}
           </ul>
         ) : null}
+      </section>
+
+      <section className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card">
+        <h2 className="m-0 text-[1.05rem] font-semibold text-navy">メールアドレス</h2>
+        <p className="mt-1 text-sm text-[#4f5d75]">
+          パスワードを忘れたときに再設定リンクを送るために利用します。email は他の会員には公開されません。
+        </p>
+        <p className="mt-2 text-sm text-navy">
+          現在の状態:{' '}
+          {hasVerifiedEmail === null ? (
+            <span className="text-[#4f5d75]">確認中...</span>
+          ) : hasVerifiedEmail ? (
+            <span className="font-semibold text-correct">検証済み</span>
+          ) : (
+            <span className="font-semibold text-[#8a5a00]">未検証（または未登録）</span>
+          )}
+        </p>
+
+        <form className="mt-3 grid gap-3" onSubmit={(event) => void handleSubmitEmail(event)}>
+          <label className="grid gap-1.5 text-sm font-medium text-navy">
+            新しいメールアドレス
+            <input
+              className="w-full rounded-surface border border-navy/12 bg-white/90 px-4 py-2.5 text-navy focus:outline-none focus:ring-2 focus:ring-accent/40"
+              type="email"
+              name="email"
+              autoComplete="email"
+              inputMode="email"
+              maxLength={254}
+              required
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+            />
+          </label>
+
+          {emailError !== null ? (
+            <p className="m-0 rounded-surface border border-incorrect/16 bg-incorrect-bg px-3 py-2 text-sm text-incorrect" role="alert">
+              {emailError}
+            </p>
+          ) : null}
+          {emailNotice !== null ? (
+            <p className="m-0 rounded-surface border border-correct/16 bg-correct-bg px-3 py-2 text-sm text-correct" role="status">
+              {emailNotice}
+            </p>
+          ) : null}
+
+          <button
+            type="submit"
+            className={`${buttonClassName} bg-linear-to-br from-accent to-accent-strong text-white`}
+            disabled={isSubmittingEmail}
+          >
+            {isSubmittingEmail ? '送信中...' : '確認メールを送信'}
+          </button>
+        </form>
       </section>
 
       <section className="rounded-card border border-navy/12 bg-white/86 p-card shadow-card">

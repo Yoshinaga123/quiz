@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import {
   answerHistoryCreateRequestSchema,
   answerHistoryListResponseSchema,
+  masteryResponseSchema,
   publicMemberSchema,
 } from '../../src/schemas/member';
 
@@ -67,6 +68,35 @@ describe('member API fixtures (ADR 0016)', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0]?.path).toContain('selectedIndex');
+    }
+  });
+
+  it('parses mastery-empty.json with masteryResponseSchema', () => {
+    const result = masteryResponseSchema.safeParse(readFixture('mastery-empty.json'));
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.items).toEqual([]);
+      expect(result.data.rank.rank).toBe('4級');
+    }
+  });
+
+  it('parses mastery-list.json with masteryResponseSchema', () => {
+    const result = masteryResponseSchema.safeParse(readFixture('mastery-list.json'));
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.items).toHaveLength(3);
+      expect(result.data.streakCap).toBe(2);
+      expect(result.data.rank.rank).toBe('初段');
+    }
+  });
+
+  it('rejects mastery-invalid-streak-over-cap.json (ADR 0016 §4 streakCap = 2)', () => {
+    const result = masteryResponseSchema.safeParse(
+      readFixture('mastery-invalid-streak-over-cap.json'),
+    );
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.path).toContain('streak');
     }
   });
 });

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:quiz_mobile/layers/data/dto/answer_history_entry_dto.dart';
+import 'package:quiz_mobile/layers/data/dto/mastery_dto.dart';
 import 'package:quiz_mobile/layers/data/dto/public_member_dto.dart';
 import 'package:quiz_mobile/layers/domain/errors/member_failure.dart';
 
@@ -102,6 +103,58 @@ class MemberApiClient {
       body: {'quizId': quizId, 'selectedIndex': selectedIndex},
     );
     return AnswerHistoryEntryDto.fromJson(_expectJsonObject(response));
+  }
+
+  /// ADR 0018 §3: email を設定・変更し、検証メールを送信させる。202 応答。
+  Future<void> setEmail({
+    required String token,
+    required String email,
+  }) async {
+    await _request(
+      method: 'POST',
+      path: '/api/me/email',
+      bearer: token,
+      body: {'email': email},
+    );
+  }
+
+  /// ADR 0018 §3: 検証トークンを消費し email_verified_at を立てる。204 応答。
+  Future<void> consumeEmailVerification({required String token}) async {
+    await _request(
+      method: 'POST',
+      path: '/api/email-verifications/${Uri.encodeComponent(token)}',
+    );
+  }
+
+  /// ADR 0018 §3: 常に 202 を返し、実在有無を隠す。
+  Future<void> requestPasswordReset({required String handleOrEmail}) async {
+    await _request(
+      method: 'POST',
+      path: '/api/password-resets',
+      body: {'handleOrEmail': handleOrEmail},
+    );
+  }
+
+  /// ADR 0018 §3: リセットトークンを消費し新パスワードに更新。204 応答。
+  Future<void> consumePasswordReset({
+    required String token,
+    required String newPassword,
+  }) async {
+    await _request(
+      method: 'POST',
+      path: '/api/password-resets/${Uri.encodeComponent(token)}',
+      body: {'newPassword': newPassword},
+    );
+  }
+
+  /// ADR 0018 系のフォローアップ: `GET /api/me/mastery` で段位計算用の streak を取得する。
+  Future<MasteryResponseDto> fetchMastery({required String token}) async {
+    final response = await _request(
+      method: 'GET',
+      path: '/api/me/mastery',
+      bearer: token,
+    );
+    return MasteryResponseDto.fromJson(_expectJsonObject(response));
   }
 
   void close() {
