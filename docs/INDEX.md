@@ -50,7 +50,7 @@
 | [`./quiz-data-workflow.md`](./quiz-data-workflow.md) | クイズデータの 3 層フロー（候補プール → 本番シード → DB） |
 | [`./firebase-api-key-handling.md`](./firebase-api-key-handling.md) | Firebase 設定は gitignore。このアプリのプロジェクト以外を入れない |
 | [`./local-https-setup.md`](./local-https-setup.md) | ローカル開発環境の HTTPS 設定（自己署名証明書 + Vite） |
-| [`./deploy-lightsail.md`](./deploy-lightsail.md) | 本番 Lightsail 1台の起動手順（ADR 0015） |
+| [`./deploy-lightsail.md`](./deploy-lightsail.md) | 本番 Lightsail 1台の起動手順 + CD（ADR 0015） |
 | [`./counter-api.md`](./counter-api.md) | PV カウンター API（`/counter`、永続化は `views` テーブル） |
 | [`./push-notification-mock.md`](./push-notification-mock.md) | Push 通知 Phase A モック（手動送信 + feed + ローカル通知） |
 | [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |

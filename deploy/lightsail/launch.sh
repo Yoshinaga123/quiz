@@ -21,6 +21,10 @@ if [[ "${JWT_SECRET}" == "change-me-long-random-secret" || "${DB_PASSWORD}" == "
   echo "error: replace placeholder secrets in .env before launching." >&2
   exit 1
 fi
+if [[ "${MEMBER_JWT_SECRET:-}" == "change-me-member-jwt-secret" || -z "${MEMBER_JWT_SECRET:-}" ]]; then
+  echo "error: set MEMBER_JWT_SECRET in .env (separate from JWT_SECRET)." >&2
+  exit 1
+fi
 
 # Expand ${PUBLIC_IP} inside VITE_ / CORS_ if the user left the template form.
 if [[ "${VITE_API_BASE_URL}" == *'${PUBLIC_IP}'* ]]; then
