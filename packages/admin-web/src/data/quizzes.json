@@ -13353,6 +13353,22 @@
       "correctAnswerIndex": 0,
       "explanation": "`js/ts.tsdk.path` はワークスペース版 TypeScript の場所を VS Code に知らせますが、それだけでは使用版は切り替わりません。TypeScript ファイルを開いて `TypeScript: Select TypeScript Version` から `Use Workspace Version` を選択します。選択状態は TypeScript 拡張の内部 workspace state（`typescript.useWorkspaceTsdk`）に保存されるため、このキーを通常の `settings.json` や `tsconfig.json` に直接書く設定ではありません。",
       "source": "https://code.visualstudio.com/docs/typescript/typescript-transpiling#_using-the-workspace-version-of-typescript"
+    },
+    {
+      "id": 839,
+      "section": "セクション: SSH・ネットワーク",
+      "title": "外部ユーザー想定のSSH疎通確認",
+      "question": "次のコマンドを実行したところ、`external-test@52.196.241.106: Permission denied (publickey).` と表示されました。この結果の解釈として最も適切なものはどれですか？",
+      "code": "ssh \\\n  -F /dev/null \\\n  -o UserKnownHostsFile=/tmp/quiz-external-known-hosts \\\n  -o StrictHostKeyChecking=accept-new \\\n  -o BatchMode=yes \\\n  -o PubkeyAuthentication=no \\\n  -o PasswordAuthentication=no \\\n  -o KbdInteractiveAuthentication=no \\\n  -o ConnectTimeout=10 \\\n  external-test@52.196.241.106 true",
+      "options": [
+        "TCP 22への接続にも失敗しており、SSHサーバーとは通信できていない",
+        "TCP 22とSSHサーバーへの到達には成功したが、有効な公開鍵を提示していないため認証で拒否された",
+        "パスワード認証に成功したが、`true`コマンドの実行だけが失敗した",
+        "SSH接続に成功し、`external-test`ユーザーとしてログイン済みである"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "`Permission denied (publickey)` は、対象のTCP 22へ接続してSSHプロトコルのやり取りを行った後、公開鍵認証を完了できずに拒否されたことを示します。このコマンドは `-F /dev/null` でユーザーのSSH設定を使わず、公開鍵・パスワード・キーボード対話認証も送らないため、外部の未認証ユーザーを想定した到達確認になります。ポートへ到達できない場合は、一般にタイムアウトまたは接続拒否になります。",
+      "source": "https://man.openbsd.org/ssh"
     }
   ]
 }

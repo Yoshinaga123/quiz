@@ -16,6 +16,17 @@
 
 	encode gzip
 
+	redir /admin /admin/ 308
+	handle_path /admin/* {
+		reverse_proxy admin-web:80
+	}
+
+	handle_path /downloads/* {
+		root * /srv/downloads
+		header Content-Disposition "attachment"
+		file_server
+	}
+
 	handle /v1/* {
 		reverse_proxy api:8080
 	}
@@ -25,8 +36,9 @@
 	handle /counter {
 		reverse_proxy api:8080
 	}
-	# Admin API is intentionally not reverse-proxied on the public IP preview.
-	# Add `handle /api/*` after you lock down secrets / network, or use SSH tunnel.
+	handle /api/* {
+		reverse_proxy api:8080
+	}
 
 	handle {
 		reverse_proxy web:80

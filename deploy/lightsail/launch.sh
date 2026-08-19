@@ -36,4 +36,6 @@ docker compose pull caddy
 docker compose up --build -d
 docker compose ps
 echo "open:  https://${PUBLIC_IP}/"
+echo "admin: https://${PUBLIC_IP}/admin/"
+echo "apk:   https://${PUBLIC_IP}/downloads/socrates-quiz.apk"
 echo "health: curl -fsS https://${PUBLIC_IP}/healthz"

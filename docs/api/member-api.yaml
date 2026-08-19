@@ -130,6 +130,30 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AnswerHistoryEntry"
+    SetMemberEmailRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: RFC 5322 準拠。保存時に小文字化。
+    PasswordResetRequest:
+      type: object
+      required: [handleOrEmail]
+      properties:
+        handleOrEmail:
+          type: string
+          description: ハンドル or email。列挙対策のため常に 202 を返す。
+    PasswordResetConsumeRequest:
+      type: object
+      required: [newPassword]
+      properties:
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
     PublicError:
       type: object
       required: [code, message]
@@ -299,6 +323,113 @@ paths:
                 $ref: "#/components/schemas/PublicError"
         "401":
           description: 未認証 / 削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/me/email:
+    post:
+      tags: [me]
+      summary: email を登録または変更し、検証メールを送る
+      description: |
+        ADR 0018 §3。既存 email があれば `email_verified_at` が NULL に戻り、
+        再検証が必要になる。開発環境ではメールは stdout にログ出力するのみ。
+      operationId: setMemberEmail
+      security: [{memberBearer: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetMemberEmailRequest"
+      responses:
+        "202":
+          description: 受理（検証メールを送信）
+        "400":
+          description: 不正な email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+        "401":
+          description: 未認証 / 削除済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/email-verifications/{token}:
+    post:
+      tags: [me]
+      summary: 検証トークンを消費して email を検証済みにする
+      description: |
+        ADR 0018 §3。24 時間で失効。一度きり利用可能。
+      operationId: consumeEmailVerification
+      security: []
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+            description: 平文の一回性トークン（サーバー側は SHA-256 の hex を保持）。
+      responses:
+        "204":
+          description: 検証完了
+        "400":
+          description: トークン不正 / 期限切れ / 消費済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicError"
+
+  /api/password-resets:
+    post:
+      tags: [members]
+      summary: パスワード再設定リンクの送信を要求
+      description: |
+        ADR 0018 §3。列挙対策のため、handle/email の実在に関わらず常に 202 を返す。
+        検証済み email があるときのみ内部でメール送信する。
+      operationId: requestPasswordReset
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetRequest"
+      responses:
+        "202":
+          description: 受理（実在有無に関わらず同じ応答）
+
+  /api/password-resets/{token}:
+    post:
+      tags: [members]
+      summary: パスワード再設定を実行
+      description: |
+        ADR 0018 §3。30 分で失効、一度きり利用可能。成功時に同一会員の未消費トークンを
+        すべて無効化する。
+      operationId: consumePasswordReset
+      security: []
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+            description: 平文の一回性トークン。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetConsumeRequest"
+      responses:
+        "204":
+          description: 更新完了
+        "400":
+          description: トークン不正 / 期限切れ / 消費済み / 新パスワード不正
           content:
             application/json:
               schema:

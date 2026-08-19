@@ -23,6 +23,7 @@ services:
       target: runtime
     restart: unless-stopped
     environment:
+      APP_ENV: production
       DB_HOST: db
       DB_PORT: "5432"
       DB_USER: ${DB_USER}
@@ -49,6 +50,17 @@ services:
     expose:
       - "80"
 
+  admin-web:
+    build:
+      context: ../..
+      dockerfile: packages/admin-web/Dockerfile
+      target: runtime
+      args:
+        VITE_API_BASE_URL: ""
+    restart: unless-stopped
+    expose:
+      - "80"
+
   caddy:
     image: caddy:2.11.2-alpine
     restart: unless-stopped
@@ -57,11 +69,13 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./artifacts:/srv/downloads:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
       - api
       - web
+      - admin-web
 
 volumes:
   pgdata:

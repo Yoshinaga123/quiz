@@ -3,7 +3,7 @@ dist/
 .env
 *.log
 .DS_Store
-packages/backend/tmp/server
+packages/backend/tmp/
 packages/backend/view-counter
 packages/backend/quiz
 __pycache__/
@@ -22,8 +22,10 @@ game/
 falling_puzzle
 reports/
 .triage/
+deploy/lightsail/artifacts/*.apk
 **/GoogleService-Info.plist
 docs/juice-shop-*
 scripts/juice_shop_tree_dirs_rich.py
 security-attack-notes.md
 侵入テスト.md
+packages/backend/chat.json

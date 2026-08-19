@@ -12,19 +12,15 @@ class _FakeApiClient implements MemberApiClient {
     this.registerResult,
     this.sessionToken,
     this.meResult,
-    this.historyResult,
     this.createAnswerResult,
     this.signInError,
-    this.deleteError,
   });
 
   final PublicMemberDto? registerResult;
   final String? sessionToken;
   final PublicMemberDto? meResult;
-  final AnswerHistoryListDto? historyResult;
   final AnswerHistoryEntryDto? createAnswerResult;
   final Object? signInError;
-  final Object? deleteError;
 
   int registerCalls = 0;
   int sessionCalls = 0;
@@ -65,7 +61,6 @@ class _FakeApiClient implements MemberApiClient {
   Future<void> deleteMe({required String token}) async {
     deleteCalls++;
     lastToken = token;
-    if (deleteError != null) throw deleteError!;
   }
 
   @override
@@ -76,7 +71,7 @@ class _FakeApiClient implements MemberApiClient {
   }) async {
     historyCalls++;
     lastToken = token;
-    return historyResult ?? const AnswerHistoryListDto(items: []);
+    return const AnswerHistoryListDto(items: []);
   }
 
   @override

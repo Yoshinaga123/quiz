@@ -63,6 +63,15 @@
 | 10.1 | 技術ドキュメント整備 | API/構成/設計資料 | yoshinaga | 2026-10-10 | 2026-10-12 | 1.5 |
 | 10.2 | 運用手順書整備 | 監視・障害対応手順 | yoshinaga | 2026-10-13 | 2026-10-14 | 1.0 |
 | 10.3 | 引継ぎ・クローズ | 引継ぎ完了報告 | yoshinaga | 2026-10-15 | 2026-10-15 | 1.5 |
+| 11 | 会員機能追加開発（ADR 0016 / 0018） | 会員 API・端末間履歴・パスワードリセット | yoshinaga | 2026-08-04 | 2026-08-19 | 9.5 |
+| 11.1 | 会員 ADR 策定（0016 / 0018） | ADR 本文・レビュー | yoshinaga | 2026-08-04 | 2026-08-05 | 1.0 |
+| 11.2 | DB マイグレーション（017–022） | members / answer_history / member_login_logs / email / reset_tokens / verification_tokens | yoshinaga | 2026-08-06 | 2026-08-07 | 1.0 |
+| 11.3 | backend 会員 API 実装 | `/api/members` / `/api/session` / `/api/me` / `/api/me/answers` / `/api/me/email` / `/api/email-verifications/{token}` / `/api/password-resets` / `/api/password-resets/{token}` | yoshinaga | 2026-08-08 | 2026-08-12 | 3.0 |
+| 11.4 | backend レート制限・タイミング攻撃対策 | ADR 0017（dummy bcrypt / sliding window） | yoshinaga | 2026-08-13 | 2026-08-13 | 0.5 |
+| 11.5 | OpenAPI（`member-api.yaml`）+ 契約テスト | yaml / Zod / DTO 同期 | yoshinaga | 2026-08-14 | 2026-08-14 | 0.5 |
+| 11.6 | user-web 会員画面（登録/ログイン/プロフィール/履歴） | pages/MemberRegister/Login/Profile + api/member.ts + schemas/member.ts | yoshinaga | 2026-08-15 | 2026-08-17 | 2.0 |
+| 11.7 | mobile 会員画面（登録/ログイン/プロフィール） | member_register/login/profile_view + member_api_client + DTO | yoshinaga | 2026-08-18 | 2026-08-19 | 1.0 |
+| 11.8 | 会員関連テスト | `members_test.go` / `password_reset_test.go` / `auth_verification_test.go` / web `tests/api/member.test.ts` | yoshinaga | 2026-08-19 | 2026-08-19 | 0.5 |
 
 詳細設計の成果物は [`docs/detailed-design/`](./detailed-design/README.md) に置く（基本設計の `architecture/` / `api/` / `adr/` とは分ける）。
 
@@ -90,8 +99,12 @@
 | セキュリティ・品質保証 | 6.0 |
 | リリース準備 | 4.0 |
 | ドキュメント整備・運用移管 | 4.0 |
-| 合計 | 69.0 |
+| 会員機能追加開発（ADR 0016 / 0018） | 9.5 |
+| 合計 | 78.5 |
 
 ## 実装メモ
 
 - 5.3 は `POST /v1/attempts` による匿名回答集計として実装済み。履歴の一次ソースは引き続き web の `localStorage`、サーバー送信は best-effort とする。
+- 11 は当初要件に無かった追加スコープ（[ADR 0016](./adr/0016-member-accounts.md) / [ADR 0018](./adr/0018-member-password-reset.md)）。匿名利用は維持し、会員登録は任意。管理者 JWT と鍵を分離（`MEMBER_JWT_SECRET`, `aud: "member"`）。
+- 11.3 のうち `/api/me/email` 系と `/api/password-resets` 系は [ADR 0018](./adr/0018-member-password-reset.md)。開発環境ではメール送信は `stdout` ログ（[`packages/backend/mailer.go`](../packages/backend/mailer.go)）。
+- 11.4 のレート制限は [ADR 0017](./adr/0017-member-login-rate-limit.md) 準拠。IP + handle のスライディングウィンドウと bcrypt ダミーハッシュでタイミング差を抑制。
