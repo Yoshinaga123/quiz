@@ -54,8 +54,7 @@ export function calculateAccuracy(correct: number, total: number): number {
   return Math.round((correct / total) * 100)
 }
 
-// The public attempts API requires a UUID, but `crypto.randomUUID` only exists
-// in secure contexts, so plain-HTTP hosts fall back to `getRandomValues`.
+// The public attempts API requires a UUID, but `crypto.randomUUID` only exists in secure contexts, so plain-HTTP hosts fall back to `getRandomValues`.
 export function generateSessionId(): string {
   const webCrypto = globalThis.crypto as Crypto | undefined
   if (typeof webCrypto?.randomUUID === 'function') {

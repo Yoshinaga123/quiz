@@ -8,7 +8,7 @@ const adminRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 
 export default defineConfig({
   root: adminRoot,
-  plugins: [react()],
+  plugins: [react() as never],
   test: {
     environment: 'jsdom',
     globals: true,

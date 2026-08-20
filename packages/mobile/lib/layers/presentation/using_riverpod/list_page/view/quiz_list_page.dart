@@ -5,6 +5,7 @@ import 'package:quiz_mobile/layers/data/service/push_feed_poller.dart';
 import 'package:quiz_mobile/layers/domain/entity/quiz.dart';
 import 'package:quiz_mobile/layers/domain/errors/quiz_failure.dart';
 import 'package:quiz_mobile/layers/presentation/member/member_profile_page.dart';
+import 'package:quiz_mobile/layers/domain/quiz_session.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/view/quiz_details_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/history_page/view/history_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/list_page/notifier/quiz_list_notifier.dart';
@@ -222,7 +223,7 @@ class _ContentState extends State<_Content> {
                       },
                 child: Text(
                   _sectionFilter == null
-                      ? '${defaultPlayLimit}問出題する'
+                      ? '$defaultPlayLimit問出題する'
                       : '$_sectionFilter を出題する',
                 ),
               ),

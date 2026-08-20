@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz_mobile/layers/domain/entity/history_record.dart';
 import 'package:quiz_mobile/layers/domain/entity/quiz.dart';
 import 'package:quiz_mobile/layers/presentation/member/member_profile_page.dart';
+import 'package:quiz_mobile/layers/domain/quiz_session.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/notifier/quiz_details_notifier.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/notifier/quiz_details_state.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/history_providers.dart';

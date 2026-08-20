@@ -79,8 +79,7 @@ describe('computeRank', () => {
   });
 
   it('advances one rank as mastery grows', () => {
-    // 26 pt of 40 → progress = 0.65 → resolveRankIndex = floor(0.65 * 13) = 8
-    // Levels: 0=4級, 1=3級, 2=2級, 3=1級, 4=初段, 5=二段, 6=三段, 7=四段, 8=五段
+    // 26 pt of 40 → progress = 0.65 → resolveRankIndex = floor(0.65 * 13) = 8 Levels: 0=4級, 1=3級, 2=2級, 3=1級, 4=初段, 5=二段, 6=三段, 7=四段, 8=五段
     const streaks: Record<number, number> = {};
     let pt = 0;
     for (const id of quizIds) {
