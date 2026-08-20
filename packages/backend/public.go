@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -39,32 +40,53 @@ func (s *server) handleHealthz(w http.ResponseWriter, r *http.Request) {
 	_, _ = io.WriteString(w, "ok")
 }
 
+type publicListParams struct {
+	section string
+	limit   int
+	offset  int
+}
+
+func parsePublicListParams(q url.Values) (publicListParams, string) {
+	params := publicListParams{
+		section: strings.TrimSpace(q.Get("section")),
+		limit:   publicDefaultListLimit,
+		offset:  0,
+	}
+
+	if raw := strings.TrimSpace(q.Get("limit")); raw != "" {
+		parsed, err := strconv.Atoi(raw)
+		if err != nil || parsed < 1 || parsed > publicMaxListLimit {
+			return publicListParams{}, fmt.Sprintf("limit must be an integer between 1 and %d", publicMaxListLimit)
+		}
+		params.limit = parsed
+	}
+
+	if raw := strings.TrimSpace(q.Get("offset")); raw != "" {
+		parsed, err := strconv.Atoi(raw)
+		if err != nil || parsed < 0 {
+			return publicListParams{}, "offset must be an integer >= 0"
+		}
+		params.offset = parsed
+	}
+
+	return params, ""
+}
+
 func (s *server) handleListPublicQuizzes(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
+	params, errMsg := parsePublicListParams(r.URL.Query())
+	if errMsg != "" {
+		writePublicError(w, http.StatusBadRequest, publicErrCodeBadRequest, errMsg)
+		return
+	}
 
 	where := []string{"status = 'published'"}
 	args := []any{}
 	argIdx := 1
 
-	if section := strings.TrimSpace(q.Get("section")); section != "" {
+	if params.section != "" {
 		where = append(where, fmt.Sprintf("section = $%d", argIdx))
-		args = append(args, section)
+		args = append(args, params.section)
 		argIdx++
-	}
-
-	limit := publicDefaultListLimit
-	if raw := strings.TrimSpace(q.Get("limit")); raw != "" {
-		parsed, err := strconv.Atoi(raw)
-		if err != nil || parsed < 1 || parsed > publicMaxListLimit {
-			writePublicError(
-				w,
-				http.StatusBadRequest,
-				publicErrCodeBadRequest,
-				fmt.Sprintf("limit must be an integer between 1 and %d", publicMaxListLimit),
-			)
-			return
-		}
-		limit = parsed
 	}
 
 	whereClause := strings.Join(where, " AND ")
@@ -81,9 +103,9 @@ func (s *server) handleListPublicQuizzes(w http.ResponseWriter, r *http.Request)
 		FROM quizzes
 		WHERE %s
 		ORDER BY id ASC
-		LIMIT $%d
-	`, publicQuizSelectProjection, whereClause, argIdx)
-	args = append(args, limit)
+		LIMIT $%d OFFSET $%d
+	`, publicQuizSelectProjection, whereClause, argIdx, argIdx+1)
+	args = append(args, params.limit, params.offset)
 
 	rows, err := s.db.QueryContext(r.Context(), dataQuery, args...)
 	if err != nil {
@@ -92,7 +114,7 @@ func (s *server) handleListPublicQuizzes(w http.ResponseWriter, r *http.Request)
 	}
 	defer rows.Close()
 
-	items := make([]publicQuiz, 0, limit)
+	items := make([]publicQuiz, 0, params.limit)
 	for rows.Next() {
 		item, err := scanPublicQuiz(rows)
 		if err != nil {

@@ -15,7 +15,9 @@ This app uses a quiz-focused clean architecture. We are intentionally **not** co
 The initial scaffold includes:
 
 - quiz list page
-- quiz details page
+- interactive play (select then reveal) and session scoring
+- local history (`shared_preferences`, ADR 0008)
+- quiz details page (notification tap; answers stay hidden until submit)
 - domain entities, repository contracts, and use cases
 - remote data source using the public Go API
 - mock Push feed polling and local notification display
@@ -35,7 +37,7 @@ flutter run --dart-define=QUIZ_API_BASE_URL=http://10.0.2.2:8082
 
 5. Open the quiz list or tap the notification icon in the app bar. The app calls `GET /v1/push/feed`.
 6. If the latest `deliveryId` has not been shown before, `flutter_local_notifications` displays a local notification.
-7. Tapping the notification opens the quiz details page for the delivered `quizId`.
+7. Tapping the notification opens that quiz as a playable question (answers stay hidden until submit).
 
 The last displayed `deliveryId` is stored in `shared_preferences` under `quzzes:lastMockPushDeliveryId` to avoid duplicate local notifications.
 

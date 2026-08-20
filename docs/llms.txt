@@ -72,6 +72,7 @@
 
 - [コマンド](docs/detailed-design/web/public-contract.md#コマンド)
 - [匿名回答集計](docs/detailed-design/web/public-contract.md#匿名回答集計)
+- [一覧のページング](docs/detailed-design/web/public-contract.md#一覧のページング)
 
 ## admin-web
 

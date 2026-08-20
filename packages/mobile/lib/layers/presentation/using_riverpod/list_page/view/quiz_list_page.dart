@@ -6,8 +6,10 @@ import 'package:quiz_mobile/layers/domain/entity/quiz.dart';
 import 'package:quiz_mobile/layers/domain/errors/quiz_failure.dart';
 import 'package:quiz_mobile/layers/presentation/member/member_profile_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/view/quiz_details_page.dart';
+import 'package:quiz_mobile/layers/presentation/using_riverpod/history_page/view/history_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/list_page/notifier/quiz_list_notifier.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/list_page/notifier/quiz_list_state.dart';
+import 'package:quiz_mobile/layers/presentation/using_riverpod/play_page/view/quiz_play_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/remote_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -115,6 +117,13 @@ class _QuizListViewState extends ConsumerState<_QuizListView> {
         ),
         actions: [
           IconButton(
+            tooltip: '履歴',
+            onPressed: () {
+              Navigator.of(context).push(HistoryPage.route());
+            },
+            icon: const Icon(Icons.history),
+          ),
+          IconButton(
             tooltip: 'mock Push を確認',
             onPressed: _isCheckingPushFeed
                 ? null
@@ -152,7 +161,7 @@ class _QuizListViewState extends ConsumerState<_QuizListView> {
   }
 }
 
-class _Content extends StatelessWidget {
+class _Content extends StatefulWidget {
   const _Content({
     required this.quizzes,
   });
@@ -160,8 +169,18 @@ class _Content extends StatelessWidget {
   final List<Quiz> quizzes;
 
   @override
+  State<_Content> createState() => _ContentState();
+}
+
+class _ContentState extends State<_Content> {
+  String? _sectionFilter;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final sections = widget.quizzes.map((quiz) => quiz.section).toSet().toList()
+      ..sort();
+    final visible = filterBySection(widget.quizzes, _sectionFilter);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,15 +203,62 @@ class _Content extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Clean architecture + Riverpod の最小構成です。まずは一覧と詳細の縦切りから始めています。',
+                '選んで回答してから正解と解説が出ます。履歴は端末に残ります。',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: const Color(0xFFD9EAF8),
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton.tonal(
+                onPressed: visible.isEmpty
+                    ? null
+                    : () {
+                        Navigator.of(context).push(
+                          QuizPlayPage.route(
+                            quizzes: widget.quizzes,
+                            sectionFilter: _sectionFilter,
+                          ),
+                        );
+                      },
+                child: Text(
+                  _sectionFilter == null
+                      ? '${defaultPlayLimit}問出題する'
+                      : '$_sectionFilter を出題する',
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              FilterChip(
+                label: const Text('すべて'),
+                selected: _sectionFilter == null,
+                onSelected: (_) {
+                  setState(() {
+                    _sectionFilter = null;
+                  });
+                },
+              ),
+              for (final section in sections) ...[
+                const SizedBox(width: 8),
+                FilterChip(
+                  label: Text(section),
+                  selected: _sectionFilter == section,
+                  onSelected: (_) {
+                    setState(() {
+                      _sectionFilter = section;
+                    });
+                  },
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
         Text(
           'Available Quizzes',
           style: theme.textTheme.titleLarge,
@@ -200,10 +266,10 @@ class _Content extends StatelessWidget {
         const SizedBox(height: 12),
         Expanded(
           child: ListView.separated(
-            itemCount: quizzes.length,
+            itemCount: visible.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              final quiz = quizzes[index];
+              final quiz = visible[index];
               return _QuizCard(quiz: quiz);
             },
           ),
@@ -229,7 +295,11 @@ class _QuizCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         onTap: () {
           Navigator.of(context).push(
-            QuizDetailsPage.route(quizId: quiz.id),
+            QuizPlayPage.route(
+              quizzes: [quiz],
+              sectionFilter: quiz.section,
+              limit: 1,
+            ),
           );
         },
         child: Padding(

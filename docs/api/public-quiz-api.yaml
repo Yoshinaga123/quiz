@@ -23,7 +23,8 @@ servers:
     description: |
       Production public URL (HTTPS port 443).
       Hostname: socrates-quiz.jp.
-      TLS is terminated at the edge (ALB / CloudFront). The Go container still listens on 8080.
+      TLS is terminated by Caddy on a single Lightsail instance (ADR 0015).
+      The Go container still listens on 8080.
 
 
 tags:
@@ -61,6 +62,10 @@ paths:
       description: |
         管理画面で `status = published` に設定されたクイズのみを返す。
         section 指定時は前方一致ではなく完全一致でフィルタする。
+        `limit` は 1 ページあたりの件数（未指定時 100、最大 100）。
+        `offset` は 0 始まりのスキップ件数（未指定時 0）。
+        `totalCount` はページではなく、条件に合う公開クイズの全件数。
+        100 件を超える公開データを取るときは `offset` を進めて次ページを取る。
       parameters:
         - in: query
           name: section
@@ -75,6 +80,12 @@ paths:
             type: integer
             minimum: 1
             maximum: 100
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: integer
+            minimum: 0
       responses:
         "200":
           description: クイズ一覧

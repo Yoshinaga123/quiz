@@ -60,7 +60,7 @@
 | 品質 | ESLint、Vitest（web / admin-web）、go test、Redocly |
 | Push | Phase A: mock feed + ローカル通知。FCM / APNs は ADR 0007（Proposed） |
 
-本番公開 URL: `https://socrates-quiz.jp`（HTTPS 443）。詳細は [`README.md`](README.md) と [`docs/INDEX.md`](docs/INDEX.md)。
+本番公開 URL: `https://socrates-quiz.jp`（HTTPS 443）。置き場は Lightsail 1台（[ADR 0015](docs/adr/0015-lightsail-production.md)）。詳細は [`README.md`](README.md) と [`docs/INDEX.md`](docs/INDEX.md)。
 
 ## 開発規約
 
