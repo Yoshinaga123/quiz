@@ -318,18 +318,18 @@ Zod は TypeScript ライブラリとして ESLint をやめて Biome にした�
 - **由来**: 2026-08-19。設計説明や運用説明のために、シーケンス図の記法とツールを選定したい。
 - **優先度**: P3（導入は既存機能と切り離せる）
 - **状態**: 先送り。評価のみを行う。
-- **対象**: Mermaid, PlantUML, diagrams.net, draw.io, Lucidchart
+- **対象**: Mermaid, PlantUML, diagrams.net（ブラウザ版）, draw.io（デスクトップ版/旧名）, Lucidchart
 
 **背景**
 
-PR ベースの運用、protected branch、CI/quality checks、認証フローなどを説明するには、シーケンス図が有効である。まずは最低限の可視化のために、無料枠で扱いやすいツールを比較する。
+PR ベースの運用、protected branch、CI/quality checks、認証フローなどを説明するには、シーケンス図が有効である。まずは最低限の可視化のために、無料枠で扱いやすいツールを比較する（diagrams.net は draw.io のブラウザ版）。
 
 **やること**
 
 1. Mermaid を最小構成で試し、Markdown/GitHub への埋め込みのしやすさを比較する
 2. PlantUML を試し、テキストベースでの記述や生成のしやすさを評価する
-3. diagrams.net を試し、ブラウザでの図作成の手軽さと編集容易性を確認する
-4. draw.io を試し、ローカル/ブラウザ運用の違いを確認する
+3. diagrams.net（ブラウザ版）を試し、ブラウザでの図作成の手軽さと編集容易性を確認する
+4. draw.io（デスクトップ版）を試し、ローカル運用のしやすさを確認する
 5. Lucidchart の無料枠と使いやすさを比較し、チーム共有の観点を確認する
 6. 評価結果をもとに、リポジトリで標準化する図作成ツールを決める
 
