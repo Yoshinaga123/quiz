@@ -11,6 +11,7 @@ FIELDS = [
     ("ADMIN_USER", "admin"),
     ("ADMIN_PASSWORD", "password"),
     ("JWT_SECRET", "dev-only-secret"),
+    ("APP_ENV", "development"),
     (
         "QUIZ_SEED_GENERATOR_SCRIPT",
         str(Path(__file__).resolve().parent / "generate_migration.py"),

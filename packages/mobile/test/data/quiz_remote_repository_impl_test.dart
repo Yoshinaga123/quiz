@@ -23,7 +23,11 @@ class _FakeRemoteDataSource implements QuizRemoteDataSource {
   int callsToSections = 0;
 
   @override
-  Future<List<PublicQuizDto>> fetchQuizList({String? section, int? limit}) async {
+  Future<List<PublicQuizDto>> fetchQuizList({
+    String? section,
+    int? limit,
+    int? offset,
+  }) async {
     callsToList++;
     return list ?? const [];
   }

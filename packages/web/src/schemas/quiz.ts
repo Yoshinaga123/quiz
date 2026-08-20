@@ -1,12 +1,10 @@
 import { z } from 'zod'
-// Zod は TypeScript/JavaScript でデータ構造（スキーマ）を定義し、実行時のデータ検証を行うライブラリ
-// 型定義をSingle Source of Truthとして管理できる。 
+// Zod は TypeScript/JavaScript でデータ構造（スキーマ）を定義し、実行時のデータ検証を行うライブラリ。型定義を Single Source of Truth として管理できる。
 
 function hasValidCorrectAnswerIndex(correctAnswerIndex: number, optionCount: number): boolean {
   return correctAnswerIndex >= 0 && correctAnswerIndex < optionCount
 }
-// 正解番号が選択肢の範囲内か見ます。
-// JSONの各問では選択肢は固定だが、問によって個数が違うので、関数は個数を外から受け取る設計にしている
+// 正解番号が選択肢の範囲内か見ます。JSON の各問では選択肢は固定だが、問によって個数が違うので、関数は個数を外から受け取る。
 
 export const quizSchema = z
   .object({

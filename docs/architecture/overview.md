@@ -88,7 +88,7 @@ Vite + TypeScript の SPA。`/api/admin/` エンドポイントのみ使用。JW
 
 | メソッド | パス | 説明 |
 |---------|------|------|
-| GET | `/v1/quizzes` | published クイズ一覧（section・limit 絞り込み可） |
+| GET | `/v1/quizzes` | published クイズ一覧（section・limit・offset 絞り込み可） |
 | GET | `/v1/quizzes/{id}` | 個別クイズ取得 |
 | GET | `/v1/sections` | セクション一覧（件数付き） |
 

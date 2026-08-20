@@ -13,5 +13,4 @@ const result = quizzesSchema.safeParse(STARTER_QUIZZES)
 console.log('success:', result.success)
 console.log(result.success ? result.data : result.error)
 
-// cd /home/yoshinaga_kosuke/workspace/quiz/web
-// npx --yes tsx scripts/try-quiz-parse.ts
+// cd packages/web && npx --yes tsx scripts/try-quiz-parse.ts

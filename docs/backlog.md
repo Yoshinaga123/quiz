@@ -117,7 +117,7 @@ CI はテストを実行しているが、backend に `*_test.go` がなく web 
 
 #### Phase 1: backend — DB
 
-- [x] **TODO-003-05** migration `015_create_push_deliveries.up.sql` を追加する
+- [x] **TODO-003-05** `push_deliveries` を `001_create_tables.up.sql` に含める
 
 ```sql
 CREATE TABLE push_deliveries (

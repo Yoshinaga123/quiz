@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz_mobile/layers/domain/entity/history_record.dart';
 import 'package:quiz_mobile/layers/domain/entity/quiz.dart';
 import 'package:quiz_mobile/layers/presentation/member/member_profile_page.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/notifier/quiz_details_notifier.dart';
 import 'package:quiz_mobile/layers/presentation/using_riverpod/details_page/notifier/quiz_details_state.dart';
+import 'package:quiz_mobile/layers/presentation/using_riverpod/history_providers.dart';
+import 'package:quiz_mobile/layers/presentation/using_riverpod/widgets/quiz_question_body.dart';
 
 class QuizDetailsPage extends StatelessWidget {
   const QuizDetailsPage({
@@ -37,13 +40,44 @@ class _QuizDetailsView extends ConsumerStatefulWidget {
 }
 
 class _QuizDetailsViewState extends ConsumerState<_QuizDetailsView> {
+  int? _selectedIndex;
+  bool _revealed = false;
+  bool _saved = false;
+
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(quizDetailsStateProvider.notifier).load(id: widget.quizId);
     });
+  }
+
+  Future<void> _submit(Quiz quiz) async {
+    final selected = _selectedIndex;
+    if (selected == null || _revealed) return;
+    setState(() {
+      _revealed = true;
+    });
+    if (_saved) return;
+    _saved = true;
+    final startedAt = nowIso();
+    await ref.read(appendHistoryRecordProvider)(
+      HistoryRecord(
+        id: generateSessionId(),
+        sectionFilter: quiz.section,
+        total: 1,
+        correct: isAnswerCorrect(quiz, selected) ? 1 : 0,
+        startedAt: startedAt,
+        completedAt: nowIso(),
+        answers: [
+          QuizAnswer(
+            quizId: quiz.id,
+            selectedIndex: selected,
+            correct: isAnswerCorrect(quiz, selected),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -71,13 +105,44 @@ class _QuizDetailsViewState extends ConsumerState<_QuizDetailsView> {
         ),
       );
     } else {
-      child = _Content(quiz: state.quiz!);
+      final quiz = state.quiz!;
+      child = Column(
+        children: [
+          Expanded(
+            child: QuizQuestionBody(
+              quiz: quiz,
+              selectedIndex: _selectedIndex,
+              revealed: _revealed,
+              onSelect: (index) {
+                if (_revealed) return;
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _revealed || _selectedIndex == null
+                      ? null
+                      : () => _submit(quiz),
+                  child: Text(_revealed ? '回答済み' : '回答する'),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Quiz Details',
+          '出題',
           style: theme.textTheme.titleLarge,
         ),
         actions: [
@@ -107,209 +172,6 @@ class _QuizDetailsViewState extends ConsumerState<_QuizDetailsView> {
             child: child,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _Content extends StatelessWidget {
-  const _Content({
-    required this.quiz,
-  });
-
-  final Quiz quiz;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return ListView(
-      children: [
-        Card(
-          color: const Color(0xFF102A43),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1768AC),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    quiz.section,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  quiz.title,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  quiz.question,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFFD9E2EC),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Choices', style: theme.textTheme.titleLarge),
-                const SizedBox(height: 14),
-                for (var i = 0; i < quiz.options.length; i++) ...[
-                  _OptionTile(
-                    label: '${i + 1}',
-                    text: quiz.options[i],
-                    isCorrect: i == quiz.correctAnswerIndex,
-                  ),
-                  if (i != quiz.options.length - 1) const SizedBox(height: 10),
-                ],
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Explanation', style: theme.textTheme.titleLarge),
-                const SizedBox(height: 12),
-                Text(quiz.explanation, style: theme.textTheme.bodyLarge),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Source', style: theme.textTheme.titleLarge),
-                const SizedBox(height: 12),
-                Text(quiz.source, style: theme.textTheme.bodyLarge),
-              ],
-            ),
-          ),
-        ),
-        if (quiz.code != null && quiz.code!.trim().isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Card(
-            color: const Color(0xFF0B1F33),
-            child: Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Code',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Text(
-                      quiz.code!,
-                      style: const TextStyle(
-                        color: Color(0xFFD9E2EC),
-                        fontFamily: 'monospace',
-                        height: 1.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class _OptionTile extends StatelessWidget {
-  const _OptionTile({
-    required this.label,
-    required this.text,
-    required this.isCorrect,
-  });
-
-  final String label;
-  final String text;
-  final bool isCorrect;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: isCorrect ? const Color(0xFFE6F4EA) : const Color(0xFFF8FBFD),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isCorrect ? const Color(0xFF2D8A4F) : const Color(0xFFD9E2EC),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: isCorrect ? const Color(0xFF2D8A4F) : const Color(0xFFBCCCDC),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 16,
-                height: 1.45,
-                color: Color(0xFF243B53),
-              ),
-            ),
-          ),
-          if (isCorrect) ...[
-            const SizedBox(width: 12),
-            const Icon(
-              Icons.check_circle,
-              color: Color(0xFF2D8A4F),
-            ),
-          ],
-        ],
       ),
     );
   }
