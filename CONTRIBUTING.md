@@ -21,6 +21,8 @@
 
 Husky が commit 前に lint-staged、push 前に `npm run test:contract` を走らせる。
 
+<!-- auto-merge smoke #2 ran 2026-08-20 -->
+
 ## スキーマ・API を変えるとき
 
 Zod の CONTRIBUTING（実装と docs を同時更新）に合わせる。公開契約の手順は [`docs/detailed-design/web/public-contract.md`](docs/detailed-design/web/public-contract.md)。
@@ -59,3 +61,5 @@ cd packages/backend && gofmt -l . && go test ./... && go vet ./...
 - 1 PR 1 目的。学習用 `samples/` の追加は別リポジトリか `archive/` 方針に従う。
 - コミットメッセージは変更理由が分かる短文。
 - 公開契約を変える Issue は `.github/ISSUE_TEMPLATE/contract.yml` を使う。
+- `develop` / `main` 以外への push は [`.github/workflows/auto-pr-merge.yml`](.github/workflows/auto-pr-merge.yml) が **PR を自動作成**し、draft でなければ **auto-merge を有効化**する。必須 CI が緑なら `develop` へ自動マージされる。コンフリクトや未解決レビュー会話がある場合は止まって人手待ち。
+- 手元で明示する場合: `gh pr create --base develop` のあと `gh pr merge --auto --merge`。

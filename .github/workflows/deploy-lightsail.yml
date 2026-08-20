@@ -1,0 +1,48 @@
+name: Deploy Lightsail
+
+# Continuous deploy to the single Lightsail host (ADR 0015).
+# Runs on a self-hosted runner on that host so SSH port 22 can stay
+# restricted to admin IPs (GitHub-hosted runners cannot reach it).
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - "packages/web/**"
+      - "packages/admin-web/**"
+      - "packages/backend/**"
+      - "deploy/lightsail/**"
+      - ".github/workflows/deploy-lightsail.yml"
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy (default develop)"
+        required: false
+        default: develop
+
+concurrency:
+  group: deploy-lightsail
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: deploy (self-hosted)
+    runs-on: [self-hosted, lightsail]
+    timeout-minutes: 45
+    steps:
+      - name: Update checkout and rebuild Compose stack
+        env:
+          DEPLOY_BRANCH: ${{ github.event.inputs.branch || 'develop' }}
+        run: |
+          set -euo pipefail
+          root="${HOME}/quiz"
+          if [[ ! -d "${root}/.git" ]]; then
+            echo "error: expected git checkout at ${root}" >&2
+            exit 1
+          fi
+          export QUIZ_ROOT="${root}"
+          export DEPLOY_BRANCH
+          bash "${QUIZ_ROOT}/deploy/lightsail/remote-update.sh"

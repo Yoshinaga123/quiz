@@ -36,12 +36,14 @@ HTTP は HTTPS へリダイレクトし、管理 API（`/api`）はエッジか�
 - TLS・DNS・アプリを 1 台で完結できる
 - 既存の Dockerfile（web runtime / backend runtime）をそのまま使える
 - マイグレーションは API 起動時の `go:embed` で適用される
+- `develop` への該当パス push で self-hosted runner 経由の CD が可能（[`docs/deploy-lightsail.md`](../deploy-lightsail.md)）
 
 ### Negative
 
 - 単一障害点（インスタンス障害 = 全体停止）
 - DB も同ホストなのでバックアップとスナップショットが必須
 - IP アドレス証明書は有効期間が短く、Caddy の継続稼働と自動更新監視が必要
+- CD 用 self-hosted runner が同ホスト上にいる（ホスト侵害時の影響範囲に注意）
 - スケールアウトは別 ADR が必要
 
 ## Alternatives Considered

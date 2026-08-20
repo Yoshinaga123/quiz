@@ -50,7 +50,8 @@
 | [`./quiz-data-workflow.md`](./quiz-data-workflow.md) | クイズデータの 3 層フロー（候補プール → 本番シード → DB） |
 | [`./firebase-api-key-handling.md`](./firebase-api-key-handling.md) | Firebase 設定は gitignore。このアプリのプロジェクト以外を入れない |
 | [`./local-https-setup.md`](./local-https-setup.md) | ローカル開発環境の HTTPS 設定（自己署名証明書 + Vite） |
-| [`./deploy-lightsail.md`](./deploy-lightsail.md) | 本番 Lightsail 1台の起動手順（ADR 0015） |
+| [`./deploy-lightsail.md`](./deploy-lightsail.md) | 本番 Lightsail 1台の起動手順 + CD（ADR 0015） |
+| [`.github/workflows/auto-pr-merge.yml`](../.github/workflows/auto-pr-merge.yml) | feature ブランチ push で PR 作成 + CI 緑で auto-merge（smoke PR で動作確認済み） |
 | [`./counter-api.md`](./counter-api.md) | PV カウンター API（`/counter`、永続化は `views` テーブル） |
 | [`./push-notification-mock.md`](./push-notification-mock.md) | Push 通知 Phase A モック（手動送信 + feed + ローカル通知） |
 | [`./quizzes-quality-review.md`](./quizzes-quality-review.md) | `quizzes.json` 全体の品質レビューと修正優先順 |
@@ -76,6 +77,9 @@ ADR は、複数領域に長期間影響し、後戻りコストが高い判断�
 | [0008](./adr/0008-user-attempt-history.md) | Accepted | ユーザー回答履歴の保存方式 |
 | [0009](./adr/0009-mobile-state-management.md) | Accepted | モバイル版の状態管理と層構造 |
 | [0015](./adr/0015-lightsail-production.md) | Accepted | 本番は AWS Lightsail 1台 |
+| [0016](./adr/0016-member-accounts.md) | Accepted | 会員アカウント（admin と分離） |
+| [0017](./adr/0017-member-login-rate-limit.md) | Accepted | 会員ログインのレート制限 |
+| [0018](./adr/0018-member-password-reset.md) | Accepted | 会員のパスワードリセット（email 追加） |
 
 ## API 仕様
 
