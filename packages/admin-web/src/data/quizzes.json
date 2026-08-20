@@ -13401,6 +13401,326 @@
       "correctAnswerIndex": 0,
       "explanation": "ヒアドキュメントは、区切り語と一致する行が現れるまで続きます。その行は区切り語そのものだけである必要があり、通常は行頭一致で前後に空白を付けません（`<<-` を使う場合は先頭タブの削除はできますが、マーカー名自体は一致必須です）。`py` や `EOF` は慣習的な識別子で、特別なキーワードではありません。",
       "source": "https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Here-Documents"
+    },
+    {
+      "id": 842,
+      "section": "セクション: Python の型オブジェクト",
+      "title": "type(data) と type(data).__name__ の出力",
+      "question": "`data = []` のとき、`print(type(data))` と `print(type(data).__name__)` の出力の違いとして正しいものはどれですか？",
+      "code": "data = []\nprint(type(data))\nprint(type(data).__name__)",
+      "options": [
+        "`type(data)` は型オブジェクト（表示は `<class 'list'>`）、`type(data).__name__` は型名の文字列 `'list'` を返す",
+        "どちらも同じ文字列 `'list'` を返す",
+        "どちらも同じ型オブジェクト `<class 'list'>` を返す",
+        "`__name__` はモジュール名 `'__main__'` を返す"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`type(data)` はオブジェクトの型そのもの（type オブジェクト）を返します。対話表示や `print` では `<class 'list'>` のように見えます。`__name__` はその型の名前を表す文字列属性なので、`type(data).__name__` は `'list'` になります。ログ向けには文字列、型比較には型オブジェクトを使います。",
+      "source": "https://docs.python.org/3/library/functions.html#type"
+    },
+    {
+      "id": 843,
+      "section": "セクション: Python の型オブジェクト",
+      "title": "型比較に使う式",
+      "question": "`data` が dict かどうかを型オブジェクト同士で比較する書き方として適切なのはどれですか？",
+      "code": "data = {\"a\": 1}\nprint(type(data) == dict)\nprint(type(data).__name__ == \"dict\")",
+      "options": [
+        "`type(data) == dict` は型オブジェクト同士の比較、`type(data).__name__ == \"dict\"` は文字列比較である",
+        "`type(data).__name__ == dict` が型オブジェクト同士の正しい比較である",
+        "`type(data) == \"dict\"` は常に True になる",
+        "`__name__` を付けないと `type(data)` は比較に使えない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "`type(data)` の戻り値は `dict` などの型オブジェクトなので、`type(data) == dict` は型同士の比較です。`type(data).__name__` は `'dict'` という str なので、比較相手も文字列にする必要があります。サブクラスも含めたい場合は `isinstance(data, dict)` の方が適切です。",
+      "source": "https://docs.python.org/3/library/functions.html#type"
+    },
+    {
+      "id": 844,
+      "section": "セクション: Python の型アノテーション",
+      "title": "任意の式を許したことが実行時評価を生んだ",
+      "question": "Python のアノテーションについて、初期仕様と後の用途変化の因果として最も適切なものはどれですか？",
+      "code": "def f(x: 1 + 2) -> None:\n    pass\nprint(f.__annotations__)\n# {'x': 3, 'return': None}",
+      "options": [
+        "初期仕様で任意の式を書けたため、定義時に評価して `__annotations__` へ値を保存する必要があった。用途が静的型チェック中心になった後も、その実行時評価が残った",
+        "mypy などの静的型チェッカが実行時に `__annotations__` を読むため、最初から評価が必須だった",
+        "アノテーションは最初から文字列専用で、実行時評価は後から PEP 8 が要求した",
+        "評価が無駄になったのは、アノテーションをコメントと同じ構文にしたためである"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "関数アノテーションは単なる文字列ではなく、`1 + 2` や関数呼び出しのような Python の式を書ける汎用機能として設計されました。処理系はモジュール読み込み（定義時）にその式を評価し、得られたオブジェクトを `__annotations__` に保存します。のちに用途が mypy などの静的型チェックへ特化すると、ツールはソースをパースするだけで足りるため、実行時評価は型ヒントとしては無意味な処理として取り残されました。この因果が、後の postponed / deferred evaluation（`from __future__ import annotations` など）の動機になります。",
+      "source": "https://peps.python.org/pep-0563/"
+    },
+    {
+      "id": 845,
+      "section": "セクション: 制御工学",
+      "title": "MPC が PID より得意なこと",
+      "question": "モデル予測制御（MPC）が PID 制御より得意とすることとして、最も適切なものはどれですか？",
+      "code": "# MPC: model + finite-horizon optimization + constraints\n# PID: feedback on current error (P, I, D terms)",
+      "options": [
+        "入力・出力の制約や多変数（MIMO）の相互作用を明示的に扱い、有限ホライズン先の挙動を予測しながら最適入力を選ぶこと",
+        "調整パラメータが常に3つだけで、モデルや計算機が一切不要なこと",
+        "現在の誤差だけを見て操作し、将来の制約や変数間の結合は考慮しないこと",
+        "アナログ回路だけで実装でき、デジタル最適化計算が不要なこと"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "PID は現在（と積分・微分）の誤差に反応するフィードバック制御で、単ループでは簡便です。一方 MPC はプロセスの動的モデルを使い、有限時間先の軌道を予測しながらコストを最小化します。その最適化に入力・出力の制約や多変数の結合を直接入れられるのが、PID に対する主な強みです。PID で同等のことを近似するには、カスケードやデカップリング、飽和対策などを外付けで組む必要があり、複雑になります。単純な単ループでは PID の方が実装・調整が楽なことも多いです。",
+      "source": "https://en.wikipedia.org/wiki/Model_predictive_control"
+    },
+    {
+      "id": 846,
+      "section": "セクション: デジタルツイン",
+      "title": "デジタルツインと静的 3D CAD の違い",
+      "question": "デジタルツインが静的な 3D CAD と異なる点として、最も適切なものはどれですか？",
+      "code": "# static 3D CAD: geometry snapshot at design time\n# digital twin: virtual replica synced with a specific physical asset",
+      "options": [
+        "特定の物理資産と対応し、センサ等のデータで状態を同期・更新する動的な表現であること（見た目の幾何だけでなく振る舞い・運用状態を映す）",
+        "必ずリアルタイムの連続通信が必須で、定期同期ではデジタルツインと呼ばないこと",
+        "3D 形状だけを表し、実機とのデータ接続や履歴・予測は持たないこと",
+        "紙の図面と同じく手作業でしか更新できず、運用中のデータは反映できないこと"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "静的な 3D CAD は設計時点の形状・寸法などのスナップショットで、実機が変わっても自動では追従しません。デジタルツインは特定の物理資産（製品・設備・プロセスなど）のデジタル表現であり、観測データとの同期によって状態が更新されます。CAD 幾何を土台にすることが多いですが、本質的な差は「見た目」ではなく、実世界との対応とデータの結びつきです。更新頻度は用途次第で、常時リアルタイムである必要は必ずしもありません（fit-for-purpose な同期）。",
+      "source": "https://en.wikipedia.org/wiki/Digital_twin"
+    },
+    {
+      "id": 847,
+      "section": "セクション: ロボティクス・シミュレーション",
+      "title": "リアリティギャップを克服する代表的手法",
+      "question": "シミュレーションと実機のずれ（reality gap / sim-to-real）を克服する代表的な手法として、最も適切なものはどれですか？",
+      "code": "# sim policy may fail on real robot\n# because mass, friction, sensors, etc. differ",
+      "options": [
+        "システム同定でシミュレータを実機に近づけ、ドメインランダマイゼーションで多様なシミュレーション条件に頑健な方策を学習すること",
+        "シミュレータを一切使わず、実機だけでランダム探索することだけが唯一の正解であること",
+        "摩擦や質量などの物理パラメータを一切変えず、見た目の色だけを固定して学習すること",
+        "リアリティギャップは理論上存在しないため、対策手法は不要であること"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "リアリティギャップは、シミュレータが実世界のダイナミクス・センサ・接触などを完全には再現できないために生じます。代表的な対策は、(1) システム同定（実測データで物理パラメータを合わせ、シミュレータを実機に近づける）、(2) ドメインランダマイゼーション（質量・摩擦・照明などを幅広く乱して学習し、実機をその分布の一サンプルとして扱う）です。両者を組み合わせたり、実機ロールアウトで乱数分布を適応させる手法もあります。",
+      "source": "https://lilianweng.github.io/posts/2019-05-05-domain-randomization/"
+    },
+    {
+      "id": 848,
+      "section": "セクション: 組込み・検証",
+      "title": "HIL で検証できること",
+      "question": "Hardware-in-the-Loop（HIL）で検証できることとして、最も適切なものはどれですか？",
+      "code": "# HIL: real controller hardware + real-time simulated plant\n# connected via real I/O / buses (CAN, analog, digital, ...)",
+      "options": [
+        "実機コントローラ（ECU 等）上の制御ソフトを、実時間のプラント・センサ・アクチュエータ模擬と実 I/O で閉ループ動作させ、ハード／ソフト統合やタイミングを検証すること",
+        "コントローラもプラントもすべてホスト PC 上のモデルだけにして、実ハードを一切使わないこと（= MIL のみ）",
+        "最終製品の実車・実機だけを使い、危険なシナリオは一切再現できないこと",
+        "電源や配線を無視し、ソースコードの静的解析だけで組込みソフトを保証すること"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "HIL は、検証対象の実コントローラハード（とその上の組込みソフト）を残し、制御対象のプラント側をリアルタイムシミュレータで置き換える手法です。実アナログ／デジタル I/O や CAN などのバスで接続するため、MIL/SIL では再現しにくい電気・タイミング・通信を含めた閉ループ検証ができます。危険・稀な条件も安全に繰り返し試せる一方、最終の実機試験を完全に置き換えるわけではありません。",
+      "source": "https://www.mathworks.com/discovery/hardware-in-the-loop-hil.html"
+    },
+    {
+      "id": 849,
+      "section": "セクション: LLM ロボティクス",
+      "title": "LLM 作業指示ロボットの処理フロー順序",
+      "question": "LLM を用いた作業指示ロボットの処理フローとして正しい順序はどれですか？",
+      "code": "# natural-language instruction → robot actions in a scene",
+      "options": [
+        "自然言語指示の解釈 → 環境とのグラウンディング（シーン理解） → 高レベルタスク計画 → 低レベル動作・実行 → 結果フィードバック／必要なら再計画",
+        "低レベル関節指令の実行 → その後に自然言語を解釈 → 最後にシーンを観測する",
+        "フィードバックなしで一度だけ関節指令を出し、計画やグラウンディングは一切行わない",
+        "モータ指令を先に固定し、成功後に指示文を後付けで生成する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "LLM 作業指示ロボットでは、まず自然言語の指示を理解し、シーングラフや観測と結びつけて実行可能な意味に落とします（グラウンディング）。そのうえで高レベルな手順を計画し、パス計画やスキルなどの低レベル制御で実行します。失敗時は状態フィードバックで再計画する閉ループがよく使われます。実行を先に固定してから指示を解釈する順序では、環境制約や長期手順を扱えません。",
+      "source": "https://arxiv.org/abs/2402.08546"
+    },
+    {
+      "id": 850,
+      "section": "セクション: 産業用ロボット安全規格",
+      "title": "ISO 10218:2025 改訂後の評価の考え方",
+      "question": "ISO 10218:2025 改訂後の評価の考え方として正しいものはどれですか？",
+      "code": "# ISO 10218-1/2:2025 (industrial robots / robot applications)\n# former ISO/TS 15066 content largely folded into 10218",
+      "options": [
+        "「協働ロボット」かどうかではなく、ロボット・ツール・ワーク・プログラム・周辺を含むアプリケーション単位でリスクを評価し、協働はアプリケーションの性質として判断する",
+        "ロボット本体のカタログに「協働」と書いてあれば、アプリケーションのリスクアセスメントは不要である",
+        "ISO/TS 15066 だけを単独で参照し続け、ISO 10218:2025 は無視してよい",
+        "評価対象はロボットアームの色とブランドのみで、エンドエフェクタや作業内容は見ない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "2025 年版では、協働をロボット固有の属性ではなく、アプリケーション（ロボットシステム＋ワーク＋プログラム＋関連設備など）の性質として扱います。「collaborative robot」という用語は廃し、collaborative application / collaborative task で整理されます。したがって適合・安全の判断は、銘板や製品区分だけで決めず、用途に応じたリスクアセスメントが中心です。旧 ISO/TS 15066 の協働要件の多くは ISO 10218-2:2025 に取り込まれています。",
+      "source": "https://www.iso.org/standard/73933.html"
+    },
+    {
+      "id": 851,
+      "section": "セクション: 自動車産業の事例",
+      "title": "自動車業界の事例で正しい記述（複数選択）",
+      "question": "自動車業界の事例に関する記述として正しいものをすべて選べ、という設問で正しい組み合わせはどれですか？\nA. BMW×Figure 02 は米国 Spartanburg 工場で X3 生産 30,000 台以上に貢献した\nB. Tesla Optimus は Fremont 工場の Model S/X 生産終了後、Optimus 量産ラインへ転用された\nC. BYD の「閃充」技術は 5 分で 400 km 走行分の充電を実現した\nD. トヨタ元町工場は AI 導入によりサイクルタイムを 80% 削減した\nE. 日産栃木の NIF は女性・高齢者が活躍できるインクルーシブ工場を目指す軸を含む",
+      "code": "# automotive industry case facts (verify against primary announcements)",
+      "options": [
+        "A・B・C・E",
+        "A・C・D・E",
+        "B・C・D",
+        "A・B・D・E"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "A は Figure AI 発表どおり、Spartanburg で Figure 02 が X3 生産 3 万台超に貢献したとされる。B は Fremont の Model S/X ライン終了後、Optimus 向けに床面積を転用する動きとして報じられている。C は BYD スーパー e プラットフォーム／閃充の公式主張（5 分で約 400 km 相当）に沿う。E は日産の NIF（栃木）が「人とロボットの共生」として女性・高齢者も活躍できる職場を掲げている。D は誤りで、トヨタが示すのは工程・投資・生産準備リードタイムの「1/2」などの目標であり、「AI でサイクルタイム 80% 削減」という定説にはなっていない。",
+      "source": "https://www.nissan-global.com/JP/INNOVATION/TECHNOLOGY/ARCHIVE/NIF/"
+    },
+    {
+      "id": 852,
+      "section": "セクション: フィジカルAI",
+      "title": "フィジカルAIを構成する3つの技術要素",
+      "question": "フィジカルAIを構成する3つの技術要素をすべて選べ、という設問で正しい組み合わせはどれですか？\nA. シミュレーション（仮想環境での検証・合成データ生成）\nB. 学習（大規模モデルのトレーニング）\nC. エッジ推論（実機でのリアルタイム推論・制御）\nD. 紙の手順書のみによる人手教示（計算機を使わない）\nE. オフラインの静的 3D CAD 閲覧だけ（実機・学習なし）",
+      "code": "# NVIDIA \"three computers\" for Physical AI:\n# train (DGX) / simulate (Omniverse+Cosmos) / infer on robot (Jetson/DRIVE AGX)",
+      "options": [
+        "A・B・C",
+        "A・B・D",
+        "B・C・E",
+        "A・C・D・E"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "NVIDIA が提唱するフィジカルAIの枠組みでは、単一マシンではなく役割の異なる3層が必要とされます。(1) シミュレーション／デジタルツインで検証と合成データを作る、(2) AI スーパーコンピュータ等でモデルを学習する、(3) ロボットや車載のエッジでリアルタイム推論・制御する。この循環で実世界データが再び学習に戻ります。紙の手順書のみや静的 CAD 閲覧だけではフィジカルAIの構成要素になりません。",
+      "source": "https://www.nvidia.com/en-us/glossary/physical-ai/"
+    },
+    {
+      "id": 853,
+      "section": "セクション: フィジカルAI",
+      "title": "自動車・製造業の主要な導入領域",
+      "question": "自動車・製造業における主要な導入領域として挙げられていたものをすべて選べ、という設問で正しい組み合わせはどれですか？\nA. 外観検査\nB. 車両組立\nC. 工場内搬送\nD. 予知保全\nE. 財務会計の自動化",
+      "code": "# Physical AI / industrial AI on the shop floor\n# (vision QC, assembly, AGV/AMR logistics, predictive maintenance)",
+      "options": [
+        "A・B・C・D",
+        "A・B・E",
+        "C・D・E",
+        "A・B・C・D・E"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "自動車・製造業でよく挙げられる導入領域は、画像認識による外観・品質検査、組立工程でのロボット／フィジカルAI、工場内の搬送（AGV/AMR 等）、設備センサーを使った予知保全です。財務会計の自動化はバックオフィスの業務自動化であり、工場の物理作業・設備に関する主要導入領域としては通常まとめられません。",
+      "source": "https://media.emuniinc.jp/2026/06/28/automotive-manufacturing-process-ai/"
+    },
+    {
+      "id": 854,
+      "section": "セクション: Transformer・言語モデル",
+      "title": "Transformer が旧式 LM に対して実現した改善（誤りを選ぶ）",
+      "question": "Transformer が旧式言語モデル（LSTM・CNN ベース）に対して実現した改善として誤っているものはどれですか？",
+      "code": "# Attention Is All You Need (Vaswani et al., 2017)\n# self-attention, no recurrence/convolution in the base architecture",
+      "options": [
+        "系列を必ず1トークンずつ順にしか処理できず、学習時の並列化は LSTM より劣る",
+        "自己注意により任意の位置ペアを直接結びつけ、長距離依存を捉えやすくした",
+        "再帰を廃し（元論文では畳み込みも使わず）、GPU/TPU 向けに学習を並列化しやすくした",
+        "位置の情報は再帰に頼れないため、positional encoding などで補う設計になった"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Transformer の主な改善は、(1) 自己注意で長距離依存のパス長を短くすること、(2) RNN のような時間方向の逐次依存をなくし学習の並列化を容易にすることです。元論文は再帰と畳み込みを使わず注意だけで表現を計算します。再帰がないため語順は positional encoding 等で与えます。したがって「逐次処理しかできず並列化が LSTM より劣る」は改善の説明として誤りです（むしろ逆です）。",
+      "source": "https://arxiv.org/abs/1706.03762"
+    },
+    {
+      "id": 855,
+      "section": "セクション: 大規模言語モデル",
+      "title": "GPT-3 で見られた汎用性の現象名",
+      "question": "GPT-3 において、1つのモデルで翻訳・計算・プログラミングなどがこなせる汎用性が現れた現象を何と呼ぶか？",
+      "code": "# Brown et al., 2020: Language Models are Few-Shot Learners\n# task demonstrated in the prompt → model adapts without weight updates",
+      "options": [
+        "フューショット学習（インコンテキスト学習）",
+        "勾配消失問題",
+        "モデルの量子化",
+        "教師なしクラスタリングのみによる専用モデル分割"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "GPT-3 論文は『Language Models are Few-Shot Learners』で、プロンプト中に少数の例や指示を与えるだけで、追加の重み更新なしに様々なタスクへ適応できることを示しました。この文脈依存の適応はインコンテキスト学習とも呼ばれ、翻訳・推論・コードなどへの汎用性として注目されました。勾配消失は古い RNN の課題、量子化は圧縮手法であり、この現象の名称ではありません。",
+      "source": "https://arxiv.org/abs/2005.14165"
+    },
+    {
+      "id": 856,
+      "section": "セクション: 大規模言語モデル",
+      "title": "コンテキストウィンドウの説明（誤りを選ぶ）",
+      "question": "コンテキストウィンドウに関する説明として間違っているものはどれか？",
+      "code": "# context window ≈ max tokens the model can condition on in one pass\n# (prompt / chat history / sometimes including generated tokens)",
+      "options": [
+        "長さに上限はなく、どれだけ長い文書でも一度に全部を必ず保持・参照できる",
+        "モデルが一度に条件付けできるトークン数の上限を表すことが多い",
+        "上限を超えると先頭側が切られる、要約されるなどして、遠い文脈が使えなくなることがある",
+        "長いウィンドウほどコストやレイテンシが増えやすい（特に注意機構の計算）"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "コンテキストウィンドウは、モデルが一度の推論で参照できるトークン量の上限です。プロンプトや会話履歴がその枠に収まる必要があり、超えると切り捨てや外部メモリ／RAG などの工夫が要ります。注意計算は系列長に応じてコストが増えやすいため、長いウィンドウは便利でも無料ではありません。「上限がなく全部必ず保持できる」は誤りです。",
+      "source": "https://arxiv.org/abs/1706.03762"
+    },
+    {
+      "id": 857,
+      "section": "セクション: エージェント・ツール連携",
+      "title": "MCP と CLI のコンテキスト効率（誤りを選ぶ）",
+      "question": "MCP と CLI ツールのコンテキスト効率に関する説明として間違っているものはどれか？",
+      "code": "# MCP: tool schemas often loaded into the prompt/context\n# CLI: models often already know common CLIs (git, gh, kubectl)",
+      "options": [
+        "MCP は常に CLI よりトークン消費が少なく、スキーマをコンテキストに載せてもコストは増えない",
+        "MCP は接続時にツール定義（名前・引数スキーマ等）をコンテキストへ載せることが多く、ツール数が多いとオーバーヘッドが大きい",
+        "よく知られた CLI（git や gh など）は学習済み知識で呼べることがあり、初期のスキーマ負荷が小さい場合がある",
+        "用途によっては CLI 優先・必要時だけ MCP、あるいは遅延ロード／フィルタでスキーマ肥大を抑える、という使い分けがある"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "MCP（Model Context Protocol）はツール発見や構造化呼び出しに向きますが、サーバのツールスキーマをコンテキストに載せるため、接続時点で数千〜数万トークンを消費しうることが指摘されています。一方、git / gh / kubectl などの CLI はモデルが既に使い方を知っていることが多く、初期のスキーマ負荷が小さい場合があります。したがって「MCP は常にトークンが少なくスキーマコストもない」は誤りです。認証や社内 API などでは MCP の利点が勝つこともあり、両方を併用する設計も一般的です。",
+      "source": "https://circleci.com/blog/mcp-vs-cli/"
+    },
+    {
+      "id": 858,
+      "section": "セクション: エージェント・ツール連携",
+      "title": "スキル（Skills）の特徴",
+      "question": "「スキル（Skills）」の特徴として最も適切なものはどれか？",
+      "code": "# Agent Skill: directory with SKILL.md (+ optional refs/scripts)\n# description tells the agent when to load the full instructions",
+      "options": [
+        "特定ワークフロー向けの手順を `SKILL.md` などにまとめ、必要なときだけエージェントに読み込ませて専門作業を実行させる仕組みである",
+        "GPU 上で必ず再学習してからしか使えず、Markdown では定義できない仕組みである",
+        "MCP サーバのフルスキーマを常時コンテキストへ強制注入するだけの仕組みである",
+        "OS のカーネルモジュールであり、チャットエージェントとは無関係である"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "エージェントの Skills は、レビュー手順やデプロイ手順など特定タスク向けの知識・手順を `SKILL.md`（と任意の参考資料・スクリプト）としてパッケージ化したものです。description で発動条件を示し、必要なときに本文を読んで従うため、常時すべてをコンテキストに載せる MCP スキーマ注入や、モデル再学習そのものとは別物です。個人用・プロジェクト用の置き場で共有できます。",
+      "source": "https://docs.cursor.com/context/skills"
+    },
+    {
+      "id": 859,
+      "section": "セクション: エージェント・ツール連携",
+      "title": "Function Call における LLM とシステムの役割",
+      "question": "Function Call の処理フローにおいて、「LLM」と「システム」の役割分担として正しいものはどれか？",
+      "code": "# typical tool-calling loop:\n# user → model (may emit tool_call) → runtime executes → result → model → answer",
+      "options": [
+        "LLM はどの関数を・どの引数で呼ぶかを決め、システム（ランタイム）が実際に関数を実行して結果を返す",
+        "LLM が OS 上で直接バイナリを実行し、システムは関与しない",
+        "システムだけが関数名と引数を決め、LLM は結果を見ずに常に固定文を返す",
+        "LLM とシステムは同じプロセスで同時に関数本体を書き換えてから実行する"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Function Calling（ツール呼び出し）では、利用可能な関数のスキーマをモデルに渡し、モデルが必要なら関数名と引数を構造化出力として返します。実際の副作用（API 呼び出し、DB 照会など）はホスト側のシステム／ランタイムが行い、その戻り値を再びモデルに渡して最終回答を生成します。モデル自身が勝手にホスト上で任意コードを実行するわけではありません。",
+      "source": "https://platform.openai.com/docs/guides/function-calling"
+    },
+    {
+      "id": 860,
+      "section": "セクション: 要件定義・AI協働",
+      "title": "クライアント要望の構造化における AI の役割",
+      "question": "クライアント要望の構造化において、AI に求められる本質的な役割として最も適切なものはどれか？",
+      "code": "# vague request → clarify goals, constraints, assumptions → structured requirements",
+      "options": [
+        "曖昧な要望から目的・制約・前提・受け入れ条件を引き出し、確認可能な形に整理すること（決め打ちで実装を先走らない）",
+        "要望を聞かずに完成コードだけを大量生成し、レビューは不要とすること",
+        "クライアントの代わりに契約金額と法的責任をすべて引き受けること",
+        "要件をわざと曖昧なまま残し、後工程で解釈を変えてよいこと"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "要望の構造化では、AI は「何を作るか」を勝手に確定するのではなく、曖昧な表現から目的・非機能制約・前提・受け入れ条件・未決事項を洗い出して整理し、人と確認できる形にすることが本質です。先にコードを量産したり、法的責任を肩代わりしたり、曖昧さを放置したりするのは、構造化の役割ではありません。",
+      "source": "https://www.ibm.com/think/topics/requirements-engineering"
+    },
+    {
+      "id": 861,
+      "section": "セクション: AIネイティブIDE",
+      "title": "AIネイティブIDEの活用原則",
+      "question": "AIネイティブIDEの活用原則として推奨されているものはどれか？",
+      "code": "# e.g. Cursor / Copilot-style workflows:\n# clear intent → AI draft → human review → tests → commit",
+      "options": [
+        "目的と制約を明確にし、提案差分を人がレビューし、テスト等で検証してから取り込む",
+        "生成コードは無条件で全部 Accept し、テストもレビューも省略する",
+        "秘密情報をプロンプトに貼り付け、ログや学習に乗っても気にしない",
+        "リポジトリ全体を一度に書き換えさせ、意図も差分も確認しない"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "AIネイティブIDEでは、モデルが高速に案を出しますが、正しさの最終責任は開発者にあります。目的・制約・対象ファイルを明確にし、差分を読んで受け入れ、テストや型チェックで検証するのが基本です。無条件 Accept、秘密情報の投入、巨大な無検証リライトは推奨されません。",
+      "source": "https://docs.cursor.com/get-started/welcome"
     }
   ]
 }
