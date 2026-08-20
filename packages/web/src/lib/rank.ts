@@ -108,8 +108,7 @@ export function computeRank(
 function resolveRankIndex(mastery: number, totalPossible: number): number {
   // 満点は「名人」だけに割り当てる。
   if (mastery >= totalPossible) return RANK_LABELS.length - 1
-  // 4級..九段 (13 段階) を 0..totalPossible-1 で均等分割する。
-  // ceil で境界を「まだ届いていない」側に倒し、少しでも進歩すれば 3級 に上がるようにする。
+  // 4級..九段 (13 段階) を 0..totalPossible-1 で均等分割する。 ceil で境界を「まだ届いていない」側に倒し、少しでも進歩すれば 3級 に上がるようにする。
   const step = totalPossible / SUB_MASTER_LEVELS
   if (step <= 0) return 0
   const raw = Math.floor(mastery / step)

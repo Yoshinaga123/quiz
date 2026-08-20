@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-// ADR 0016 §3 と OpenAPI docs/api/member-api.yaml と一対一で対応させる。
-// shape を変えたら YAML・fixtures・packages/backend/me.go・テストを同じ PR で直す。
+// ADR 0016 §3 と OpenAPI docs/api/member-api.yaml と一対一で対応させる。 shape を変えたら YAML・fixtures・packages/backend/me.go・テストを同じ PR で直す。
 
 const memberHandleSchema = z
   .string()
@@ -28,8 +27,7 @@ export const memberSessionResponseSchema = z.object({
   token: z.string().min(1),
 });
 
-// publicMember は id と handle と hasVerifiedEmail のみ。ADR 0016 §6 と
-// ADR 0018 §6 の禁止フィールドは strict() で弾く。
+// publicMember は id と handle と hasVerifiedEmail のみ。ADR 0016 §6 と ADR 0018 §6 の禁止フィールドは strict() で弾く。
 export const publicMemberSchema = z
   .object({
     id: z.string().uuid(),
@@ -55,8 +53,7 @@ export const answerHistoryListResponseSchema = z.object({
   items: z.array(answerHistoryEntrySchema),
 });
 
-// ADR 0018 §3: メール登録・検証・パスワードリセット系。
-// email は RFC 5322 準拠 + 254 文字上限 + 保存時に小文字化（サーバー側で正規化）。
+// ADR 0018 §3: メール登録・検証・パスワードリセット系。 email は RFC 5322 準拠 + 254 文字上限 + 保存時に小文字化（サーバー側で正規化）。
 export const setMemberEmailRequestSchema = z.object({
   email: z.string().email().max(254),
 });

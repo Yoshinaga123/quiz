@@ -142,8 +142,7 @@ export const fetchMastery = async (opts: AuthOptions): Promise<MasteryResponse> 
     ...withSignal(opts.signal),
   });
 
-// Fire-and-forget wrapper for the play flow; swallows errors so a network
-// hiccup does not disrupt the quiz UI. Local history remains the primary record.
+// Fire-and-forget wrapper for the play flow; swallows errors so a network hiccup does not disrupt the quiz UI. Local history remains the primary record.
 export const createAnswerHistoryBestEffort = async (
   token: string,
   payload: AnswerHistoryCreateRequest,
@@ -155,8 +154,7 @@ export const createAnswerHistoryBestEffort = async (
   }
 };
 
-// ADR 0018 §3 系エンドポイントは 202/204 を返し JSON body を持たない。
-// requestJson は JSON パースを要求するため、ここでは fetch を直接叩く。
+// ADR 0018 §3 系エンドポイントは 202/204 を返し JSON body を持たない。 requestJson は JSON パースを要求するため、ここでは fetch を直接叩く。
 async function fetchNoContent(
   path: string,
   init: RequestInit,
