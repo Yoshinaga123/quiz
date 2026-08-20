@@ -9,12 +9,161 @@ CI で `python3 scripts/lint_quizzes.py packages/admin-web/src/data/quizzes.json
 """
 
 from __future__ import annotations
+"""
+from __futire__ import annotationとは、Pythonの型ヒントの評価を遅延させる
+自動的に文字列として扱わせる特殊な設定である。
+Pythonの組み込み機能であり、将来の標準仕様挙動を先取したものである。
+主なメリット
+
+- 前方参照をそのまま書くことができる。クラス定義の中で自分自身の型を指定する際に通常発生するNamedErrorを回避することができる。
+- モジュール読み込み時に型ヒントををその場で評価しなくなるため、インポート時の処理速度を向上します。
+- 型定義のためだけに読み込んでいる別モジュールとの循環インポートを回避することができる。
+
+# 「設定なし」 エラーになるケース
+class Node:
+    まだ、Nodeの定義が終わっていないのに、引数の型ヒントで使用するとNamedError
+    def set_next(self, node: Node) -> None:
+        pass
+
+# 「設定あり」 正常に動くケース
+from __future__ import annotations
+
+class Node:
+    # 内部で文字列として扱われるため、エラーにならない
+    def set_next(self, node: Node) -> None:
+        pass
+
+Python 3.7で導入された機能で、型ヒントを多用するモダンなPythonコード (FastAPIやPydanticなどを使う
+プロジェクト)では標準的にファイル先頭に書かれることが多い。
+
+型名オブジェクトの評価が行われることが問題
+関数を定義する際に、型ヒントに書かれたNodeという名前を見て「Nodeクラス」を存在するかを探して保持する処理
+クラス定義の最中に、自身のクラス名を型とするとNameErrorになってしまう。
+また、型チェックで使わないにもかかわらず、大量の型オブジェクトをファイルを読み込み時に
+一つずつ探して準備するため、アプリの起動が遅くなってしまう。
+
+もともとAnnotationはメタデータを付与することができ、あらゆるPythonオブジェクトがメモとして記述できた。
+
+
+"""
 
 import argparse
+"""
+argparseは、Pythonの標準ライブラリに含まれているコマンドライン引数の解析モジュールです。
+
+argparseの三つの主要機能
+    - handles both optional and positional arguments
+        - 位置引数と任意引数の両方を処理する
+    - produces highly informative usage messages
+        - 非常に有益な使用法メッセージを生成する
+    - supports parsers that dispatch to sub-parsers
+        - サブパーサにディスパッチするパーサをサポートする
+
+import argparse
+
+# 1. パーサーの作成
+parser = argparse.ArgumentParser(description="ファイル処理用スクリプト")
+
+# 2. 引数の定義
+parser.add_argument("filename", help="処理対象のファイルパス")
+parser.add_argument(
+    "c", "--count", type=int, default=1, help="処理の繰り返し回数"
+)
+parser.add_argument(
+    "-v", "--verbose", action="store_true", help="詳細ログを出力する"
+)
+
+# 3. 引数の解析
+
+カッコ内に何も渡していないように見えますが、
+引数を省略した場合
+parse_args() はターミナルで実行時に入力されたコマンドライン引数(sys.argv)を
+自動的に読み込む仕様になっています。
+
+args = parser.parse_args()
+
+# 4. 取得した値の利用
+print(f"ファイル名: {args.filename}")
+
+type     引数の型を指定する                 type = int
+default  デフォルト値                       default="output.txt"
+required オプション引数を必須にするか        required=True
+choises  値を限定する                       choices["dev", "prod"]
+action   フラグ指定時の動作を設定            action="store_true"
+
+"""
 import json
+"""
+import jsonは、PythonでJSON (JavaScript Object Notation) 形式のデータを読み書き・変換
+するための標準ライブラリです。
+Pythonの辞書やリストと、JSONフォーマットのテキストやファイルを相互に変換する際に使用する
+
+主な4つの関数
+
+Pythonオブジェクト    →     JSON文字列  json.dumps()
+JSON文字列           →     Pythonオブジェクト  json.loads()
+JSONファイル         →     Pythonオブジェクト json.dump()
+
+import json
+
+data = {"name": "Alice", "age": 25, "is_admin": False}
+
+# Pythonオブジェクト -> JSON文字列に変換
+json_str = jspn.dumps(data, indent=2)
+print(json_str)
+
+# JSON文字列 -> Pythonオブジェクトに変換
+parsed_data = json.loads(json_str)
+print(parsed_data["name"])
+
+# ファイルへの書き込み
+with open("data.json", "w") as f:
+    json.dump(data, f, indent=2)
+
+# ファイルからの読み込み
+with open("data.json", "r") as f:
+    loaded_data = json.load(f)
+
+型の自動変換
+
+変換時には以下のようにデータ型が自動でマッピングされます。
+dict <-> JSONオブジェクト ({})
+list, tuple <-> JSON配列
+True / False <-> true / false
+None <-> null
+
+"""
+
 import sys
+"""
+import sysは、Pythonインタプリタや実行環境と直接やり取りをするための機能を提供する標準ライブラリ
+コマンドライン引数の直接参照、処理の即時終了、モジュール検索パスの追加など
+
+sys.argv コマンドライン引数の参照
+実行時にターミナルから渡された引数のリストのこと
+sys.exit() スクリプトの即時終了
+sys.path モジュール検索パスの追加
+"""
 from collections import Counter
+"""
+Python標準ライブラリのcollectionsモジュールからCounterクラスを読み込むコードです。
+
+from collection import Counter
+
+fruits = ["apple", "banana", "apple", "orange", "banana", "appple"]
+
+count = Counter(fruits)
+
+print(count)
+
+"""
+
 from pathlib import Path
+"""
+from pathlib import Pathは、Python標準ライブラリのpathlibからPathクラスを読み込むコード
+Pathは、ファイルやフォルダのパスを扱いやすくするための機能です。
+"""
+
 from typing import Any, Iterable
 
 REQUIRED_STRING_FIELDS = ("section", "title", "question", "explanation", "source")
